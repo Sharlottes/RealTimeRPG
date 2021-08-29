@@ -19,12 +19,12 @@ client.on("ready", () => console.log(`Logged in as ${client.user.tag}!`))
 
 client.on("message", (message) => {
   if (message.author.bot) return; //not botself
-  if (!msg.content.startsWith(prefix)) return; //need command tag
+  if (!message.content.startsWith(prefix)) return; //need command tag
 
-  const args = msg.content.slice(prefix.length).trim().split(/ +/g);
+  const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
   let cmd = client.commands.get(command);
-  if(cmd) cmd.run(client, msg, args);
+  if(cmd) cmd.run(client, message, args);
 });
 
 client.login(process.env.token)
