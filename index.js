@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 const fs = require("fs")
 const intent_list = new Discord.Intents(["GUILD_MEMBERS", "GUILD_MESSAGES", "GUILDS", "GUILD_INVITES"])
 const client = new Discord.Client({ ws: { intents: intent_list } })
-const prefix = 'si.';
+const prefix = '!';
 const token = process.env.token
 
 client.commands = new Discord.Collection() 
@@ -22,8 +22,6 @@ client.on("ready", () => console.log(`Logged in as ${client.user.tag}!`))
 client.on("message", (message) => {
   if (message.author.bot) return; //not botself
   if (!msg.content.startsWith(prefix)) return; //need command tag
-  if (msg.content.slice(0, prefix.length) !== prefix) return; //need command tag
-
 
   const args = msg.content.slice(prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
@@ -55,16 +53,16 @@ client.on("message", (message) => {
   if (message.content == "si.help") {
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
     let commandList = [
-      { name: "si.ping", desc: "check bot status" },
-      { name: "si.help", desc: "show avaliable commands" },
-      { name: "si.info <unitname>", desc: "show its information" },
-      { name: "si.create <unitname>", desc: "add new unit" }
+      { name: "ping", desc: "check bot status" },
+      { name: "help", desc: "show avaliable commands" },
+      { name: "info <unitname>", desc: "show its information" },
+      { name: "create <unitname>", desc: "add new unit" }
     ]
     let commandStr = ""
     let embed = new Discord.MessageEmbed().setAuthor("Avaliable Commands", helpImg).setColor("#186de6")
 
     commandList.forEach((x) => {
-      commandStr += `• \`\`${changeCommandStringLength(`${x.name}`)}\`\` : **${x.desc}**\n`
+      commandStr += `• !\`\`${changeCommandStringLength(`${x.name}`)}\`\` : **${x.desc}**\n`
     })
 
     embed.addField("Commands: ", commandStr)
