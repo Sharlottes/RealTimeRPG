@@ -7,13 +7,13 @@ client.commands = new Discord.Collection()
 
 client.commands.load = dir => {
   for (const file of fs.readdirSync(dir)) {
-    const cmd = require(`./commands/${file}`);
+    const cmd = require('./commands/${file}');
     client.commands.set(cmd.name, cmd);
   }
   console.log(client.commands.map(c => c.name).join(', ') + ' command loaded.');
 }
 
-client.commands.load("./commands/");
+client.commands.load("./commands");
 
 client.on("ready", () => console.log(`Logged in as ${client.user.tag}!`))
 
