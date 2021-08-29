@@ -21,6 +21,4 @@ exports.run = (client, msg, args) => {
     message.channel.send(embed)
 };
 
-exports = {
-    name: 'help'
-};
+exports.name = "help"
