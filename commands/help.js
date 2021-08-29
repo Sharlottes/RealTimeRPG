@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 
 //run이라는 메소드(function)을 export(수출)
-exports.run = (client, msg, args) => {
+exports.run = (client, message, args) => {
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
     let commandList = [
         { name: "ping", desc: "check bot status" },
@@ -21,4 +21,4 @@ exports.run = (client, msg, args) => {
     message.channel.send(embed)
 };
 
-exports.name = "help"
+exports.name = "help";
