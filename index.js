@@ -13,7 +13,7 @@ client.commands.load = dir => {
   console.log(client.commands.map(c => c.name).join(', ') + ' command loaded.');
 }
 
-client.commands.load("commands/general");
+client.commands.load("commands");
 
 client.on("ready", () => console.log(`Logged in as ${client.user.tag}!`))
 
