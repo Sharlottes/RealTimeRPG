@@ -13,35 +13,15 @@ SERVER MEMBERS INTENT 활성화를 필요로 합니다.
 */
 
 const Discord = require("discord.js")
+const fs = require("fs")
 const intent_list = new Discord.Intents(["GUILD_MEMBERS", "GUILD_MESSAGES", "GUILDS", "GUILD_INVITES"])
 const client = new Discord.Client({ ws: { intents: intent_list } })
 const token = process.env.token
-const welcomeChannelName = "안녕하세요" // 입장 시 환영메시지를 전송 할 채널의 이름을 입력하세요.
-const byeChannelName = "안녕히가세요" // 퇴장 시 메시지를 전송 할 채널의 이름을 입력하세요.
-const welcomeChannelComment = "어서오세요." // 입장 시 전송할 환영메시지의 내용을 입력하세요.
-const byeChannelComment = "안녕히가세요." // 퇴장 시 전송할 메시지의 내용을 입력하세요.
-const roleName = "게스트" // 입장 시 지급 할 역할의 이름을 적어주세요.
 
 client.on("ready", () => {
   console.log("켰다.")
 })
 
-client.on("guildMemberAdd", (member) => {
-  const guild = member.guild
-  const newUser = member.user
-  const welcomeChannel = guild.channels.cache.find((channel) => channel.name == welcomeChannelName)
-
-  welcomeChannel.send(`<@${newUser.id}> ${welcomeChannelComment}\n`) // 올바른 채널명을 기입하지 않았다면, Cannot read property 'send' of undefined; 오류가 발생합니다.
-  member.roles.add(guild.roles.cache.find((r) => r.name === roleName).id)
-})
-
-client.on("guildMemberRemove", (member) => {
-  const guild = member.guild
-  const deleteUser = member.user
-  const byeChannel = guild.channels.cache.find((channel) => channel.name == byeChannelName)
-
-  byeChannel.send(`<@${deleteUser.id}> ${byeChannelComment}\n`) // 올바른 채널명을 기입하지 않았다면, Cannot read property 'send' of undefined; 오류가 발생합니다.
-})
 
 client.on("message", (message) => {
   if (message.author.bot) return
@@ -50,6 +30,7 @@ client.on("message", (message) => {
     return message.reply("pong")
   }
 
+  /*
   if (message.content == "embed") {
     let img = "https://cdn.discordapp.com/icons/419671192857739264/6dccc22df4cb0051b50548627f36c09b.webp?size=256"
     let embed = new Discord.MessageEmbed()
@@ -68,16 +49,18 @@ client.on("message", (message) => {
       .setFooter("나긋해가 만듬", img)
 
     message.channel.send(embed)
-  } else if (message.content == "si.help") {
+  }
+  */
+  if (message.content == "si.help") {
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
     let commandList = [
-      { name: "ping", desc: "check bot status" },
-      { name: "embed", desc: "embed 예제1" },
-      { name: "embed2", desc: "embed 예제2 (help)" },
-      { name: "!전체공지", desc: "dm으로 전체 공지 보내기" },
+      { name: "si.ping", desc: "check bot status" },
+      { name: "si.help", desc: "show avaliable commands" },
+      { name: "si.info <unitname>", desc: "show its information" },
+      { name: "si.create <unitname>", desc: "add new unit" }
     ]
     let commandStr = ""
-    let embed = new Discord.MessageEmbed().setAuthor("Avaliable Commands", helpImg).setColor("#186de6").setFooter(`Current Time: `).setTimestamp()
+    let embed = new Discord.MessageEmbed().setAuthor("Avaliable Commands", helpImg).setColor("#186de6")
 
     commandList.forEach((x) => {
       commandStr += `• \`\`${changeCommandStringLength(`${x.name}`)}\`\` : **${x.desc}**\n`
@@ -86,22 +69,6 @@ client.on("message", (message) => {
     embed.addField("Commands: ", commandStr)
 
     message.channel.send(embed)
-  }
-
-  if (message.content.startsWith("!전체공지")) {
-    if (checkPermission(message)) return
-    if (message.member != null) {
-      // 채널에서 공지 쓸 때
-      let contents = message.content.slice("!전체공지".length)
-      message.member.guild.members.cache.array().forEach((x) => {
-        if (x.user.bot) return
-        x.user.send(`<@${message.author.id}> ${contents}`)
-      })
-
-      return message.reply("공지를 전송했습니다.")
-    } else {
-      return message.reply("채널에서 실행해주세요.")
-    }
   }
 })
 
