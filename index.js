@@ -1,34 +1,35 @@
-/*
-[ 필수 확인 ]
-
-본 코드는 나긋해님의 코드를 Discord.js v12에 맞게 변경한 코드이며,
-SERVER MEMBERS INTENT 활성화를 필요로 합니다.
-
-봇 토큰을 발급받는 페이지에서 하단으로 스크롤하면 Privileged Gateway Intents 라는 항목이 있습니다.
-해당 항목 중 SERVER MEMBERS INTENT 를 활성화 해주시면 됩니다.
-
-활성화가 됬다면 우측 버튼이 파란색으로 바뀝니다.
-
-만약 활성화하지 않고 봇을 키시면 켜지지 않습니다.
-*/
-
 const Discord = require("discord.js")
 const fs = require("fs")
 const intent_list = new Discord.Intents(["GUILD_MEMBERS", "GUILD_MESSAGES", "GUILDS", "GUILD_INVITES"])
 const client = new Discord.Client({ ws: { intents: intent_list } })
+const prefix = 'si.';
 const token = process.env.token
 
-client.on("ready", () => {
-  console.log("켰다.")
-})
+client.commands = new Discord.Collection() 
 
+client.commands.load = dir => {
+  for (const file of fs.readdirSync(dir)) {
+    const cmd = require(`./commands/${file}`);
+    client.commands.set(cmd.name, cmd);
+  }
+  console.log(client.commands.map(c => c.name).join(', ') + ' command loaded.');
+}
+
+client.commands.load(__dirname + "/commands");
+
+client.on("ready", () => console.log(`Logged in as ${client.user.tag}!`))
 
 client.on("message", (message) => {
-  if (message.author.bot) return
+  if (message.author.bot) return; //not botself
+  if (!msg.content.startsWith(prefix)) return; //need command tag
+  if (msg.content.slice(0, prefix.length) !== prefix) return; //need command tag
 
-  if (message.content == "ping") {
-    return message.reply("pong")
-  }
+
+  const args = msg.content.slice(prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+  let cmd = client.commands.get(command);
+  if(cmd) cmd.run(client, msg, args);
+
 
   /*
   if (message.content == "embed") {
@@ -71,15 +72,6 @@ client.on("message", (message) => {
     message.channel.send(embed)
   }
 })
-
-function checkPermission(message) {
-  if (!message.member.hasPermission("MANAGE_MESSAGES")) {
-    message.channel.send(`<@${message.author.id}> ` + "명령어를 수행할 관리자 권한을 소지하고 있지않습니다.")
-    return true
-  } else {
-    return false
-  }
-}
 
 function changeCommandStringLength(str, limitLen = 8) {
   let tmp = str
