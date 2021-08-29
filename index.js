@@ -12,7 +12,7 @@ SERVER MEMBERS INTENT 활성화를 필요로 합니다.
 만약 활성화하지 않고 봇을 키시면 켜지지 않습니다.
 */
 
-const Discord = require("discord.js") 
+const Discord = require("discord.js")
 const intent_list = new Discord.Intents(["GUILD_MEMBERS", "GUILD_MESSAGES", "GUILDS", "GUILD_INVITES"])
 const client = new Discord.Client({ ws: { intents: intent_list } })
 const token = process.env.token
