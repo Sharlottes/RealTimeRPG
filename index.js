@@ -1,9 +1,7 @@
 const Discord = require("discord.js")
-const fs = require("fs")
-const intent_list = new Discord.Intents(["GUILD_MEMBERS", "GUILD_MESSAGES", "GUILDS", "GUILD_INVITES"])
 const client = new Discord.Client({ ws: { intents: intent_list } })
+const fs = require("fs")
 const prefix = '!';
-const token = process.env.token
 
 client.commands = new Discord.Collection() 
 
@@ -29,4 +27,4 @@ client.on("message", (message) => {
   if(cmd) cmd.run(client, msg, args);
 });
 
-client.login(token)
+client.login(process.env.token)
