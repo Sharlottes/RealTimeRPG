@@ -5,13 +5,13 @@ exports.run = (client, message, args) => {
     let jsonFiles = fs.readdirSync('./json');
     let kvStrs = ""
     let stop = false;
+    let keys = "";
     jsonFiles.forEach(f => {
         if(stop) return;
         message.channel.send(`debug: check type - ${f.split(".")[0]} and ${args[0]}`);
         if(f.split(".")[0] != args[0]) return;
         message.channel.send(`debug: check type - **${f.split(".")[0]}** matched!`);
 
-        let keys = "";
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
             keys += k;
