@@ -16,7 +16,7 @@ exports.run = (client, message, args) => {
 
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
-            keys += k + " \n";
+            if(JSON.stringify(v).includes("{")) keys += k + " \n";
             return v;
         });
 
