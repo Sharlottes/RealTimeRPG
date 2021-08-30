@@ -1,0 +1,58 @@
+{
+  "Water": {
+    "type": "mindustry.content.Liquids$1",
+    "name": "water",
+    "iconId": 170,
+    "inlineDescription": true,
+    "alwaysUnlocked": true,
+    "description": "Used for cooling machines and waste processing.",
+    "localizedName": "Water",
+    "explosiveness": 0,
+    "viscosity": 0.5,
+    "heatCapacity": 0.4000000059604645,
+    "temperature": 0.5,
+    "flammability": 0
+  },
+  "Slag": {
+    "type": "mindustry.content.Liquids$2",
+    "name": "slag",
+    "iconId": 171,
+    "inlineDescription": true,
+    "alwaysUnlocked": false,
+    "description": "Refined in separators into constituent metals, or sprayed at enemies as a weapon.",
+    "localizedName": "Slag",
+    "explosiveness": 0,
+    "viscosity": 0.699999988079071,
+    "heatCapacity": 0.5,
+    "temperature": 1,
+    "flammability": 0
+  },
+  "Oil": {
+    "type": "mindustry.content.Liquids$3",
+    "name": "oil",
+    "iconId": 172,
+    "inlineDescription": true,
+    "alwaysUnlocked": false,
+    "description": "Used in advanced material production and as incendiary ammunition.",
+    "localizedName": "Oil",
+    "explosiveness": 1.2000000476837158,
+    "viscosity": 0.75,
+    "heatCapacity": 0.699999988079071,
+    "temperature": 0.5,
+    "flammability": 1.2000000476837158
+  },
+  "Cryofluid": {
+    "type": "mindustry.content.Liquids$4",
+    "name": "cryofluid",
+    "iconId": 173,
+    "inlineDescription": true,
+    "alwaysUnlocked": false,
+    "description": "Used as coolant in reactors, turrets and factories.",
+    "localizedName": "Cryofluid",
+    "explosiveness": 0,
+    "viscosity": 0.5,
+    "heatCapacity": 0.8999999761581421,
+    "temperature": 0.25,
+    "flammability": 0
+  }
+}
