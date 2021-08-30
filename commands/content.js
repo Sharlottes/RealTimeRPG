@@ -5,7 +5,7 @@ const jsonFiles = fs.readdirSync('./json', 'utf8');
 exports.run = (client, message, args) => {
     let kvStrs = ""
     jsonFiles.forEach(f => {
-        if(f.split(".")[1] != args[1]) continue;
+        if(f.split(".")[1] != args[1]) return;
 
         let jsonData = fs.readFileSync("./json/" + f);
         JSON.parse(jsonData.toString(), (k, v) => {
