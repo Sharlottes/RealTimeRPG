@@ -7,7 +7,7 @@ exports.run = (client, message, args) => {
     jsonFiles.forEach(f => {
         if(f.split(".")[1] != args[1]) return;
 
-        let jsonData = fs.readFileSync("./json/" + f);
+        let jsonData = fs.readFileSync("./commands/json/" + f);
         JSON.parse(jsonData.toString(), (k, v) => {
             if(k == arg[2]) kvStrs += (k + ": " + v + "\n"); 
             return v; 
