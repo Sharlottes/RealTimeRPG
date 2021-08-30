@@ -44,7 +44,7 @@ exports.run = (client, message, args) => {
         if(keys.length >= 500) {
             let tmpStr = "";
             for(var str of keys.split(" ")){
-                tmpStr += str + "\n";
+                tmpStr += str;
                 if(tmpStr.length >= 500){
                     let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
                     embed.addField("Values: ", tmpStr);
