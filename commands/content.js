@@ -10,10 +10,11 @@ exports.run = (client, message, args) => {
         message.channel.send(`debug: check type - ${f.split(".")[0]} and ${args[0]}`);
         if(f.split(".")[0] != args[0]) return;
         message.channel.send(`debug: check type - **${f.split(".")[0]}** matched!`);
+
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString());
         if(!jsonData[args[1]]) {
-            console.log(`${args[1]} - ${jsonData[args[1]]}`);
+            console.log(`${args[1]} - ${jsonData[args[1]].toString()}`);
             JSON.parse(jsonBuffer[args[1]].toString(), (k1, v1) => kvStrs += `${k1} : ${v1.toString()}\n`); 
         }
         stop = true;
