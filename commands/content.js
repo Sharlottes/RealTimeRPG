@@ -10,7 +10,7 @@ exports.run = (client, message, args) => {
 
         let jsonData = fs.readFileSync("./json/" + f);
         JSON.parse(jsonData.toString(), (k, v) => {
-            if(k == arg[1]) kvStrs += (k + ": " + v + "\n"); 
+            if(k == args[1]) kvStrs += (k + ": " + v + "\n"); 
             return v; 
         });
     });
