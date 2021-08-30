@@ -14,7 +14,7 @@ exports.run = (client, message, args) => {
         JSON.parse(jsonData.toString(), (k, v) => {
             if(k === args[1]) {
                 console.log(`${k} - ${v}`);
-                JSON.parse(v, (k1, v1) => kvStrs += (`${k1} : ${v1}\n`)); 
+                JSON.parse(v.toString(), (k1, v1) => kvStrs += (`${k1} : ${v1}\n`)); 
             }
             
             return v; 
