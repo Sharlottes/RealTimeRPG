@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const fs = require('fs');
-const jsonFiles = fs.readdirSync('./json');
+const jsonFiles = fs.readdirSync('./commands/json');
 
 exports.run = (client, message, args) => {
     let kvStrs = ""
