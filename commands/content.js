@@ -10,15 +10,12 @@ exports.run = (client, message, args) => {
         message.channel.send(`debug: check type - ${f.split(".")[0]} and ${args[0]}`);
         if(f.split(".")[0] != args[0]) return;
         message.channel.send(`debug: check type - **${f.split(".")[0]}** matched!`);
-        let jsonData = fs.readFileSync("./json/" + f);
-        JSON.parse(jsonData.toString(), (k, v) => {
-            if(k === args[1]) {
-                console.log(`${k} - ${v.toString()}`);
-                JSON.parse(v.toString(), (k1, v1) => kvStrs += (`${k1} : ${v1.toString()}\n`)); 
-            }
-            
-            return v; 
-        });
+        let jsonBuffer = fs.readFileSync("./json/" + f);
+        let jsonData = JSON.parse(jsonBuffer.toString());
+        if(!jsonData[args[1]]) {
+            console.log(`${args[1]} - ${jsonData[args[1]]}`);
+            JSON.parse(jsonBuffer[args[1]].toString(), (k1, v1) => kvStrs += `${k1} : ${v1.toString()}\n`); 
+        }
         stop = true;
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
