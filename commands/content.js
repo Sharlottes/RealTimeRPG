@@ -11,8 +11,13 @@ exports.run = (client, message, args) => {
         if(f.split(".")[0] != args[0]) return;
         message.channel.send(`debug: check type - **${f.split(".")[0]}** matched!`);
 
+        let keys = "";
         let jsonBuffer = fs.readFileSync("./json/" + f);
-        let jsonData = JSON.parse(jsonBuffer.toString());
+        let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
+            keys += k;
+            return v;
+        });
+
         if(jsonData[args[1]] !== undefined) {
             let value =  JSON.stringify(jsonData[args[1]]);
             console.log(`${args[1]} - ${value}`);
@@ -24,17 +29,24 @@ exports.run = (client, message, args) => {
                 return v1;
             });        
         }
+    
         stop = true;
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
 
+    if(args[1] === undefined){
+    
+        let embed = new Discord.MessageEmbed().setAuthor("All Keys", helpImg).setColor("#186de6");
+        embed.addField(keys);
+        message.channel.send(embed);
+    }
     if(kvStrs.length >= 500) {
         let tmpStr = "";
         for(var str of kvStrs.split(",")){
             tmpStr += str;
             if(tmpStr.length >= 500){
                 let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
-                embed.addField("Values: ", str);
+                embed.addField("Values: ", tmpStr);
                 message.channel.send(embed);
                 tmpStr = "";
             }   
@@ -43,7 +55,6 @@ exports.run = (client, message, args) => {
         let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
         embed.addField("Values: ", kvStrs === "" ? "<Empty>" : kvStrs);
         message.channel.send(embed);
-
     }
 
 };
