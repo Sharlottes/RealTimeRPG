@@ -16,7 +16,7 @@ exports.run = (client, message, args) => {
 
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
-            keys += k + "\n";
+            keys += k + " \n";
             return v;
         });
 
@@ -25,7 +25,7 @@ exports.run = (client, message, args) => {
             console.log(`${args[1]} - ${value}`);
             JSON.parse(value, (k1, v1) => {
                 if(args[2] !== undefined){
-                    if(k1 === args[2]) kvStrs += `${k1} : ${JSON.stringify(v1)}\n`; 
+                    if(k1 === (args[2]+"").toLowerCase()) kvStrs += `${k1} : ${JSON.stringify(v1)}\n`; 
                 } 
                 else kvStrs += `${k1} : ${JSON.stringify(v1)}\n`;
                 return v1;
@@ -41,9 +41,22 @@ exports.run = (client, message, args) => {
         embed.addField(files);
         message.channel.send(embed);
     }else if(args[1] === undefined){
-        let embed = new Discord.MessageEmbed().setAuthor("All Keys", helpImg).setColor("#186de6");
-        embed.addField(keys);
-        message.channel.send(embed);
+        if(keys.length >= 500) {
+            let tmpStr = "";
+            for(var str of kvStrs.split(" ")){
+                tmpStr += str + "\n";
+                if(tmpStr.length >= 500){
+                    let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
+                    embed.addField("Values: ", tmpStr);
+                    message.channel.send(embed);
+                    tmpStr = "";
+                }   
+            }
+        } else {
+            let embed = new Discord.MessageEmbed().setAuthor("All Keys", helpImg).setColor("#186de6");
+            embed.addField(keys);
+            message.channel.send(embed);
+        }
     }else if(kvStrs.length >= 500) {
         let tmpStr = "";
         for(var str of kvStrs.split(",")){
