@@ -15,9 +15,9 @@ exports.run = (client, message, args) => {
         });
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
-    let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[2], helpImg).setColor("#186de6")
+    let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6")
 
-    embed.addField("Values: ", kvStrs)
+    embed.addField("Values: ", kvStrs === "" ? "<Empty>" : kvStrs)
     message.channel.send(embed)
 };
 
