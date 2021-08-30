@@ -13,8 +13,8 @@ exports.run = (client, message, args) => {
         let jsonData = fs.readFileSync("./json/" + f);
         JSON.parse(jsonData.toString(), (k, v) => {
             if(k === args[1]) {
-                console.log(`${k} - ${v}`);
-                JSON.parse(v.toString(), (k1, v1) => kvStrs += (`${k1} : ${v1}\n`)); 
+                console.log(`${k} - ${v.toString()}`);
+                JSON.parse(v.toString(), (k1, v1) => kvStrs += (`${k1} : ${v1.toString()}\n`)); 
             }
             
             return v; 
