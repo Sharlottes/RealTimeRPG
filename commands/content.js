@@ -10,7 +10,7 @@ exports.run = (client, message, args) => {
         let jsonData = fs.readFileSync("./json/" + f);
         JSON.parse(jsonData.toString(), (k, v) => {
             if(k == arg[2]) kvStrs += (k + ": " + v + "\n"); 
-            return v;
+            return v; 
         });
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
