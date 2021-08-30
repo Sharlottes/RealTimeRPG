@@ -14,10 +14,10 @@ exports.run = (client, message, args) => {
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString());
         if(jsonData[args[1]] !== undefined) {
-            let value = jsonData[args[1]]+"";
+            let value =  JSON.stringify(jsonData[args[1]]);
             console.log(`${args[1]} - ${value}`);
             JSON.parse(value, (k1, v1) => {
-                kvStrs += `${k1} : ${v1+""}\n`; 
+                kvStrs += `${k1} : ${JSON.stringify(v1)}\n`; 
                 return v1;
             });        
         }
