@@ -3,24 +3,22 @@ const fs = require('fs');
 const jsonFiles = fs.readdirSync('./json', 'utf8');
 
 exports.run = (client, message, args) => {
+    let kvStrs = ""
     jsonFiles.forEach(f => {
-        if(f.split(".")[0] != args[0]) continue;
+        if(f.split(".")[1] != args[1]) continue;
 
-        var jsonData = fs.readFileSync("./json/" + f);
+        let jsonData = fs.readFileSync("./json/" + f);
         JSON.parse(jsonData.toString(), (k, v) => {
-            if(k == arg[1]) console.log(k + ": " + v); 
+            if(k == arg[2]) kvStrs += (k + ": " + v + "\n"); 
             return v;
         });
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
-    let embed = new Discord.MessageEmbed().setAuthor("Avaliable Commands", helpImg).setColor("#186de6")
+    let embed = new Discord.MessageEmbed().setAuthor(args[1] + " - " + args[2], helpImg).setColor("#186de6")
 
-    let commandStr = ""
-    client.commands.forEach((x) => commandStr += `• !${x.name} : **${x.description}**\n`);
-    embed.addField("Commands: ", commandStr)
-
+    embed.addField("Values: ", kvStrs)
     message.channel.send(embed)
 };
 
 exports.name = "content";
-exports.description = "show avaliable commands";
+exports.description = "show contents";
