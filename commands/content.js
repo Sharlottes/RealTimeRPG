@@ -9,7 +9,7 @@ exports.run = (client, message, args) => {
     let files = "";
     jsonFiles.forEach(f => {
         files += f + "\n";
-        if(stop) return;
+        if(stop || args[0] === undefined) return;
         message.channel.send(`debug: check type - ${f.split(".")[0]} and ${args[0]}`);
         if(f.split(".")[0] != args[0]) return;
         message.channel.send(`debug: check type - **${f.split(".")[0]}** matched!`);
@@ -47,7 +47,7 @@ exports.run = (client, message, args) => {
     }else if(kvStrs.length >= 500) {
         let tmpStr = "";
         for(var str of kvStrs.split(",")){
-            tmpStr += str;
+            tmpStr += str + "\n";
             if(tmpStr.length >= 500){
                 let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
                 embed.addField("Values: ", tmpStr);
@@ -64,4 +64,4 @@ exports.run = (client, message, args) => {
 };
 
 exports.name = "content";
-exports.description = "show contents";
+exports.description = "show contents.\nex) !content, !content block, !content block air, !content block air health...";
