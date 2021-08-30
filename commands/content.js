@@ -5,6 +5,7 @@ exports.run = (client, message, args) => {
     let jsonFiles = fs.readdirSync('./json');
     let kvStrs = ""
     jsonFiles.forEach(f => {
+        message.channel.send("debug: check type - " + f.split(".")[0] + " and " + args[0]);
         if(f.split(".")[0] != args[0]) return;
 
         let jsonData = fs.readFileSync("./json/" + f);
