@@ -16,7 +16,6 @@ exports.run = (client, message, args) => {
         if(jsonData[args[1]] !== undefined) {
             let value = jsonData[args[1]]+"";
             console.log(`${args[1]} - ${value}`);
-            jsonData.forEach()
             JSON.parse(value, (k1, v1) => {
                 kvStrs += `${k1} : ${v1+""}\n`; 
                 return v1;
