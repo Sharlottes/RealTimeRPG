@@ -14,8 +14,9 @@ exports.run = (client, message, args) => {
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString());
         if(!jsonData[args[1]]) {
-            console.log(`${args[1]} - ${jsonData[args[1]].toString()}`);
-            JSON.parse(jsonBuffer[args[1]].toString(), (k1, v1) => kvStrs += `${k1} : ${v1.toString()}\n`); 
+            let value = jsonData[args[1]].toString();
+            console.log(`${args[1]} - ${value}`);
+            JSON.parse(value, (k1, v1) => kvStrs += `${k1} : ${v1.toString()}\n`); 
         }
         stop = true;
     });
