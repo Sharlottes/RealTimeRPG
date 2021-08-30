@@ -27,14 +27,14 @@ exports.run = (client, message, args) => {
 
     if(kvStrs.length >= 1000) {
         for(var str of kvStrs.split(0, 1000)){
-            let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
-            embed.addField("Values: ", str);
-            message.channel.send(embed);
+            //let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
+            //embed.addField("Values: ", str);
+            message.channel.send(str);
         }
     } else {
-        let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
-        embed.addField("Values: ", kvStrs === "" ? "<Empty>" : kvStrs);
-        message.channel.send(embed);
+        //let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
+        //embed.addField("Values: ", kvStrs === "" ? "<Empty>" : kvStrs);
+        message.channel.send(kvStrs === "" ? "<Empty>" : kvStrs);
 
     }
 
