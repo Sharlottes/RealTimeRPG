@@ -1,13 +1,13 @@
 const Discord = require('discord.js');
 const fs = require('fs');
-const jsonFiles = fs.readdirSync('./commands/json');
 
 exports.run = (client, message, args) => {
+    let jsonFiles = fs.readdirSync('./json');
     let kvStrs = ""
     jsonFiles.forEach(f => {
         if(f.split(".")[1] != args[1]) return;
 
-        let jsonData = fs.readFileSync("./commands/json/" + f);
+        let jsonData = fs.readFileSync("./json/" + f);
         JSON.parse(jsonData.toString(), (k, v) => {
             if(k == arg[2]) kvStrs += (k + ": " + v + "\n"); 
             return v; 
