@@ -12,7 +12,8 @@ exports.run = (client, message, args) => {
         message.channel.send(`debug: check type - **${f.split(".")[0]}** matched!`);
         let jsonData = fs.readFileSync("./json/" + f);
         JSON.parse(jsonData.toString(), (k, v) => {
-            if(!args[1]) kvStrs += (k + ": " + v + "\n"); 
+            console.log(`${k} - ${v}`);
+            //if(!args[1]) kvStrs += (k + ": " + v + "\n"); 
             return v; 
         });
         stop = true;
