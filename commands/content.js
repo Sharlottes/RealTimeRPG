@@ -24,14 +24,20 @@ exports.run = (client, message, args) => {
         stop = true;
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
-    let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6")
 
-    if(kvStrs.length > 1024) for(var str of kvStrs.split(0, 1024))
-        embed.addField("Values: ", str);
-    else
+    if(kvStrs.length > 1024) {
+        for(var str of kvStrs.split(0, 1024)){
+            let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
+            embed.addField("Values: ", str);
+            message.channel.send(embed);
+        }
+    } else {
+        let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
         embed.addField("Values: ", kvStrs === "" ? "<Empty>" : kvStrs);
-        
-    message.channel.send(embed);
+        message.channel.send(embed);
+
+    }
+
 };
 
 exports.name = "content";
