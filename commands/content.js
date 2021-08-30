@@ -43,7 +43,7 @@ exports.run = (client, message, args) => {
     }else if(args[1] === undefined){
         if(keys.length >= 500) {
             let tmpStr = "";
-            for(var str of kvStrs.split(" ")){
+            for(var str of keys.split(" ")){
                 tmpStr += str + "\n";
                 if(tmpStr.length >= 500){
                     let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
