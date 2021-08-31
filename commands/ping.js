@@ -21,15 +21,15 @@ exports.run = (client, message, args) => {
                         if(k == "name") server[serverIndex].name = v;
                         if(k == "address") server[serverIndex].address = v;
                         if(server[serverIndex].name != "" && server[serverIndex].address != "") {
-                            embed.addField(server[serverIndex].name, erver[serverIndex].address);
+                            embed.addField(server[serverIndex].name, server[serverIndex].address);
                             server[++serverIndex] = {name: "", address: ""};
                         }   
                         return v;
                     });
+                    message.channel.send(embed);
                 }
                 else console.log(error);
             });
-            message.channel.send(embed);
         }
     }
 }
