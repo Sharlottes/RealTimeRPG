@@ -1,5 +1,7 @@
+
 {
-  "Snow": {
+  "snow":
+  {
     "type": "mindustry.content.Weathers$1",
     "name": "snow",
     "iconId": 0,
@@ -43,7 +45,8 @@
     "yspeed": -2,
     "particleRegion": "particle"
   },
-  "Rain": {
+  "rain":
+  {
     "type": "mindustry.content.Weathers$2",
     "name": "rain",
     "iconId": 0,
@@ -69,7 +72,8 @@
     "xspeed": 1.5,
     "yspeed": 5
   },
-  "Sandstorm": {
+  "sandstorm":
+  {
     "type": "mindustry.content.Weathers$3",
     "name": "sandstorm",
     "iconId": 0,
@@ -113,7 +117,8 @@
     "yspeed": -2,
     "particleRegion": "particle"
   },
-  "Sporestorm": {
+  "sporestorm":
+  {
     "type": "mindustry.content.Weathers$4",
     "name": "sporestorm",
     "iconId": 0,
@@ -157,7 +162,8 @@
     "yspeed": -2,
     "particleRegion": "circle-small"
   },
-  "Fog": {
+  "fog":
+  {
     "type": "mindustry.content.Weathers$5",
     "name": "fog",
     "iconId": 0,
@@ -201,7 +207,8 @@
     "yspeed": 0.009999999776482582,
     "particleRegion": "circle-shadow"
   },
-  "suspend-particles": {
+  "suspend-particles":
+  {
     "type": "mindustry.content.Weathers$6",
     "name": "suspend-particles",
     "iconId": 0,

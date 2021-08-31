@@ -1,5 +1,7 @@
+
 {
-  "Sun": {
+  "sun":
+  {
     "type": "mindustry.content.Planets$1",
     "name": "sun",
     "iconId": 0,
@@ -22,7 +24,8 @@
     "atmosphereRadIn": 0,
     "radius": 2
   },
-  "Serpulo": {
+  "serpulo":
+  {
     "type": "mindustry.content.Planets$2",
     "name": "serpulo",
     "iconId": 0,

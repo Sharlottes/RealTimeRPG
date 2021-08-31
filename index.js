@@ -5,7 +5,10 @@ const prefix = '!';
 
 client.commands = new Discord.Collection() 
 
+const help = require('./commands/help.js');
+client.commands.set(help.name, help);
 for (const file of fs.readdirSync("./commands")) {
+  if(file.name === "help") continue; 
   const cmd = require('./commands/' + file);
   client.commands.set(cmd.name, cmd);
 }

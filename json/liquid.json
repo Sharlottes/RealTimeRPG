@@ -1,5 +1,7 @@
+
 {
-  "Water": {
+  "water":
+  {
     "type": "mindustry.content.Liquids$1",
     "name": "water",
     "iconId": 170,
@@ -13,7 +15,8 @@
     "temperature": 0.5,
     "flammability": 0
   },
-  "Slag": {
+  "slag":
+  {
     "type": "mindustry.content.Liquids$2",
     "name": "slag",
     "iconId": 171,
@@ -27,7 +30,8 @@
     "temperature": 1,
     "flammability": 0
   },
-  "Oil": {
+  "oil":
+  {
     "type": "mindustry.content.Liquids$3",
     "name": "oil",
     "iconId": 172,
@@ -41,7 +45,8 @@
     "temperature": 0.5,
     "flammability": 1.2000000476837158
   },
-  "Cryofluid": {
+  "cryofluid":
+  {
     "type": "mindustry.content.Liquids$4",
     "name": "cryofluid",
     "iconId": 173,

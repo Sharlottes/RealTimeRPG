@@ -1,5 +1,7 @@
+
 {
-  "Dagger": {
+  "dagger":
+  {
     "type": "mindustry.content.UnitTypes$1",
     "name": "dagger",
     "iconId": 192,
@@ -98,7 +100,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Mace": {
+  "mace":
+  {
     "type": "mindustry.content.UnitTypes$2",
     "name": "mace",
     "iconId": 193,
@@ -197,7 +200,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Fortress": {
+  "fortress":
+  {
     "type": "mindustry.content.UnitTypes$3",
     "name": "fortress",
     "iconId": 194,
@@ -296,7 +300,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Scepter": {
+  "scepter":
+  {
     "type": "mindustry.content.UnitTypes$4",
     "name": "scepter",
     "iconId": 195,
@@ -395,7 +400,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Reign": {
+  "reign":
+  {
     "type": "mindustry.content.UnitTypes$5",
     "name": "reign",
     "iconId": 196,
@@ -494,7 +500,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Nova": {
+  "nova":
+  {
     "type": "mindustry.content.UnitTypes$6",
     "name": "nova",
     "iconId": 197,
@@ -593,7 +600,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Pulsar": {
+  "pulsar":
+  {
     "type": "mindustry.content.UnitTypes$7",
     "name": "pulsar",
     "iconId": 198,
@@ -692,7 +700,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Quasar": {
+  "quasar":
+  {
     "type": "mindustry.content.UnitTypes$8",
     "name": "quasar",
     "iconId": 199,
@@ -791,7 +800,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Vela": {
+  "vela":
+  {
     "type": "mindustry.content.UnitTypes$9",
     "name": "vela",
     "iconId": 200,
@@ -890,7 +900,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Corvus": {
+  "corvus":
+  {
     "type": "mindustry.content.UnitTypes$10",
     "name": "corvus",
     "iconId": 201,
@@ -989,7 +1000,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Crawler": {
+  "crawler":
+  {
     "type": "mindustry.content.UnitTypes$11",
     "name": "crawler",
     "iconId": 202,
@@ -1088,7 +1100,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Atrax": {
+  "atrax":
+  {
     "type": "mindustry.content.UnitTypes$12",
     "name": "atrax",
     "iconId": 203,
@@ -1187,7 +1200,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Spiroct": {
+  "spiroct":
+  {
     "type": "mindustry.content.UnitTypes$13",
     "name": "spiroct",
     "iconId": 204,
@@ -1286,7 +1300,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Arkyid": {
+  "arkyid":
+  {
     "type": "mindustry.content.UnitTypes$14",
     "name": "arkyid",
     "iconId": 205,
@@ -1385,7 +1400,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Toxopid": {
+  "toxopid":
+  {
     "type": "mindustry.content.UnitTypes$15",
     "name": "toxopid",
     "iconId": 206,
@@ -1484,7 +1500,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Flare": {
+  "flare":
+  {
     "type": "mindustry.content.UnitTypes$16",
     "name": "flare",
     "iconId": 207,
@@ -1583,7 +1600,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Horizon": {
+  "horizon":
+  {
     "type": "mindustry.content.UnitTypes$17",
     "name": "horizon",
     "iconId": 208,
@@ -1682,7 +1700,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Zenith": {
+  "zenith":
+  {
     "type": "mindustry.content.UnitTypes$18",
     "name": "zenith",
     "iconId": 209,
@@ -1781,7 +1800,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Antumbra": {
+  "antumbra":
+  {
     "type": "mindustry.content.UnitTypes$19",
     "name": "antumbra",
     "iconId": 210,
@@ -1880,7 +1900,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Eclipse": {
+  "eclipse":
+  {
     "type": "mindustry.content.UnitTypes$20",
     "name": "eclipse",
     "iconId": 211,
@@ -1979,7 +2000,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Mono": {
+  "mono":
+  {
     "type": "mindustry.content.UnitTypes$21",
     "name": "mono",
     "iconId": 212,
@@ -2078,7 +2100,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Poly": {
+  "poly":
+  {
     "type": "mindustry.content.UnitTypes$22",
     "name": "poly",
     "iconId": 213,
@@ -2177,7 +2200,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Mega": {
+  "mega":
+  {
     "type": "mindustry.content.UnitTypes$23",
     "name": "mega",
     "iconId": 214,
@@ -2276,7 +2300,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Quad": {
+  "quad":
+  {
     "type": "mindustry.content.UnitTypes$24",
     "name": "quad",
     "iconId": 215,
@@ -2375,7 +2400,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Oct": {
+  "oct":
+  {
     "type": "mindustry.content.UnitTypes$25",
     "name": "oct",
     "iconId": 216,
@@ -2474,7 +2500,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Risso": {
+  "risso":
+  {
     "type": "mindustry.content.UnitTypes$26",
     "name": "risso",
     "iconId": 217,
@@ -2573,7 +2600,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Minke": {
+  "minke":
+  {
     "type": "mindustry.content.UnitTypes$27",
     "name": "minke",
     "iconId": 218,
@@ -2672,7 +2700,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Bryde": {
+  "bryde":
+  {
     "type": "mindustry.content.UnitTypes$28",
     "name": "bryde",
     "iconId": 219,
@@ -2771,7 +2800,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Sei": {
+  "sei":
+  {
     "type": "mindustry.content.UnitTypes$29",
     "name": "sei",
     "iconId": 220,
@@ -2870,7 +2900,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Omura": {
+  "omura":
+  {
     "type": "mindustry.content.UnitTypes$30",
     "name": "omura",
     "iconId": 221,
@@ -2969,7 +3000,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Retusa": {
+  "retusa":
+  {
     "type": "mindustry.content.UnitTypes$31",
     "name": "retusa",
     "iconId": 222,
@@ -3068,7 +3100,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Oxynoe": {
+  "oxynoe":
+  {
     "type": "mindustry.content.UnitTypes$32",
     "name": "oxynoe",
     "iconId": 223,
@@ -3167,7 +3200,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Cyerce": {
+  "cyerce":
+  {
     "type": "mindustry.content.UnitTypes$33",
     "name": "cyerce",
     "iconId": 224,
@@ -3266,7 +3300,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Aegires": {
+  "aegires":
+  {
     "type": "mindustry.content.UnitTypes$34",
     "name": "aegires",
     "iconId": 225,
@@ -3365,7 +3400,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Navanax": {
+  "navanax":
+  {
     "type": "mindustry.content.UnitTypes$35",
     "name": "navanax",
     "iconId": 226,
@@ -3464,7 +3500,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Alpha": {
+  "alpha":
+  {
     "type": "mindustry.content.UnitTypes$36",
     "name": "alpha",
     "iconId": 227,
@@ -3563,7 +3600,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Beta": {
+  "beta":
+  {
     "type": "mindustry.content.UnitTypes$37",
     "name": "beta",
     "iconId": 228,
@@ -3662,7 +3700,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "Gamma": {
+  "gamma":
+  {
     "type": "mindustry.content.UnitTypes$38",
     "name": "gamma",
     "iconId": 229,
@@ -3761,7 +3800,8 @@
     "shadowTY": -13,
     "shadowTX": -12
   },
-  "block": {
+  "block":
+  {
     "type": "mindustry.content.UnitTypes$39",
     "name": "block",
     "iconId": 0,

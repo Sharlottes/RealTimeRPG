@@ -1,5 +1,7 @@
+
 {
-  "Ground Zero": {
+  "groundZero":
+  {
     "type": "mindustry.content.SectorPresets$1",
     "name": "groundZero",
     "iconId": 0,
@@ -13,7 +15,8 @@
     "useAI": true,
     "captureWave": 10
   },
-  "Salt Flats": {
+  "saltFlats":
+  {
     "type": "mindustry.content.SectorPresets$2",
     "name": "saltFlats",
     "iconId": 0,
@@ -27,7 +30,8 @@
     "useAI": false,
     "captureWave": 0
   },
-  "Frozen Forest": {
+  "frozenForest":
+  {
     "type": "mindustry.content.SectorPresets$3",
     "name": "frozenForest",
     "iconId": 0,
@@ -41,7 +45,8 @@
     "useAI": true,
     "captureWave": 15
   },
-  "Biomass Synthesis Facility": {
+  "biomassFacility":
+  {
     "type": "mindustry.content.SectorPresets$4",
     "name": "biomassFacility",
     "iconId": 0,
@@ -55,7 +60,8 @@
     "useAI": true,
     "captureWave": 20
   },
-  "The Craters": {
+  "craters":
+  {
     "type": "mindustry.content.SectorPresets$5",
     "name": "craters",
     "iconId": 0,
@@ -69,7 +75,8 @@
     "useAI": true,
     "captureWave": 20
   },
-  "Ruinous Shores": {
+  "ruinousShores":
+  {
     "type": "mindustry.content.SectorPresets$6",
     "name": "ruinousShores",
     "iconId": 0,
@@ -83,7 +90,8 @@
     "useAI": true,
     "captureWave": 30
   },
-  "Windswept Islands": {
+  "windsweptIslands":
+  {
     "type": "mindustry.content.SectorPresets$7",
     "name": "windsweptIslands",
     "iconId": 0,
@@ -97,7 +105,8 @@
     "useAI": true,
     "captureWave": 30
   },
-  "Stained Mountains": {
+  "stainedMountains":
+  {
     "type": "mindustry.content.SectorPresets$8",
     "name": "stainedMountains",
     "iconId": 0,
@@ -111,7 +120,8 @@
     "useAI": true,
     "captureWave": 30
   },
-  "Extraction Outpost": {
+  "extractionOutpost":
+  {
     "type": "mindustry.content.SectorPresets$9",
     "name": "extractionOutpost",
     "iconId": 0,
@@ -125,7 +135,8 @@
     "useAI": false,
     "captureWave": 0
   },
-  "Fungal Pass": {
+  "fungalPass":
+  {
     "type": "mindustry.content.SectorPresets$10",
     "name": "fungalPass",
     "iconId": 0,
@@ -139,7 +150,8 @@
     "useAI": false,
     "captureWave": 0
   },
-  "Overgrowth": {
+  "overgrowth":
+  {
     "type": "mindustry.content.SectorPresets$11",
     "name": "overgrowth",
     "iconId": 0,
@@ -153,7 +165,8 @@
     "useAI": false,
     "captureWave": 0
   },
-  "Tar Fields": {
+  "tarFields":
+  {
     "type": "mindustry.content.SectorPresets$12",
     "name": "tarFields",
     "iconId": 0,
@@ -167,7 +180,8 @@
     "useAI": true,
     "captureWave": 40
   },
-  "Impact 0078": {
+  "impact0078":
+  {
     "type": "mindustry.content.SectorPresets$13",
     "name": "impact0078",
     "iconId": 0,
@@ -181,7 +195,8 @@
     "useAI": true,
     "captureWave": 45
   },
-  "Desolate Rift": {
+  "desolateRift":
+  {
     "type": "mindustry.content.SectorPresets$14",
     "name": "desolateRift",
     "iconId": 0,
@@ -195,7 +210,8 @@
     "useAI": true,
     "captureWave": 18
   },
-  "Nuclear Production Complex": {
+  "nuclearComplex":
+  {
     "type": "mindustry.content.SectorPresets$15",
     "name": "nuclearComplex",
     "iconId": 0,
@@ -209,7 +225,8 @@
     "useAI": true,
     "captureWave": 50
   },
-  "Planetary Launch Terminal": {
+  "planetaryTerminal":
+  {
     "type": "mindustry.content.SectorPresets$16",
     "name": "planetaryTerminal",
     "iconId": 0,

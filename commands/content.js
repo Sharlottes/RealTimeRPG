@@ -16,7 +16,7 @@ exports.run = (client, message, args) => {
 
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
-            if(JSON.stringify(v).includes("{")) keys += k.toLowerCase().replace(" ", "") + " \n";
+            if(JSON.stringify(v).includes("{")) keys += k + " \n";
             return v;
         });
 
@@ -25,7 +25,7 @@ exports.run = (client, message, args) => {
             console.log(`${args[1]} - ${value}`);
             JSON.parse(value, (k1, v1) => {
                 if(args[2] !== undefined){
-                    if(k1.toLowerCase().replace(" ", "") === (args[2]+"").toLowerCase().replace(" ", "")) kvStrs += `${k1} : ${JSON.stringify(v1)}\n`; 
+                    if(k1 === (args[2]+"")) kvStrs += `${k1} : ${JSON.stringify(v1)}\n`; 
                 } 
                 else kvStrs += `${k1} : ${JSON.stringify(v1)}\n`;
                 return v1;

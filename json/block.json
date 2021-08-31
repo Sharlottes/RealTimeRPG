@@ -1,5 +1,7 @@
+
 {
-  "air": {
+  "air":
+  {
     "type": "mindustry.world.blocks.environment.AirBlock",
     "name": "air",
     "iconId": 0,
@@ -107,7 +109,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Enemy Spawn": {
+  "spawn":
+  {
     "type": "mindustry.world.blocks.environment.SpawnBlock",
     "name": "spawn",
     "iconId": 0,
@@ -215,7 +218,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Cliff": {
+  "cliff":
+  {
     "type": "mindustry.content.Blocks$1",
     "name": "cliff",
     "iconId": 0,
@@ -260,7 +264,7 @@
     "clipSize": 8,
     "expanded": false,
     "offset": 0,
-    "size": 11,
+    "size": 1,
     "floating": false,
     "baseExplosiveness": 0,
     "health": 40,
@@ -305,9 +309,11 @@
     "outputsLiquid": false,
     "hasPower": false,
     "hasLiquids": false,
-    "hasItems": false
+    "hasItems": false,
+    "size": 11
   },
-  "build1": {
+  "build1":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build1",
     "iconId": 0,
@@ -399,7 +405,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build2": {
+  "build2":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build2",
     "iconId": 0,
@@ -491,7 +498,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build3": {
+  "build3":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build3",
     "iconId": 0,
@@ -583,7 +591,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build4": {
+  "build4":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build4",
     "iconId": 0,
@@ -675,7 +684,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build5": {
+  "build5":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build5",
     "iconId": 0,
@@ -767,7 +777,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build6": {
+  "build6":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build6",
     "iconId": 0,
@@ -859,7 +870,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build7": {
+  "build7":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build7",
     "iconId": 0,
@@ -951,7 +963,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build8": {
+  "build8":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build8",
     "iconId": 0,
@@ -1043,7 +1056,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build9": {
+  "build9":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build9",
     "iconId": 0,
@@ -1135,7 +1149,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build10": {
+  "build10":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build10",
     "iconId": 0,
@@ -1227,7 +1242,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build11": {
+  "build11":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build11",
     "iconId": 0,
@@ -1319,7 +1335,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build12": {
+  "build12":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build12",
     "iconId": 0,
@@ -1411,7 +1428,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build13": {
+  "build13":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build13",
     "iconId": 0,
@@ -1503,7 +1521,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build14": {
+  "build14":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build14",
     "iconId": 0,
@@ -1595,7 +1614,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build15": {
+  "build15":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build15",
     "iconId": 0,
@@ -1687,7 +1707,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "build16": {
+  "build16":
+  {
     "type": "mindustry.world.blocks.ConstructBlock",
     "name": "build16",
     "iconId": 0,
@@ -1779,7 +1800,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Deep Water": {
+  "deep-water":
+  {
     "type": "mindustry.content.Blocks$2",
     "name": "deep-water",
     "iconId": 0,
@@ -1887,7 +1909,8 @@
     "speedMultiplier": 0.20000000298023224,
     "edge": "stone"
   },
-  "Water": {
+  "shallow-water":
+  {
     "type": "mindustry.content.Blocks$3",
     "name": "shallow-water",
     "iconId": 0,
@@ -1995,7 +2018,8 @@
     "speedMultiplier": 0.5,
     "edge": "stone"
   },
-  "Tainted Water": {
+  "tainted-water":
+  {
     "type": "mindustry.content.Blocks$4",
     "name": "tainted-water",
     "iconId": 0,
@@ -2103,7 +2127,8 @@
     "speedMultiplier": 0.17000000178813934,
     "edge": "stone"
   },
-  "Dark Sand Tainted Water": {
+  "darksand-tainted-water":
+  {
     "type": "mindustry.content.Blocks$5",
     "name": "darksand-tainted-water",
     "iconId": 0,
@@ -2212,7 +2237,8 @@
     "edge": "stone",
     "liquidOpacity": 0.3499999940395355
   },
-  "Sand Water": {
+  "sand-water":
+  {
     "type": "mindustry.content.Blocks$6",
     "name": "sand-water",
     "iconId": 0,
@@ -2321,7 +2347,8 @@
     "edge": "stone",
     "liquidOpacity": 0.3499999940395355
   },
-  "Dark Sand Water": {
+  "darksand-water":
+  {
     "type": "mindustry.content.Blocks$7",
     "name": "darksand-water",
     "iconId": 0,
@@ -2430,7 +2457,8 @@
     "edge": "stone",
     "liquidOpacity": 0.3499999940395355
   },
-  "Tar": {
+  "tar":
+  {
     "type": "mindustry.content.Blocks$8",
     "name": "tar",
     "iconId": 0,
@@ -2538,7 +2566,8 @@
     "speedMultiplier": 0.1899999976158142,
     "edge": "stone"
   },
-  "Slag": {
+  "molten-slag":
+  {
     "type": "mindustry.content.Blocks$9",
     "name": "molten-slag",
     "iconId": 0,
@@ -2646,7 +2675,8 @@
     "speedMultiplier": 0.1899999976158142,
     "edge": "stone"
   },
-  "Space": {
+  "space":
+  {
     "type": "mindustry.content.Blocks$10",
     "name": "space",
     "iconId": 0,
@@ -2754,7 +2784,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Stone": {
+  "stone":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "stone",
     "iconId": 0,
@@ -2862,7 +2893,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Craters": {
+  "crater-stone":
+  {
     "type": "mindustry.content.Blocks$11",
     "name": "crater-stone",
     "iconId": 0,
@@ -2970,7 +3002,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Char": {
+  "char":
+  {
     "type": "mindustry.content.Blocks$12",
     "name": "char",
     "iconId": 0,
@@ -3078,7 +3111,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Basalt": {
+  "basalt":
+  {
     "type": "mindustry.content.Blocks$13",
     "name": "basalt",
     "iconId": 0,
@@ -3186,7 +3220,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Hot Rock": {
+  "hotrock":
+  {
     "type": "mindustry.content.Blocks$14",
     "name": "hotrock",
     "iconId": 0,
@@ -3294,7 +3329,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Magma Rock": {
+  "magmarock":
+  {
     "type": "mindustry.content.Blocks$15",
     "name": "magmarock",
     "iconId": 0,
@@ -3402,7 +3438,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Sand": {
+  "sand":
+  {
     "type": "mindustry.content.Blocks$16",
     "name": "sand",
     "iconId": 17,
@@ -3510,7 +3547,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Dark Sand": {
+  "darksand":
+  {
     "type": "mindustry.content.Blocks$17",
     "name": "darksand",
     "iconId": 0,
@@ -3618,7 +3656,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Dirt": {
+  "dirt":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "dirt",
     "iconId": 0,
@@ -3726,7 +3765,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Mud": {
+  "mud":
+  {
     "type": "mindustry.content.Blocks$18",
     "name": "mud",
     "iconId": 0,
@@ -3834,7 +3874,8 @@
     "speedMultiplier": 0.6000000238418579,
     "edge": "stone"
   },
-  "Dacite": {
+  "dacite":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "dacite",
     "iconId": 0,
@@ -3942,7 +3983,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Grass": {
+  "grass":
+  {
     "type": "mindustry.content.Blocks$19",
     "name": "grass",
     "iconId": 0,
@@ -4050,7 +4092,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Salt": {
+  "salt":
+  {
     "type": "mindustry.content.Blocks$20",
     "name": "salt",
     "iconId": 0,
@@ -4158,7 +4201,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Snow": {
+  "snow":
+  {
     "type": "mindustry.content.Blocks$21",
     "name": "snow",
     "iconId": 0,
@@ -4266,7 +4310,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Ice": {
+  "ice":
+  {
     "type": "mindustry.content.Blocks$22",
     "name": "ice",
     "iconId": 0,
@@ -4374,7 +4419,8 @@
     "speedMultiplier": 0.8999999761581421,
     "edge": "stone"
   },
-  "Ice Snow": {
+  "ice-snow":
+  {
     "type": "mindustry.content.Blocks$23",
     "name": "ice-snow",
     "iconId": 0,
@@ -4482,7 +4528,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Shale": {
+  "shale":
+  {
     "type": "mindustry.content.Blocks$24",
     "name": "shale",
     "iconId": 0,
@@ -4590,7 +4637,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Stone Wall": {
+  "stone-wall":
+  {
     "type": "mindustry.content.Blocks$25",
     "name": "stone-wall",
     "iconId": 0,
@@ -4682,7 +4730,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Spore Wall": {
+  "spore-wall":
+  {
     "type": "mindustry.content.Blocks$26",
     "name": "spore-wall",
     "iconId": 0,
@@ -4774,7 +4823,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Dirt Wall": {
+  "dirt-wall":
+  {
     "type": "mindustry.content.Blocks$27",
     "name": "dirt-wall",
     "iconId": 0,
@@ -4866,7 +4916,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Dacite Wall": {
+  "dacite-wall":
+  {
     "type": "mindustry.content.Blocks$28",
     "name": "dacite-wall",
     "iconId": 0,
@@ -4958,7 +5009,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Ice Wall": {
+  "ice-wall":
+  {
     "type": "mindustry.content.Blocks$29",
     "name": "ice-wall",
     "iconId": 0,
@@ -5050,7 +5102,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Snow Wall": {
+  "snow-wall":
+  {
     "type": "mindustry.content.Blocks$30",
     "name": "snow-wall",
     "iconId": 0,
@@ -5142,7 +5195,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Dune Wall": {
+  "dune-wall":
+  {
     "type": "mindustry.content.Blocks$31",
     "name": "dune-wall",
     "iconId": 0,
@@ -5234,7 +5288,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Sand Wall": {
+  "sand-wall":
+  {
     "type": "mindustry.content.Blocks$32",
     "name": "sand-wall",
     "iconId": 0,
@@ -5326,7 +5381,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Salt Wall": {
+  "salt-wall":
+  {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "name": "salt-wall",
     "iconId": 0,
@@ -5418,7 +5474,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Shrubs": {
+  "shrubs":
+  {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "name": "shrubs",
     "iconId": 0,
@@ -5510,7 +5567,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Shale Wall": {
+  "shale-wall":
+  {
     "type": "mindustry.content.Blocks$33",
     "name": "shale-wall",
     "iconId": 0,
@@ -5602,7 +5660,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Spore Pine": {
+  "spore-pine":
+  {
     "type": "mindustry.content.Blocks$34",
     "name": "spore-pine",
     "iconId": 0,
@@ -5694,7 +5753,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Snow Pine": {
+  "snow-pine":
+  {
     "type": "mindustry.content.Blocks$35",
     "name": "snow-pine",
     "iconId": 0,
@@ -5786,7 +5846,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Pine": {
+  "pine":
+  {
     "type": "mindustry.content.Blocks$36",
     "name": "pine",
     "iconId": 0,
@@ -5878,7 +5939,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "White Tree Dead": {
+  "white-tree-dead":
+  {
     "type": "mindustry.world.blocks.environment.TreeBlock",
     "name": "white-tree-dead",
     "iconId": 0,
@@ -5971,7 +6033,8 @@
     "hasItems": false,
     "shadowOffset": -4
   },
-  "White Tree": {
+  "white-tree":
+  {
     "type": "mindustry.world.blocks.environment.TreeBlock",
     "name": "white-tree",
     "iconId": 0,
@@ -6064,7 +6127,8 @@
     "hasItems": false,
     "shadowOffset": -4
   },
-  "Spore Cluster": {
+  "spore-cluster":
+  {
     "type": "mindustry.content.Blocks$37",
     "name": "spore-cluster",
     "iconId": 0,
@@ -6156,7 +6220,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Boulder": {
+  "boulder":
+  {
     "type": "mindustry.content.Blocks$38",
     "name": "boulder",
     "iconId": 0,
@@ -6248,7 +6313,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Snow Boulder": {
+  "snow-boulder":
+  {
     "type": "mindustry.content.Blocks$39",
     "name": "snow-boulder",
     "iconId": 0,
@@ -6340,7 +6406,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Shale Boulder": {
+  "shale-boulder":
+  {
     "type": "mindustry.content.Blocks$40",
     "name": "shale-boulder",
     "iconId": 0,
@@ -6432,7 +6499,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Sand Boulder": {
+  "sand-boulder":
+  {
     "type": "mindustry.content.Blocks$41",
     "name": "sand-boulder",
     "iconId": 0,
@@ -6524,7 +6592,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Dacite Boulder": {
+  "dacite-boulder":
+  {
     "type": "mindustry.content.Blocks$42",
     "name": "dacite-boulder",
     "iconId": 0,
@@ -6616,7 +6685,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Basalt Boulder": {
+  "basalt-boulder":
+  {
     "type": "mindustry.content.Blocks$43",
     "name": "basalt-boulder",
     "iconId": 0,
@@ -6708,7 +6778,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Moss": {
+  "moss":
+  {
     "type": "mindustry.content.Blocks$44",
     "name": "moss",
     "iconId": 0,
@@ -6816,7 +6887,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Spore Moss": {
+  "spore-moss":
+  {
     "type": "mindustry.content.Blocks$45",
     "name": "spore-moss",
     "iconId": 0,
@@ -6924,7 +6996,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Metal Floor 1": {
+  "metal-floor":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "metal-floor",
     "iconId": 0,
@@ -7032,7 +7105,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Damaged Metal Floor": {
+  "metal-floor-damaged":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "metal-floor-damaged",
     "iconId": 0,
@@ -7140,7 +7214,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Metal Floor 2": {
+  "metal-floor-2":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "metal-floor-2",
     "iconId": 0,
@@ -7248,7 +7323,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Metal Floor 3": {
+  "metal-floor-3":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "metal-floor-3",
     "iconId": 0,
@@ -7356,7 +7432,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Metal Floor 4": {
+  "metal-floor-4":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "metal-floor-4",
     "iconId": 0,
@@ -7464,7 +7541,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Metal Floor 5": {
+  "metal-floor-5":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "metal-floor-5",
     "iconId": 0,
@@ -7572,7 +7650,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Dark Panel 1": {
+  "dark-panel-1":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "dark-panel-1",
     "iconId": 0,
@@ -7680,7 +7759,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Dark Panel 2": {
+  "dark-panel-2":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "dark-panel-2",
     "iconId": 0,
@@ -7788,7 +7868,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Dark Panel 3": {
+  "dark-panel-3":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "dark-panel-3",
     "iconId": 0,
@@ -7896,7 +7977,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Dark Panel 4": {
+  "dark-panel-4":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "dark-panel-4",
     "iconId": 0,
@@ -8004,7 +8086,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Dark Panel 5": {
+  "dark-panel-5":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "dark-panel-5",
     "iconId": 0,
@@ -8112,7 +8195,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Dark Panel 6": {
+  "dark-panel-6":
+  {
     "type": "mindustry.world.blocks.environment.Floor",
     "name": "dark-panel-6",
     "iconId": 0,
@@ -8220,7 +8304,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Dark Metal": {
+  "dark-metal":
+  {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "name": "dark-metal",
     "iconId": 0,
@@ -8312,7 +8397,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Pebbles": {
+  "pebbles":
+  {
     "type": "mindustry.world.blocks.environment.DoubleOverlayFloor",
     "name": "pebbles",
     "iconId": 0,
@@ -8420,7 +8506,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Tendrils": {
+  "tendrils":
+  {
     "type": "mindustry.world.blocks.environment.OverlayFloor",
     "name": "tendrils",
     "iconId": 0,
@@ -8528,7 +8615,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Copper": {
+  "ore-copper":
+  {
     "type": "mindustry.content.Blocks$46",
     "name": "ore-copper",
     "iconId": 0,
@@ -8636,7 +8724,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Lead": {
+  "ore-lead":
+  {
     "type": "mindustry.content.Blocks$47",
     "name": "ore-lead",
     "iconId": 0,
@@ -8744,7 +8833,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Scrap": {
+  "ore-scrap":
+  {
     "type": "mindustry.world.blocks.environment.OreBlock",
     "name": "ore-scrap",
     "iconId": 0,
@@ -8852,7 +8942,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Coal": {
+  "ore-coal":
+  {
     "type": "mindustry.content.Blocks$48",
     "name": "ore-coal",
     "iconId": 0,
@@ -8960,7 +9051,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Titanium": {
+  "ore-titanium":
+  {
     "type": "mindustry.content.Blocks$49",
     "name": "ore-titanium",
     "iconId": 0,
@@ -9068,7 +9160,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Thorium": {
+  "ore-thorium":
+  {
     "type": "mindustry.content.Blocks$50",
     "name": "ore-thorium",
     "iconId": 0,
@@ -9176,7 +9269,8 @@
     "speedMultiplier": 1,
     "edge": "stone"
   },
-  "Graphite Press": {
+  "graphite-press":
+  {
     "type": "mindustry.content.Blocks$51",
     "name": "graphite-press",
     "iconId": 18,
@@ -9273,7 +9367,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 90
   },
-  "Multi-Press": {
+  "multi-press":
+  {
     "type": "mindustry.content.Blocks$52",
     "name": "multi-press",
     "iconId": 19,
@@ -9370,7 +9465,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 30
   },
-  "Silicon Smelter": {
+  "silicon-smelter":
+  {
     "type": "mindustry.content.Blocks$53",
     "name": "silicon-smelter",
     "iconId": 20,
@@ -9467,7 +9563,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 40
   },
-  "Silicon Crucible": {
+  "silicon-crucible":
+  {
     "type": "mindustry.content.Blocks$54",
     "name": "silicon-crucible",
     "iconId": 21,
@@ -9567,7 +9664,8 @@
     "boostScale": 0.15000000596046448,
     "baseEfficiency": 1
   },
-  "Kiln": {
+  "kiln":
+  {
     "type": "mindustry.content.Blocks$55",
     "name": "kiln",
     "iconId": 22,
@@ -9664,7 +9762,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 30
   },
-  "Plastanium Compressor": {
+  "plastanium-compressor":
+  {
     "type": "mindustry.content.Blocks$56",
     "name": "plastanium-compressor",
     "iconId": 23,
@@ -9761,7 +9860,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 60
   },
-  "Phase Weaver": {
+  "phase-weaver":
+  {
     "type": "mindustry.content.Blocks$57",
     "name": "phase-weaver",
     "iconId": 24,
@@ -9858,7 +9958,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 120
   },
-  "Alloy Smelter": {
+  "alloy-smelter":
+  {
     "type": "mindustry.content.Blocks$58",
     "name": "alloy-smelter",
     "iconId": 25,
@@ -9955,7 +10056,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 75
   },
-  "Cryofluid Mixer": {
+  "cryofluid-mixer":
+  {
     "type": "mindustry.content.Blocks$59",
     "name": "cryofluid-mixer",
     "iconId": 26,
@@ -10052,7 +10154,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 120
   },
-  "Pyratite Mixer": {
+  "pyratite-mixer":
+  {
     "type": "mindustry.content.Blocks$60",
     "name": "pyratite-mixer",
     "iconId": 27,
@@ -10149,7 +10252,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 80
   },
-  "Blast Mixer": {
+  "blast-mixer":
+  {
     "type": "mindustry.content.Blocks$61",
     "name": "blast-mixer",
     "iconId": 28,
@@ -10246,7 +10350,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 80
   },
-  "Melter": {
+  "melter":
+  {
     "type": "mindustry.content.Blocks$62",
     "name": "melter",
     "iconId": 29,
@@ -10343,7 +10448,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 10
   },
-  "Separator": {
+  "separator":
+  {
     "type": "mindustry.content.Blocks$63",
     "name": "separator",
     "iconId": 30,
@@ -10438,7 +10544,8 @@
     "spinnerSpeed": 3,
     "craftTime": 35
   },
-  "Disassembler": {
+  "disassembler":
+  {
     "type": "mindustry.content.Blocks$64",
     "name": "disassembler",
     "iconId": 31,
@@ -10533,7 +10640,8 @@
     "spinnerSpeed": 3,
     "craftTime": 15
   },
-  "Spore Press": {
+  "spore-press":
+  {
     "type": "mindustry.content.Blocks$65",
     "name": "spore-press",
     "iconId": 32,
@@ -10630,7 +10738,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 20
   },
-  "Pulverizer": {
+  "pulverizer":
+  {
     "type": "mindustry.content.Blocks$66",
     "name": "pulverizer",
     "iconId": 33,
@@ -10727,7 +10836,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 40
   },
-  "Coal Centrifuge": {
+  "coal-centrifuge":
+  {
     "type": "mindustry.content.Blocks$67",
     "name": "coal-centrifuge",
     "iconId": 34,
@@ -10824,7 +10934,8 @@
     "updateEffectChance": 0.03999999910593033,
     "craftTime": 30
   },
-  "Incinerator": {
+  "incinerator":
+  {
     "type": "mindustry.content.Blocks$68",
     "name": "incinerator",
     "iconId": 35,
@@ -10917,7 +11028,8 @@
     "hasLiquids": true,
     "hasItems": false
   },
-  "Copper Wall": {
+  "copper-wall":
+  {
     "type": "mindustry.content.Blocks$69",
     "name": "copper-wall",
     "iconId": 36,
@@ -11015,7 +11127,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Large Copper Wall": {
+  "copper-wall-large":
+  {
     "type": "mindustry.content.Blocks$70",
     "name": "copper-wall-large",
     "iconId": 37,
@@ -11113,7 +11226,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Titanium Wall": {
+  "titanium-wall":
+  {
     "type": "mindustry.content.Blocks$71",
     "name": "titanium-wall",
     "iconId": 38,
@@ -11211,7 +11325,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Large Titanium Wall": {
+  "titanium-wall-large":
+  {
     "type": "mindustry.content.Blocks$72",
     "name": "titanium-wall-large",
     "iconId": 39,
@@ -11309,7 +11424,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Plastanium Wall": {
+  "plastanium-wall":
+  {
     "type": "mindustry.content.Blocks$73",
     "name": "plastanium-wall",
     "iconId": 40,
@@ -11407,7 +11523,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Large Plastanium Wall": {
+  "plastanium-wall-large":
+  {
     "type": "mindustry.content.Blocks$74",
     "name": "plastanium-wall-large",
     "iconId": 41,
@@ -11505,7 +11622,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Thorium Wall": {
+  "thorium-wall":
+  {
     "type": "mindustry.content.Blocks$75",
     "name": "thorium-wall",
     "iconId": 42,
@@ -11603,7 +11721,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Large Thorium Wall": {
+  "thorium-wall-large":
+  {
     "type": "mindustry.content.Blocks$76",
     "name": "thorium-wall-large",
     "iconId": 43,
@@ -11701,7 +11820,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Phase Wall": {
+  "phase-wall":
+  {
     "type": "mindustry.content.Blocks$77",
     "name": "phase-wall",
     "iconId": 44,
@@ -11799,7 +11919,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Large Phase Wall": {
+  "phase-wall-large":
+  {
     "type": "mindustry.content.Blocks$78",
     "name": "phase-wall-large",
     "iconId": 45,
@@ -11897,7 +12018,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Surge Wall": {
+  "surge-wall":
+  {
     "type": "mindustry.content.Blocks$79",
     "name": "surge-wall",
     "iconId": 46,
@@ -11995,7 +12117,8 @@
     "lightningDamage": 20,
     "lightningChance": 0.05000000074505806
   },
-  "Large Surge Wall": {
+  "surge-wall-large":
+  {
     "type": "mindustry.content.Blocks$80",
     "name": "surge-wall-large",
     "iconId": 47,
@@ -12093,7 +12216,8 @@
     "lightningDamage": 20,
     "lightningChance": 0.05000000074505806
   },
-  "Door": {
+  "door":
+  {
     "type": "mindustry.content.Blocks$81",
     "name": "door",
     "iconId": 48,
@@ -12192,7 +12316,8 @@
     "lightningChance": -1,
     "timerToggle": 1
   },
-  "Large Door": {
+  "door-large":
+  {
     "type": "mindustry.content.Blocks$82",
     "name": "door-large",
     "iconId": 49,
@@ -12291,7 +12416,8 @@
     "lightningChance": -1,
     "timerToggle": 1
   },
-  "Scrap Wall": {
+  "scrap-wall":
+  {
     "type": "mindustry.content.Blocks$83",
     "name": "scrap-wall",
     "iconId": 50,
@@ -12388,7 +12514,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Large Scrap Wall": {
+  "scrap-wall-large":
+  {
     "type": "mindustry.content.Blocks$84",
     "name": "scrap-wall-large",
     "iconId": 51,
@@ -12485,7 +12612,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Huge Scrap Wall": {
+  "scrap-wall-huge":
+  {
     "type": "mindustry.content.Blocks$85",
     "name": "scrap-wall-huge",
     "iconId": 52,
@@ -12582,7 +12710,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Gigantic Scrap Wall": {
+  "scrap-wall-gigantic":
+  {
     "type": "mindustry.content.Blocks$86",
     "name": "scrap-wall-gigantic",
     "iconId": 53,
@@ -12679,7 +12808,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Thruster": {
+  "thruster":
+  {
     "type": "mindustry.content.Blocks$87",
     "name": "thruster",
     "iconId": 0,
@@ -12776,7 +12906,8 @@
     "lightningDamage": 20,
     "lightningChance": -1
   },
-  "Mender": {
+  "mender":
+  {
     "type": "mindustry.content.Blocks$88",
     "name": "mender",
     "iconId": 54,
@@ -12876,7 +13007,8 @@
     "reload": 200,
     "timerUse": 1
   },
-  "Mend Projector": {
+  "mend-projector":
+  {
     "type": "mindustry.content.Blocks$89",
     "name": "mend-projector",
     "iconId": 55,
@@ -12976,7 +13108,8 @@
     "reload": 250,
     "timerUse": 1
   },
-  "Overdrive Projector": {
+  "overdrive-projector":
+  {
     "type": "mindustry.content.Blocks$90",
     "name": "overdrive-projector",
     "iconId": 56,
@@ -13077,7 +13210,8 @@
     "reload": 60,
     "timerUse": 1
   },
-  "Overdrive Dome": {
+  "overdrive-dome":
+  {
     "type": "mindustry.content.Blocks$91",
     "name": "overdrive-dome",
     "iconId": 57,
@@ -13178,7 +13312,8 @@
     "reload": 60,
     "timerUse": 1
   },
-  "Force Projector": {
+  "force-projector":
+  {
     "type": "mindustry.content.Blocks$92",
     "name": "force-projector",
     "iconId": 58,
@@ -13280,7 +13415,8 @@
     "phaseUseTime": 350,
     "timerUse": 1
   },
-  "Shock Mine": {
+  "shock-mine":
+  {
     "type": "mindustry.content.Blocks$93",
     "name": "shock-mine",
     "iconId": 59,
@@ -13382,7 +13518,8 @@
     "cooldown": 80,
     "timerDamage": 1
   },
-  "Conveyor": {
+  "conveyor":
+  {
     "type": "mindustry.content.Blocks$94",
     "name": "conveyor",
     "iconId": 60,
@@ -13477,7 +13614,8 @@
     "displayedSpeed": 4.199999809265137,
     "speed": 0.029999999329447746
   },
-  "Titanium Conveyor": {
+  "titanium-conveyor":
+  {
     "type": "mindustry.content.Blocks$95",
     "name": "titanium-conveyor",
     "iconId": 61,
@@ -13572,7 +13710,8 @@
     "displayedSpeed": 11,
     "speed": 0.07999999821186066
   },
-  "Plastanium Conveyor": {
+  "plastanium-conveyor":
+  {
     "type": "mindustry.content.Blocks$96",
     "name": "plastanium-conveyor",
     "iconId": 62,
@@ -13668,7 +13807,8 @@
     "splitOut": true,
     "speed": 0.06666667014360428
   },
-  "Armored Conveyor": {
+  "armored-conveyor":
+  {
     "type": "mindustry.content.Blocks$97",
     "name": "armored-conveyor",
     "iconId": 63,
@@ -13763,7 +13903,8 @@
     "displayedSpeed": 11,
     "speed": 0.07999999821186066
   },
-  "Junction": {
+  "junction":
+  {
     "type": "mindustry.content.Blocks$98",
     "name": "junction",
     "iconId": 64,
@@ -13858,7 +13999,8 @@
     "capacity": 6,
     "speed": 26
   },
-  "Bridge Conveyor": {
+  "bridge-conveyor":
+  {
     "type": "mindustry.content.Blocks$99",
     "name": "bridge-conveyor",
     "iconId": 65,
@@ -13964,7 +14106,8 @@
     "speed": 74,
     "timerAccept": 2
   },
-  "Phase Conveyor": {
+  "phase-conveyor":
+  {
     "type": "mindustry.content.Blocks$100",
     "name": "phase-conveyor",
     "iconId": 66,
@@ -14067,7 +14210,8 @@
     "range": 12,
     "timerCheckMoved": 1
   },
-  "Sorter": {
+  "sorter":
+  {
     "type": "mindustry.content.Blocks$101",
     "name": "sorter",
     "iconId": 67,
@@ -14161,7 +14305,8 @@
     "hasItems": false,
     "invert": false
   },
-  "Inverted Sorter": {
+  "inverted-sorter":
+  {
     "type": "mindustry.content.Blocks$102",
     "name": "inverted-sorter",
     "iconId": 68,
@@ -14255,7 +14400,8 @@
     "hasItems": false,
     "invert": true
   },
-  "Router": {
+  "router":
+  {
     "type": "mindustry.content.Blocks$103",
     "name": "router",
     "iconId": 69,
@@ -14350,7 +14496,8 @@
     "hasItems": true,
     "speed": 8
   },
-  "Distributor": {
+  "distributor":
+  {
     "type": "mindustry.content.Blocks$104",
     "name": "distributor",
     "iconId": 70,
@@ -14444,7 +14591,8 @@
     "hasItems": true,
     "speed": 8
   },
-  "Overflow Gate": {
+  "overflow-gate":
+  {
     "type": "mindustry.content.Blocks$105",
     "name": "overflow-gate",
     "iconId": 71,
@@ -14539,7 +14687,8 @@
     "invert": false,
     "speed": 1
   },
-  "Underflow Gate": {
+  "underflow-gate":
+  {
     "type": "mindustry.content.Blocks$106",
     "name": "underflow-gate",
     "iconId": 72,
@@ -14634,7 +14783,8 @@
     "invert": true,
     "speed": 1
   },
-  "Mass Driver": {
+  "mass-driver":
+  {
     "type": "mindustry.content.Blocks$107",
     "name": "mass-driver",
     "iconId": 73,
@@ -14736,7 +14886,8 @@
     "rotateSpeed": 5,
     "range": 440
   },
-  "Duct": {
+  "duct":
+  {
     "type": "mindustry.content.Blocks$108",
     "name": "duct",
     "iconId": 74,
@@ -14829,7 +14980,8 @@
     "hasItems": true,
     "speed": 4
   },
-  "Duct Router": {
+  "duct-router":
+  {
     "type": "mindustry.content.Blocks$109",
     "name": "duct-router",
     "iconId": 75,
@@ -14922,7 +15074,8 @@
     "hasItems": true,
     "speed": 4
   },
-  "Duct Bridge": {
+  "duct-bridge":
+  {
     "type": "mindustry.content.Blocks$110",
     "name": "duct-bridge",
     "iconId": 76,
@@ -15016,7 +15169,8 @@
     "speed": 4,
     "range": 4
   },
-  "Mechanical Pump": {
+  "mechanical-pump":
+  {
     "type": "mindustry.content.Blocks$111",
     "name": "mechanical-pump",
     "iconId": 77,
@@ -15110,7 +15264,8 @@
     "hasItems": false,
     "pumpAmount": 0.11666666716337204
   },
-  "Rotary Pump": {
+  "rotary-pump":
+  {
     "type": "mindustry.content.Blocks$112",
     "name": "rotary-pump",
     "iconId": 78,
@@ -15204,7 +15359,8 @@
     "hasItems": false,
     "pumpAmount": 0.20000000298023224
   },
-  "Thermal Pump": {
+  "thermal-pump":
+  {
     "type": "mindustry.content.Blocks$113",
     "name": "thermal-pump",
     "iconId": 79,
@@ -15298,7 +15454,8 @@
     "hasItems": false,
     "pumpAmount": 0.2199999988079071
   },
-  "Conduit": {
+  "conduit":
+  {
     "type": "mindustry.content.Blocks$114",
     "name": "conduit",
     "iconId": 80,
@@ -15393,7 +15550,8 @@
     "leaks": true,
     "timerFlow": 1
   },
-  "Pulse Conduit": {
+  "pulse-conduit":
+  {
     "type": "mindustry.content.Blocks$115",
     "name": "pulse-conduit",
     "iconId": 81,
@@ -15488,7 +15646,8 @@
     "leaks": true,
     "timerFlow": 1
   },
-  "Plated Conduit": {
+  "plated-conduit":
+  {
     "type": "mindustry.content.Blocks$116",
     "name": "plated-conduit",
     "iconId": 82,
@@ -15583,7 +15742,8 @@
     "leaks": false,
     "timerFlow": 1
   },
-  "Liquid Router": {
+  "liquid-router":
+  {
     "type": "mindustry.content.Blocks$117",
     "name": "liquid-router",
     "iconId": 83,
@@ -15676,7 +15836,8 @@
     "hasLiquids": true,
     "hasItems": false
   },
-  "Liquid Tank": {
+  "liquid-tank":
+  {
     "type": "mindustry.content.Blocks$118",
     "name": "liquid-tank",
     "iconId": 84,
@@ -15769,7 +15930,8 @@
     "hasLiquids": true,
     "hasItems": false
   },
-  "Liquid Junction": {
+  "liquid-junction":
+  {
     "type": "mindustry.content.Blocks$119",
     "name": "liquid-junction",
     "iconId": 85,
@@ -15862,7 +16024,8 @@
     "hasLiquids": true,
     "hasItems": false
   },
-  "Bridge Conduit": {
+  "bridge-conduit":
+  {
     "type": "mindustry.content.Blocks$120",
     "name": "bridge-conduit",
     "iconId": 86,
@@ -15965,7 +16128,8 @@
     "range": 4,
     "timerCheckMoved": 1
   },
-  "Phase Conduit": {
+  "phase-conduit":
+  {
     "type": "mindustry.content.Blocks$121",
     "name": "phase-conduit",
     "iconId": 87,
@@ -16068,7 +16232,8 @@
     "range": 12,
     "timerCheckMoved": 1
   },
-  "Power Node": {
+  "power-node":
+  {
     "type": "mindustry.content.Blocks$122",
     "name": "power-node",
     "iconId": 88,
@@ -16163,7 +16328,8 @@
     "maxNodes": 10,
     "laserRange": 6
   },
-  "Large Power Node": {
+  "power-node-large":
+  {
     "type": "mindustry.content.Blocks$123",
     "name": "power-node-large",
     "iconId": 89,
@@ -16258,7 +16424,8 @@
     "maxNodes": 15,
     "laserRange": 9.5
   },
-  "Surge Tower": {
+  "surge-tower":
+  {
     "type": "mindustry.content.Blocks$124",
     "name": "surge-tower",
     "iconId": 90,
@@ -16353,7 +16520,8 @@
     "maxNodes": 2,
     "laserRange": 40
   },
-  "Battery Diode": {
+  "diode":
+  {
     "type": "mindustry.content.Blocks$125",
     "name": "diode",
     "iconId": 91,
@@ -16446,7 +16614,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Battery": {
+  "battery":
+  {
     "type": "mindustry.content.Blocks$126",
     "name": "battery",
     "iconId": 92,
@@ -16539,7 +16708,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Large Battery": {
+  "battery-large":
+  {
     "type": "mindustry.content.Blocks$127",
     "name": "battery-large",
     "iconId": 93,
@@ -16632,7 +16802,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Combustion Generator": {
+  "combustion-generator":
+  {
     "type": "mindustry.content.Blocks$128",
     "name": "combustion-generator",
     "iconId": 94,
@@ -16733,7 +16904,8 @@
     "minItemEfficiency": 0.20000000298023224,
     "turbineSpeed": 2
   },
-  "Thermal Generator": {
+  "thermal-generator":
+  {
     "type": "mindustry.content.Blocks$129",
     "name": "thermal-generator",
     "iconId": 95,
@@ -16828,7 +17000,8 @@
     "powerProduction": 1.7999999523162842,
     "effectChance": 0.010999999940395355
   },
-  "Steam Generator": {
+  "steam-generator":
+  {
     "type": "mindustry.content.Blocks$130",
     "name": "steam-generator",
     "iconId": 96,
@@ -16929,7 +17102,8 @@
     "minItemEfficiency": 0.20000000298023224,
     "turbineSpeed": 2
   },
-  "Differential Generator": {
+  "differential-generator":
+  {
     "type": "mindustry.content.Blocks$131",
     "name": "differential-generator",
     "iconId": 97,
@@ -17029,7 +17203,8 @@
     "itemDuration": 220,
     "minItemEfficiency": 0.20000000298023224
   },
-  "RTG Generator": {
+  "rtg-generator":
+  {
     "type": "mindustry.content.Blocks$132",
     "name": "rtg-generator",
     "iconId": 98,
@@ -17129,7 +17304,8 @@
     "itemDuration": 840,
     "minItemEfficiency": 0.20000000298023224
   },
-  "Solar Panel": {
+  "solar-panel":
+  {
     "type": "mindustry.content.Blocks$133",
     "name": "solar-panel",
     "iconId": 99,
@@ -17223,7 +17399,8 @@
     "hasItems": false,
     "powerProduction": 0.10000000149011612
   },
-  "Large Solar Panel": {
+  "solar-panel-large":
+  {
     "type": "mindustry.content.Blocks$134",
     "name": "solar-panel-large",
     "iconId": 100,
@@ -17317,7 +17494,8 @@
     "hasItems": false,
     "powerProduction": 1.2999999523162842
   },
-  "Thorium Reactor": {
+  "thorium-reactor":
+  {
     "type": "mindustry.content.Blocks$135",
     "name": "thorium-reactor",
     "iconId": 101,
@@ -17419,7 +17597,8 @@
     "itemDuration": 360,
     "timerFuel": 1
   },
-  "Impact Reactor": {
+  "impact-reactor":
+  {
     "type": "mindustry.content.Blocks$136",
     "name": "impact-reactor",
     "iconId": 102,
@@ -17518,7 +17697,8 @@
     "warmupSpeed": 0.0010000000474974513,
     "timerUse": 1
   },
-  "Mechanical Drill": {
+  "mechanical-drill":
+  {
     "type": "mindustry.content.Blocks$137",
     "name": "mechanical-drill",
     "iconId": 103,
@@ -17621,7 +17801,8 @@
     "tier": 2,
     "hardnessDrillMultiplier": 50
   },
-  "Pneumatic Drill": {
+  "pneumatic-drill":
+  {
     "type": "mindustry.content.Blocks$138",
     "name": "pneumatic-drill",
     "iconId": 104,
@@ -17724,7 +17905,8 @@
     "tier": 3,
     "hardnessDrillMultiplier": 50
   },
-  "Laser Drill": {
+  "laser-drill":
+  {
     "type": "mindustry.content.Blocks$139",
     "name": "laser-drill",
     "iconId": 105,
@@ -17827,7 +18009,8 @@
     "tier": 4,
     "hardnessDrillMultiplier": 50
   },
-  "Airblast Drill": {
+  "blast-drill":
+  {
     "type": "mindustry.content.Blocks$140",
     "name": "blast-drill",
     "iconId": 106,
@@ -17930,7 +18113,8 @@
     "tier": 5,
     "hardnessDrillMultiplier": 50
   },
-  "Water Extractor": {
+  "water-extractor":
+  {
     "type": "mindustry.content.Blocks$141",
     "name": "water-extractor",
     "iconId": 107,
@@ -18027,7 +18211,8 @@
     "rotateSpeed": 1.399999976158142,
     "updateEffectChance": 0.019999999552965164
   },
-  "Cultivator": {
+  "cultivator":
+  {
     "type": "mindustry.content.Blocks$142",
     "name": "cultivator",
     "iconId": 108,
@@ -18128,7 +18313,8 @@
     "boostScale": 1,
     "baseEfficiency": 1
   },
-  "Oil Extractor": {
+  "oil-extractor":
+  {
     "type": "mindustry.content.Blocks$143",
     "name": "oil-extractor",
     "iconId": 109,
@@ -18226,7 +18412,8 @@
     "updateEffectChance": 0.05000000074505806,
     "itemUseTime": 60
   },
-  "Core: Shard": {
+  "core-shard":
+  {
     "type": "mindustry.content.Blocks$144",
     "name": "core-shard",
     "iconId": 110,
@@ -18322,7 +18509,8 @@
     "captureInvicibility": 900,
     "thrusterLength": 3.5
   },
-  "Core: Foundation": {
+  "core-foundation":
+  {
     "type": "mindustry.content.Blocks$145",
     "name": "core-foundation",
     "iconId": 111,
@@ -18418,7 +18606,8 @@
     "captureInvicibility": 900,
     "thrusterLength": 8.5
   },
-  "Core: Nucleus": {
+  "core-nucleus":
+  {
     "type": "mindustry.content.Blocks$146",
     "name": "core-nucleus",
     "iconId": 112,
@@ -18514,7 +18703,8 @@
     "captureInvicibility": 900,
     "thrusterLength": 10
   },
-  "Vault": {
+  "vault":
+  {
     "type": "mindustry.content.Blocks$147",
     "name": "vault",
     "iconId": 113,
@@ -18607,7 +18797,8 @@
     "hasLiquids": false,
     "hasItems": true
   },
-  "Container": {
+  "container":
+  {
     "type": "mindustry.content.Blocks$148",
     "name": "container",
     "iconId": 114,
@@ -18700,7 +18891,8 @@
     "hasLiquids": false,
     "hasItems": true
   },
-  "Unloader": {
+  "unloader":
+  {
     "type": "mindustry.content.Blocks$149",
     "name": "unloader",
     "iconId": 115,
@@ -18794,7 +18986,8 @@
     "hasItems": true,
     "speed": 5.454545497894287
   },
-  "Duo": {
+  "duo":
+  {
     "type": "mindustry.content.Blocks$150",
     "name": "duo",
     "iconId": 116,
@@ -18921,7 +19114,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Scatter": {
+  "scatter":
+  {
     "type": "mindustry.content.Blocks$151",
     "name": "scatter",
     "iconId": 117,
@@ -19048,7 +19242,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Scorch": {
+  "scorch":
+  {
     "type": "mindustry.content.Blocks$152",
     "name": "scorch",
     "iconId": 118,
@@ -19175,7 +19370,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Hail": {
+  "hail":
+  {
     "type": "mindustry.content.Blocks$153",
     "name": "hail",
     "iconId": 119,
@@ -19302,7 +19498,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Wave": {
+  "wave":
+  {
     "type": "mindustry.content.Blocks$154",
     "name": "wave",
     "iconId": 120,
@@ -19430,7 +19627,8 @@
     "logicControlCooldown": 120,
     "extinguish": true
   },
-  "Lancer": {
+  "lancer":
+  {
     "type": "mindustry.content.Blocks$155",
     "name": "lancer",
     "iconId": 121,
@@ -19558,7 +19756,8 @@
     "logicControlCooldown": 120,
     "powerUse": 6
   },
-  "Arc": {
+  "arc":
+  {
     "type": "mindustry.content.Blocks$156",
     "name": "arc",
     "iconId": 122,
@@ -19686,7 +19885,8 @@
     "logicControlCooldown": 120,
     "powerUse": 3.299999952316284
   },
-  "Parallax": {
+  "parallax":
+  {
     "type": "mindustry.content.Blocks$157",
     "name": "parallax",
     "iconId": 123,
@@ -19795,7 +19995,8 @@
     "retargetTime": 5,
     "timerTarget": 1
   },
-  "Swarmer": {
+  "swarmer":
+  {
     "type": "mindustry.content.Blocks$158",
     "name": "swarmer",
     "iconId": 124,
@@ -19922,7 +20123,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Salvo": {
+  "salvo":
+  {
     "type": "mindustry.content.Blocks$159",
     "name": "salvo",
     "iconId": 125,
@@ -20049,7 +20251,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Segment": {
+  "segment":
+  {
     "type": "mindustry.content.Blocks$160",
     "name": "segment",
     "iconId": 126,
@@ -20152,7 +20355,8 @@
     "retargetTime": 5,
     "timerTarget": 1
   },
-  "Tsunami": {
+  "tsunami":
+  {
     "type": "mindustry.content.Blocks$161",
     "name": "tsunami",
     "iconId": 127,
@@ -20280,7 +20484,8 @@
     "logicControlCooldown": 120,
     "extinguish": true
   },
-  "Fuse": {
+  "fuse":
+  {
     "type": "mindustry.content.Blocks$162",
     "name": "fuse",
     "iconId": 128,
@@ -20407,7 +20612,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Ripple": {
+  "ripple":
+  {
     "type": "mindustry.content.Blocks$163",
     "name": "ripple",
     "iconId": 129,
@@ -20534,7 +20740,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Cyclone": {
+  "cyclone":
+  {
     "type": "mindustry.content.Blocks$164",
     "name": "cyclone",
     "iconId": 130,
@@ -20661,7 +20868,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Foreshadow": {
+  "foreshadow":
+  {
     "type": "mindustry.content.Blocks$165",
     "name": "foreshadow",
     "iconId": 131,
@@ -20788,7 +20996,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Spectre": {
+  "spectre":
+  {
     "type": "mindustry.content.Blocks$166",
     "name": "spectre",
     "iconId": 132,
@@ -20915,7 +21124,8 @@
     "timerTarget": 1,
     "logicControlCooldown": 120
   },
-  "Meltdown": {
+  "meltdown":
+  {
     "type": "mindustry.content.Blocks$167",
     "name": "meltdown",
     "iconId": 133,
@@ -21045,7 +21255,8 @@
     "shootDuration": 230,
     "firingMoveFract": 0.5
   },
-  "Command Center": {
+  "command-center":
+  {
     "type": "mindustry.content.Blocks$168",
     "name": "command-center",
     "iconId": 134,
@@ -21142,7 +21353,8 @@
     "effectSize": 150,
     "timerEffect": 1
   },
-  "Ground Factory": {
+  "ground-factory":
+  {
     "type": "mindustry.content.Blocks$169",
     "name": "ground-factory",
     "iconId": 135,
@@ -21237,7 +21449,8 @@
     "payloadRotateSpeed": 5,
     "payloadSpeed": 0.699999988079071
   },
-  "Air Factory": {
+  "air-factory":
+  {
     "type": "mindustry.content.Blocks$170",
     "name": "air-factory",
     "iconId": 136,
@@ -21332,7 +21545,8 @@
     "payloadRotateSpeed": 5,
     "payloadSpeed": 0.699999988079071
   },
-  "Naval Factory": {
+  "naval-factory":
+  {
     "type": "mindustry.content.Blocks$171",
     "name": "naval-factory",
     "iconId": 137,
@@ -21427,7 +21641,8 @@
     "payloadRotateSpeed": 5,
     "payloadSpeed": 0.699999988079071
   },
-  "Additive Reconstructor": {
+  "additive-reconstructor":
+  {
     "type": "mindustry.content.Blocks$172",
     "name": "additive-reconstructor",
     "iconId": 138,
@@ -21523,7 +21738,8 @@
     "payloadSpeed": 0.699999988079071,
     "constructTime": 600
   },
-  "Multiplicative Reconstructor": {
+  "multiplicative-reconstructor":
+  {
     "type": "mindustry.content.Blocks$173",
     "name": "multiplicative-reconstructor",
     "iconId": 139,
@@ -21619,7 +21835,8 @@
     "payloadSpeed": 0.699999988079071,
     "constructTime": 1800
   },
-  "Exponential Reconstructor": {
+  "exponential-reconstructor":
+  {
     "type": "mindustry.content.Blocks$174",
     "name": "exponential-reconstructor",
     "iconId": 140,
@@ -21715,7 +21932,8 @@
     "payloadSpeed": 0.699999988079071,
     "constructTime": 5400
   },
-  "Tetrative Reconstructor": {
+  "tetrative-reconstructor":
+  {
     "type": "mindustry.content.Blocks$175",
     "name": "tetrative-reconstructor",
     "iconId": 141,
@@ -21811,7 +22029,8 @@
     "payloadSpeed": 0.699999988079071,
     "constructTime": 14400
   },
-  "Repair Point": {
+  "repair-point":
+  {
     "type": "mindustry.content.Blocks$176",
     "name": "repair-point",
     "iconId": 142,
@@ -21916,7 +22135,8 @@
     "timerEffect": 2,
     "timerTarget": 1
   },
-  "Repair Turret": {
+  "repair-turret":
+  {
     "type": "mindustry.content.Blocks$177",
     "name": "repair-turret",
     "iconId": 143,
@@ -22021,7 +22241,8 @@
     "timerEffect": 2,
     "timerTarget": 1
   },
-  "Payload Conveyor": {
+  "payload-conveyor":
+  {
     "type": "mindustry.content.Blocks$178",
     "name": "payload-conveyor",
     "iconId": 144,
@@ -22117,7 +22338,8 @@
     "moveForce": 201,
     "moveTime": 40
   },
-  "Payload Router": {
+  "payload-router":
+  {
     "type": "mindustry.content.Blocks$179",
     "name": "payload-router",
     "iconId": 145,
@@ -22213,7 +22435,8 @@
     "moveForce": 201,
     "moveTime": 40
   },
-  "Payload Propulsion Tower": {
+  "payload-propulsion-tower":
+  {
     "type": "mindustry.content.Blocks$180",
     "name": "payload-propulsion-tower",
     "iconId": 146,
@@ -22318,7 +22541,8 @@
     "rotateSpeed": 2,
     "range": 1000
   },
-  "Power Source": {
+  "power-source":
+  {
     "type": "mindustry.content.Blocks$181",
     "name": "power-source",
     "iconId": 147,
@@ -22414,7 +22638,8 @@
     "laserRange": 6,
     "powerProduction": 16666.666015625
   },
-  "Power Void": {
+  "power-void":
+  {
     "type": "mindustry.content.Blocks$182",
     "name": "power-void",
     "iconId": 148,
@@ -22507,7 +22732,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Item Source": {
+  "item-source":
+  {
     "type": "mindustry.content.Blocks$183",
     "name": "item-source",
     "iconId": 149,
@@ -22600,7 +22826,8 @@
     "hasLiquids": false,
     "hasItems": true
   },
-  "Item Void": {
+  "item-void":
+  {
     "type": "mindustry.content.Blocks$184",
     "name": "item-void",
     "iconId": 150,
@@ -22693,7 +22920,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Liquid Source": {
+  "liquid-source":
+  {
     "type": "mindustry.content.Blocks$185",
     "name": "liquid-source",
     "iconId": 151,
@@ -22786,7 +23014,8 @@
     "hasLiquids": true,
     "hasItems": false
   },
-  "Liquid Void": {
+  "liquid-void":
+  {
     "type": "mindustry.content.Blocks$186",
     "name": "liquid-void",
     "iconId": 152,
@@ -22879,7 +23108,8 @@
     "hasLiquids": true,
     "hasItems": false
   },
-  "Payload Source": {
+  "payload-source":
+  {
     "type": "mindustry.content.Blocks$187",
     "name": "payload-source",
     "iconId": 153,
@@ -22974,7 +23204,8 @@
     "payloadRotateSpeed": 5,
     "payloadSpeed": 0.699999988079071
   },
-  "Payload Void": {
+  "payload-void":
+  {
     "type": "mindustry.content.Blocks$188",
     "name": "payload-void",
     "iconId": 154,
@@ -23069,7 +23300,8 @@
     "payloadRotateSpeed": 5,
     "payloadSpeed": 1.2000000476837158
   },
-  "Illuminator": {
+  "illuminator":
+  {
     "type": "mindustry.content.Blocks$189",
     "name": "illuminator",
     "iconId": 155,
@@ -23164,7 +23396,8 @@
     "radius": 140,
     "brightness": 0.75
   },
-  "legacy-mech-pad": {
+  "legacy-mech-pad":
+  {
     "type": "mindustry.world.blocks.legacy.LegacyMechPad",
     "name": "legacy-mech-pad",
     "iconId": 0,
@@ -23256,7 +23489,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "legacy-unit-factory": {
+  "legacy-unit-factory":
+  {
     "type": "mindustry.world.blocks.legacy.LegacyUnitFactory",
     "name": "legacy-unit-factory",
     "iconId": 0,
@@ -23348,7 +23582,8 @@
     "hasLiquids": false,
     "hasItems": true
   },
-  "legacy-unit-factory-air": {
+  "legacy-unit-factory-air":
+  {
     "type": "mindustry.content.Blocks$190",
     "name": "legacy-unit-factory-air",
     "iconId": 0,
@@ -23440,7 +23675,8 @@
     "hasLiquids": false,
     "hasItems": true
   },
-  "legacy-unit-factory-ground": {
+  "legacy-unit-factory-ground":
+  {
     "type": "mindustry.content.Blocks$191",
     "name": "legacy-unit-factory-ground",
     "iconId": 0,
@@ -23532,7 +23768,8 @@
     "hasLiquids": false,
     "hasItems": true
   },
-  "Launch Pad": {
+  "launch-pad":
+  {
     "type": "mindustry.content.Blocks$192",
     "name": "launch-pad",
     "iconId": 156,
@@ -23626,7 +23863,8 @@
     "hasItems": true,
     "launchTime": 1200
   },
-  "Interplanetary Accelerator": {
+  "interplanetary-accelerator":
+  {
     "type": "mindustry.content.Blocks$193",
     "name": "interplanetary-accelerator",
     "iconId": 157,
@@ -23719,7 +23957,8 @@
     "hasLiquids": false,
     "hasItems": true
   },
-  "Message": {
+  "message":
+  {
     "type": "mindustry.content.Blocks$194",
     "name": "message",
     "iconId": 158,
@@ -23814,7 +24053,8 @@
     "maxNewlines": 24,
     "maxTextLength": 220
   },
-  "Switch": {
+  "switch":
+  {
     "type": "mindustry.content.Blocks$195",
     "name": "switch",
     "iconId": 159,
@@ -23907,7 +24147,8 @@
     "hasLiquids": false,
     "hasItems": false
   },
-  "Micro Processor": {
+  "micro-processor":
+  {
     "type": "mindustry.content.Blocks$196",
     "name": "micro-processor",
     "iconId": 160,
@@ -24003,7 +24244,8 @@
     "instructionsPerTick": 2,
     "maxInstructionScale": 5
   },
-  "Logic Processor": {
+  "logic-processor":
+  {
     "type": "mindustry.content.Blocks$197",
     "name": "logic-processor",
     "iconId": 161,
@@ -24099,7 +24341,8 @@
     "instructionsPerTick": 8,
     "maxInstructionScale": 5
   },
-  "Hyper Processor": {
+  "hyper-processor":
+  {
     "type": "mindustry.content.Blocks$198",
     "name": "hyper-processor",
     "iconId": 162,
@@ -24195,7 +24438,8 @@
     "instructionsPerTick": 25,
     "maxInstructionScale": 5
   },
-  "Memory Cell": {
+  "memory-cell":
+  {
     "type": "mindustry.content.Blocks$199",
     "name": "memory-cell",
     "iconId": 163,
@@ -24289,7 +24533,8 @@
     "hasItems": false,
     "memoryCapacity": 64
   },
-  "Memory Bank": {
+  "memory-bank":
+  {
     "type": "mindustry.content.Blocks$200",
     "name": "memory-bank",
     "iconId": 164,
@@ -24383,7 +24628,8 @@
     "hasItems": false,
     "memoryCapacity": 512
   },
-  "Logic Display": {
+  "logic-display":
+  {
     "type": "mindustry.content.Blocks$201",
     "name": "logic-display",
     "iconId": 165,
@@ -24478,7 +24724,8 @@
     "displaySize": 80,
     "maxSides": 25
   },
-  "Large Logic Display": {
+  "large-logic-display":
+  {
     "type": "mindustry.content.Blocks$202",
     "name": "large-logic-display",
     "iconId": 166,
@@ -24573,7 +24820,8 @@
     "displaySize": 176,
     "maxSides": 25
   },
-  "Block Forge": {
+  "block-forge":
+  {
     "type": "mindustry.content.Blocks$203",
     "name": "block-forge",
     "iconId": 167,
@@ -24668,9 +24916,11 @@
     "payloadSpeed": 0.699999988079071,
     "buildSpeed": 0.4000000059604645,
     "maxBlockSize": 2,
-    "minBlockSize": 1
+    "minBlockSize": 1,
+    "buildSpeed": 0.4000000059604645
   },
-  "Block Loader": {
+  "block-loader":
+  {
     "type": "mindustry.content.Blocks$204",
     "name": "block-loader",
     "iconId": 168,
@@ -24769,7 +25019,8 @@
     "loadTime": 2,
     "timerLoad": 1
   },
-  "Block Unloader": {
+  "block-unloader":
+  {
     "type": "mindustry.content.Blocks$205",
     "name": "block-unloader",
     "iconId": 169,
