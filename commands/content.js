@@ -53,7 +53,7 @@ exports.run = (client, message, args) => {
         let tmpStr = "";
         for(var str of keys){
             tmpStr += str;
-            if(tmpStr.length >= 1000){
+            if(tmpStr.length >= Math.min(keys.length, 1000)){
                 let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
                 embed.addField("Values: ", tmpStr);
                 message.channel.send(embed);
@@ -64,7 +64,7 @@ exports.run = (client, message, args) => {
         let tmpStr = "";
         for(var str of kvStrs.split(",")){
             tmpStr += str + "\n";
-            if(tmpStr.length >= 1000){
+            if(tmpStr.length >= Math.min(keys.length, 1000)){
                 let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
                 embed.addField("Values: ", tmpStr);
                 message.channel.send(embed);
