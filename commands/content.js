@@ -37,7 +37,7 @@ exports.run = (client, message, args) => {
     if(!stop) {
         message.channel.send("**content type is not found!**");
         let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
-        embed.addField(`!content ${files.split(".")[0]}`);
+        embed.addField(`!content ${files.replace(".json", "")}`);
         message.channel.send(embed);
         return;
     }
