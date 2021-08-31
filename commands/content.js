@@ -41,7 +41,7 @@ exports.run = (client, message, args) => {
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
 
-    if(!stop){ //== (args[0] === undefined)
+    if(!stop || args[0] === undefined) {
         message.channel.send("**content type is not found!**");
         let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
         let str = "";
