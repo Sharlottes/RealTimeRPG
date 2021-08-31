@@ -23,7 +23,7 @@ exports.run = (client, message, args) => {
             let value = JSON.stringify(jsonData[args[1]]);
             JSON.parse(value, (k1, v1) => {
                 if(args[2] !== undefined){
-                    if(k1 == args[2]) kvStrs[kvIndex++] = `${k1} : ${JSON.stringify(v1)}`; 
+                    if(k1 == args[2]) kvStrs[kvIndex++] = `${k1} : ${v1}`; 
                 } 
                 else kvStrs[kvIndex++] = `${k1} : ${v1}`;
 
@@ -33,6 +33,7 @@ exports.run = (client, message, args) => {
     
         stop = true;
     });
+
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
     let str = "";
     let maxLength = 1000;
