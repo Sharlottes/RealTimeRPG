@@ -12,7 +12,10 @@ exports.run = (client, message, args) => {
     }, (error, response, body) => !error && response.statusCode === 200 ? JSON.parse(JSON.stringify(body), (k, v) => {
         if(k === "name") server[serverIndex].name = v;
         if(k === "address") server[serverIndex].address = v;
-        if(server[serverIndex].name == "" || server[serverIndex].address == "") serverIndex++;
+        if(server[serverIndex].name == "" || server[serverIndex].address == "") {
+            console.log(server);
+            serverIndex++;
+        }
         return v;
     }) : console.log(error))
     message.channel.send("ps: server is on us");
