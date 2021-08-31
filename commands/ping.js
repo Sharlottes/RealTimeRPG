@@ -1,15 +1,18 @@
 const tcpp = require('tcp-ping');
-const fs = require('fs');
 const request = require('request');
-
-
-
+let server = [{
+    name = "",
+    address = ""
+}]
+let serverIndex = 0;
 exports.run = (client, message, args) => {
     request ({
 	    url: 'https://raw.githubusercontent.com/Anuken/Mindustry/master/servers_v7.json',
 	    json: true
     }, (error, response, body) => !error && response.statusCode === 200 ? JSON.parse(JSON.stringify(body), (k, v) => {
-        console.log(k + " - " + v);
+        if(k === "name") server[serverIndex].name = v;
+        if(k === "address") server[serverIndex].address = v;
+        if(server[serverIndex].name == "" || server[serverIndex].address == "") serverIndex++;
         return v;
     }) : console.log(error))
     message.channel.send("ps: server is on us");
