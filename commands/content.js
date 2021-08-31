@@ -11,7 +11,7 @@ exports.run = (client, message, args) => {
 
     jsonFiles.forEach(f => {
         if(f !== undefined) {
-            files[index] = f + "\n";
+            files[index] = f;
             index++;
         }
         if(stop || args[0] === undefined || args[0] != f.split(".")[0]) return;
@@ -58,14 +58,14 @@ exports.run = (client, message, args) => {
             for(var str of keys.split(" ")){
                 tmpStr += str;
                 if(tmpStr.length >= 500){
-                    let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
+                    let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} Contents`, helpImg).setColor("#186de6");
                     embed.addField("Values: ", tmpStr);
                     message.channel.send(embed);
                     tmpStr = "";
                 }   
             }
         } else {
-            let embed = new Discord.MessageEmbed().setAuthor("All Keys", helpImg).setColor("#186de6");
+            let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} Contents`, helpImg).setColor("#186de6");
             embed.addField(keys);
             message.channel.send(embed);
         }
