@@ -45,7 +45,7 @@ exports.run = (client, message, args) => {
         message.channel.send("**content type is not found!**");
         let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
         let str = "";
-        files.forEach(f => str += `• !content **${str.replace(".json", "")}**\n`);
+        files.forEach(f => str += `• !content **${f.replace(".json", "")}**\n`);
         embed.addField(`Commands`, str);
         message.channel.send(embed);
     }else if(args[1] === undefined){
@@ -53,7 +53,7 @@ exports.run = (client, message, args) => {
         let tmpStr = "";
         for(var str of keys){
             tmpStr += str;
-            if(tmpStr.length >= Math.min(keys.length, 1000)){
+            if(tmpStr.length >= Math.min(keys.length, 500)){
                 let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
                 embed.addField("Values: ", tmpStr);
                 message.channel.send(embed);
@@ -64,7 +64,7 @@ exports.run = (client, message, args) => {
         let tmpStr = "";
         for(var str of kvStrs.split(",")){
             tmpStr += str + "\n";
-            if(tmpStr.length >= Math.min(keys.length, 1000)){
+            if(tmpStr.length >= Math.min(keys.length, 500)){
                 let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
                 embed.addField("Values: ", tmpStr);
                 message.channel.send(embed);
