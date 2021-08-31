@@ -10,6 +10,8 @@ exports.run = (client, message, args) => {
         process.exec(`ping ${args[0]}`, (err, stdout, stderr) => {
             console.log(stdout);
             message.channel.send(stdout);
+            console.log(stderr);
+            message.channel.send(stderr);
         });
 };
 
