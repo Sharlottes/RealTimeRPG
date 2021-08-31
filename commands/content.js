@@ -15,7 +15,7 @@ exports.run = (client, message, args) => {
 
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
-            if(JSON.stringify(v).includes("{")) keys[keyIndex++] = k + "\n";
+            if(JSON.stringify(v).includes("{")) keys[keyIndex++] = k;
             return v;
         });
 
@@ -46,7 +46,7 @@ exports.run = (client, message, args) => {
         let str = "";
         keys.forEach(k => {
             str += `• !content ${args[0]} **${k}** <value>\n`;
-            if(str.length >= Math.min(keys.length, 500)) {
+            if(str.length >= Math.min(keys.length, 750)) {
                 let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
                 embed.addField("Values: ", str);
                 message.channel.send(embed);
@@ -57,7 +57,7 @@ exports.run = (client, message, args) => {
         let tmpStr = "";
         for(var str of kvStrs.split(",")){
             tmpStr += str + "\n";
-            if(tmpStr.length >= Math.min(keys.length, 500)){
+            if(tmpStr.length >= Math.min(keys.length, 750)){
                 let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
                 embed.addField("Values: ", tmpStr);
                 message.channel.send(embed);
