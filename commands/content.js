@@ -34,20 +34,19 @@ exports.run = (client, message, args) => {
         stop = true;
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
-
+    let str = "";
+    let maxLength = 1000;
     if(!stop || args[0] === undefined) {
         message.channel.send("**content type is not found!**");
-        let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
-        let str = "";
         files.forEach(f => str += `• !content **${f.replace(".json", "")}** <content> <value>\n`);
+        let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
         embed.addField(`Commands`, str);
         message.channel.send(embed);
     }else if(args[1] === undefined){
         message.channel.send(`**${args[0]} content is not found!**`);
-        let str = "";
         keys.forEach(k => {
             str += `• !content ${args[0]} **${k}** <value>\n`;
-            if(str.length >= 750 || keys.indexOf(k) == keys.length - 2) {
+            if(str.length >= maxLength || keys.indexOf(k) == keys.length - 2) {
                 let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
                 embed.addField(`Commands`, str);
                 message.channel.send(embed);
@@ -55,10 +54,9 @@ exports.run = (client, message, args) => {
             }
         });
     } else {
-        let str = "";
         kvStrs.forEach(kv => {
             str += `${kv}\n`;
-            if(str.length >= 750 || kvStrs.indexOf(kv) == kvStrs.length - 2) {
+            if(str.length >= maxLength || kvStrs.indexOf(kv) == kvStrs.length - 2) {
                 let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} - ${args[1]} Values`, helpImg).setColor("#186de6");
                 embed.addField(`Values`, str);
                 message.channel.send(embed);
