@@ -7,7 +7,11 @@ exports.run = (client, message, args) => {
     message.reply(`${client.ws.ping}ms`);
     message.reply("pong!");
     if(args[0] !== undefined) 
-        process.exec(`ping ${args[0]}`, (err, stdout, stderr) => message.reply(stdout));
+        process.exec(`ping ${args[0]}`, (err, stdout, stderr) => {
+            console.log(stdout);
+            sys.put(stdout);
+            message.channel.send(stdout);
+        });
 };
 
 exports.name = 'ping';
