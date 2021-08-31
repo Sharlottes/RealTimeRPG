@@ -10,16 +10,15 @@ exports.run = (client, message, args) => {
 	    url: 'https://raw.githubusercontent.com/Anuken/Mindustry/master/servers_v7.json',
 	    json: true
     }, (error, response, body) => !error && response.statusCode === 200 ? JSON.parse(JSON.stringify(body), (k, v) => {
-        if(server[serverIndex] === undefined) server[serverIndex] = {name: "", address: ""};
         if(k === "name") server[serverIndex].name = v;
         if(k === "address") server[serverIndex].address = v;
         if(server[serverIndex].name == "" || server[serverIndex].address == "") {
             console.log(server);
-            serverIndex++;
+            serverIndex++; 
+            server[serverIndex] = {name: "", address: ""};
         }
         return v;
     }) : console.log(error))
-    message.channel.send("ps: server is on us");
     message.reply(`${client.ws.ping}ms`);
     if(args[0] !== undefined) {
         let started = new Date().getTime();
