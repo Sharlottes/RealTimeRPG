@@ -39,17 +39,19 @@ exports.run = (client, message, args) => {
     if(!stop || args[0] === undefined) {
         message.channel.send("**content type is not found!**");
         files.forEach(f => str += `• !content **${f.replace(".json", "")}** <content> <value>\n`);
-        let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
-        embed.addField(`Commands`, str);
-        message.channel.send(embed);
+        message.channel.send(new Discord.MessageEmbed()
+            .setAuthor("All Content Types", helpImg)
+            .setColor("#186de6")
+            .addField(`Commands`, str));
     }else if(args[1] === undefined){
         message.channel.send(`**${args[0]} content is not found!**`);
         keys.forEach(k => {
             str += `• !content ${args[0]} **${k}** <value>\n`;
             if(str.length >= maxLength || keys.indexOf(k) == keys.length - 2) {
-                let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
-                embed.addField(`Commands`, str);
-                message.channel.send(embed);
+                message.channel.send(new Discord.MessageEmbed()
+                    .setAuthor(`All ${args[0]} contents`, helpImg)
+                    .setColor("#186de6")
+                    .addField(`Commands`, str));
                 str = "";
             }
         });
@@ -57,9 +59,10 @@ exports.run = (client, message, args) => {
         kvStrs.forEach(kv => {
             str += `${kv}\n`;
             if(str.length >= maxLength || kvStrs.indexOf(kv) == kvStrs.length - 2) {
-                let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} - ${args[1]} Values`, helpImg).setColor("#186de6");
-                embed.addField(`Values`, str);
-                message.channel.send(embed);
+                message.channel.send(new Discord.MessageEmbed()
+                    .setAuthor(`All ${args[0]} - ${args[1]} Values`, helpImg)
+                    .setColor("#186de6")
+                    .addField(`Values`, str));
                 str = "";
             }
         });
