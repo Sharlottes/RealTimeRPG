@@ -2,13 +2,18 @@ const Discord = require('discord.js');
 const fs = require('fs');
 
 exports.run = (client, message, args) => {
+    let stop = false;
     let jsonFiles = fs.readdirSync('./json');
     let kvStrs = ""
-    let stop = false;
     let keys = "";
-    let files = "";
+    let files = [""];
+    let index = 0;
+
     jsonFiles.forEach(f => {
-        if(f !== undefined) files += f + "\n";
+        if(f !== undefined) {
+            files[index] = f + "\n";
+            index++;
+        }
         if(stop || args[0] === undefined || args[0] != f.split(".")[0]) return;
 
         let jsonBuffer = fs.readFileSync("./json/" + f);
@@ -37,7 +42,8 @@ exports.run = (client, message, args) => {
     if(!stop) {
         message.channel.send("**content type is not found!**");
         let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
-        embed.addField(`!content ${files.replace(".json", "")}`);
+        for(let str of files)
+            embed.addField(`!content ${str.replace(".json", "")}`);
         message.channel.send(embed);
         return;
     }
