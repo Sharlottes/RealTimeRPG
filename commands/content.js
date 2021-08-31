@@ -46,7 +46,7 @@ exports.run = (client, message, args) => {
         let str = "";
         keys.forEach(k => {
             str += `• !content ${args[0]} **${k}** <value>\n`;
-            if(str.length >= Math.min(keys.length, 750)) {
+            if(str.length >= 750 || keys.indexOf(k) == keys.length - 1) {
                 let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
                 embed.addField("Values: ", str);
                 message.channel.send(embed);
