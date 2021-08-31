@@ -38,12 +38,17 @@ exports.run = (client, message, args) => {
     let str = "";
     let maxLength = 1000;
     if(!stop || args[0] === undefined) {
-        message.channel.send("**content type is not found!**");
-        files.forEach(f => str += `• !content **${f.replace(".json", "")}** <content> <value>\n`);
-        message.channel.send(new Discord.MessageEmbed()
-            .setAuthor("All Content Types", helpImg)
-            .setColor("#186de6")
-            .addField(`Commands`, str));
+        message.channel.send("**content type is not found!**");        
+        files.forEach(k => {
+            str += `• !content **${f.replace(".json", "")}** <content> <value>\n`
+            if(str.length >= maxLength || files.indexOf(f) == files.length - 2) {
+                message.channel.send(new Discord.MessageEmbed()
+                    .setAuthor(`All Content Types`, helpImg)
+                    .setColor("#186de6")
+                    .addField(`Commands`, str));
+                str = "";
+            }
+        });
     }else if(args[1] === undefined){
         message.channel.send(`**${args[0]} content is not found!**`);
         keys.forEach(k => {
