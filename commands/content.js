@@ -9,10 +9,7 @@ exports.run = (client, message, args) => {
     let files = "";
     jsonFiles.forEach(f => {
         files += f + "\n";
-        if(stop || args[0] === undefined) return;
-        message.channel.send(`debug: check type - ${f.split(".")[0]} and ${args[0]}`);
-        if(f.split(".")[0] != args[0]) return;
-        message.channel.send(`debug: check type - **${f.split(".")[0]}** matched!`);
+        if(stop || args[0] === undefined || args[0] != f.split(".")[0]) return;
 
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
@@ -35,6 +32,15 @@ exports.run = (client, message, args) => {
         stop = true;
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
+
+
+    if(!stop) {
+        message.channel.send("**content type is not found!**");
+        let embed = new Discord.MessageEmbed().setAuthor("All Types", helpImg).setColor("#186de6");
+        embed.addField(files);
+        message.channel.send(embed);
+        return;
+    }
 
     if(args[0] === undefined){
         let embed = new Discord.MessageEmbed().setAuthor("All Types", helpImg).setColor("#186de6");
