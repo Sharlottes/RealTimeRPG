@@ -44,8 +44,9 @@ exports.run = (client, message, args) => {
     if(!stop){ //== (args[0] === undefined)
         message.channel.send("**content type is not found!**");
         let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
-        for(let str of files)
-            embed.addField(`!content ${str.replace(".json", "")}`, " ");
+        let str = "";
+        files.forEach(f => str += `• !content **${str.replace(".json", "")}**\n`);
+        embed.addField(`Commands`, str);
         message.channel.send(embed);
     }else if(args[1] === undefined){
         message.channel.send(`**${args[0]} content is not found!**`);
