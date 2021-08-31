@@ -19,7 +19,7 @@ exports.run = (client, message, args) => {
                         if(k == "name") server[serverIndex].name = v;
                         if(k == "address") server[serverIndex].address = v;
                         if(server[serverIndex].name != "" && server[serverIndex].address != "")    
-                            server[serverIndex++] = {name: "", address: ""};
+                            server[++serverIndex] = {name: "", address: ""};
                         return v;
                     });
                     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
