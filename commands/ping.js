@@ -26,7 +26,7 @@ exports.run = (client, message, args) => {
                     let embed = new Discord.MessageEmbed().setAuthor(`BE servers`, helpImg).setColor("#186de6");
                     server.forEach((element, index, arr) => {
                         let str = "";
-                        element.address.replace("[", "").replace("]", "").split(", ").forEach(add => str += `• ${add}\n`);
+                        element.address.split(", ").forEach(add => str += `• ${add}\n`);
                         embed.addField(element.name, str);
                     });
                     message.channel.send(embed);
