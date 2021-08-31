@@ -8,7 +8,7 @@ exports.run = (client, message, args) => {
     let keys = "";
     let files = "";
     jsonFiles.forEach(f => {
-        files += f + "\n";
+        if(!f) files += f + "\n";
         if(stop || args[0] === undefined || args[0] != f.split(".")[0]) return;
 
         let jsonBuffer = fs.readFileSync("./json/" + f);
