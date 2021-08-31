@@ -53,19 +53,20 @@ exports.run = (client, message, args) => {
         embed.addField(files);
         message.channel.send(embed);
     }else if(args[1] === undefined){
+        message.channel.send(`**${args[0]} content is not found!**`);
         if(keys.length >= 500) {
             let tmpStr = "";
             for(var str of keys.split(" ")){
                 tmpStr += str;
                 if(tmpStr.length >= 500){
-                    let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} Contents`, helpImg).setColor("#186de6");
+                    let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
                     embed.addField("Values: ", tmpStr);
                     message.channel.send(embed);
                     tmpStr = "";
                 }   
             }
         } else {
-            let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} Contents`, helpImg).setColor("#186de6");
+            let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
             embed.addField(keys);
             message.channel.send(embed);
         }
