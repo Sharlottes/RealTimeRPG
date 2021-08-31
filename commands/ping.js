@@ -1,8 +1,8 @@
 const tcpp = require('tcp-ping');
 const request = require('request');
 let server = [{
-    name = "",
-    address = ""
+    name: "",
+    address: ""
 }]
 let serverIndex = 0;
 exports.run = (client, message, args) => {
