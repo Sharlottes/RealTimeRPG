@@ -18,17 +18,15 @@ exports.run = (client, message, args) => {
                     JSON.parse(JSON.stringify(body), (k, v) => {
                         if(k == "name") server[serverIndex].name = v;
                         if(k == "address") server[serverIndex].address = v;
-                        if(server[serverIndex].name != "" && server[serverIndex].address != "") {
-                            serverIndex++;
-                            server[serverIndex] = {name: "", address: ""};
-                        }
+                        if(server[serverIndex].name != "" && server[serverIndex].address != "")    
+                            server[serverIndex++] = {name: "", address: ""};
                         return v;
                     });
                     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
                     let embed = new Discord.MessageEmbed().setAuthor(`BE servers`, helpImg).setColor("#186de6");
-                    servers.array.forEach(element => {
+                    server.forEach(element => {
                         let str = "";
-                        element.address.split(", ").forEach(add => str += `• ${add}\n`);
+                        element.address.replace("[", "").replace("]", "").split(", ").forEach(add => str += `• ${add}\n`);
                         embed.addField(element.name, str);
                     });
                     message.channel.send(embed);
