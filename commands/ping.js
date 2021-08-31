@@ -25,8 +25,7 @@ exports.run = (client, message, args) => {
                     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
                     let embed = new Discord.MessageEmbed().setAuthor(`BE servers`, helpImg).setColor("#186de6");
                     server.forEach((element, index, arr) => {
-                        let str = element.address.replace;
-                        //element.address.replace("[", "").replace("]", "");
+                        let str = element.address.replace("[", "").replace("]", "");
                         //element.address.split(", ").forEach(add => str += `• ${add}\n`);
                         embed.addField(element.name, str);
                     });
