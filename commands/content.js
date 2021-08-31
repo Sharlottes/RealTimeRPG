@@ -38,19 +38,10 @@ exports.run = (client, message, args) => {
     });
     let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
 
-
-    if(!stop) {
-        message.channel.send("**content type is not found!**");
-        let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
+    if(!stop){
+        let embed = new Discord.MessageEmbed().setAuthor("All Types", helpImg).setColor("#186de6");
         for(let str of files)
             embed.addField(`!content ${str.replace(".json", "").replace("undefined", "")}`);
-        message.channel.send(embed);
-        return;
-    }
-
-    if(args[0] === undefined){
-        let embed = new Discord.MessageEmbed().setAuthor("All Types", helpImg).setColor("#186de6");
-        embed.addField(files);
         message.channel.send(embed);
     }else if(args[1] === undefined){
         message.channel.send(`**${args[0]} content is not found!**`);
