@@ -8,7 +8,10 @@ exports.run = (client, message, args) => {
     request ({
 	    url: 'https://raw.githubusercontent.com/Anuken/Mindustry/master/servers_v7.json',
 	    json: true
-    }, (error, response, body) => !error && response.statusCode === 200 ? console.log(JSON.parse(JSON.stringify(body))) : console.log(error))
+    }, (error, response, body) => !error && response.statusCode === 200 ? console.log(JSON.parse(JSON.stringify(body), (k, v) => {
+        console.log(k + " - " + v);
+        return v;
+    })) : console.log(error))
     message.reply("pong!");
     message.channel.send("ps: server is on us");
     message.channel.send(`${client.user.tag}, ${client.ws.ping}ms`);
