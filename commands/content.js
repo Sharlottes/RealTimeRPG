@@ -7,30 +7,23 @@ exports.run = (client, message, args) => {
     let kvStrs = ""
     let keys = [""];
     let files = [""];
-    let index = 0, keyIndex = 0;
+    let fileIndex = 0, keyIndex = 0;
 
     jsonFiles.forEach(f => {
-        if(f !== undefined) {
-            files[index] = f;
-            index++;
-        }
+        if(f !== undefined) files[fileIndex++] = f;
         if(stop || args[0] === undefined || args[0] != f.split(".")[0]) return;
 
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
-            if(JSON.stringify(v).includes("{")) {
-                keys[keyIndex] = k + "\n";
-                keyIndex++;
-            }
+            if(JSON.stringify(v).includes("{")) keys[keyIndex++] = k + "\n";
             return v;
         });
 
         if(jsonData[args[1]] !== undefined) {
             let value =  JSON.stringify(jsonData[args[1]]);
-            console.log(`${args[1]} - ${value}`);
             JSON.parse(value, (k1, v1) => {
                 if(args[2] !== undefined){
-                    if(k1 === (args[2]+"")) kvStrs += `${k1} : ${JSON.stringify(v1)}\n`; 
+                    if(k1 == args[2]) kvStrs += `${k1} : ${JSON.stringify(v1)}\n`; 
                 } 
                 else kvStrs += `${k1} : ${JSON.stringify(v1)}\n`;
                 return v1;
@@ -45,21 +38,21 @@ exports.run = (client, message, args) => {
         message.channel.send("**content type is not found!**");
         let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
         let str = "";
-        files.forEach(f => str += `• !content **${f.replace(".json", "")}**\n`);
+        files.forEach(f => str += `• !content **${f.replace(".json", "")}** <content> <value>\n`);
         embed.addField(`Commands`, str);
         message.channel.send(embed);
     }else if(args[1] === undefined){
         message.channel.send(`**${args[0]} content is not found!**`);
-        let tmpStr = "";
-        for(var str of keys){
-            tmpStr += str;
-            if(tmpStr.length >= Math.min(keys.length, 500)){
+        let str = "";
+        keys.forEach(k => {
+            str += `• !content ${args[0]} **${k}** <value>\n`;
+            if(str.length >= Math.min(keys.length, 500)) {
                 let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
-                embed.addField("Values: ", tmpStr);
+                embed.addField("Values: ", str);
                 message.channel.send(embed);
-                tmpStr = "";
-            }   
-        }
+                str = "";
+            }
+        });
     } else {
         let tmpStr = "";
         for(var str of kvStrs.split(",")){
