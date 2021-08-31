@@ -1,18 +1,10 @@
-const Discord = require('discord.js'); 
-const sys = require('sys');
-const process = require('child_process');
-
+const tcpp = require('tcp-ping');
 
 exports.run = (client, message, args) => {
     message.reply(`${client.ws.ping}ms`);
     message.reply("pong!");
     if(args[0] !== undefined) 
-        process.exec(`ping ${args[0]}`, (err, stdout, stderr) => {
-            console.log(stdout);
-            message.channel.send(stdout);
-            console.log(stderr);
-            message.channel.send(stderr);
-        });
+        tcpp.probe(args[0], args[1] === undefined ? 6567 : args[1], (err, available) => message.channel.send(avaliable));
 };
 
 exports.name = 'ping';
