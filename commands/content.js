@@ -5,9 +5,9 @@ exports.run = (client, message, args) => {
     let stop = false;
     let jsonFiles = fs.readdirSync('./json');
     let kvStrs = ""
-    let keys = "";
+    let keys = [""];
     let files = [""];
-    let index = 0;
+    let index = 0, keyIndex = 0;
 
     jsonFiles.forEach(f => {
         if(f !== undefined) {
@@ -18,7 +18,10 @@ exports.run = (client, message, args) => {
 
         let jsonBuffer = fs.readFileSync("./json/" + f);
         let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
-            if(JSON.stringify(v).includes("{")) keys += k + " \n";
+            if(JSON.stringify(v).includes("{")) {
+                keys[keyIndex] = k + "\n";
+                keyIndex++;
+            }
             return v;
         });
 
@@ -42,43 +45,32 @@ exports.run = (client, message, args) => {
         message.channel.send("**content type is not found!**");
         let embed = new Discord.MessageEmbed().setAuthor("All Content Types", helpImg).setColor("#186de6");
         for(let str of files)
-            embed.addField(`!content ${str.replace(".json", "")}`, "");
+            embed.addField(`!content ${str.replace(".json", "")}`, " ");
         message.channel.send(embed);
     }else if(args[1] === undefined){
         message.channel.send(`**${args[0]} content is not found!**`);
-        if(keys.length >= 500) {
-            let tmpStr = "";
-            for(var str of keys.split(" ")){
-                tmpStr += str;
-                if(tmpStr.length >= 500){
-                    let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
-                    embed.addField("Values: ", tmpStr);
-                    message.channel.send(embed);
-                    tmpStr = "";
-                }   
-            }
-        } else {
-            let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
-            embed.addField(keys, "");
-            message.channel.send(embed);
-        }
-    }else if(kvStrs.length >= 500) {
         let tmpStr = "";
-        for(var str of kvStrs.split(",")){
-            tmpStr += str + "\n";
-            if(tmpStr.length >= 500){
-                let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
+        for(var str of keys){
+            tmpStr += str;
+            if(tmpStr.length >= 1000){
+                let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
                 embed.addField("Values: ", tmpStr);
                 message.channel.send(embed);
                 tmpStr = "";
             }   
         }
     } else {
-        let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
-        embed.addField("Values: ", kvStrs === "" ? "<Empty>" : kvStrs);
-        message.channel.send(embed);
+        let tmpStr = "";
+        for(var str of kvStrs.split(",")){
+            tmpStr += str + "\n";
+            if(tmpStr.length >= 1000){
+                let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
+                embed.addField("Values: ", tmpStr);
+                message.channel.send(embed);
+                tmpStr = "";
+            }   
+        }
     }
-
 };
 
 exports.name = "content";
