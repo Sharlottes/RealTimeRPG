@@ -4,10 +4,10 @@ const fs = require('fs');
 exports.run = (client, message, args) => {
     let stop = false;
     let jsonFiles = fs.readdirSync('./json');
-    let kvStrs = ""
+    let kvStrs = [""];
     let keys = [""];
     let files = [""];
-    let fileIndex = 0, keyIndex = 0;
+    let fileIndex = 0, keyIndex = 0, kvIndex = 0;
 
     jsonFiles.forEach(f => {
         if(f !== undefined) files[fileIndex++] = f;
@@ -20,12 +20,13 @@ exports.run = (client, message, args) => {
         });
 
         if(jsonData[args[1]] !== undefined) {
-            let value =  JSON.stringify(jsonData[args[1]]);
+            let value = JSON.stringify(jsonData[args[1]]);
             JSON.parse(value, (k1, v1) => {
                 if(args[2] !== undefined){
-                    if(k1 == args[2]) kvStrs += `${k1} : ${JSON.stringify(v1)}\n`; 
+                    if(k1 == args[2]) kvStrs[kvIndex++] = `${k1} : ${JSON.stringify(v1)}`; 
                 } 
-                else kvStrs += `${k1} : ${JSON.stringify(v1)}\n`;
+                else kvStrs[kvIndex++] = `${k1} : ${v1}`;
+
                 return v1;
             });        
         }
@@ -48,22 +49,22 @@ exports.run = (client, message, args) => {
             str += `• !content ${args[0]} **${k}** <value>\n`;
             if(str.length >= 750 || keys.indexOf(k) == keys.length - 2) {
                 let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} contents`, helpImg).setColor("#186de6");
-                embed.addField("Values: ", str);
+                embed.addField(`Commands`, str);
                 message.channel.send(embed);
                 str = "";
             }
         });
     } else {
-        let tmpStr = "";
-        for(var str of kvStrs.split(",")){
-            tmpStr += str + "\n";
-            if(tmpStr.length >= Math.min(keys.length, 750)){
-                let embed = new Discord.MessageEmbed().setAuthor(args[0] + " - " + args[1], helpImg).setColor("#186de6");
-                embed.addField("Values: ", tmpStr);
+        let str = "";
+        kvStrs.forEach(kv => {
+            str += `${kv}\n`;
+            if(str.length >= 750 || kvStrs.indexOf(kv) == kvStrs.length - 2) {
+                let embed = new Discord.MessageEmbed().setAuthor(`All ${args[0]} - ${args[1]} Values`, helpImg).setColor("#186de6");
+                embed.addField(`Values`, str);
                 message.channel.send(embed);
-                tmpStr = "";
-            }   
-        }
+                str = "";
+            }
+        });
     }
 };
 
