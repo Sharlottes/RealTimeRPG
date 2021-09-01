@@ -29,7 +29,7 @@ exports.run = (client, message, args) => {
                         (x.address+'').split(",").forEach((str, index, arr) => {
                             tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1], (err, available) => {
                                 strs += `${str} - ${new Date().getTime() - started}ms\n`;
-                                if(idex == arr.length - 1) embed.addField(x.name, strs);
+                                if(index == arr.length - 1) embed.addField(x.name, strs);
                                 if(indexx == arrs.length - 1) message.channel.send(embed);
                             });
                         });
