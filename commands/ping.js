@@ -16,24 +16,28 @@ exports.run = (client, message, args) => {
             let embed = new Discord.MessageEmbed().setAuthor(`${args[0]} servers`, helpImg).setColor("#186de6");
             request({url: url, json: true}, (error, response, body) => {
                 if(!error && response.statusCode === 200){
-                    JSON.parse(JSON.stringify(body), (k, v) => {
+                    let parsed = JSON.parse(JSON.stringify(body), (k, v) => {
                         if(k == "name") server[serverIndex].name = v;
                         if(k == "address") server[serverIndex].address = v;
                         if(server[serverIndex].name != "" && server[serverIndex].address != "") 
                             server[++serverIndex] = {name: "", address: ""};
-                        return v;
-                    });
-                    server.forEach((x, indexx, arrs) => {
-                        let str = "";
-                        (x.address+'').split(",").forEach((str, index, arr) => {
-                            let started = new Date().getTime();
-                            tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
-                                str += `${str} - ${new Date().getTime() - started}ms`;
+
+                        
+                        server.forEach((x, indexx, arrs) => {
+                            (x.address+'').split(",").forEach((str, index, arr) => {
+                                let started = new Date().getTime();
+                                tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
+                                    if(indexx == arrs.length - 1) embed.addField(x.name, `${str} - ${new Date().getTime() - started}ms\n`);
+                                    if(indexx == arrs.length - 1) message.channel.send(embed);
+                                });
                             });
                         });
-                        embed.addField(arrs[indexx].name, str);
+                        return v;
                     });
-                    message.channel.send(embed);
+
+                    parsed.forEach((v, i, a) => {
+                        console.log(v);
+                    });
                 }
                 else console.log(error);
             });
