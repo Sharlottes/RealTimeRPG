@@ -23,10 +23,7 @@ exports.run = (client, message, args) => {
                             tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
                                 field += `${str} - ${new Date().getTime() - started}ms\n`;
                                 if(arr.indexOf(str) == arr.length - 1) {
-                                    message.channel.send(new Discord.MessageEmbed()
-                                    .setAuthor(`${args[0]} Servers`, helpImg)
-                                    .setColor("#186de6")
-                                    .addField(name, field));
+                                    message.channel.send(`**${name}**\n${field}`);
                                 }
                             });
                         });
