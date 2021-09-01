@@ -25,12 +25,12 @@ exports.run = (client, message, args) => {
                             let name = server[serverIndex].name;
                             tcpp.probe((address+'').split(":")[0], (address+'').split(":")[1], (err, available) => {
                                 embed.addField(name, `${address} - ${new Date().getTime() - started}ms`);
+                                message.channel.send(embed);
                             });
                             server[++serverIndex] = {name: "", address: ""};
                         }   
                         return v;
                     });
-                    message.channel.send(embed);
                 }
                 else console.log(error);
             });
