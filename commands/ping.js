@@ -26,7 +26,7 @@ exports.run = (client, message, args) => {
                                     let embed = new Discord.MessageEmbed()
                                     .setAuthor(`${name} servers`, helpImg)
                                     .setColor("#186de6")
-                                    .addField(name, `${str} - ${new Date().getTime() - started}ms\n`);
+                                    .addField(name, field);
                                     message.channel.send(embed);
                                 }
                             });
