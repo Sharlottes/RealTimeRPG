@@ -13,7 +13,7 @@ exports.run = (client, message, args) => {
                     let parsed = JSON.parse(JSON.stringify(body));
 
                     let embed = new Discord.MessageEmbed()
-                    .setAuthor(`${name} servers`, helpImg)
+                    .setAuthor(`${args[0]} Servers`, helpImg)
                     .setColor("#186de6");
                     parsed.forEach((v, i, a) => {
                         let parsedParsed = JSON.parse(JSON.stringify(v));
