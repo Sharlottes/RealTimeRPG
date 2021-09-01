@@ -23,14 +23,14 @@ exports.run = (client, message, args) => {
                             server[++serverIndex] = {name: "", address: ""};
                         return v;
                     });
-                    server.forEach((x, index, arr) => {
+                    server.forEach((x, indexx, arrs) => {
                         let started = new Date().getTime();
                         let strs = "";
                         (x.address+'').split(",").forEach((str, index, arr) => {
                             tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1], (err, available) => {
                                 strs += `${str} - ${new Date().getTime() - started}ms\n`;
                                 embed.addField(x.name, strs);
-                                if(index == arr.length - 1) message.channel.send(embed);
+                                if(indexx == arrs.length - 1) message.channel.send(embed);
                             });
                         });
                     });
