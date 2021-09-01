@@ -24,14 +24,16 @@ exports.run = (client, message, args) => {
                         return v;
                     });
                     server.forEach((x, indexx, arrs) => {
+                        let str = "";
                         (x.address+'').split(",").forEach((str, index, arr) => {
                             let started = new Date().getTime();
                             tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
-                                if(index == arr.length - 1) embed.addField(arrs[indexx].name, `${str} - ${new Date().getTime() - started}ms\n`);
-                                if(indexx == arrs.length - 1) message.channel.send(embed);
+                                str += `${str} - ${new Date().getTime() - started}ms`;
                             });
                         });
+                        embed.addField(arrs[indexx].name, str);
                     });
+                    message.channel.send(embed);
                 }
                 else console.log(error);
             });
