@@ -19,17 +19,20 @@ exports.run = (client, message, args) => {
                     JSON.parse(JSON.stringify(body), (k, v) => {
                         if(k == "name") server[serverIndex].name = v;
                         if(k == "address") server[serverIndex].address = v;
-                        if(server[serverIndex].name != "" && server[serverIndex].address != "") {
-                            let started = new Date().getTime();
-                            let address = server[serverIndex].address;
-                            let name = server[serverIndex].name;
-                            tcpp.probe((address+'').split(":")[0], (address+'').split(":")[1], (err, available) => {
-                                embed.addField(name, `${(address+'').replace(",", "\n")} - ${new Date().getTime() - started}ms`);
-                                message.channel.send(embed);
-                            });
+                        if(server[serverIndex].name != "" && server[serverIndex].address != "") 
                             server[++serverIndex] = {name: "", address: ""};
-                        }   
                         return v;
+                    });
+                    server.forEach((x, index, arr) => {
+                        let started = new Date().getTime();
+                        let strs = "";
+                        (x.address+'').split(",").forEach((str, index, arr) => {
+                            tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1], (err, available) => {
+                                strs += `${str} - ${new Date().getTime() - started}ms\n`;
+                                embed.addField(x.name, strs);
+                                if(index == arr.length - 1) message.channel.send(embed);
+                            });
+                        });
                     });
                 }
                 else console.log(error);
