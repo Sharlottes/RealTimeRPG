@@ -21,9 +21,8 @@ exports.run = (client, message, args) => {
                         if(k == "address") server[serverIndex].address = v;
                         if(server[serverIndex].name != "" && server[serverIndex].address != "") {
                             let started = new Date().getTime();
-                            let addr = server[serverIndex].address;
-                            let address = addr.split(":", 2)[0];
-                            let port = addr.split(":", 2)[1];
+                            let address = (server[serverIndex].address+'').split(":")[0];
+                            let port = (server[serverIndex].address+'').split(":")[1];
                             tcpp.probe(address, port, (err, available) => embed.addField(server[serverIndex].name, `${server[serverIndex].address} - ${new Date().getTime() - started}ms`));
                             embed.addField(server[serverIndex].name, server[serverIndex].address);
                             server[++serverIndex] = {name: "", address: ""};
