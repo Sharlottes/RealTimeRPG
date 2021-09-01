@@ -13,7 +13,8 @@ exports.run = (client, message, args) => {
                     let parsed = JSON.parse(JSON.stringify(body));
                     let embed = new Discord.MessageEmbed().setAuthor(`${args[0]} Servers`, helpImg).setColor("#186de6");
 
-                    parsed.forEach((v, i, a) => {
+                    parsed.forEach()
+                    parsed.forEach((v, index, array) => {
                         let parsedParsed = JSON.parse(JSON.stringify(v));
                         let name = parsedParsed["name"];
                         let address = (parsedParsed["address"]+'').replace("[", "").replace("]", "");
@@ -24,8 +25,7 @@ exports.run = (client, message, args) => {
                             tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
                                 field += `${str} - ${new Date().getTime() - started}ms\n`;
                                 if(arr.indexOf(str) == arr.length - 1) embed.addField(name, field);
-                            
-                                if(i == a.length - 1) message.channel.send(embed);
+                                if(array.indexOf(v) == arary.length - 1) message.channel.send(embed);
                             });
                         });
                     });
