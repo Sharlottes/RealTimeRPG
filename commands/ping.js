@@ -27,12 +27,12 @@ exports.run = (client, message, args) => {
                         let started = new Date().getTime();
                         let strs = "";
                         (x.address+'').split(",").forEach((str, index, arr) => {
-                            tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1], (err, available) => {
+                            tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
                                 strs += `${str} - ${new Date().getTime() - started}ms\n`;
-                                if(index == arr.length - 1) embed.addField(x.name, strs);
-                                if(indexx == arrs.length - 1) message.channel.send(embed);
                             });
+                            if(index == arr.length - 1) embed.addField(x.name, strs);
                         });
+                        if(indexx == arrs.length - 1) message.channel.send(embed);
                     });
                 }
                 else console.log(error);
