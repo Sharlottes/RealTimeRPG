@@ -27,7 +27,7 @@ exports.run = (client, message, args) => {
                                 field += `${str} - ${new Date().getTime() - started}ms\n`;
                                 if(arr.indexOf(str) == arr.length - 1) {
                                     embed.addField(name, field);
-                                    if(i == a.length - 1) imessage.channel.send(embed);
+                                    if(i == a.length - 1) message.channel.send(embed);
                                 }
                             });
                         });
