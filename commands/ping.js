@@ -16,7 +16,7 @@ exports.run = (client, message, args) => {
                         let parsedParsed = JSON.parse(JSON.stringify(v));
                         let name = parsedParsed["name"];
                         let address = (parsedParsed["address"]+'').replace("[", "").replace("]", "");
-                        let arr = (address+'').split(", ");
+                        let arr = (address+'').split(",");
                         let embed = new Discord.MessageEmbed()
                         .setAuthor(`${name} servers`, helpImg)
                         .setColor("#186de6");
