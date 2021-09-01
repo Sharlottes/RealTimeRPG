@@ -12,6 +12,9 @@ exports.run = (client, message, args) => {
                 if(!error && response.statusCode === 200){
                     let parsed = JSON.parse(JSON.stringify(body));
 
+                    let embed = new Discord.MessageEmbed()
+                    .setAuthor(`${name} servers`, helpImg)
+                    .setColor("#186de6");
                     parsed.forEach((v, i, a) => {
                         let parsedParsed = JSON.parse(JSON.stringify(v));
                         let name = parsedParsed["name"];
@@ -23,11 +26,8 @@ exports.run = (client, message, args) => {
                             tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
                                 field += `${str} - ${new Date().getTime() - started}ms\n`;
                                 if(arr.indexOf(str) == arr.length - 1) {
-                                    let embed = new Discord.MessageEmbed()
-                                    .setAuthor(`${name} servers`, helpImg)
-                                    .setColor("#186de6")
-                                    .addField(name, field);
-                                    message.channel.send(embed);
+                                    embed.addField(name, field);
+                                    if(i == a.length - 1) imessage.channel.send(embed);
                                 }
                             });
                         });
