@@ -37,7 +37,8 @@ exports.run = (client, message, args) => {
 
                     parsed.forEach((v, i, a) => {
                         let parsedParsed = JSON.parse(JSON.stringify(v));
-                        console.log(parsedParsed.addresss);
+                        console.log(parsedParsed);
+                        console.log(parsedParsed[addresss]);
                     });
                 }
                 else console.log(error);
