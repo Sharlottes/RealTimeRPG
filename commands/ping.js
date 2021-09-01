@@ -28,7 +28,7 @@ exports.run = (client, message, args) => {
                             let started = new Date().getTime();
                             let name = x.name;
                             tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
-                                embed.addField(name, `${str} - ${new Date().getTime() - started}ms\n`);
+                                if(index == arr.length - 1) embed.addField(name, `${str} - ${new Date().getTime() - started}ms\n`);
                                 if(indexx == arrs.length - 1) message.channel.send(embed);
                             });
                         });
