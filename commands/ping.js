@@ -23,8 +23,10 @@ exports.run = (client, message, args) => {
                             let started = new Date().getTime();
                             tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
                                 field += `${str} - ${new Date().getTime() - started}ms\n`;
-                                if(arr.indexOf(str) == arr.length - 1) embed.addField(name, field);
-                                if(parsed.indexOf(v) == arary.length - 1) message.channel.send(embed);
+                                if(arr.indexOf(str) == arr.length - 1) {
+                                    embed.addField(name, field);
+                                    if(parsed.indexOf(v) == parsed.length - 1) message.channel.send(embed);
+                                }
                             });
                         });
                     });
