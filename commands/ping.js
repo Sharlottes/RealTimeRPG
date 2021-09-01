@@ -1,11 +1,10 @@
 const Discord = require('discord.js');
 const tcpp = require('tcp-ping');
 const request = require('request');
+
 exports.run = (client, message, args) => {
     message.reply(`${client.ws.ping}ms`);
     if(args[0] !== undefined) {
-        let started = new Date().getTime();
-        tcpp.probe(args[0], args[1] === undefined ? 6567 : args[1], (err, available) => message.channel.send(`${args[0]}, ${new Date().getTime() - started}ms`));
         if(args[0] === "v7" || args[0] === "v6" || args[0] === "be"){
             let server = [{
                 name: "",
@@ -30,6 +29,9 @@ exports.run = (client, message, args) => {
                 }
                 else console.log(error);
             });
+        } else {
+            let started = new Date().getTime();
+            tcpp.probe(args[0], args[1] === undefined ? 6567 : args[1], (err, available) => message.channel.send(`${args[0]}, ${new Date().getTime() - started}ms`));
         }
     }
 }
