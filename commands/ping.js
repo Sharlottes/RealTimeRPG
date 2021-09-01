@@ -17,16 +17,15 @@ exports.run = (client, message, args) => {
                         let name = parsedParsed["name"];
                         let address = (parsedParsed["address"]+'').replace("[", "").replace("]", "");
                         let arr = (address+'').split(", ");
-                        let field = ``;
+                        let embed = new Discord.MessageEmbed()
+                        .setAuthor(`${name} servers`, helpImg)
+                        .setColor("#186de6");
                         arr.forEach(str => {
                             let started = new Date().getTime();
                             tcpp.probe((str+'').split(":")[0], (str+'').split(":")[1] === undefined ? 6567 : (str+'').split(":")[1], (err, available) => {
-                                field += `${str} - ${new Date().getTime() - started}ms\n`;
-                                if(arr.indexOf(str) == arr.length - 1) {
-                                    let embed = new Discord.MessageEmbed().setAuthor(`${args[0]} servers`, helpImg).setColor("#186de6");
-                                    embed.addField(name, field);
+                                embed.addField(name, `${str} - ${new Date().getTime() - started}ms\n`);
+                                if(arr.indexOf(str) == arr.length - 1) 
                                     message.channel.send(embed);
-                                }
                             });
                         });
                     });
