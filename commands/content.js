@@ -66,12 +66,18 @@ exports.run = (client, message, args) => {
       str += `• !content ${args[0]} **${k}** <value>\n`;
     });
     for (var i = 0; i < str.length % maxLength; i++) {
-      message.channel.send(
-        new Discord.MessageEmbed()
-          .setAuthor(`All ${args[0]} contents`, helpImg)
-          .setColor("#186de6")
-          .addField(`Commands`, str.slice(i * maxLength, (i + 1) * maxLength))
+      sstr = str.slice(
+        i * maxLength,
+        Math.min(str.length, (i + 1) * maxLength)
       );
+
+      if (sstr !== "")
+        message.channel.send(
+          new Discord.MessageEmbed()
+            .setAuthor(`All ${args[0]} contents`, helpImg)
+            .setColor("#186de6")
+            .addField(`Commands`, sstr)
+        );
     }
   } else {
     kvStrs.forEach((kv) => {
