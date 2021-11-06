@@ -1,58 +1,71 @@
+
 {
-  "water": {
+  "water":
+  {
     "type": "mindustry.content.Liquids$1",
     "name": "water",
-    "iconId": 170,
+    "iconId": 174,
+    "hideDetails": true,
     "inlineDescription": true,
     "alwaysUnlocked": true,
-    "description": "Used for cooling machines and waste processing.",
-    "localizedName": "Water",
-    "explosiveness": 0,
-    "viscosity": 0.5,
-    "heatCapacity": 0.4000000059604645,
-    "temperature": 0.5,
-    "flammability": 0
+    "details": "",
+    "description": "기능성이 뛰어난 액체. 냉각기 및 폐기물 처리에 일반적으로 사용됩니다.",
+    "localizedName": "물",
+    "explosiveness": "0.00",
+    "viscosity": "0.50",
+    "heatCapacity": "0.40",
+    "temperature": "0.50",
+    "flammability": "0.00"
   },
-  "slag": {
+  "slag":
+  {
     "type": "mindustry.content.Liquids$2",
     "name": "slag",
-    "iconId": 171,
+    "iconId": 175,
+    "hideDetails": true,
     "inlineDescription": true,
     "alwaysUnlocked": false,
-    "description": "Refined in separators into constituent metals, or sprayed at enemies as a weapon.",
-    "localizedName": "Slag",
-    "explosiveness": 0,
-    "viscosity": 0.699999988079071,
-    "heatCapacity": 0.5,
-    "temperature": 1,
-    "flammability": 0
+    "details": "",
+    "description": "다양한 종류의 금속들이 함께 섞여 녹아있습니다. 분리기를 이용해 다른 광물들로 분리하거나 탄약으로 사용해 적 부대를 향해 살포할 수 있습니다.",
+    "localizedName": "광재",
+    "explosiveness": "0.00",
+    "viscosity": "0.69",
+    "heatCapacity": "0.50",
+    "temperature": "1.00",
+    "flammability": "0.00"
   },
-  "oil": {
+  "oil":
+  {
     "type": "mindustry.content.Liquids$3",
     "name": "oil",
-    "iconId": 172,
+    "iconId": 176,
+    "hideDetails": true,
     "inlineDescription": true,
     "alwaysUnlocked": false,
-    "description": "Used in advanced material production and as incendiary ammunition.",
-    "localizedName": "Oil",
-    "explosiveness": 1.2000000476837158,
-    "viscosity": 0.75,
-    "heatCapacity": 0.699999988079071,
-    "temperature": 0.5,
-    "flammability": 1.2000000476837158
+    "details": "",
+    "description": "고급 재료 생산에 사용되는 액체. 석탄으로 전환하거나 무기로 뿌려서 불을 지를 수 있습니다.",
+    "localizedName": "석유",
+    "explosiveness": "1.20",
+    "viscosity": "0.75",
+    "heatCapacity": "0.69",
+    "temperature": "0.50",
+    "flammability": "1.20"
   },
-  "cryofluid": {
+  "cryofluid":
+  {
     "type": "mindustry.content.Liquids$4",
     "name": "cryofluid",
-    "iconId": 173,
+    "iconId": 177,
+    "hideDetails": true,
     "inlineDescription": true,
     "alwaysUnlocked": false,
-    "description": "Used as coolant in reactors, turrets and factories.",
-    "localizedName": "Cryofluid",
-    "explosiveness": 0,
-    "viscosity": 0.5,
-    "heatCapacity": 0.8999999761581421,
-    "temperature": 0.25,
-    "flammability": 0
+    "details": "[lightgray][비공식][]티타늄을 갈아서 물에 희석했다.",
+    "description": "물과 티타늄으로 만든 비부식성 액체. 열용량이 매우 높으며 냉각수로 광범위하게 사용됩니다.",
+    "localizedName": "냉각수",
+    "explosiveness": "0.00",
+    "viscosity": "0.50",
+    "heatCapacity": "0.89",
+    "temperature": "0.25",
+    "flammability": "0.00"
   }
 }
