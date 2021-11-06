@@ -77,7 +77,7 @@ exports.run = (client, message, args) => {
   } else {
     kvStrs.forEach((kv) => {
       str += `${kv}\n`;
-      if (str.length >= maxLength || kvStrs.indexOf(kv) == kvStrs.length - 2) {
+      if (str.length >= maxLength || kvStrs.indexOf(kv) == kvStrs.length - 1) {
         message.channel.send(
           new Discord.MessageEmbed()
             .setAuthor(`All ${args[0]} - ${args[1]} Values`, helpImg)

@@ -1,7 +1,5 @@
-
 {
-  "bullet#0":
-  {
+  "bullet#0": {
     "type": "mindustry.content.Bullets$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -78,8 +76,7 @@
     "speed": 0.00009999999747378752,
     "lifetime": 10
   },
-  "bullet#1":
-  {
+  "bullet#1": {
     "type": "mindustry.content.Bullets$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -156,8 +153,7 @@
     "speed": 0.00009999999747378752,
     "lifetime": 10
   },
-  "bullet#2":
-  {
+  "bullet#2": {
     "type": "mindustry.content.Bullets$2",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -242,8 +238,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#3":
-  {
+  "bullet#3": {
     "type": "mindustry.content.Bullets$3",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -326,8 +321,7 @@
     "height": 12,
     "width": 10
   },
-  "bullet#4":
-  {
+  "bullet#4": {
     "type": "mindustry.content.Bullets$4",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -412,8 +406,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#5":
-  {
+  "bullet#5": {
     "type": "mindustry.content.Bullets$5",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -498,8 +491,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#6":
-  {
+  "bullet#6": {
     "type": "mindustry.content.Bullets$6",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -584,8 +576,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#7":
-  {
+  "bullet#7": {
     "type": "mindustry.content.Bullets$7",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -670,8 +661,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#8":
-  {
+  "bullet#8": {
     "type": "mindustry.content.Bullets$8",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -754,8 +744,7 @@
     "height": 12,
     "width": 5
   },
-  "bullet#9":
-  {
+  "bullet#9": {
     "type": "mindustry.content.Bullets$9",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -840,8 +829,7 @@
     "explodeDelay": 5,
     "explodeRange": 30
   },
-  "bullet#10":
-  {
+  "bullet#10": {
     "type": "mindustry.content.Bullets$10",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -926,8 +914,7 @@
     "explodeDelay": 5,
     "explodeRange": 30
   },
-  "bullet#11":
-  {
+  "bullet#11": {
     "type": "mindustry.content.Bullets$11",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1012,8 +999,7 @@
     "explodeDelay": 5,
     "explodeRange": 30
   },
-  "bullet#12":
-  {
+  "bullet#12": {
     "type": "mindustry.content.Bullets$12",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1096,8 +1082,7 @@
     "height": 12,
     "width": 5
   },
-  "bullet#13":
-  {
+  "bullet#13": {
     "type": "mindustry.content.Bullets$13",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1180,8 +1165,7 @@
     "height": 12,
     "width": 10
   },
-  "bullet#14":
-  {
+  "bullet#14": {
     "type": "mindustry.content.Bullets$14",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1266,8 +1250,7 @@
     "explodeDelay": 5,
     "explodeRange": 20
   },
-  "bullet#15":
-  {
+  "bullet#15": {
     "type": "mindustry.content.Bullets$15",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1352,8 +1335,7 @@
     "explodeDelay": 5,
     "explodeRange": 20
   },
-  "bullet#16":
-  {
+  "bullet#16": {
     "type": "mindustry.content.Bullets$16",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1438,8 +1420,7 @@
     "explodeDelay": 5,
     "explodeRange": 30
   },
-  "bullet#17":
-  {
+  "bullet#17": {
     "type": "mindustry.content.Bullets$17",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1524,8 +1505,7 @@
     "explodeDelay": 5,
     "explodeRange": 20
   },
-  "bullet#18":
-  {
+  "bullet#18": {
     "type": "mindustry.content.Bullets$18",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1608,8 +1588,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#19":
-  {
+  "bullet#19": {
     "type": "mindustry.content.Bullets$19",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1692,8 +1671,7 @@
     "height": 8,
     "width": 7
   },
-  "bullet#20":
-  {
+  "bullet#20": {
     "type": "mindustry.content.Bullets$20",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1776,8 +1754,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#21":
-  {
+  "bullet#21": {
     "type": "mindustry.content.Bullets$21",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1860,8 +1837,7 @@
     "height": 9,
     "width": 7
   },
-  "bullet#22":
-  {
+  "bullet#22": {
     "type": "mindustry.content.Bullets$22",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -1944,8 +1920,7 @@
     "height": 12,
     "width": 9
   },
-  "bullet#23":
-  {
+  "bullet#23": {
     "type": "mindustry.content.Bullets$23",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -2028,8 +2003,7 @@
     "height": 13,
     "width": 10
   },
-  "bullet#24":
-  {
+  "bullet#24": {
     "type": "mindustry.content.Bullets$24",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -2112,8 +2086,7 @@
     "height": 9,
     "width": 7
   },
-  "bullet#25":
-  {
+  "bullet#25": {
     "type": "mindustry.content.Bullets$25",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -2196,8 +2169,7 @@
     "height": 12,
     "width": 10
   },
-  "bullet#26":
-  {
+  "bullet#26": {
     "type": "mindustry.content.Bullets$26",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 24,
@@ -2280,8 +2252,7 @@
     "height": 21,
     "width": 15
   },
-  "bullet#27":
-  {
+  "bullet#27": {
     "type": "mindustry.content.Bullets$27",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 25,
@@ -2364,8 +2335,7 @@
     "height": 23,
     "width": 16
   },
-  "bullet#28":
-  {
+  "bullet#28": {
     "type": "mindustry.content.Bullets$28",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 25,
@@ -2448,8 +2418,7 @@
     "height": 21,
     "width": 16
   },
-  "bullet#29":
-  {
+  "bullet#29": {
     "type": "mindustry.entities.bullet.FireBulletType",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -2532,8 +2501,7 @@
     "velMin": 0.6000000238418579,
     "radius": 3
   },
-  "bullet#30":
-  {
+  "bullet#30": {
     "type": "mindustry.content.Bullets$29",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 35,
@@ -2610,8 +2578,7 @@
     "speed": 3.3499999046325684,
     "lifetime": 18
   },
-  "bullet#31":
-  {
+  "bullet#31": {
     "type": "mindustry.content.Bullets$30",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 35,
@@ -2688,8 +2655,7 @@
     "speed": 4,
     "lifetime": 18
   },
-  "bullet#32":
-  {
+  "bullet#32": {
     "type": "mindustry.content.Bullets$31",
     "lightOpacity": 0,
     "lightRadius": 20,
@@ -2768,8 +2734,7 @@
     "orbSize": 3,
     "puddleSize": 6
   },
-  "bullet#33":
-  {
+  "bullet#33": {
     "type": "mindustry.content.Bullets$32",
     "lightOpacity": 0.20000000298023224,
     "lightRadius": 20,
@@ -2848,8 +2813,7 @@
     "orbSize": 3,
     "puddleSize": 6
   },
-  "bullet#34":
-  {
+  "bullet#34": {
     "type": "mindustry.content.Bullets$33",
     "lightOpacity": 0.4000000059604645,
     "lightRadius": 20,
@@ -2928,8 +2892,7 @@
     "orbSize": 3,
     "puddleSize": 6
   },
-  "bullet#35":
-  {
+  "bullet#35": {
     "type": "mindustry.content.Bullets$34",
     "lightOpacity": 0,
     "lightRadius": 20,
@@ -3008,8 +2971,7 @@
     "orbSize": 3,
     "puddleSize": 6
   },
-  "bullet#36":
-  {
+  "bullet#36": {
     "type": "mindustry.content.Bullets$35",
     "lightOpacity": 0,
     "lightRadius": 20,
@@ -3088,8 +3050,7 @@
     "orbSize": 4,
     "puddleSize": 8
   },
-  "bullet#37":
-  {
+  "bullet#37": {
     "type": "mindustry.content.Bullets$36",
     "lightOpacity": 0.20000000298023224,
     "lightRadius": 20,
@@ -3168,8 +3129,7 @@
     "orbSize": 4,
     "puddleSize": 8
   },
-  "bullet#38":
-  {
+  "bullet#38": {
     "type": "mindustry.content.Bullets$37",
     "lightOpacity": 0.4000000059604645,
     "lightRadius": 20,
@@ -3248,8 +3208,7 @@
     "orbSize": 4,
     "puddleSize": 8
   },
-  "bullet#39":
-  {
+  "bullet#39": {
     "type": "mindustry.content.Bullets$38",
     "lightOpacity": 0,
     "lightRadius": 20,
@@ -3328,8 +3287,7 @@
     "orbSize": 4,
     "puddleSize": 8
   },
-  "bullet#40":
-  {
+  "bullet#40": {
     "type": "mindustry.content.UnitTypes$2$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 35,
@@ -3406,8 +3364,7 @@
     "speed": 4.099999904632568,
     "lifetime": 13
   },
-  "bullet#41":
-  {
+  "bullet#41": {
     "type": "mindustry.content.UnitTypes$3$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -3492,8 +3449,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#42":
-  {
+  "bullet#42": {
     "type": "mindustry.content.UnitTypes$4$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -3576,8 +3532,7 @@
     "height": 20,
     "width": 11
   },
-  "bullet#43":
-  {
+  "bullet#43": {
     "type": "mindustry.content.UnitTypes$5$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -3660,8 +3615,7 @@
     "height": 33,
     "width": 14
   },
-  "bullet#44":
-  {
+  "bullet#44": {
     "type": "mindustry.content.UnitTypes$5$1$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -3744,8 +3698,7 @@
     "height": 10,
     "width": 10
   },
-  "bullet#45":
-  {
+  "bullet#45": {
     "type": "mindustry.content.UnitTypes$6$1$1",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 20,
@@ -3830,8 +3783,7 @@
     "height": 7,
     "width": 2
   },
-  "bullet#46":
-  {
+  "bullet#46": {
     "type": "mindustry.content.UnitTypes$7$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -3910,8 +3862,7 @@
     "lightningLengthRand": 7,
     "lightningLength": 7
   },
-  "bullet#47":
-  {
+  "bullet#47": {
     "type": "mindustry.content.UnitTypes$7$1$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -3988,8 +3939,7 @@
     "speed": 0.00009999999747378752,
     "lifetime": 10
   },
-  "bullet#48":
-  {
+  "bullet#48": {
     "type": "mindustry.content.UnitTypes$8$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -4076,8 +4026,7 @@
     "width": 15,
     "length": 135
   },
-  "bullet#49":
-  {
+  "bullet#49": {
     "type": "mindustry.content.UnitTypes$9$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -4163,8 +4112,7 @@
     "shake": 1,
     "length": 180
   },
-  "bullet#50":
-  {
+  "bullet#50": {
     "type": "mindustry.content.UnitTypes$10$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -4251,8 +4199,7 @@
     "width": 75,
     "length": 460
   },
-  "bullet#51":
-  {
+  "bullet#51": {
     "type": "mindustry.content.UnitTypes$11$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -4335,8 +4282,7 @@
     "height": 7,
     "width": 5
   },
-  "bullet#52":
-  {
+  "bullet#52": {
     "type": "mindustry.content.UnitTypes$12$1$1",
     "lightOpacity": 0.4000000059604645,
     "lightRadius": 20,
@@ -4415,8 +4361,7 @@
     "orbSize": 3,
     "puddleSize": 6
   },
-  "bullet#53":
-  {
+  "bullet#53": {
     "type": "mindustry.content.UnitTypes$13$1$1",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 18,
@@ -4496,8 +4441,7 @@
     "sapStrength": 0.5,
     "length": 75
   },
-  "bullet#54":
-  {
+  "bullet#54": {
     "type": "mindustry.content.UnitTypes$13$2$1",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 18,
@@ -4577,8 +4521,7 @@
     "sapStrength": 0.800000011920929,
     "length": 40
   },
-  "bullet#55":
-  {
+  "bullet#55": {
     "type": "mindustry.content.UnitTypes$14$1",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 18,
@@ -4658,8 +4601,7 @@
     "sapStrength": 0.8500000238418579,
     "length": 55
   },
-  "bullet#56":
-  {
+  "bullet#56": {
     "type": "mindustry.content.UnitTypes$14$5$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -4744,8 +4686,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#57":
-  {
+  "bullet#57": {
     "type": "mindustry.content.UnitTypes$15$1$1",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 20,
@@ -4831,8 +4772,7 @@
     "width": 25,
     "length": 90
   },
-  "bullet#58":
-  {
+  "bullet#58": {
     "type": "mindustry.content.UnitTypes$15$2$1",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 40,
@@ -4917,8 +4857,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#59":
-  {
+  "bullet#59": {
     "type": "mindustry.content.UnitTypes$15$2$1$1",
     "lightOpacity": 0.5,
     "lightRadius": 30,
@@ -5003,8 +4942,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#60":
-  {
+  "bullet#60": {
     "type": "mindustry.content.UnitTypes$16$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -5087,8 +5025,7 @@
     "height": 9,
     "width": 7
   },
-  "bullet#61":
-  {
+  "bullet#61": {
     "type": "mindustry.content.UnitTypes$17$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -5171,8 +5108,7 @@
     "height": 14,
     "width": 10
   },
-  "bullet#62":
-  {
+  "bullet#62": {
     "type": "mindustry.content.UnitTypes$18$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -5255,8 +5191,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#63":
-  {
+  "bullet#63": {
     "type": "mindustry.content.UnitTypes$19$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -5339,8 +5274,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#64":
-  {
+  "bullet#64": {
     "type": "mindustry.content.UnitTypes$19$4$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -5423,8 +5357,7 @@
     "height": 18,
     "width": 12
   },
-  "bullet#65":
-  {
+  "bullet#65": {
     "type": "mindustry.content.UnitTypes$20$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -5509,8 +5442,7 @@
     "explodeDelay": 5,
     "explodeRange": 30
   },
-  "bullet#66":
-  {
+  "bullet#66": {
     "type": "mindustry.content.UnitTypes$20$2$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -5597,8 +5529,7 @@
     "width": 25,
     "length": 230
   },
-  "bullet#67":
-  {
+  "bullet#67": {
     "type": "mindustry.content.UnitTypes$22$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -5681,8 +5612,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#68":
-  {
+  "bullet#68": {
     "type": "mindustry.content.UnitTypes$23$1$1",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 20,
@@ -5767,8 +5697,7 @@
     "height": 7,
     "width": 2
   },
-  "bullet#69":
-  {
+  "bullet#69": {
     "type": "mindustry.content.UnitTypes$23$2$1",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 20,
@@ -5853,8 +5782,7 @@
     "height": 7,
     "width": 2
   },
-  "bullet#70":
-  {
+  "bullet#70": {
     "type": "mindustry.content.UnitTypes$24$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -5937,8 +5865,7 @@
     "height": 30,
     "width": 30
   },
-  "bullet#71":
-  {
+  "bullet#71": {
     "type": "mindustry.content.UnitTypes$26$2$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6021,8 +5948,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#72":
-  {
+  "bullet#72": {
     "type": "mindustry.content.UnitTypes$27$2$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6107,8 +6033,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#73":
-  {
+  "bullet#73": {
     "type": "mindustry.content.UnitTypes$28$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6193,8 +6118,7 @@
     "trailSize": 6,
     "trailMult": 0.800000011920929
   },
-  "bullet#74":
-  {
+  "bullet#74": {
     "type": "mindustry.content.UnitTypes$28$2$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6277,8 +6201,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#75":
-  {
+  "bullet#75": {
     "type": "mindustry.content.UnitTypes$29$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6361,8 +6284,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#76":
-  {
+  "bullet#76": {
     "type": "mindustry.content.UnitTypes$29$2$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6445,8 +6367,7 @@
     "height": 19,
     "width": 13
   },
-  "bullet#77":
-  {
+  "bullet#77": {
     "type": "mindustry.content.UnitTypes$30$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6526,8 +6447,7 @@
     "length": 500,
     "pierceDamageFactor": 0.5
   },
-  "bullet#78":
-  {
+  "bullet#78": {
     "type": "mindustry.content.UnitTypes$31$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6604,8 +6524,7 @@
     "speed": 1,
     "lifetime": 40
   },
-  "bullet#79":
-  {
+  "bullet#79": {
     "type": "mindustry.content.UnitTypes$31$2$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 110,
@@ -6688,8 +6607,7 @@
     "height": 11,
     "width": 11
   },
-  "bullet#80":
-  {
+  "bullet#80": {
     "type": "mindustry.content.UnitTypes$32$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 35,
@@ -6766,8 +6684,7 @@
     "speed": 3.4000000953674316,
     "lifetime": 18
   },
-  "bullet#81":
-  {
+  "bullet#81": {
     "type": "mindustry.content.UnitTypes$32$2$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6844,8 +6761,7 @@
     "speed": 1,
     "lifetime": 40
   },
-  "bullet#82":
-  {
+  "bullet#82": {
     "type": "mindustry.content.UnitTypes$33$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -6922,8 +6838,7 @@
     "speed": 1,
     "lifetime": 40
   },
-  "bullet#83":
-  {
+  "bullet#83": {
     "type": "mindustry.content.UnitTypes$33$2$1",
     "lightOpacity": 0.699999988079071,
     "lightRadius": 60,
@@ -7008,8 +6923,7 @@
     "explodeDelay": 5,
     "explodeRange": 40
   },
-  "bullet#84":
-  {
+  "bullet#84": {
     "type": "mindustry.content.UnitTypes$33$2$1$2",
     "lightOpacity": 0.699999988079071,
     "lightRadius": 40,
@@ -7092,8 +7006,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#85":
-  {
+  "bullet#85": {
     "type": "mindustry.content.UnitTypes$34$2$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -7170,8 +7083,7 @@
     "speed": 1,
     "lifetime": 40
   },
-  "bullet#86":
-  {
+  "bullet#86": {
     "type": "mindustry.content.UnitTypes$34$2$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -7248,8 +7160,7 @@
     "speed": 1,
     "lifetime": 40
   },
-  "bullet#87":
-  {
+  "bullet#87": {
     "type": "mindustry.content.UnitTypes$35$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -7335,8 +7246,7 @@
     "shake": 1,
     "length": 95
   },
-  "bullet#88":
-  {
+  "bullet#88": {
     "type": "mindustry.content.UnitTypes$35$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -7422,8 +7332,7 @@
     "shake": 1,
     "length": 95
   },
-  "bullet#89":
-  {
+  "bullet#89": {
     "type": "mindustry.content.UnitTypes$35$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -7509,8 +7418,7 @@
     "shake": 1,
     "length": 95
   },
-  "bullet#90":
-  {
+  "bullet#90": {
     "type": "mindustry.content.UnitTypes$35$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -7596,8 +7504,7 @@
     "shake": 1,
     "length": 95
   },
-  "bullet#91":
-  {
+  "bullet#91": {
     "type": "mindustry.content.UnitTypes$35$2$1",
     "lightOpacity": 0.699999988079071,
     "lightRadius": 70,
@@ -7687,8 +7594,7 @@
     "timeIncrease": 3,
     "radius": 100
   },
-  "bullet#92":
-  {
+  "bullet#92": {
     "type": "mindustry.content.UnitTypes$36$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -7771,8 +7677,7 @@
     "height": 9,
     "width": 7
   },
-  "bullet#93":
-  {
+  "bullet#93": {
     "type": "mindustry.content.UnitTypes$37$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -7855,8 +7760,7 @@
     "height": 9,
     "width": 7
   },
-  "bullet#94":
-  {
+  "bullet#94": {
     "type": "mindustry.content.UnitTypes$38$1$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -7939,8 +7843,7 @@
     "height": 11,
     "width": 6.5
   },
-  "bullet#95":
-  {
+  "bullet#95": {
     "type": "mindustry.entities.bullet.MassDriverBolt",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8017,8 +7920,7 @@
     "speed": 1,
     "lifetime": 1
   },
-  "bullet#96":
-  {
+  "bullet#96": {
     "type": "mindustry.content.Bullets$22",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8101,8 +8003,7 @@
     "height": 12,
     "width": 9
   },
-  "bullet#97":
-  {
+  "bullet#97": {
     "type": "mindustry.content.Bullets$21",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8185,8 +8086,7 @@
     "height": 9,
     "width": 7
   },
-  "bullet#98":
-  {
+  "bullet#98": {
     "type": "mindustry.content.Bullets$24",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8269,8 +8169,7 @@
     "height": 9,
     "width": 7
   },
-  "bullet#99":
-  {
+  "bullet#99": {
     "type": "mindustry.content.Bullets$25",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8353,8 +8252,7 @@
     "height": 12,
     "width": 10
   },
-  "bullet#100":
-  {
+  "bullet#100": {
     "type": "mindustry.content.Bullets$9",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8439,8 +8337,7 @@
     "explodeDelay": 5,
     "explodeRange": 30
   },
-  "bullet#101":
-  {
+  "bullet#101": {
     "type": "mindustry.content.Bullets$11",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8525,8 +8422,7 @@
     "explodeDelay": 5,
     "explodeRange": 30
   },
-  "bullet#102":
-  {
+  "bullet#102": {
     "type": "mindustry.content.Bullets$10",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8611,8 +8507,7 @@
     "explodeDelay": 5,
     "explodeRange": 30
   },
-  "bullet#103":
-  {
+  "bullet#103": {
     "type": "mindustry.content.Bullets$2",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8697,8 +8592,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#104":
-  {
+  "bullet#104": {
     "type": "mindustry.content.Bullets$5",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8783,8 +8677,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#105":
-  {
+  "bullet#105": {
     "type": "mindustry.content.Bullets$6",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8869,8 +8762,7 @@
     "trailSize": 4,
     "trailMult": 1
   },
-  "bullet#106":
-  {
+  "bullet#106": {
     "type": "mindustry.content.Blocks$155$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -8957,8 +8849,7 @@
     "width": 15,
     "length": 173
   },
-  "bullet#107":
-  {
+  "bullet#107": {
     "type": "mindustry.content.Blocks$156$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9037,8 +8928,7 @@
     "lightningLengthRand": 0,
     "lightningLength": 25
   },
-  "bullet#108":
-  {
+  "bullet#108": {
     "type": "mindustry.content.Bullets$20",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9121,8 +9011,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#109":
-  {
+  "bullet#109": {
     "type": "mindustry.content.Bullets$19",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9205,8 +9094,7 @@
     "height": 8,
     "width": 7
   },
-  "bullet#110":
-  {
+  "bullet#110": {
     "type": "mindustry.content.Bullets$18",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9289,8 +9177,7 @@
     "height": 8,
     "width": 8
   },
-  "bullet#111":
-  {
+  "bullet#111": {
     "type": "mindustry.content.Bullets$22",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9373,8 +9260,7 @@
     "height": 12,
     "width": 9
   },
-  "bullet#112":
-  {
+  "bullet#112": {
     "type": "mindustry.content.Bullets$21",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9457,8 +9343,7 @@
     "height": 9,
     "width": 7
   },
-  "bullet#113":
-  {
+  "bullet#113": {
     "type": "mindustry.content.Bullets$25",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9541,8 +9426,7 @@
     "height": 12,
     "width": 10
   },
-  "bullet#114":
-  {
+  "bullet#114": {
     "type": "mindustry.content.Bullets$24",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9625,8 +9509,7 @@
     "height": 9,
     "width": 7
   },
-  "bullet#115":
-  {
+  "bullet#115": {
     "type": "mindustry.content.Bullets$23",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9709,8 +9592,7 @@
     "height": 13,
     "width": 10
   },
-  "bullet#116":
-  {
+  "bullet#116": {
     "type": "mindustry.content.Blocks$162$1",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 20,
@@ -9796,8 +9678,7 @@
     "width": 17,
     "length": 100
   },
-  "bullet#117":
-  {
+  "bullet#117": {
     "type": "mindustry.content.Blocks$162$2",
     "lightOpacity": 0.6000000238418579,
     "lightRadius": 20,
@@ -9883,8 +9764,7 @@
     "width": 20,
     "length": 100
   },
-  "bullet#118":
-  {
+  "bullet#118": {
     "type": "mindustry.content.Bullets$17",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -9969,8 +9849,7 @@
     "explodeDelay": 5,
     "explodeRange": 20
   },
-  "bullet#119":
-  {
+  "bullet#119": {
     "type": "mindustry.content.Bullets$15",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -10055,8 +9934,7 @@
     "explodeDelay": 5,
     "explodeRange": 20
   },
-  "bullet#120":
-  {
+  "bullet#120": {
     "type": "mindustry.content.Bullets$14",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -10141,8 +10019,7 @@
     "explodeDelay": 5,
     "explodeRange": 20
   },
-  "bullet#121":
-  {
+  "bullet#121": {
     "type": "mindustry.content.Bullets$16",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -10227,8 +10104,7 @@
     "explodeDelay": 5,
     "explodeRange": 30
   },
-  "bullet#122":
-  {
+  "bullet#122": {
     "type": "mindustry.content.Blocks$165$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
@@ -10306,8 +10182,7 @@
     "lifetime": 100,
     "trailSpacing": 20
   },
-  "bullet#123":
-  {
+  "bullet#123": {
     "type": "mindustry.content.Bullets$26",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 24,
@@ -10390,8 +10265,7 @@
     "height": 21,
     "width": 15
   },
-  "bullet#124":
-  {
+  "bullet#124": {
     "type": "mindustry.content.Bullets$28",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 25,
@@ -10474,8 +10348,7 @@
     "height": 21,
     "width": 16
   },
-  "bullet#125":
-  {
+  "bullet#125": {
     "type": "mindustry.content.Bullets$27",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 25,
@@ -10558,8 +10431,7 @@
     "height": 23,
     "width": 16
   },
-  "bullet#126":
-  {
+  "bullet#126": {
     "type": "mindustry.content.Blocks$167$1",
     "lightOpacity": 0.30000001192092896,
     "lightRadius": 20,
