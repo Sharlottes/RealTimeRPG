@@ -27,8 +27,7 @@ exports.run = (client, message, args) => {
       let value = JSON.stringify(jsonData[args[1]]);
       JSON.parse(value, (k1, v1) => {
         if (args[2] !== undefined) {
-          console.log("third parm is exist: " + args[2]);
-          if (k1.trim().includes(args[2].trim())) {
+          if (k1.toLowerCase().includes(args[2].toLowerCase())) {
             kvStrs[kvIndex++] = `${k1} : ${v1}`;
           }
         } else {
