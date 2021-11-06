@@ -20,7 +20,7 @@ exports.run = (client, message, args) => {
     let jsonBuffer = fs.readFileSync("./json/" + f);
     let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
       var vstr = JSON.stringify(v);
-      if (JSON.stringify(v).slice(0, 5).includes("{") && !vstr.includes("{}"))
+      if (JSON.stringify(v).slice(0, 1).includes("{") && !vstr.includes("{}"))
         keys[keyIndex++] = k;
       return v;
     });
@@ -65,8 +65,10 @@ exports.run = (client, message, args) => {
   } else if (args[1] === undefined) {
     message.channel.send(`**${args[0]} content is not found!**`);
     keys.forEach((k) => {
-      if (k !== "") str += `• !content ${args[0]} **${k}** <value>\n`;
+      if (k !== "immunities" && k !== "")
+        str += `• !content ${args[0]} **${k}** <value>\n`;
     });
+
     for (var i = 0; i < str.length % maxLength; i++) {
       sstr = str.slice(
         i * maxLength,
