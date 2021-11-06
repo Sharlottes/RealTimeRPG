@@ -50,7 +50,7 @@ exports.run = (client, message, args) => {
     message.channel.send("**content type is not found!**");
     files.forEach((k) => {
       str += `• !content **${k.replace(".json", "")}** <content> <value>\n`;
-      if (str.length >= maxLength || files.indexOf(f) == files.length - 2) {
+      if (str.length >= maxLength || files.indexOf(k) == files.length - 2) {
         message.channel.send(
           new Discord.MessageEmbed()
             .setAuthor(`All Content Types`, helpImg)
