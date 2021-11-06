@@ -2,6 +2,8 @@ const Discord = require("discord.js");
 const fs = require("fs");
 
 exports.run = (client, message, args) => {
+  console.log(client + " called content commands with" + JSON.stringify(args));
+
   let stop = false;
   let jsonFiles = fs.readdirSync("./json");
   let kvStrs = [""];
