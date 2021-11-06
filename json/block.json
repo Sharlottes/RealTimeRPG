@@ -1,7 +1,5 @@
-
 {
-  "air":
-  {
+  "air": {
     "type": "mindustry.world.blocks.environment.AirBlock",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -14,19 +12,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": false,
     "needsSurface": false,
     "hasItems": false,
@@ -160,8 +158,7 @@
     "name": "air",
     "id": "0"
   },
-  "spawn":
-  {
+  "spawn": {
     "type": "mindustry.world.blocks.environment.SpawnBlock",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -174,19 +171,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": false,
     "hasItems": false,
@@ -318,8 +315,7 @@
     "name": "spawn",
     "id": "1"
   },
-  "cliff":
-  {
+  "cliff": {
     "type": "mindustry.content.Blocks$1",
     "size": "11 or 1",
     "cliffs": "[cliffmask0, cliffmask1, cliffmask2, cliffmask3, cliffmask4, cliffmask5, cliffmask6, cliffmask7, cliffmask8, cliffmask9, cliffmask10, cliffmask11, cliffmask12, cliffmask13, cliffmask14, cliffmask15, cliffmask16, cliffmask17, cliffmask18, cliffmask19, cliffmask20, cliffmask21, cliffmask22, cliffmask23, cliffmask24, cliffmask25, cliffmask26, cliffmask27, cliffmask28, cliffmask29, cliffmask30, cliffmask31, cliffmask32, cliffmask33, cliffmask34, cliffmask35, cliffmask36, cliffmask37, cliffmask38, cliffmask39, cliffmask40, cliffmask41, cliffmask42, cliffmask43, cliffmask44, cliffmask45, cliffmask46, cliffmask47, cliffmask48, cliffmask49, cliffmask50, cliffmask51, cliffmask52, cliffmask53, cliffmask54, cliffmask55, cliffmask56, cliffmask57, cliffmask58, cliffmask59, cliffmask60, cliffmask61, cliffmask62, cliffmask63, cliffmask64, cliffmask65, cliffmask66, cliffmask67, cliffmask68, cliffmask69, cliffmask70, cliffmask71, cliffmask72, cliffmask73, cliffmask74, cliffmask75, cliffmask76, cliffmask77, cliffmask78, cliffmask79, cliffmask80, cliffmask81, cliffmask82, cliffmask83, cliffmask84, cliffmask85, cliffmask86, cliffmask87, cliffmask88, cliffmask89, cliffmask90, cliffmask91, cliffmask92, cliffmask93, cliffmask94, cliffmask95, cliffmask96, cliffmask97, cliffmask98, cliffmask99, cliffmask100, cliffmask101, cliffmask102, cliffmask103, cliffmask104, cliffmask105, cliffmask106, cliffmask107, cliffmask108, cliffmask109, cliffmask110, cliffmask111, cliffmask112, cliffmask113, cliffmask114, cliffmask115, cliffmask116, cliffmask117, cliffmask118, cliffmask119, cliffmask120, cliffmask121, cliffmask122, cliffmask123, cliffmask124, cliffmask125, cliffmask126, cliffmask127, cliffmask128, cliffmask129, cliffmask130, cliffmask131, cliffmask132, cliffmask133, cliffmask134, cliffmask135, cliffmask136, cliffmask137, cliffmask138, cliffmask139, cliffmask140, cliffmask141, cliffmask142, cliffmask143, cliffmask144, cliffmask145, cliffmask146, cliffmask147, cliffmask148, cliffmask149, cliffmask150, cliffmask151, cliffmask152, cliffmask153, cliffmask154, cliffmask155, cliffmask156, cliffmask157, cliffmask158, cliffmask159, cliffmask160, cliffmask161, cliffmask162, cliffmask163, cliffmask164, cliffmask165, cliffmask166, cliffmask167, cliffmask168, cliffmask169, cliffmask170, cliffmask171, cliffmask172, cliffmask173, cliffmask174, cliffmask175, cliffmask176, cliffmask177, cliffmask178, cliffmask179, cliffmask180, cliffmask181, cliffmask182, cliffmask183, cliffmask184, cliffmask185, cliffmask186, cliffmask187, cliffmask188, cliffmask189, cliffmask190, cliffmask191, cliffmask192, cliffmask193, cliffmask194, cliffmask195, cliffmask196, cliffmask197, cliffmask198, cliffmask199, cliffmask200, cliffmask201, cliffmask202, cliffmask203, cliffmask204, cliffmask205, cliffmask206, cliffmask207, cliffmask208, cliffmask209, cliffmask210, cliffmask211, cliffmask212, cliffmask213, cliffmask214, cliffmask215, cliffmask216, cliffmask217, cliffmask218, cliffmask219, cliffmask220, cliffmask221, cliffmask222, cliffmask223, cliffmask224, cliffmask225, cliffmask226, cliffmask227, cliffmask228, cliffmask229, cliffmask230, cliffmask231, cliffmask232, cliffmask233, cliffmask234, cliffmask235, cliffmask236, cliffmask237, cliffmask238, cliffmask239, cliffmask240, cliffmask241, cliffmask242, cliffmask243, cliffmask244, cliffmask245, cliffmask246, cliffmask247, cliffmask248, cliffmask249, cliffmask250, cliffmask251, cliffmask252, cliffmask253, cliffmask254, cliffmask255]",
@@ -452,8 +448,7 @@
     "name": "cliff",
     "id": "2"
   },
-  "build1":
-  {
+  "build1": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -584,8 +579,7 @@
     "name": "build1",
     "id": "3"
   },
-  "build2":
-  {
+  "build2": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -716,8 +710,7 @@
     "name": "build2",
     "id": "4"
   },
-  "build3":
-  {
+  "build3": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -848,8 +841,7 @@
     "name": "build3",
     "id": "5"
   },
-  "build4":
-  {
+  "build4": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -980,8 +972,7 @@
     "name": "build4",
     "id": "6"
   },
-  "build5":
-  {
+  "build5": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -1112,8 +1103,7 @@
     "name": "build5",
     "id": "7"
   },
-  "build6":
-  {
+  "build6": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -1244,8 +1234,7 @@
     "name": "build6",
     "id": "8"
   },
-  "build7":
-  {
+  "build7": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -1376,8 +1365,7 @@
     "name": "build7",
     "id": "9"
   },
-  "build8":
-  {
+  "build8": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -1508,8 +1496,7 @@
     "name": "build8",
     "id": "10"
   },
-  "build9":
-  {
+  "build9": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -1640,8 +1627,7 @@
     "name": "build9",
     "id": "11"
   },
-  "build10":
-  {
+  "build10": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -1772,8 +1758,7 @@
     "name": "build10",
     "id": "12"
   },
-  "build11":
-  {
+  "build11": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -1904,8 +1889,7 @@
     "name": "build11",
     "id": "13"
   },
-  "build12":
-  {
+  "build12": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -2036,8 +2020,7 @@
     "name": "build12",
     "id": "14"
   },
-  "build13":
-  {
+  "build13": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -2168,8 +2151,7 @@
     "name": "build13",
     "id": "15"
   },
-  "build14":
-  {
+  "build14": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -2300,8 +2282,7 @@
     "name": "build14",
     "id": "16"
   },
-  "build15":
-  {
+  "build15": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -2432,8 +2413,7 @@
     "name": "build15",
     "id": "17"
   },
-  "build16":
-  {
+  "build16": {
     "type": "mindustry.world.blocks.ConstructBlock",
     "hasItems": false,
     "hasLiquids": false,
@@ -2564,8 +2544,7 @@
     "name": "build16",
     "id": "18"
   },
-  "deep-water":
-  {
+  "deep-water": {
     "type": "mindustry.content.Blocks$2",
     "edge": "stone",
     "speedMultiplier": 0.20000000298023224,
@@ -2578,19 +2557,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 120,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 1.5,
     "isLiquid": true,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -2721,8 +2700,7 @@
     "name": "deep-water",
     "id": "19"
   },
-  "shallow-water":
-  {
+  "shallow-water": {
     "type": "mindustry.content.Blocks$3",
     "edge": "stone",
     "speedMultiplier": 0.5,
@@ -2735,19 +2713,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 90,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 1,
     "isLiquid": true,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -2878,8 +2856,7 @@
     "name": "shallow-water",
     "id": "20"
   },
-  "tainted-water":
-  {
+  "tainted-water": {
     "type": "mindustry.content.Blocks$4",
     "edge": "stone",
     "speedMultiplier": 0.5,
@@ -2892,19 +2869,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 90,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 1,
     "isLiquid": true,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -3035,8 +3012,7 @@
     "name": "tainted-water",
     "id": "21"
   },
-  "deep-tainted-water":
-  {
+  "deep-tainted-water": {
     "type": "mindustry.content.Blocks$5",
     "edge": "stone",
     "speedMultiplier": 0.18000000715255737,
@@ -3049,19 +3025,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 140,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 1,
     "isLiquid": true,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -3192,11 +3168,10 @@
     "name": "deep-tainted-water",
     "id": "22"
   },
-  "darksand-tainted-water":
-  {
+  "darksand-tainted-water": {
     "type": "mindustry.content.Blocks$6",
-    "liquidBase":{},
-    "floorBase":{},
+    "liquidBase": {},
+    "floorBase": {},
     "liquidOpacity": 0.3499999940395355,
     "edge": "stone",
     "speedMultiplier": 0.75,
@@ -3209,19 +3184,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 1,
     "isLiquid": true,
     "shallow": true,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -3352,11 +3327,10 @@
     "name": "darksand-tainted-water",
     "id": "23"
   },
-  "sand-water":
-  {
+  "sand-water": {
     "type": "mindustry.content.Blocks$7",
-    "liquidBase":{},
-    "floorBase":{},
+    "liquidBase": {},
+    "floorBase": {},
     "liquidOpacity": 0.3499999940395355,
     "edge": "stone",
     "speedMultiplier": 0.800000011920929,
@@ -3369,19 +3343,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 50,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 1,
     "isLiquid": true,
     "shallow": true,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -3512,11 +3486,10 @@
     "name": "sand-water",
     "id": "24"
   },
-  "darksand-water":
-  {
+  "darksand-water": {
     "type": "mindustry.content.Blocks$8",
-    "liquidBase":{},
-    "floorBase":{},
+    "liquidBase": {},
+    "floorBase": {},
     "liquidOpacity": 0.3499999940395355,
     "edge": "stone",
     "speedMultiplier": 0.800000011920929,
@@ -3529,19 +3502,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 50,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 1,
     "isLiquid": true,
     "shallow": true,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -3672,8 +3645,7 @@
     "name": "darksand-water",
     "id": "25"
   },
-  "tar":
-  {
+  "tar": {
     "type": "mindustry.content.Blocks$9",
     "edge": "stone",
     "speedMultiplier": 0.1899999976158142,
@@ -3686,19 +3658,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 240,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 1,
     "isLiquid": true,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -3829,8 +3801,7 @@
     "name": "tar",
     "id": "26"
   },
-  "pooled-cryofluid":
-  {
+  "pooled-cryofluid": {
     "type": "mindustry.content.Blocks$10",
     "edge": "stone",
     "speedMultiplier": 0.5,
@@ -3843,19 +3814,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 240,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 0.5,
     "isLiquid": true,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -3986,8 +3957,7 @@
     "name": "pooled-cryofluid",
     "id": "27"
   },
-  "molten-slag":
-  {
+  "molten-slag": {
     "type": "mindustry.content.Blocks$11",
     "edge": "stone",
     "speedMultiplier": 0.1899999976158142,
@@ -4000,19 +3970,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 240,
-    "liquidDrop":{},
+    "liquidDrop": {},
     "liquidMultiplier": 1,
     "isLiquid": true,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -4143,8 +4113,7 @@
     "name": "molten-slag",
     "id": "28"
   },
-  "space":
-  {
+  "space": {
     "type": "mindustry.content.Blocks$12",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -4157,19 +4126,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": false,
     "needsSurface": true,
     "hasItems": false,
@@ -4300,8 +4269,7 @@
     "name": "space",
     "id": "29"
   },
-  "empty":
-  {
+  "empty": {
     "type": "mindustry.world.blocks.environment.EmptyFloor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -4314,19 +4282,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": false,
     "needsSurface": true,
     "hasItems": false,
@@ -4458,8 +4426,7 @@
     "name": "empty",
     "id": "30"
   },
-  "stone":
-  {
+  "stone": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -4472,19 +4439,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -4616,8 +4583,7 @@
     "name": "stone",
     "id": "31"
   },
-  "crater-stone":
-  {
+  "crater-stone": {
     "type": "mindustry.content.Blocks$13",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -4630,19 +4596,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -4774,8 +4740,7 @@
     "name": "crater-stone",
     "id": "32"
   },
-  "char":
-  {
+  "char": {
     "type": "mindustry.content.Blocks$14",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -4788,19 +4753,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -4932,8 +4897,7 @@
     "name": "char",
     "id": "33"
   },
-  "basalt":
-  {
+  "basalt": {
     "type": "mindustry.content.Blocks$15",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -4946,19 +4910,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -5090,8 +5054,7 @@
     "name": "basalt",
     "id": "34"
   },
-  "hotrock":
-  {
+  "hotrock": {
     "type": "mindustry.content.Blocks$16",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -5104,19 +5067,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -5248,8 +5211,7 @@
     "name": "hotrock",
     "id": "35"
   },
-  "magmarock":
-  {
+  "magmarock": {
     "type": "mindustry.content.Blocks$17",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -5262,19 +5224,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -5406,8 +5368,7 @@
     "name": "magmarock",
     "id": "36"
   },
-  "sand":
-  {
+  "sand": {
     "type": "mindustry.content.Blocks$18",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -5420,19 +5381,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": true,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -5482,7 +5443,7 @@
     "noUpdateDisabled": false,
     "updateInUnits": true,
     "useColor": true,
-    "itemDrop":{},
+    "itemDrop": {},
     "attributes": "mindustry.world.blocks.Attributes@1bc53649",
     "health": 40,
     "baseExplosiveness": 0,
@@ -5564,8 +5525,7 @@
     "name": "sand",
     "id": "37"
   },
-  "darksand":
-  {
+  "darksand": {
     "type": "mindustry.content.Blocks$19",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -5578,19 +5538,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": true,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -5640,7 +5600,7 @@
     "noUpdateDisabled": false,
     "updateInUnits": true,
     "useColor": true,
-    "itemDrop":{},
+    "itemDrop": {},
     "attributes": "mindustry.world.blocks.Attributes@160c3ec1",
     "health": 40,
     "baseExplosiveness": 0,
@@ -5722,8 +5682,7 @@
     "name": "darksand",
     "id": "38"
   },
-  "dirt":
-  {
+  "dirt": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -5736,19 +5695,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -5880,8 +5839,7 @@
     "name": "dirt",
     "id": "39"
   },
-  "mud":
-  {
+  "mud": {
     "type": "mindustry.content.Blocks$20",
     "edge": "stone",
     "speedMultiplier": 0.6000000238418579,
@@ -5894,19 +5852,19 @@
     "walkSoundPitchMin": 0.4000000059604645,
     "walkSoundPitchMax": 0.5,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 30,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -6037,8 +5995,7 @@
     "name": "mud",
     "id": "40"
   },
-  "dacite":
-  {
+  "dacite": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -6051,19 +6008,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -6195,8 +6152,7 @@
     "name": "dacite",
     "id": "41"
   },
-  "grass":
-  {
+  "grass": {
     "type": "mindustry.content.Blocks$21",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -6209,19 +6165,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -6353,8 +6309,7 @@
     "name": "grass",
     "id": "42"
   },
-  "salt":
-  {
+  "salt": {
     "type": "mindustry.content.Blocks$22",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -6367,19 +6322,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -6511,8 +6466,7 @@
     "name": "salt",
     "id": "43"
   },
-  "snow":
-  {
+  "snow": {
     "type": "mindustry.content.Blocks$23",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -6525,19 +6479,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -6669,8 +6623,7 @@
     "name": "snow",
     "id": "44"
   },
-  "ice":
-  {
+  "ice": {
     "type": "mindustry.content.Blocks$24",
     "edge": "stone",
     "speedMultiplier": 0.8999999761581421,
@@ -6683,19 +6636,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -6827,8 +6780,7 @@
     "name": "ice",
     "id": "45"
   },
-  "ice-snow":
-  {
+  "ice-snow": {
     "type": "mindustry.content.Blocks$25",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -6841,19 +6793,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -6985,8 +6937,7 @@
     "name": "ice-snow",
     "id": "46"
   },
-  "shale":
-  {
+  "shale": {
     "type": "mindustry.content.Blocks$26",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -6999,19 +6950,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -7143,8 +7094,7 @@
     "name": "shale",
     "id": "47"
   },
-  "moss":
-  {
+  "moss": {
     "type": "mindustry.content.Blocks$27",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -7157,19 +7107,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -7301,8 +7251,7 @@
     "name": "moss",
     "id": "48"
   },
-  "spore-moss":
-  {
+  "spore-moss": {
     "type": "mindustry.content.Blocks$28",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -7315,19 +7264,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -7459,8 +7408,7 @@
     "name": "spore-moss",
     "id": "49"
   },
-  "stone-wall":
-  {
+  "stone-wall": {
     "type": "mindustry.content.Blocks$29",
     "split": "[[Larc.graphics.g2d.TextureRegion;@7561db12, [Larc.graphics.g2d.TextureRegion;@3301500b]",
     "hasItems": false,
@@ -7592,8 +7540,7 @@
     "name": "stone-wall",
     "id": "50"
   },
-  "spore-wall":
-  {
+  "spore-wall": {
     "type": "mindustry.content.Blocks$30",
     "split": "[[Larc.graphics.g2d.TextureRegion;@36dce7ed, [Larc.graphics.g2d.TextureRegion;@47a64f7d]",
     "hasItems": false,
@@ -7725,8 +7672,7 @@
     "name": "spore-wall",
     "id": "51"
   },
-  "dirt-wall":
-  {
+  "dirt-wall": {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "split": "[[Larc.graphics.g2d.TextureRegion;@106faf11, [Larc.graphics.g2d.TextureRegion;@70f43b45]",
     "hasItems": false,
@@ -7858,8 +7804,7 @@
     "name": "dirt-wall",
     "id": "52"
   },
-  "dacite-wall":
-  {
+  "dacite-wall": {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "split": "[[Larc.graphics.g2d.TextureRegion;@7bfc3126, [Larc.graphics.g2d.TextureRegion;@3e792ce3]",
     "hasItems": false,
@@ -7991,8 +7936,7 @@
     "name": "dacite-wall",
     "id": "53"
   },
-  "ice-wall":
-  {
+  "ice-wall": {
     "type": "mindustry.content.Blocks$31",
     "split": "[[Larc.graphics.g2d.TextureRegion;@54a3ab8f, [Larc.graphics.g2d.TextureRegion;@1968a49c]",
     "hasItems": false,
@@ -8124,8 +8068,7 @@
     "name": "ice-wall",
     "id": "54"
   },
-  "snow-wall":
-  {
+  "snow-wall": {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "split": "[[Larc.graphics.g2d.TextureRegion;@3ef41c66, [Larc.graphics.g2d.TextureRegion;@6b739528]",
     "hasItems": false,
@@ -8257,8 +8200,7 @@
     "name": "snow-wall",
     "id": "55"
   },
-  "dune-wall":
-  {
+  "dune-wall": {
     "type": "mindustry.content.Blocks$32",
     "split": "[[Larc.graphics.g2d.TextureRegion;@e041f0c, [Larc.graphics.g2d.TextureRegion;@6a175569]",
     "hasItems": false,
@@ -8390,8 +8332,7 @@
     "name": "dune-wall",
     "id": "56"
   },
-  "sand-wall":
-  {
+  "sand-wall": {
     "type": "mindustry.content.Blocks$33",
     "split": "[[Larc.graphics.g2d.TextureRegion;@3a71c100, [Larc.graphics.g2d.TextureRegion;@5b69fd74]",
     "hasItems": false,
@@ -8523,8 +8464,7 @@
     "name": "sand-wall",
     "id": "57"
   },
-  "salt-wall":
-  {
+  "salt-wall": {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "split": "[[Larc.graphics.g2d.TextureRegion;@49ef32e0, [Larc.graphics.g2d.TextureRegion;@271f18d3]",
     "hasItems": false,
@@ -8656,8 +8596,7 @@
     "name": "salt-wall",
     "id": "58"
   },
-  "shrubs":
-  {
+  "shrubs": {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "split": "[[Larc.graphics.g2d.TextureRegion;@315df4bb, [Larc.graphics.g2d.TextureRegion;@3fc08eec]",
     "hasItems": false,
@@ -8789,8 +8728,7 @@
     "name": "shrubs",
     "id": "59"
   },
-  "shale-wall":
-  {
+  "shale-wall": {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "split": "[[Larc.graphics.g2d.TextureRegion;@4201a617, [Larc.graphics.g2d.TextureRegion;@467f77a5]",
     "hasItems": false,
@@ -8922,8 +8860,7 @@
     "name": "shale-wall",
     "id": "60"
   },
-  "spore-pine":
-  {
+  "spore-pine": {
     "type": "mindustry.content.Blocks$34",
     "split": "[[Larc.graphics.g2d.TextureRegion;@7a34b7b8]",
     "hasItems": false,
@@ -9055,8 +8992,7 @@
     "name": "spore-pine",
     "id": "61"
   },
-  "snow-pine":
-  {
+  "snow-pine": {
     "type": "mindustry.world.blocks.environment.StaticTree",
     "split": "[[Larc.graphics.g2d.TextureRegion;@74a9c4b0]",
     "hasItems": false,
@@ -9188,8 +9124,7 @@
     "name": "snow-pine",
     "id": "62"
   },
-  "pine":
-  {
+  "pine": {
     "type": "mindustry.world.blocks.environment.StaticTree",
     "split": "[[Larc.graphics.g2d.TextureRegion;@10567255]",
     "hasItems": false,
@@ -9321,8 +9256,7 @@
     "name": "pine",
     "id": "63"
   },
-  "white-tree-dead":
-  {
+  "white-tree-dead": {
     "type": "mindustry.world.blocks.environment.TreeBlock",
     "shadowOffset": -4,
     "hasItems": false,
@@ -9454,8 +9388,7 @@
     "name": "white-tree-dead",
     "id": "64"
   },
-  "white-tree":
-  {
+  "white-tree": {
     "type": "mindustry.world.blocks.environment.TreeBlock",
     "shadowOffset": -4,
     "hasItems": false,
@@ -9587,8 +9520,7 @@
     "name": "white-tree",
     "id": "65"
   },
-  "spore-cluster":
-  {
+  "spore-cluster": {
     "type": "mindustry.content.Blocks$35",
     "hasItems": false,
     "hasLiquids": false,
@@ -9719,8 +9651,7 @@
     "name": "spore-cluster",
     "id": "66"
   },
-  "boulder":
-  {
+  "boulder": {
     "type": "mindustry.content.Blocks$36",
     "hasItems": false,
     "hasLiquids": false,
@@ -9851,8 +9782,7 @@
     "name": "boulder",
     "id": "67"
   },
-  "snow-boulder":
-  {
+  "snow-boulder": {
     "type": "mindustry.content.Blocks$37",
     "hasItems": false,
     "hasLiquids": false,
@@ -9983,8 +9913,7 @@
     "name": "snow-boulder",
     "id": "68"
   },
-  "shale-boulder":
-  {
+  "shale-boulder": {
     "type": "mindustry.content.Blocks$38",
     "hasItems": false,
     "hasLiquids": false,
@@ -10115,8 +10044,7 @@
     "name": "shale-boulder",
     "id": "69"
   },
-  "sand-boulder":
-  {
+  "sand-boulder": {
     "type": "mindustry.content.Blocks$39",
     "hasItems": false,
     "hasLiquids": false,
@@ -10247,8 +10175,7 @@
     "name": "sand-boulder",
     "id": "70"
   },
-  "dacite-boulder":
-  {
+  "dacite-boulder": {
     "type": "mindustry.content.Blocks$40",
     "hasItems": false,
     "hasLiquids": false,
@@ -10379,8 +10306,7 @@
     "name": "dacite-boulder",
     "id": "71"
   },
-  "basalt-boulder":
-  {
+  "basalt-boulder": {
     "type": "mindustry.content.Blocks$41",
     "hasItems": false,
     "hasLiquids": false,
@@ -10511,8 +10437,7 @@
     "name": "basalt-boulder",
     "id": "72"
   },
-  "metal-floor":
-  {
+  "metal-floor": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -10525,19 +10450,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -10669,8 +10594,7 @@
     "name": "metal-floor",
     "id": "73"
   },
-  "metal-floor-damaged":
-  {
+  "metal-floor-damaged": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -10683,19 +10607,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -10827,8 +10751,7 @@
     "name": "metal-floor-damaged",
     "id": "74"
   },
-  "metal-floor-2":
-  {
+  "metal-floor-2": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -10841,19 +10764,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -10985,8 +10908,7 @@
     "name": "metal-floor-2",
     "id": "75"
   },
-  "metal-floor-3":
-  {
+  "metal-floor-3": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -10999,19 +10921,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -11143,8 +11065,7 @@
     "name": "metal-floor-3",
     "id": "76"
   },
-  "metal-floor-4":
-  {
+  "metal-floor-4": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -11157,19 +11078,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -11301,8 +11222,7 @@
     "name": "metal-floor-4",
     "id": "77"
   },
-  "metal-floor-5":
-  {
+  "metal-floor-5": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -11315,19 +11235,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -11459,8 +11379,7 @@
     "name": "metal-floor-5",
     "id": "78"
   },
-  "dark-panel-1":
-  {
+  "dark-panel-1": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -11473,19 +11392,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -11617,8 +11536,7 @@
     "name": "dark-panel-1",
     "id": "79"
   },
-  "dark-panel-2":
-  {
+  "dark-panel-2": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -11631,19 +11549,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -11775,8 +11693,7 @@
     "name": "dark-panel-2",
     "id": "80"
   },
-  "dark-panel-3":
-  {
+  "dark-panel-3": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -11789,19 +11706,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -11933,8 +11850,7 @@
     "name": "dark-panel-3",
     "id": "81"
   },
-  "dark-panel-4":
-  {
+  "dark-panel-4": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -11947,19 +11863,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -12091,8 +12007,7 @@
     "name": "dark-panel-4",
     "id": "82"
   },
-  "dark-panel-5":
-  {
+  "dark-panel-5": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -12105,19 +12020,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -12249,8 +12164,7 @@
     "name": "dark-panel-5",
     "id": "83"
   },
-  "dark-panel-6":
-  {
+  "dark-panel-6": {
     "type": "mindustry.world.blocks.environment.Floor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -12263,19 +12177,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -12407,8 +12321,7 @@
     "name": "dark-panel-6",
     "id": "84"
   },
-  "dark-metal":
-  {
+  "dark-metal": {
     "type": "mindustry.world.blocks.environment.StaticWall",
     "split": "[[Larc.graphics.g2d.TextureRegion;@30272916, [Larc.graphics.g2d.TextureRegion;@5bb3d42d]",
     "hasItems": false,
@@ -12540,8 +12453,7 @@
     "name": "dark-metal",
     "id": "85"
   },
-  "pebbles":
-  {
+  "pebbles": {
     "type": "mindustry.world.blocks.environment.OverlayFloor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -12554,19 +12466,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -12698,8 +12610,7 @@
     "name": "pebbles",
     "id": "86"
   },
-  "tendrils":
-  {
+  "tendrils": {
     "type": "mindustry.world.blocks.environment.OverlayFloor",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -12712,19 +12623,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -12856,8 +12767,7 @@
     "name": "tendrils",
     "id": "87"
   },
-  "ore-copper":
-  {
+  "ore-copper": {
     "type": "mindustry.content.Blocks$42",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -12870,19 +12780,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": true,
     "oreScale": 23.4761905670166,
     "oreThreshold": 0.8100000023841858,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -12932,7 +12842,7 @@
     "noUpdateDisabled": false,
     "updateInUnits": true,
     "useColor": true,
-    "itemDrop":{},
+    "itemDrop": {},
     "attributes": "mindustry.world.blocks.Attributes@74518890",
     "health": 40,
     "baseExplosiveness": 0,
@@ -13014,8 +12924,7 @@
     "name": "ore-copper",
     "id": "88"
   },
-  "ore-lead":
-  {
+  "ore-lead": {
     "type": "mindustry.content.Blocks$43",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -13028,19 +12937,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": true,
     "oreScale": 23.952381134033203,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -13090,7 +12999,7 @@
     "noUpdateDisabled": false,
     "updateInUnits": true,
     "useColor": true,
-    "itemDrop":{},
+    "itemDrop": {},
     "attributes": "mindustry.world.blocks.Attributes@30865a90",
     "health": 40,
     "baseExplosiveness": 0,
@@ -13172,8 +13081,7 @@
     "name": "ore-lead",
     "id": "89"
   },
-  "ore-scrap":
-  {
+  "ore-scrap": {
     "type": "mindustry.world.blocks.environment.OreBlock",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -13186,19 +13094,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": false,
     "oreScale": 24,
     "oreThreshold": 0.828000009059906,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -13248,7 +13156,7 @@
     "noUpdateDisabled": false,
     "updateInUnits": true,
     "useColor": true,
-    "itemDrop":{},
+    "itemDrop": {},
     "attributes": "mindustry.world.blocks.Attributes@3773862a",
     "health": 40,
     "baseExplosiveness": 0,
@@ -13330,8 +13238,7 @@
     "name": "ore-scrap",
     "id": "90"
   },
-  "ore-coal":
-  {
+  "ore-coal": {
     "type": "mindustry.content.Blocks$44",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -13344,19 +13251,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": true,
     "oreScale": 24.428571701049805,
     "oreThreshold": 0.8460000157356262,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -13406,7 +13313,7 @@
     "noUpdateDisabled": false,
     "updateInUnits": true,
     "useColor": true,
-    "itemDrop":{},
+    "itemDrop": {},
     "attributes": "mindustry.world.blocks.Attributes@3b809711",
     "health": 40,
     "baseExplosiveness": 0,
@@ -13488,8 +13395,7 @@
     "name": "ore-coal",
     "id": "91"
   },
-  "ore-titanium":
-  {
+  "ore-titanium": {
     "type": "mindustry.content.Blocks$45",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -13502,19 +13408,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": true,
     "oreScale": 24.904762268066406,
     "oreThreshold": 0.8640000224113464,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -13564,7 +13470,7 @@
     "noUpdateDisabled": false,
     "updateInUnits": true,
     "useColor": true,
-    "itemDrop":{},
+    "itemDrop": {},
     "attributes": "mindustry.world.blocks.Attributes@232024b9",
     "health": 40,
     "baseExplosiveness": 0,
@@ -13646,8 +13552,7 @@
     "name": "ore-titanium",
     "id": "92"
   },
-  "ore-thorium":
-  {
+  "ore-thorium": {
     "type": "mindustry.content.Blocks$46",
     "edge": "stone",
     "speedMultiplier": 1,
@@ -13660,19 +13565,19 @@
     "walkSoundPitchMin": 0.800000011920929,
     "walkSoundPitchMax": 1.2000000476837158,
     "drownUpdateEffect": "mindustry.entities.Effect@120f38e6",
-    "status":{},
+    "status": {},
     "statusDuration": 60,
     "liquidDrop": "null",
     "liquidMultiplier": 1,
     "isLiquid": false,
     "shallow": false,
     "playerUnmineable": false,
-    "blendGroup":{},
+    "blendGroup": {},
     "oreDefault": true,
     "oreScale": 25.380952835083008,
     "oreThreshold": 0.8820000290870667,
-    "wall":{},
-    "decoration":{},
+    "wall": {},
+    "decoration": {},
     "canShadow": true,
     "needsSurface": true,
     "hasItems": false,
@@ -13722,7 +13627,7 @@
     "noUpdateDisabled": false,
     "updateInUnits": true,
     "useColor": true,
-    "itemDrop":{},
+    "itemDrop": {},
     "attributes": "mindustry.world.blocks.Attributes@62b3df3a",
     "health": 40,
     "baseExplosiveness": 0,
@@ -13804,8 +13709,7 @@
     "name": "ore-thorium",
     "id": "93"
   },
-  "graphite-press":
-  {
+  "graphite-press": {
     "type": "mindustry.content.Blocks$47",
     "outputItem": "ItemStack{item=Graphite, amount=1}",
     "outputItems": "[ItemStack{item=Graphite, amount=1}]",
@@ -13946,8 +13850,7 @@
     "name": "graphite-press",
     "id": "94"
   },
-  "multi-press":
-  {
+  "multi-press": {
     "type": "mindustry.content.Blocks$48",
     "outputItem": "ItemStack{item=Graphite, amount=2}",
     "outputItems": "[ItemStack{item=Graphite, amount=2}]",
@@ -14088,8 +13991,7 @@
     "name": "multi-press",
     "id": "95"
   },
-  "silicon-smelter":
-  {
+  "silicon-smelter": {
     "type": "mindustry.content.Blocks$49",
     "outputItem": "ItemStack{item=Silicon, amount=1}",
     "outputItems": "[ItemStack{item=Silicon, amount=1}]",
@@ -14230,8 +14132,7 @@
     "name": "silicon-smelter",
     "id": "96"
   },
-  "silicon-crucible":
-  {
+  "silicon-crucible": {
     "type": "mindustry.content.Blocks$50",
     "attribute": "heat",
     "baseEfficiency": 1,
@@ -14376,8 +14277,7 @@
     "name": "silicon-crucible",
     "id": "97"
   },
-  "kiln":
-  {
+  "kiln": {
     "type": "mindustry.content.Blocks$51",
     "outputItem": "ItemStack{item=Metaglass, amount=1}",
     "outputItems": "[ItemStack{item=Metaglass, amount=1}]",
@@ -14518,8 +14418,7 @@
     "name": "kiln",
     "id": "98"
   },
-  "plastanium-compressor":
-  {
+  "plastanium-compressor": {
     "type": "mindustry.content.Blocks$52",
     "outputItem": "ItemStack{item=Plastanium, amount=1}",
     "outputItems": "[ItemStack{item=Plastanium, amount=1}]",
@@ -14660,8 +14559,7 @@
     "name": "plastanium-compressor",
     "id": "99"
   },
-  "phase-weaver":
-  {
+  "phase-weaver": {
     "type": "mindustry.content.Blocks$53",
     "outputItem": "ItemStack{item=Phase Fabric, amount=1}",
     "outputItems": "[ItemStack{item=Phase Fabric, amount=1}]",
@@ -14802,8 +14700,7 @@
     "name": "phase-weaver",
     "id": "100"
   },
-  "alloy-smelter":
-  {
+  "alloy-smelter": {
     "type": "mindustry.content.Blocks$54",
     "outputItem": "ItemStack{item=Surge Alloy, amount=1}",
     "outputItems": "[ItemStack{item=Surge Alloy, amount=1}]",
@@ -14944,8 +14841,7 @@
     "name": "alloy-smelter",
     "id": "101"
   },
-  "cryofluid-mixer":
-  {
+  "cryofluid-mixer": {
     "type": "mindustry.content.Blocks$55",
     "outputItem": "null",
     "outputItems": "null",
@@ -15086,8 +14982,7 @@
     "name": "cryofluid-mixer",
     "id": "102"
   },
-  "pyratite-mixer":
-  {
+  "pyratite-mixer": {
     "type": "mindustry.content.Blocks$56",
     "outputItem": "ItemStack{item=Pyratite, amount=1}",
     "outputItems": "[ItemStack{item=Pyratite, amount=1}]",
@@ -15228,8 +15123,7 @@
     "name": "pyratite-mixer",
     "id": "103"
   },
-  "blast-mixer":
-  {
+  "blast-mixer": {
     "type": "mindustry.content.Blocks$57",
     "outputItem": "ItemStack{item=Blast Compound, amount=1}",
     "outputItems": "[ItemStack{item=Blast Compound, amount=1}]",
@@ -15370,8 +15264,7 @@
     "name": "blast-mixer",
     "id": "104"
   },
-  "melter":
-  {
+  "melter": {
     "type": "mindustry.content.Blocks$58",
     "outputItem": "null",
     "outputItems": "null",
@@ -15512,8 +15405,7 @@
     "name": "melter",
     "id": "105"
   },
-  "separator":
-  {
+  "separator": {
     "type": "mindustry.content.Blocks$59",
     "results": "[ItemStack{item=Copper, amount=5}, ItemStack{item=Lead, amount=3}, ItemStack{item=Graphite, amount=2}, ItemStack{item=Titanium, amount=2}]",
     "craftTime": 35,
@@ -15647,8 +15539,7 @@
     "name": "separator",
     "id": "106"
   },
-  "disassembler":
-  {
+  "disassembler": {
     "type": "mindustry.content.Blocks$60",
     "results": "[ItemStack{item=Sand, amount=2}, ItemStack{item=Graphite, amount=1}, ItemStack{item=Titanium, amount=1}, ItemStack{item=Thorium, amount=1}]",
     "craftTime": 15,
@@ -15782,8 +15673,7 @@
     "name": "disassembler",
     "id": "107"
   },
-  "spore-press":
-  {
+  "spore-press": {
     "type": "mindustry.content.Blocks$61",
     "outputItem": "null",
     "outputItems": "null",
@@ -15924,8 +15814,7 @@
     "name": "spore-press",
     "id": "108"
   },
-  "pulverizer":
-  {
+  "pulverizer": {
     "type": "mindustry.content.Blocks$62",
     "outputItem": "ItemStack{item=Sand, amount=1}",
     "outputItems": "[ItemStack{item=Sand, amount=1}]",
@@ -16066,8 +15955,7 @@
     "name": "pulverizer",
     "id": "109"
   },
-  "coal-centrifuge":
-  {
+  "coal-centrifuge": {
     "type": "mindustry.content.Blocks$63",
     "outputItem": "ItemStack{item=Coal, amount=1}",
     "outputItems": "[ItemStack{item=Coal, amount=1}]",
@@ -16208,8 +16096,7 @@
     "name": "coal-centrifuge",
     "id": "110"
   },
-  "incinerator":
-  {
+  "incinerator": {
     "type": "mindustry.content.Blocks$64",
     "effect": "mindustry.entities.Effect@55b5e331",
     "flameColor": "ffad9dff",
@@ -16342,8 +16229,7 @@
     "name": "incinerator",
     "id": "111"
   },
-  "copper-wall":
-  {
+  "copper-wall": {
     "type": "mindustry.content.Blocks$65",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -16483,8 +16369,7 @@
     "name": "copper-wall",
     "id": "112"
   },
-  "copper-wall-large":
-  {
+  "copper-wall-large": {
     "type": "mindustry.content.Blocks$66",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -16624,8 +16509,7 @@
     "name": "copper-wall-large",
     "id": "113"
   },
-  "titanium-wall":
-  {
+  "titanium-wall": {
     "type": "mindustry.content.Blocks$67",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -16765,8 +16649,7 @@
     "name": "titanium-wall",
     "id": "114"
   },
-  "titanium-wall-large":
-  {
+  "titanium-wall-large": {
     "type": "mindustry.content.Blocks$68",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -16906,8 +16789,7 @@
     "name": "titanium-wall-large",
     "id": "115"
   },
-  "plastanium-wall":
-  {
+  "plastanium-wall": {
     "type": "mindustry.content.Blocks$69",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -17047,8 +16929,7 @@
     "name": "plastanium-wall",
     "id": "116"
   },
-  "plastanium-wall-large":
-  {
+  "plastanium-wall-large": {
     "type": "mindustry.content.Blocks$70",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -17188,8 +17069,7 @@
     "name": "plastanium-wall-large",
     "id": "117"
   },
-  "thorium-wall":
-  {
+  "thorium-wall": {
     "type": "mindustry.content.Blocks$71",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -17329,8 +17209,7 @@
     "name": "thorium-wall",
     "id": "118"
   },
-  "thorium-wall-large":
-  {
+  "thorium-wall-large": {
     "type": "mindustry.content.Blocks$72",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -17470,8 +17349,7 @@
     "name": "thorium-wall-large",
     "id": "119"
   },
-  "phase-wall":
-  {
+  "phase-wall": {
     "type": "mindustry.content.Blocks$73",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -17611,8 +17489,7 @@
     "name": "phase-wall",
     "id": "120"
   },
-  "phase-wall-large":
-  {
+  "phase-wall-large": {
     "type": "mindustry.content.Blocks$74",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -17752,8 +17629,7 @@
     "name": "phase-wall-large",
     "id": "121"
   },
-  "surge-wall":
-  {
+  "surge-wall": {
     "type": "mindustry.content.Blocks$75",
     "lightningChance": 0.05000000074505806,
     "lightningDamage": 20,
@@ -17893,8 +17769,7 @@
     "name": "surge-wall",
     "id": "122"
   },
-  "surge-wall-large":
-  {
+  "surge-wall-large": {
     "type": "mindustry.content.Blocks$76",
     "lightningChance": 0.05000000074505806,
     "lightningDamage": 20,
@@ -18034,8 +17909,7 @@
     "name": "surge-wall-large",
     "id": "123"
   },
-  "door":
-  {
+  "door": {
     "type": "mindustry.content.Blocks$77",
     "timerToggle": 1,
     "openfx": "mindustry.entities.Effect@44f9779c",
@@ -18179,8 +18053,7 @@
     "name": "door",
     "id": "124"
   },
-  "door-large":
-  {
+  "door-large": {
     "type": "mindustry.content.Blocks$78",
     "timerToggle": 1,
     "openfx": "mindustry.entities.Effect@19542407",
@@ -18324,8 +18197,7 @@
     "name": "door-large",
     "id": "125"
   },
-  "scrap-wall":
-  {
+  "scrap-wall": {
     "type": "mindustry.content.Blocks$79",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -18465,8 +18337,7 @@
     "name": "scrap-wall",
     "id": "126"
   },
-  "scrap-wall-large":
-  {
+  "scrap-wall-large": {
     "type": "mindustry.content.Blocks$80",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -18606,8 +18477,7 @@
     "name": "scrap-wall-large",
     "id": "127"
   },
-  "scrap-wall-huge":
-  {
+  "scrap-wall-huge": {
     "type": "mindustry.content.Blocks$81",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -18747,8 +18617,7 @@
     "name": "scrap-wall-huge",
     "id": "128"
   },
-  "scrap-wall-gigantic":
-  {
+  "scrap-wall-gigantic": {
     "type": "mindustry.content.Blocks$82",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -18888,8 +18757,7 @@
     "name": "scrap-wall-gigantic",
     "id": "129"
   },
-  "thruster":
-  {
+  "thruster": {
     "type": "mindustry.content.Blocks$83",
     "lightningChance": -1,
     "lightningDamage": 20,
@@ -19029,8 +18897,7 @@
     "name": "thruster",
     "id": "130"
   },
-  "mender":
-  {
+  "mender": {
     "type": "mindustry.content.Blocks$84",
     "timerUse": 1,
     "baseColor": "84f491ff",
@@ -19170,8 +19037,7 @@
     "name": "mender",
     "id": "131"
   },
-  "mend-projector":
-  {
+  "mend-projector": {
     "type": "mindustry.content.Blocks$85",
     "timerUse": 1,
     "baseColor": "84f491ff",
@@ -19311,8 +19177,7 @@
     "name": "mend-projector",
     "id": "132"
   },
-  "overdrive-projector":
-  {
+  "overdrive-projector": {
     "type": "mindustry.content.Blocks$86",
     "timerUse": 1,
     "reload": 60,
@@ -19453,8 +19318,7 @@
     "name": "overdrive-projector",
     "id": "133"
   },
-  "overdrive-dome":
-  {
+  "overdrive-dome": {
     "type": "mindustry.content.Blocks$87",
     "timerUse": 1,
     "reload": 60,
@@ -19595,8 +19459,7 @@
     "name": "overdrive-dome",
     "id": "134"
   },
-  "force-projector":
-  {
+  "force-projector": {
     "type": "mindustry.content.Blocks$88",
     "timerUse": 1,
     "phaseUseTime": 350,
@@ -19738,8 +19601,7 @@
     "name": "force-projector",
     "id": "135"
   },
-  "shock-mine":
-  {
+  "shock-mine": {
     "type": "mindustry.content.Blocks$89",
     "timerDamage": 1,
     "cooldown": 80,
@@ -19881,14 +19743,13 @@
     "name": "shock-mine",
     "id": "136"
   },
-  "conveyor":
-  {
+  "conveyor": {
     "type": "mindustry.content.Blocks$90",
     "regions": "[[Larc.graphics.g2d.TextureRegion;@4b61d0c6, [Larc.graphics.g2d.TextureRegion;@6f815e7f, [Larc.graphics.g2d.TextureRegion;@65e7f52a, [Larc.graphics.g2d.TextureRegion;@304b9f1a, [Larc.graphics.g2d.TextureRegion;@75699e35, [Larc.graphics.g2d.TextureRegion;@107e5441, [Larc.graphics.g2d.TextureRegion;@4aeaadc1]",
     "speed": 0.029999999329447746,
     "displayedSpeed": 4.199999809265137,
-    "junctionReplacement":{},
-    "bridgeReplacement":{},
+    "junctionReplacement": {},
+    "bridgeReplacement": {},
     "hasItems": true,
     "hasLiquids": false,
     "hasPower": false,
@@ -20018,14 +19879,13 @@
     "name": "conveyor",
     "id": "137"
   },
-  "titanium-conveyor":
-  {
+  "titanium-conveyor": {
     "type": "mindustry.content.Blocks$91",
     "regions": "[[Larc.graphics.g2d.TextureRegion;@78f9ed3e, [Larc.graphics.g2d.TextureRegion;@1059754c, [Larc.graphics.g2d.TextureRegion;@b0964b2, [Larc.graphics.g2d.TextureRegion;@48e7b3d2, [Larc.graphics.g2d.TextureRegion;@7f4037ed, [Larc.graphics.g2d.TextureRegion;@24e8de5c, [Larc.graphics.g2d.TextureRegion;@64040287]",
     "speed": 0.07999999821186066,
     "displayedSpeed": 11,
-    "junctionReplacement":{},
-    "bridgeReplacement":{},
+    "junctionReplacement": {},
+    "bridgeReplacement": {},
     "hasItems": true,
     "hasLiquids": false,
     "hasPower": false,
@@ -20155,8 +20015,7 @@
     "name": "titanium-conveyor",
     "id": "138"
   },
-  "plastanium-conveyor":
-  {
+  "plastanium-conveyor": {
     "type": "mindustry.content.Blocks$92",
     "regions": "[plastanium-conveyor-0, plastanium-conveyor-1, plastanium-conveyor-2]",
     "speed": 0.06666667014360428,
@@ -20293,14 +20152,13 @@
     "name": "plastanium-conveyor",
     "id": "139"
   },
-  "armored-conveyor":
-  {
+  "armored-conveyor": {
     "type": "mindustry.content.Blocks$93",
     "regions": "[[Larc.graphics.g2d.TextureRegion;@511816c0, [Larc.graphics.g2d.TextureRegion;@38b972d7, [Larc.graphics.g2d.TextureRegion;@5339bbad, [Larc.graphics.g2d.TextureRegion;@3935e9a8, [Larc.graphics.g2d.TextureRegion;@288a4658, [Larc.graphics.g2d.TextureRegion;@5b56b654, [Larc.graphics.g2d.TextureRegion;@452c8a40]",
     "speed": 0.07999999821186066,
     "displayedSpeed": 11,
-    "junctionReplacement":{},
-    "bridgeReplacement":{},
+    "junctionReplacement": {},
+    "bridgeReplacement": {},
     "hasItems": true,
     "hasLiquids": false,
     "hasPower": false,
@@ -20430,8 +20288,7 @@
     "name": "armored-conveyor",
     "id": "140"
   },
-  "junction":
-  {
+  "junction": {
     "type": "mindustry.content.Blocks$94",
     "speed": 26,
     "capacity": 6,
@@ -20564,8 +20421,7 @@
     "name": "junction",
     "id": "141"
   },
-  "bridge-conveyor":
-  {
+  "bridge-conveyor": {
     "type": "mindustry.content.Blocks$95",
     "timerAccept": 2,
     "speed": 74,
@@ -20710,8 +20566,7 @@
     "name": "bridge-conveyor",
     "id": "142"
   },
-  "phase-conveyor":
-  {
+  "phase-conveyor": {
     "type": "mindustry.content.Blocks$96",
     "timerCheckMoved": 1,
     "range": 12,
@@ -20853,8 +20708,7 @@
     "name": "phase-conveyor",
     "id": "143"
   },
-  "sorter":
-  {
+  "sorter": {
     "type": "mindustry.content.Blocks$97",
     "invert": false,
     "hasItems": false,
@@ -20986,8 +20840,7 @@
     "name": "sorter",
     "id": "144"
   },
-  "inverted-sorter":
-  {
+  "inverted-sorter": {
     "type": "mindustry.content.Blocks$98",
     "invert": true,
     "hasItems": false,
@@ -21119,8 +20972,7 @@
     "name": "inverted-sorter",
     "id": "145"
   },
-  "router":
-  {
+  "router": {
     "type": "mindustry.content.Blocks$99",
     "speed": 8,
     "hasItems": true,
@@ -21252,8 +21104,7 @@
     "name": "router",
     "id": "146"
   },
-  "distributor":
-  {
+  "distributor": {
     "type": "mindustry.content.Blocks$100",
     "speed": 8,
     "hasItems": true,
@@ -21385,8 +21236,7 @@
     "name": "distributor",
     "id": "147"
   },
-  "overflow-gate":
-  {
+  "overflow-gate": {
     "type": "mindustry.content.Blocks$101",
     "speed": 1,
     "invert": false,
@@ -21519,8 +21369,7 @@
     "name": "overflow-gate",
     "id": "148"
   },
-  "underflow-gate":
-  {
+  "underflow-gate": {
     "type": "mindustry.content.Blocks$102",
     "speed": 1,
     "invert": true,
@@ -21653,8 +21502,7 @@
     "name": "underflow-gate",
     "id": "149"
   },
-  "mass-driver":
-  {
+  "mass-driver": {
     "type": "mindustry.content.Blocks$103",
     "range": 440,
     "rotateSpeed": 5,
@@ -21662,7 +21510,7 @@
     "minDistribute": 10,
     "knockback": 4,
     "reloadTime": 200,
-    "bullet":{},
+    "bullet": {},
     "bulletSpeed": 5.5,
     "bulletLifetime": 200,
     "shootEffect": "mindustry.entities.Effect@3e521715",
@@ -21799,8 +21647,7 @@
     "name": "mass-driver",
     "id": "150"
   },
-  "duct":
-  {
+  "duct": {
     "type": "mindustry.content.Blocks$104",
     "speed": 4,
     "topRegions": "[duct-top-0, duct-top-1, duct-top-2, duct-top-3, duct-top-4]",
@@ -21934,8 +21781,7 @@
     "name": "duct",
     "id": "151"
   },
-  "duct-router":
-  {
+  "duct-router": {
     "type": "mindustry.content.Blocks$105",
     "speed": 4,
     "hasItems": true,
@@ -22067,8 +21913,7 @@
     "name": "duct-router",
     "id": "152"
   },
-  "duct-bridge":
-  {
+  "duct-bridge": {
     "type": "mindustry.content.Blocks$106",
     "range": 4,
     "speed": 4,
@@ -22201,8 +22046,7 @@
     "name": "duct-bridge",
     "id": "153"
   },
-  "mechanical-pump":
-  {
+  "mechanical-pump": {
     "type": "mindustry.content.Blocks$107",
     "pumpAmount": 0.11666666716337204,
     "hasItems": false,
@@ -22334,8 +22178,7 @@
     "name": "mechanical-pump",
     "id": "154"
   },
-  "rotary-pump":
-  {
+  "rotary-pump": {
     "type": "mindustry.content.Blocks$108",
     "pumpAmount": 0.20000000298023224,
     "hasItems": false,
@@ -22467,8 +22310,7 @@
     "name": "rotary-pump",
     "id": "155"
   },
-  "thermal-pump":
-  {
+  "thermal-pump": {
     "type": "mindustry.content.Blocks$109",
     "pumpAmount": 0.2199999988079071,
     "hasItems": false,
@@ -22600,16 +22442,15 @@
     "name": "thermal-pump",
     "id": "156"
   },
-  "conduit":
-  {
+  "conduit": {
     "type": "mindustry.content.Blocks$110",
     "timerFlow": 1,
     "botColor": "565656ff",
     "topRegions": "[conduit-top-0, conduit-top-1, conduit-top-2, conduit-top-3, conduit-top-4]",
     "botRegions": "[conduit-bottom-0, conduit-bottom-1, conduit-bottom-2, conduit-bottom-3, conduit-bottom-4]",
     "leaks": true,
-    "junctionReplacement":{},
-    "bridgeReplacement":{},
+    "junctionReplacement": {},
+    "bridgeReplacement": {},
     "hasItems": false,
     "hasLiquids": true,
     "hasPower": false,
@@ -22739,16 +22580,15 @@
     "name": "conduit",
     "id": "157"
   },
-  "pulse-conduit":
-  {
+  "pulse-conduit": {
     "type": "mindustry.content.Blocks$111",
     "timerFlow": 1,
     "botColor": "565656ff",
     "topRegions": "[pulse-conduit-top-0, pulse-conduit-top-1, pulse-conduit-top-2, pulse-conduit-top-3, pulse-conduit-top-4]",
     "botRegions": "[conduit-bottom-0, conduit-bottom-1, conduit-bottom-2, conduit-bottom-3, conduit-bottom-4]",
     "leaks": true,
-    "junctionReplacement":{},
-    "bridgeReplacement":{},
+    "junctionReplacement": {},
+    "bridgeReplacement": {},
     "hasItems": false,
     "hasLiquids": true,
     "hasPower": false,
@@ -22878,16 +22718,15 @@
     "name": "pulse-conduit",
     "id": "158"
   },
-  "plated-conduit":
-  {
+  "plated-conduit": {
     "type": "mindustry.content.Blocks$112",
     "timerFlow": 1,
     "botColor": "565656ff",
     "topRegions": "[plated-conduit-top-0, plated-conduit-top-1, plated-conduit-top-2, plated-conduit-top-3, plated-conduit-top-4]",
     "botRegions": "[conduit-bottom-0, conduit-bottom-1, conduit-bottom-2, conduit-bottom-3, conduit-bottom-4]",
     "leaks": false,
-    "junctionReplacement":{},
-    "bridgeReplacement":{},
+    "junctionReplacement": {},
+    "bridgeReplacement": {},
     "hasItems": false,
     "hasLiquids": true,
     "hasPower": false,
@@ -23017,8 +22856,7 @@
     "name": "plated-conduit",
     "id": "159"
   },
-  "liquid-router":
-  {
+  "liquid-router": {
     "type": "mindustry.content.Blocks$113",
     "hasItems": false,
     "hasLiquids": true,
@@ -23149,8 +22987,7 @@
     "name": "liquid-router",
     "id": "160"
   },
-  "liquid-container":
-  {
+  "liquid-container": {
     "type": "mindustry.content.Blocks$114",
     "hasItems": false,
     "hasLiquids": true,
@@ -23281,8 +23118,7 @@
     "name": "liquid-container",
     "id": "161"
   },
-  "liquid-tank":
-  {
+  "liquid-tank": {
     "type": "mindustry.content.Blocks$115",
     "hasItems": false,
     "hasLiquids": true,
@@ -23413,8 +23249,7 @@
     "name": "liquid-tank",
     "id": "162"
   },
-  "liquid-junction":
-  {
+  "liquid-junction": {
     "type": "mindustry.content.Blocks$116",
     "hasItems": false,
     "hasLiquids": true,
@@ -23545,8 +23380,7 @@
     "name": "liquid-junction",
     "id": "163"
   },
-  "bridge-conduit":
-  {
+  "bridge-conduit": {
     "type": "mindustry.content.Blocks$117",
     "timerCheckMoved": 1,
     "range": 4,
@@ -23688,8 +23522,7 @@
     "name": "bridge-conduit",
     "id": "164"
   },
-  "phase-conduit":
-  {
+  "phase-conduit": {
     "type": "mindustry.content.Blocks$118",
     "timerCheckMoved": 1,
     "range": 12,
@@ -23831,8 +23664,7 @@
     "name": "phase-conduit",
     "id": "165"
   },
-  "power-node":
-  {
+  "power-node": {
     "type": "mindustry.content.Blocks$119",
     "laserRange": 6,
     "maxNodes": 10,
@@ -23967,8 +23799,7 @@
     "name": "power-node",
     "id": "166"
   },
-  "power-node-large":
-  {
+  "power-node-large": {
     "type": "mindustry.content.Blocks$120",
     "laserRange": 9.5,
     "maxNodes": 15,
@@ -24103,8 +23934,7 @@
     "name": "power-node-large",
     "id": "167"
   },
-  "surge-tower":
-  {
+  "surge-tower": {
     "type": "mindustry.content.Blocks$121",
     "laserRange": 40,
     "maxNodes": 2,
@@ -24239,8 +24069,7 @@
     "name": "surge-tower",
     "id": "168"
   },
-  "diode":
-  {
+  "diode": {
     "type": "mindustry.content.Blocks$122",
     "hasItems": false,
     "hasLiquids": false,
@@ -24371,8 +24200,7 @@
     "name": "diode",
     "id": "169"
   },
-  "battery":
-  {
+  "battery": {
     "type": "mindustry.content.Blocks$123",
     "emptyLightColor": "f8c266ff",
     "fullLightColor": "fb9567ff",
@@ -24505,8 +24333,7 @@
     "name": "battery",
     "id": "170"
   },
-  "battery-large":
-  {
+  "battery-large": {
     "type": "mindustry.content.Blocks$124",
     "emptyLightColor": "f8c266ff",
     "fullLightColor": "fb9567ff",
@@ -24639,8 +24466,7 @@
     "name": "battery-large",
     "id": "171"
   },
-  "combustion-generator":
-  {
+  "combustion-generator": {
     "type": "mindustry.content.Blocks$125",
     "turbineRegions": "[error, error]",
     "turbineSpeed": 2,
@@ -24785,8 +24611,7 @@
     "name": "combustion-generator",
     "id": "172"
   },
-  "thermal-generator":
-  {
+  "thermal-generator": {
     "type": "mindustry.content.Blocks$126",
     "generateEffect": "mindustry.entities.Effect@6dc1484",
     "effectChance": 0.010999999940395355,
@@ -24922,8 +24747,7 @@
     "name": "thermal-generator",
     "id": "173"
   },
-  "steam-generator":
-  {
+  "steam-generator": {
     "type": "mindustry.content.Blocks$127",
     "turbineRegions": "[steam-generator-turbine0, steam-generator-turbine1]",
     "turbineSpeed": 2,
@@ -25068,8 +24892,7 @@
     "name": "steam-generator",
     "id": "174"
   },
-  "differential-generator":
-  {
+  "differential-generator": {
     "type": "mindustry.content.Blocks$128",
     "useItems": true,
     "minItemEfficiency": 0.20000000298023224,
@@ -25213,8 +25036,7 @@
     "name": "differential-generator",
     "id": "175"
   },
-  "rtg-generator":
-  {
+  "rtg-generator": {
     "type": "mindustry.content.Blocks$129",
     "minItemEfficiency": 0.20000000298023224,
     "itemDuration": 840,
@@ -25357,8 +25179,7 @@
     "name": "rtg-generator",
     "id": "176"
   },
-  "solar-panel":
-  {
+  "solar-panel": {
     "type": "mindustry.content.Blocks$130",
     "powerProduction": 0.10000000149011612,
     "generationType": "basePowerGeneration",
@@ -25491,8 +25312,7 @@
     "name": "solar-panel",
     "id": "177"
   },
-  "solar-panel-large":
-  {
+  "solar-panel-large": {
     "type": "mindustry.content.Blocks$131",
     "powerProduction": 1.2999999523162842,
     "generationType": "basePowerGeneration",
@@ -25625,8 +25445,7 @@
     "name": "solar-panel-large",
     "id": "178"
   },
-  "thorium-reactor":
-  {
+  "thorium-reactor": {
     "type": "mindustry.content.Blocks$132",
     "timerFuel": 1,
     "tr": "(0.0,0.0)",
@@ -25771,8 +25590,7 @@
     "name": "thorium-reactor",
     "id": "179"
   },
-  "impact-reactor":
-  {
+  "impact-reactor": {
     "type": "mindustry.content.Blocks$133",
     "timerUse": 1,
     "warmupSpeed": 0.0010000000474974513,
@@ -25914,8 +25732,7 @@
     "name": "impact-reactor",
     "id": "180"
   },
-  "mechanical-drill":
-  {
+  "mechanical-drill": {
     "type": "mindustry.content.Blocks$134",
     "hardnessDrillMultiplier": 50,
     "tier": 2,
@@ -26060,8 +25877,7 @@
     "name": "mechanical-drill",
     "id": "181"
   },
-  "pneumatic-drill":
-  {
+  "pneumatic-drill": {
     "type": "mindustry.content.Blocks$135",
     "hardnessDrillMultiplier": 50,
     "tier": 3,
@@ -26206,8 +26022,7 @@
     "name": "pneumatic-drill",
     "id": "182"
   },
-  "laser-drill":
-  {
+  "laser-drill": {
     "type": "mindustry.content.Blocks$136",
     "hardnessDrillMultiplier": 50,
     "tier": 4,
@@ -26352,8 +26167,7 @@
     "name": "laser-drill",
     "id": "183"
   },
-  "blast-drill":
-  {
+  "blast-drill": {
     "type": "mindustry.content.Blocks$137",
     "hardnessDrillMultiplier": 50,
     "tier": 5,
@@ -26498,10 +26312,9 @@
     "name": "blast-drill",
     "id": "184"
   },
-  "water-extractor":
-  {
+  "water-extractor": {
     "type": "mindustry.content.Blocks$138",
-    "result":{},
+    "result": {},
     "updateEffect": "mindustry.entities.Effect@70d2e40b",
     "updateEffectChance": 0.019999999552965164,
     "rotateSpeed": 1.399999976158142,
@@ -26637,8 +26450,7 @@
     "name": "water-extractor",
     "id": "185"
   },
-  "cultivator":
-  {
+  "cultivator": {
     "type": "mindustry.content.Blocks$139",
     "attribute": "spores",
     "baseEfficiency": 1,
@@ -26783,11 +26595,10 @@
     "name": "cultivator",
     "id": "186"
   },
-  "oil-extractor":
-  {
+  "oil-extractor": {
     "type": "mindustry.content.Blocks$140",
     "itemUseTime": 60,
-    "result":{},
+    "result": {},
     "updateEffect": "mindustry.entities.Effect@27f3b6d6",
     "updateEffectChance": 0.05000000074505806,
     "rotateSpeed": 1,
@@ -26923,11 +26734,10 @@
     "name": "oil-extractor",
     "id": "187"
   },
-  "core-shard":
-  {
+  "core-shard": {
     "type": "mindustry.content.Blocks$141",
     "thrusterLength": 3.5,
-    "unitType":{},
+    "unitType": {},
     "captureInvicibility": 900,
     "hasItems": true,
     "hasLiquids": false,
@@ -27058,11 +26868,10 @@
     "name": "core-shard",
     "id": "188"
   },
-  "core-foundation":
-  {
+  "core-foundation": {
     "type": "mindustry.content.Blocks$142",
     "thrusterLength": 8.5,
-    "unitType":{},
+    "unitType": {},
     "captureInvicibility": 900,
     "hasItems": true,
     "hasLiquids": false,
@@ -27193,11 +27002,10 @@
     "name": "core-foundation",
     "id": "189"
   },
-  "core-nucleus":
-  {
+  "core-nucleus": {
     "type": "mindustry.content.Blocks$143",
     "thrusterLength": 10,
-    "unitType":{},
+    "unitType": {},
     "captureInvicibility": 900,
     "hasItems": true,
     "hasLiquids": false,
@@ -27328,8 +27136,7 @@
     "name": "core-nucleus",
     "id": "190"
   },
-  "vault":
-  {
+  "vault": {
     "type": "mindustry.content.Blocks$144",
     "hasItems": true,
     "hasLiquids": false,
@@ -27460,8 +27267,7 @@
     "name": "vault",
     "id": "191"
   },
-  "container":
-  {
+  "container": {
     "type": "mindustry.content.Blocks$145",
     "hasItems": true,
     "hasLiquids": false,
@@ -27592,8 +27398,7 @@
     "name": "container",
     "id": "192"
   },
-  "unloader":
-  {
+  "unloader": {
     "type": "mindustry.content.Blocks$146",
     "speed": 5.454545497894287,
     "hasItems": true,
@@ -27725,8 +27530,7 @@
     "name": "unloader",
     "id": "193"
   },
-  "duo":
-  {
+  "duo": {
     "type": "mindustry.content.Blocks$147",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -27904,8 +27708,7 @@
     "name": "duo",
     "id": "194"
   },
-  "scatter":
-  {
+  "scatter": {
     "type": "mindustry.content.Blocks$148",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -28083,8 +27886,7 @@
     "name": "scatter",
     "id": "195"
   },
-  "scorch":
-  {
+  "scorch": {
     "type": "mindustry.content.Blocks$149",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -28262,8 +28064,7 @@
     "name": "scorch",
     "id": "196"
   },
-  "hail":
-  {
+  "hail": {
     "type": "mindustry.content.Blocks$150",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -28441,8 +28242,7 @@
     "name": "hail",
     "id": "197"
   },
-  "wave":
-  {
+  "wave": {
     "type": "mindustry.content.Blocks$151",
     "extinguish": true,
     "logicControlCooldown": 120,
@@ -28621,10 +28421,9 @@
     "name": "wave",
     "id": "198"
   },
-  "lancer":
-  {
+  "lancer": {
     "type": "mindustry.content.Blocks$152",
-    "shootType":{},
+    "shootType": {},
     "powerUse": 6,
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -28802,10 +28601,9 @@
     "name": "lancer",
     "id": "199"
   },
-  "arc":
-  {
+  "arc": {
     "type": "mindustry.content.Blocks$153",
-    "shootType":{},
+    "shootType": {},
     "powerUse": 3.299999952316284,
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -28983,8 +28781,7 @@
     "name": "arc",
     "id": "200"
   },
-  "parallax":
-  {
+  "parallax": {
     "type": "mindustry.content.Blocks$154",
     "timerTarget": 1,
     "retargetTime": 5,
@@ -28997,7 +28794,7 @@
     "targetAir": true,
     "targetGround": false,
     "laserColor": "ffffffff",
-    "status":{},
+    "status": {},
     "statusDuration": 300,
     "shootSound": "SoloudSound: sounds/tractorbeam.ogg",
     "shootSoundVolume": 0.8999999761581421,
@@ -29135,8 +28932,7 @@
     "name": "parallax",
     "id": "201"
   },
-  "swarmer":
-  {
+  "swarmer": {
     "type": "mindustry.content.Blocks$155",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -29314,8 +29110,7 @@
     "name": "swarmer",
     "id": "202"
   },
-  "salvo":
-  {
+  "salvo": {
     "type": "mindustry.content.Blocks$156",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -29493,8 +29288,7 @@
     "name": "salvo",
     "id": "203"
   },
-  "segment":
-  {
+  "segment": {
     "type": "mindustry.content.Blocks$157",
     "timerTarget": 1,
     "retargetTime": 5,
@@ -29641,8 +29435,7 @@
     "name": "segment",
     "id": "204"
   },
-  "tsunami":
-  {
+  "tsunami": {
     "type": "mindustry.content.Blocks$158",
     "extinguish": true,
     "logicControlCooldown": 120,
@@ -29821,8 +29614,7 @@
     "name": "tsunami",
     "id": "205"
   },
-  "fuse":
-  {
+  "fuse": {
     "type": "mindustry.content.Blocks$159",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -30000,8 +29792,7 @@
     "name": "fuse",
     "id": "206"
   },
-  "ripple":
-  {
+  "ripple": {
     "type": "mindustry.content.Blocks$160",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -30179,8 +29970,7 @@
     "name": "ripple",
     "id": "207"
   },
-  "cyclone":
-  {
+  "cyclone": {
     "type": "mindustry.content.Blocks$161",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -30358,8 +30148,7 @@
     "name": "cyclone",
     "id": "208"
   },
-  "foreshadow":
-  {
+  "foreshadow": {
     "type": "mindustry.content.Blocks$162",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -30537,8 +30326,7 @@
     "name": "foreshadow",
     "id": "209"
   },
-  "spectre":
-  {
+  "spectre": {
     "type": "mindustry.content.Blocks$163",
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -30716,12 +30504,11 @@
     "name": "spectre",
     "id": "210"
   },
-  "meltdown":
-  {
+  "meltdown": {
     "type": "mindustry.content.Blocks$164",
     "firingMoveFract": 0.5,
     "shootDuration": 230,
-    "shootType":{},
+    "shootType": {},
     "powerUse": 17,
     "logicControlCooldown": 120,
     "timerTarget": 1,
@@ -30899,8 +30686,7 @@
     "name": "meltdown",
     "id": "211"
   },
-  "command-center":
-  {
+  "command-center": {
     "type": "mindustry.content.Blocks$165",
     "timerEffect": 1,
     "commandRegions": "[class mindustry.ui.Fonts$6, class mindustry.ui.Fonts$6, class mindustry.ui.Fonts$6]",
@@ -31039,8 +30825,7 @@
     "name": "command-center",
     "id": "212"
   },
-  "ground-factory":
-  {
+  "ground-factory": {
     "type": "mindustry.content.Blocks$166",
     "capacities": "[0, 40, 0, 0, 0, 20, 40, 0, 0, 60, 0, 0, 0, 0, 0, 0]",
     "plans": "[mindustry.world.blocks.units.UnitFactory$UnitPlan@4a1c0752, mindustry.world.blocks.units.UnitFactory$UnitPlan@332f25c8, mindustry.world.blocks.units.UnitFactory$UnitPlan@1b32cd16]",
@@ -31175,8 +30960,7 @@
     "name": "ground-factory",
     "id": "213"
   },
-  "air-factory":
-  {
+  "air-factory": {
     "type": "mindustry.content.Blocks$167",
     "capacities": "[0, 30, 0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0]",
     "plans": "[mindustry.world.blocks.units.UnitFactory$UnitPlan@19593091, mindustry.world.blocks.units.UnitFactory$UnitPlan@5d39f2d8]",
@@ -31311,8 +31095,7 @@
     "name": "air-factory",
     "id": "214"
   },
-  "naval-factory":
-  {
+  "naval-factory": {
     "type": "mindustry.content.Blocks$168",
     "capacities": "[0, 0, 70, 0, 0, 0, 40, 0, 0, 40, 0, 0, 0, 0, 0, 0]",
     "plans": "[mindustry.world.blocks.units.UnitFactory$UnitPlan@71c905a3, mindustry.world.blocks.units.UnitFactory$UnitPlan@30af7377]",
@@ -31447,8 +31230,7 @@
     "name": "naval-factory",
     "id": "215"
   },
-  "additive-reconstructor":
-  {
+  "additive-reconstructor": {
     "type": "mindustry.content.Blocks$169",
     "constructTime": 600,
     "upgrades": "[[Lmindustry.type.UnitType;@5c20ffa8, [Lmindustry.type.UnitType;@7fedfe27, [Lmindustry.type.UnitType;@2f879bab, [Lmindustry.type.UnitType;@1d4664d7, [Lmindustry.type.UnitType;@46c00568, [Lmindustry.type.UnitType;@56ccd751, [Lmindustry.type.UnitType;@458544e0]",
@@ -31584,8 +31366,7 @@
     "name": "additive-reconstructor",
     "id": "216"
   },
-  "multiplicative-reconstructor":
-  {
+  "multiplicative-reconstructor": {
     "type": "mindustry.content.Blocks$170",
     "constructTime": 1800,
     "upgrades": "[[Lmindustry.type.UnitType;@47b2e9e1, [Lmindustry.type.UnitType;@59942b48, [Lmindustry.type.UnitType;@1869f114, [Lmindustry.type.UnitType;@488b50ec, [Lmindustry.type.UnitType;@18a645fd, [Lmindustry.type.UnitType;@6090f3ca, [Lmindustry.type.UnitType;@37a64f9d]",
@@ -31721,8 +31502,7 @@
     "name": "multiplicative-reconstructor",
     "id": "217"
   },
-  "exponential-reconstructor":
-  {
+  "exponential-reconstructor": {
     "type": "mindustry.content.Blocks$171",
     "constructTime": 5400,
     "upgrades": "[[Lmindustry.type.UnitType;@21f9277b, [Lmindustry.type.UnitType;@201aa8c1, [Lmindustry.type.UnitType;@5d58c727, [Lmindustry.type.UnitType;@52a36910, [Lmindustry.type.UnitType;@3a095ec0, [Lmindustry.type.UnitType;@4f20a5e0, [Lmindustry.type.UnitType;@54da32dc]",
@@ -31858,8 +31638,7 @@
     "name": "exponential-reconstructor",
     "id": "218"
   },
-  "tetrative-reconstructor":
-  {
+  "tetrative-reconstructor": {
     "type": "mindustry.content.Blocks$172",
     "constructTime": 14400,
     "upgrades": "[[Lmindustry.type.UnitType;@1917d90f, [Lmindustry.type.UnitType;@66bfd864, [Lmindustry.type.UnitType;@4aac85fa, [Lmindustry.type.UnitType;@21fff664, [Lmindustry.type.UnitType;@6079cf5, [Lmindustry.type.UnitType;@1e6308a9, [Lmindustry.type.UnitType;@30cecdca]",
@@ -31995,8 +31774,7 @@
     "name": "tetrative-reconstructor",
     "id": "219"
   },
-  "repair-point":
-  {
+  "repair-point": {
     "type": "mindustry.content.Blocks$173",
     "timerTarget": 1,
     "timerEffect": 2,
@@ -32142,8 +31920,7 @@
     "name": "repair-point",
     "id": "220"
   },
-  "repair-turret":
-  {
+  "repair-turret": {
     "type": "mindustry.content.Blocks$174",
     "timerTarget": 1,
     "timerEffect": 2,
@@ -32289,8 +32066,7 @@
     "name": "repair-turret",
     "id": "221"
   },
-  "payload-conveyor":
-  {
+  "payload-conveyor": {
     "type": "mindustry.content.Blocks$175",
     "moveTime": 40,
     "moveForce": 201,
@@ -32424,8 +32200,7 @@
     "name": "payload-conveyor",
     "id": "222"
   },
-  "payload-router":
-  {
+  "payload-router": {
     "type": "mindustry.content.Blocks$176",
     "moveTime": 40,
     "moveForce": 201,
@@ -32559,8 +32334,7 @@
     "name": "payload-router",
     "id": "223"
   },
-  "payload-propulsion-tower":
-  {
+  "payload-propulsion-tower": {
     "type": "mindustry.content.Blocks$177",
     "range": 1000,
     "rotateSpeed": 2,
@@ -32708,8 +32482,7 @@
     "name": "payload-propulsion-tower",
     "id": "224"
   },
-  "deconstructor":
-  {
+  "deconstructor": {
     "type": "mindustry.content.Blocks$178",
     "maxPayloadSize": 4,
     "deconstructSpeed": 2,
@@ -32845,8 +32618,7 @@
     "name": "deconstructor",
     "id": "225"
   },
-  "constructor":
-  {
+  "constructor": {
     "type": "mindustry.content.Blocks$179",
     "buildSpeed": "0.4000000059604645 or 0.4",
     "minBlockSize": 1,
@@ -32982,8 +32754,7 @@
     "name": "constructor",
     "id": "226"
   },
-  "large-constructor":
-  {
+  "large-constructor": {
     "type": "mindustry.content.Blocks$180",
     "buildSpeed": "0.4000000059604645 or 0.4",
     "minBlockSize": 3,
@@ -33119,8 +32890,7 @@
     "name": "large-constructor",
     "id": "227"
   },
-  "payload-loader":
-  {
+  "payload-loader": {
     "type": "mindustry.content.Blocks$181",
     "timerLoad": 1,
     "loadTime": 2,
@@ -33258,8 +33028,7 @@
     "name": "payload-loader",
     "id": "228"
   },
-  "payload-unloader":
-  {
+  "payload-unloader": {
     "type": "mindustry.content.Blocks$182",
     "offloadSpeed": 4,
     "timerLoad": 1,
@@ -33398,8 +33167,7 @@
     "name": "payload-unloader",
     "id": "229"
   },
-  "power-source":
-  {
+  "power-source": {
     "type": "mindustry.content.Blocks$183",
     "powerProduction": 16666.666015625,
     "laserRange": 6,
@@ -33535,8 +33303,7 @@
     "name": "power-source",
     "id": "230"
   },
-  "power-void":
-  {
+  "power-void": {
     "type": "mindustry.content.Blocks$184",
     "hasItems": false,
     "hasLiquids": false,
@@ -33667,8 +33434,7 @@
     "name": "power-void",
     "id": "231"
   },
-  "item-source":
-  {
+  "item-source": {
     "type": "mindustry.content.Blocks$185",
     "hasItems": true,
     "hasLiquids": false,
@@ -33799,8 +33565,7 @@
     "name": "item-source",
     "id": "232"
   },
-  "item-void":
-  {
+  "item-void": {
     "type": "mindustry.content.Blocks$186",
     "hasItems": false,
     "hasLiquids": false,
@@ -33931,8 +33696,7 @@
     "name": "item-void",
     "id": "233"
   },
-  "liquid-source":
-  {
+  "liquid-source": {
     "type": "mindustry.content.Blocks$187",
     "hasItems": false,
     "hasLiquids": true,
@@ -34063,8 +33827,7 @@
     "name": "liquid-source",
     "id": "234"
   },
-  "liquid-void":
-  {
+  "liquid-void": {
     "type": "mindustry.content.Blocks$188",
     "hasItems": false,
     "hasLiquids": true,
@@ -34195,8 +33958,7 @@
     "name": "liquid-void",
     "id": "235"
   },
-  "payload-source":
-  {
+  "payload-source": {
     "type": "mindustry.content.Blocks$189",
     "payloadSpeed": 0.699999988079071,
     "payloadRotateSpeed": 5,
@@ -34329,8 +34091,7 @@
     "name": "payload-source",
     "id": "236"
   },
-  "payload-void":
-  {
+  "payload-void": {
     "type": "mindustry.content.Blocks$190",
     "incinerateEffect": "mindustry.entities.Effect@37095ded",
     "incinerateSound": "SoloudSound: sounds/bang.ogg",
@@ -34465,8 +34226,7 @@
     "name": "payload-void",
     "id": "237"
   },
-  "illuminator":
-  {
+  "illuminator": {
     "type": "mindustry.content.Blocks$191",
     "brightness": 0.75,
     "radius": 140,
@@ -34599,8 +34359,7 @@
     "name": "illuminator",
     "id": "238"
   },
-  "legacy-mech-pad":
-  {
+  "legacy-mech-pad": {
     "type": "mindustry.world.blocks.legacy.LegacyMechPad",
     "hasItems": false,
     "hasLiquids": false,
@@ -34731,10 +34490,9 @@
     "name": "legacy-mech-pad",
     "id": "239"
   },
-  "legacy-unit-factory":
-  {
+  "legacy-unit-factory": {
     "type": "mindustry.world.blocks.legacy.LegacyUnitFactory",
-    "replacement":{},
+    "replacement": {},
     "hasItems": true,
     "hasLiquids": false,
     "hasPower": true,
@@ -34864,10 +34622,9 @@
     "name": "legacy-unit-factory",
     "id": "240"
   },
-  "legacy-unit-factory-air":
-  {
+  "legacy-unit-factory-air": {
     "type": "mindustry.content.Blocks$192",
-    "replacement":{},
+    "replacement": {},
     "hasItems": true,
     "hasLiquids": false,
     "hasPower": true,
@@ -34997,10 +34754,9 @@
     "name": "legacy-unit-factory-air",
     "id": "241"
   },
-  "legacy-unit-factory-ground":
-  {
+  "legacy-unit-factory-ground": {
     "type": "mindustry.content.Blocks$193",
-    "replacement":{},
+    "replacement": {},
     "hasItems": true,
     "hasLiquids": false,
     "hasPower": true,
@@ -35130,8 +34886,7 @@
     "name": "legacy-unit-factory-ground",
     "id": "242"
   },
-  "launch-pad":
-  {
+  "launch-pad": {
     "type": "mindustry.content.Blocks$194",
     "launchTime": 1200,
     "launchSound": "SoloudSound: null",
@@ -35264,10 +35019,9 @@
     "name": "launch-pad",
     "id": "243"
   },
-  "interplanetary-accelerator":
-  {
+  "interplanetary-accelerator": {
     "type": "mindustry.content.Blocks$195",
-    "launching":{},
+    "launching": {},
     "capacities": "[8000, 8000, 0, 0, 0, 0, 0, 4000, 0, 5000, 0, 0, 0, 0, 0, 0]",
     "hasItems": true,
     "hasLiquids": false,
@@ -35398,8 +35152,7 @@
     "name": "interplanetary-accelerator",
     "id": "244"
   },
-  "message":
-  {
+  "message": {
     "type": "mindustry.content.Blocks$196",
     "maxTextLength": 220,
     "maxNewlines": 24,
@@ -35532,8 +35285,7 @@
     "name": "message",
     "id": "245"
   },
-  "switch":
-  {
+  "switch": {
     "type": "mindustry.content.Blocks$197",
     "hasItems": false,
     "hasLiquids": false,
@@ -35664,8 +35416,7 @@
     "name": "switch",
     "id": "246"
   },
-  "micro-processor":
-  {
+  "micro-processor": {
     "type": "mindustry.content.Blocks$198",
     "maxInstructionScale": 5,
     "instructionsPerTick": 2,
@@ -35799,8 +35550,7 @@
     "name": "micro-processor",
     "id": "247"
   },
-  "logic-processor":
-  {
+  "logic-processor": {
     "type": "mindustry.content.Blocks$199",
     "maxInstructionScale": 5,
     "instructionsPerTick": 8,
@@ -35934,8 +35684,7 @@
     "name": "logic-processor",
     "id": "248"
   },
-  "hyper-processor":
-  {
+  "hyper-processor": {
     "type": "mindustry.content.Blocks$200",
     "maxInstructionScale": 5,
     "instructionsPerTick": 25,
@@ -36069,8 +35818,7 @@
     "name": "hyper-processor",
     "id": "249"
   },
-  "memory-cell":
-  {
+  "memory-cell": {
     "type": "mindustry.content.Blocks$201",
     "memoryCapacity": 64,
     "hasItems": false,
@@ -36202,8 +35950,7 @@
     "name": "memory-cell",
     "id": "250"
   },
-  "memory-bank":
-  {
+  "memory-bank": {
     "type": "mindustry.content.Blocks$202",
     "memoryCapacity": 512,
     "hasItems": false,
@@ -36335,8 +36082,7 @@
     "name": "memory-bank",
     "id": "251"
   },
-  "logic-display":
-  {
+  "logic-display": {
     "type": "mindustry.content.Blocks$203",
     "commandClear": "0",
     "commandColor": "1",
@@ -36479,8 +36225,7 @@
     "name": "logic-display",
     "id": "252"
   },
-  "large-logic-display":
-  {
+  "large-logic-display": {
     "type": "mindustry.content.Blocks$204",
     "commandClear": "0",
     "commandColor": "1",

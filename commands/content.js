@@ -65,7 +65,7 @@ exports.run = (client, message, args) => {
   } else if (args[1] === undefined) {
     message.channel.send(`**${args[0]} content is not found!**`);
     keys.forEach((k) => {
-      if (k !== "immunities") str += `• !content ${args[0]} **${k}** <value>\n`;
+      if (k !== "") str += `• !content ${args[0]} **${k}** <value>\n`;
     });
     for (var i = 0; i < str.length % maxLength; i++) {
       sstr = str.slice(

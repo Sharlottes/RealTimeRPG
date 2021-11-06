@@ -1,10 +1,8 @@
-
 {
-  "groundZero":
-  {
+  "groundZero": {
     "type": "mindustry.content.SectorPresets$1",
     "generator": "mindustry.maps.generators.FileMapGenerator@6c298dc",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#15 (Ground Zero)",
     "captureWave": 10,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@3e7dfd44",
@@ -26,11 +24,10 @@
     "name": "groundZero",
     "id": "0"
   },
-  "saltFlats":
-  {
+  "saltFlats": {
     "type": "mindustry.content.SectorPresets$2",
     "generator": "mindustry.maps.generators.FileMapGenerator@6b760460",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#101 (Salt Flats)",
     "captureWave": 0,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@796065aa",
@@ -52,11 +49,10 @@
     "name": "saltFlats",
     "id": "1"
   },
-  "frozenForest":
-  {
+  "frozenForest": {
     "type": "mindustry.content.SectorPresets$3",
     "generator": "mindustry.maps.generators.FileMapGenerator@2c306a57",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#86 (Frozen Forest)",
     "captureWave": 15,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@773e2eb5",
@@ -78,11 +74,10 @@
     "name": "frozenForest",
     "id": "2"
   },
-  "biomassFacility":
-  {
+  "biomassFacility": {
     "type": "mindustry.content.SectorPresets$4",
     "generator": "mindustry.maps.generators.FileMapGenerator@1436a7ab",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#81 (Biomass Synthesis Facility)",
     "captureWave": 20,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@3b7b05a8",
@@ -104,11 +99,10 @@
     "name": "biomassFacility",
     "id": "3"
   },
-  "craters":
-  {
+  "craters": {
     "type": "mindustry.content.SectorPresets$5",
     "generator": "mindustry.maps.generators.FileMapGenerator@7abe27bf",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#18 (The Craters)",
     "captureWave": 20,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@5b94ccbc",
@@ -130,11 +124,10 @@
     "name": "craters",
     "id": "4"
   },
-  "ruinousShores":
-  {
+  "ruinousShores": {
     "type": "mindustry.content.SectorPresets$6",
     "generator": "mindustry.maps.generators.FileMapGenerator@336365bc",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#213 (Ruinous Shores)",
     "captureWave": 30,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@38eb2fb0",
@@ -156,11 +149,10 @@
     "name": "ruinousShores",
     "id": "5"
   },
-  "windsweptIslands":
-  {
+  "windsweptIslands": {
     "type": "mindustry.content.SectorPresets$7",
     "generator": "mindustry.maps.generators.FileMapGenerator@7351a16e",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#246 (Windswept Islands)",
     "captureWave": 30,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@5bb7643d",
@@ -182,11 +174,10 @@
     "name": "windsweptIslands",
     "id": "6"
   },
-  "stainedMountains":
-  {
+  "stainedMountains": {
     "type": "mindustry.content.SectorPresets$8",
     "generator": "mindustry.maps.generators.FileMapGenerator@4074023c",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#20 (Stained Mountains)",
     "captureWave": 30,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@3ed0918d",
@@ -208,11 +199,10 @@
     "name": "stainedMountains",
     "id": "7"
   },
-  "extractionOutpost":
-  {
+  "extractionOutpost": {
     "type": "mindustry.content.SectorPresets$9",
     "generator": "mindustry.maps.generators.FileMapGenerator@66ec9390",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#165 (Extraction Outpost)",
     "captureWave": 0,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@6e91893",
@@ -234,11 +224,10 @@
     "name": "extractionOutpost",
     "id": "8"
   },
-  "coastline":
-  {
+  "coastline": {
     "type": "mindustry.content.SectorPresets$10",
     "generator": "mindustry.maps.generators.FileMapGenerator@562457e1",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#108 (Coastline)",
     "captureWave": 30,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@54562ea6",
@@ -260,11 +249,10 @@
     "name": "coastline",
     "id": "9"
   },
-  "navalFortress":
-  {
+  "navalFortress": {
     "type": "mindustry.content.SectorPresets$11",
     "generator": "mindustry.maps.generators.FileMapGenerator@5b12012e",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#216 (Naval Fortress)",
     "captureWave": 0,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@2f7dcef2",
@@ -286,11 +274,10 @@
     "name": "navalFortress",
     "id": "10"
   },
-  "fungalPass":
-  {
+  "fungalPass": {
     "type": "mindustry.content.SectorPresets$12",
     "generator": "mindustry.maps.generators.FileMapGenerator@7cf162bc",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#21 (Fungal Pass)",
     "captureWave": 0,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@3721177d",
@@ -312,11 +299,10 @@
     "name": "fungalPass",
     "id": "11"
   },
-  "overgrowth":
-  {
+  "overgrowth": {
     "type": "mindustry.content.SectorPresets$13",
     "generator": "mindustry.maps.generators.FileMapGenerator@63718b93",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#134 (Overgrowth)",
     "captureWave": 0,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@14e2e1c3",
@@ -338,11 +324,10 @@
     "name": "overgrowth",
     "id": "12"
   },
-  "tarFields":
-  {
+  "tarFields": {
     "type": "mindustry.content.SectorPresets$14",
     "generator": "mindustry.maps.generators.FileMapGenerator@f202d6d",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#23 (Tar Fields)",
     "captureWave": 40,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@60e21209",
@@ -364,11 +349,10 @@
     "name": "tarFields",
     "id": "13"
   },
-  "impact0078":
-  {
+  "impact0078": {
     "type": "mindustry.content.SectorPresets$15",
     "generator": "mindustry.maps.generators.FileMapGenerator@746b18fd",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#227 (Impact 0078)",
     "captureWave": 45,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@7a2e0858",
@@ -390,11 +374,10 @@
     "name": "impact0078",
     "id": "14"
   },
-  "desolateRift":
-  {
+  "desolateRift": {
     "type": "mindustry.content.SectorPresets$16",
     "generator": "mindustry.maps.generators.FileMapGenerator@1f38957",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#123 (Desolate Rift)",
     "captureWave": 18,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@2df3c564",
@@ -416,11 +399,10 @@
     "name": "desolateRift",
     "id": "15"
   },
-  "nuclearComplex":
-  {
+  "nuclearComplex": {
     "type": "mindustry.content.SectorPresets$17",
     "generator": "mindustry.maps.generators.FileMapGenerator@4c2869a9",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#130 (Nuclear Production Complex)",
     "captureWave": 50,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@518cf84a",
@@ -442,11 +424,10 @@
     "name": "nuclearComplex",
     "id": "16"
   },
-  "planetaryTerminal":
-  {
+  "planetaryTerminal": {
     "type": "mindustry.content.SectorPresets$18",
     "generator": "mindustry.maps.generators.FileMapGenerator@6edcd0d8",
-    "planet":{},
+    "planet": {},
     "sector": "serpulo#93 (Planetary Launch Terminal)",
     "captureWave": 0,
     "rules": "mindustry.type.SectorPreset$$Lambda$899/0x0000000800f08630@6136998b",

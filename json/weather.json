@@ -1,7 +1,5 @@
-
 {
-  "snow":
-  {
+  "snow": {
     "type": "\"mindustry.content.Weathers$1\" or mindustry.type.Weather$$Lambda$893/0x0000000800f06910@2098d37d",
     "particleRegion": "particle",
     "color": "ffffffff",
@@ -42,7 +40,7 @@
     "soundVolOscMag": 1.5,
     "soundVolOscScl": 1100,
     "hidden": false,
-    "status":{},
+    "status": {},
     "statusDuration": 120,
     "statusAir": true,
     "statusGround": true,
@@ -57,8 +55,7 @@
     "name": "snow",
     "id": "0"
   },
-  "rain":
-  {
+  "rain": {
     "type": "\"mindustry.content.Weathers$2\" or mindustry.type.Weather$$Lambda$893/0x0000000800f06910@2098d37d",
     "yspeed": 5,
     "xspeed": 1.5,
@@ -68,7 +65,7 @@
     "sizeMin": 8,
     "sizeMax": 40,
     "splashTimeScale": 22,
-    "liquid":{},
+    "liquid": {},
     "splashes": "[splash-0, splash-1, splash-2, splash-3, splash-4, splash-5, splash-6, splash-7, splash-8, splash-9, splash-10, splash-11]",
     "color": "7a95eaff",
     "rand": "arc.math.Rand@746cd757",
@@ -81,7 +78,7 @@
     "soundVolOscMag": 0,
     "soundVolOscScl": 20,
     "hidden": false,
-    "status":{},
+    "status": {},
     "statusDuration": 120,
     "statusAir": true,
     "statusGround": true,
@@ -96,8 +93,7 @@
     "name": "rain",
     "id": "1"
   },
-  "sandstorm":
-  {
+  "sandstorm": {
     "type": "\"mindustry.content.Weathers$3\" or mindustry.type.Weather$$Lambda$893/0x0000000800f06910@2098d37d",
     "particleRegion": "particle",
     "color": "f7cba4ff",
@@ -138,7 +134,7 @@
     "soundVolOscMag": 0,
     "soundVolOscScl": 20,
     "hidden": false,
-    "status":{},
+    "status": {},
     "statusDuration": 120,
     "statusAir": true,
     "statusGround": true,
@@ -153,8 +149,7 @@
     "name": "sandstorm",
     "id": "2"
   },
-  "sporestorm":
-  {
+  "sporestorm": {
     "type": "\"mindustry.content.Weathers$4\" or mindustry.type.Weather$$Lambda$893/0x0000000800f06910@2098d37d",
     "particleRegion": "circle-small",
     "color": "7457ceff",
@@ -195,7 +190,7 @@
     "soundVolOscMag": 0,
     "soundVolOscScl": 20,
     "hidden": false,
-    "status":{},
+    "status": {},
     "statusDuration": 120,
     "statusAir": true,
     "statusGround": false,
@@ -210,8 +205,7 @@
     "name": "sporestorm",
     "id": "3"
   },
-  "fog":
-  {
+  "fog": {
     "type": "\"mindustry.content.Weathers$5\" or mindustry.type.Weather$$Lambda$893/0x0000000800f06910@2098d37d",
     "particleRegion": "circle-shadow",
     "color": "666666ff",
@@ -252,7 +246,7 @@
     "soundVolOscMag": 0,
     "soundVolOscScl": 20,
     "hidden": false,
-    "status":{},
+    "status": {},
     "statusDuration": 120,
     "statusAir": true,
     "statusGround": true,
@@ -267,8 +261,7 @@
     "name": "fog",
     "id": "4"
   },
-  "suspend-particles":
-  {
+  "suspend-particles": {
     "type": "\"mindustry.content.Weathers$6\" or mindustry.type.Weather$$Lambda$893/0x0000000800f06910@2098d37d",
     "particleRegion": "particle",
     "color": "a7c1faff",
@@ -309,7 +302,7 @@
     "soundVolOscMag": 0,
     "soundVolOscScl": 20,
     "hidden": true,
-    "status":{},
+    "status": {},
     "statusDuration": 120,
     "statusAir": true,
     "statusGround": false,

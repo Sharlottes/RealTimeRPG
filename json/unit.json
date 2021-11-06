@@ -1,7 +1,5 @@
-
 {
-  "dagger":
-  {
+  "dagger": {
     "type": "mindustry.content.UnitTypes$1",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -127,8 +125,7 @@
     "name": "dagger",
     "id": "0"
   },
-  "mace":
-  {
+  "mace": {
     "type": "mindustry.content.UnitTypes$2",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -254,8 +251,7 @@
     "name": "mace",
     "id": "1"
   },
-  "fortress":
-  {
+  "fortress": {
     "type": "mindustry.content.UnitTypes$3",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -381,8 +377,7 @@
     "name": "fortress",
     "id": "2"
   },
-  "scepter":
-  {
+  "scepter": {
     "type": "mindustry.content.UnitTypes$4",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -508,8 +503,7 @@
     "name": "scepter",
     "id": "3"
   },
-  "reign":
-  {
+  "reign": {
     "type": "mindustry.content.UnitTypes$5",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -635,8 +629,7 @@
     "name": "reign",
     "id": "4"
   },
-  "nova":
-  {
+  "nova": {
     "type": "mindustry.content.UnitTypes$6",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -762,8 +755,7 @@
     "name": "nova",
     "id": "5"
   },
-  "pulsar":
-  {
+  "pulsar": {
     "type": "mindustry.content.UnitTypes$7",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -889,8 +881,7 @@
     "name": "pulsar",
     "id": "6"
   },
-  "quasar":
-  {
+  "quasar": {
     "type": "mindustry.content.UnitTypes$8",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -1016,8 +1007,7 @@
     "name": "quasar",
     "id": "7"
   },
-  "vela":
-  {
+  "vela": {
     "type": "mindustry.content.UnitTypes$9",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -1143,8 +1133,7 @@
     "name": "vela",
     "id": "8"
   },
-  "corvus":
-  {
+  "corvus": {
     "type": "mindustry.content.UnitTypes$10",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -1270,8 +1259,7 @@
     "name": "corvus",
     "id": "9"
   },
-  "crawler":
-  {
+  "crawler": {
     "type": "mindustry.content.UnitTypes$11",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -1397,8 +1385,7 @@
     "name": "crawler",
     "id": "10"
   },
-  "atrax":
-  {
+  "atrax": {
     "type": "mindustry.content.UnitTypes$12",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -1524,8 +1511,7 @@
     "name": "atrax",
     "id": "11"
   },
-  "spiroct":
-  {
+  "spiroct": {
     "type": "mindustry.content.UnitTypes$13",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -1651,8 +1637,7 @@
     "name": "spiroct",
     "id": "12"
   },
-  "arkyid":
-  {
+  "arkyid": {
     "type": "mindustry.content.UnitTypes$14",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -1778,8 +1763,7 @@
     "name": "arkyid",
     "id": "13"
   },
-  "toxopid":
-  {
+  "toxopid": {
     "type": "mindustry.content.UnitTypes$15",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -1905,8 +1889,7 @@
     "name": "toxopid",
     "id": "14"
   },
-  "flare":
-  {
+  "flare": {
     "type": "mindustry.content.UnitTypes$16",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -2032,8 +2015,7 @@
     "name": "flare",
     "id": "15"
   },
-  "horizon":
-  {
+  "horizon": {
     "type": "mindustry.content.UnitTypes$17",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -2159,8 +2141,7 @@
     "name": "horizon",
     "id": "16"
   },
-  "zenith":
-  {
+  "zenith": {
     "type": "mindustry.content.UnitTypes$18",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -2286,8 +2267,7 @@
     "name": "zenith",
     "id": "17"
   },
-  "antumbra":
-  {
+  "antumbra": {
     "type": "mindustry.content.UnitTypes$19",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -2413,8 +2393,7 @@
     "name": "antumbra",
     "id": "18"
   },
-  "eclipse":
-  {
+  "eclipse": {
     "type": "mindustry.content.UnitTypes$20",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -2540,8 +2519,7 @@
     "name": "eclipse",
     "id": "19"
   },
-  "mono":
-  {
+  "mono": {
     "type": "mindustry.content.UnitTypes$21",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -2667,8 +2645,7 @@
     "name": "mono",
     "id": "20"
   },
-  "poly":
-  {
+  "poly": {
     "type": "mindustry.content.UnitTypes$22",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -2794,8 +2771,7 @@
     "name": "poly",
     "id": "21"
   },
-  "mega":
-  {
+  "mega": {
     "type": "mindustry.content.UnitTypes$23",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -2921,8 +2897,7 @@
     "name": "mega",
     "id": "22"
   },
-  "quad":
-  {
+  "quad": {
     "type": "mindustry.content.UnitTypes$24",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -3048,8 +3023,7 @@
     "name": "quad",
     "id": "23"
   },
-  "oct":
-  {
+  "oct": {
     "type": "mindustry.content.UnitTypes$25",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -3175,8 +3149,7 @@
     "name": "oct",
     "id": "24"
   },
-  "risso":
-  {
+  "risso": {
     "type": "mindustry.content.UnitTypes$26",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -3302,8 +3275,7 @@
     "name": "risso",
     "id": "25"
   },
-  "minke":
-  {
+  "minke": {
     "type": "mindustry.content.UnitTypes$27",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -3429,8 +3401,7 @@
     "name": "minke",
     "id": "26"
   },
-  "bryde":
-  {
+  "bryde": {
     "type": "mindustry.content.UnitTypes$28",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -3556,8 +3527,7 @@
     "name": "bryde",
     "id": "27"
   },
-  "sei":
-  {
+  "sei": {
     "type": "mindustry.content.UnitTypes$29",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -3683,8 +3653,7 @@
     "name": "sei",
     "id": "28"
   },
-  "omura":
-  {
+  "omura": {
     "type": "mindustry.content.UnitTypes$30",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -3810,8 +3779,7 @@
     "name": "omura",
     "id": "29"
   },
-  "retusa":
-  {
+  "retusa": {
     "type": "mindustry.content.UnitTypes$31",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -3937,8 +3905,7 @@
     "name": "retusa",
     "id": "30"
   },
-  "oxynoe":
-  {
+  "oxynoe": {
     "type": "mindustry.content.UnitTypes$32",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -4064,8 +4031,7 @@
     "name": "oxynoe",
     "id": "31"
   },
-  "cyerce":
-  {
+  "cyerce": {
     "type": "mindustry.content.UnitTypes$33",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -4191,8 +4157,7 @@
     "name": "cyerce",
     "id": "32"
   },
-  "aegires":
-  {
+  "aegires": {
     "type": "mindustry.content.UnitTypes$34",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -4318,8 +4283,7 @@
     "name": "aegires",
     "id": "33"
   },
-  "navanax":
-  {
+  "navanax": {
     "type": "mindustry.content.UnitTypes$35",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -4445,8 +4409,7 @@
     "name": "navanax",
     "id": "34"
   },
-  "alpha":
-  {
+  "alpha": {
     "type": "mindustry.content.UnitTypes$36",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -4572,8 +4535,7 @@
     "name": "alpha",
     "id": "35"
   },
-  "beta":
-  {
+  "beta": {
     "type": "mindustry.content.UnitTypes$37",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -4699,8 +4661,7 @@
     "name": "beta",
     "id": "36"
   },
-  "gamma":
-  {
+  "gamma": {
     "type": "mindustry.content.UnitTypes$38",
     "shadowTX": -12,
     "shadowTY": -13,
@@ -4826,8 +4787,7 @@
     "name": "gamma",
     "id": "37"
   },
-  "block":
-  {
+  "block": {
     "type": "mindustry.content.UnitTypes$39",
     "shadowTX": -12,
     "shadowTY": -13,

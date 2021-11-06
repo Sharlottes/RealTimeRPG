@@ -1,7 +1,5 @@
-
 {
-  "sun":
-  {
+  "sun": {
     "type": "mindustry.content.Planets$1",
     "mesh": "mindustry.graphics.g3d.SunMesh@b8a7e43",
     "cloudMesh": "null",
@@ -38,7 +36,7 @@
     "atmosphereColor": "4cb2ffff",
     "hasAtmosphere": true,
     "parent": "null",
-    "solarSystem":{},
+    "solarSystem": {},
     "children": "[serpulo]",
     "satellites": "[]",
     "stats": "mindustry.world.meta.Stats@35835fa",
@@ -52,8 +50,7 @@
     "name": "sun",
     "id": "0"
   },
-  "serpulo":
-  {
+  "serpulo": {
     "type": "mindustry.content.Planets$2",
     "mesh": "mindustry.graphics.g3d.HexMesh@56f71edb",
     "cloudMesh": "mindustry.graphics.g3d.MultiMesh@7207cb51",
@@ -89,8 +86,8 @@
     "lightColor": "ffffffff",
     "atmosphereColor": "3c1b8fff",
     "hasAtmosphere": true,
-    "parent":{},
-    "solarSystem":{},
+    "parent": {},
+    "solarSystem": {},
     "children": "[]",
     "satellites": "[]",
     "stats": "mindustry.world.meta.Stats@6fd1660",

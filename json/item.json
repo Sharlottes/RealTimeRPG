@@ -1,7 +1,5 @@
-
 {
-  "copper":
-  {
+  "copper": {
     "type": "mindustry.content.Items$1",
     "color": "d99d73ff",
     "explosiveness": 0,
@@ -22,8 +20,7 @@
     "name": "copper",
     "id": "0"
   },
-  "lead":
-  {
+  "lead": {
     "type": "mindustry.content.Items$2",
     "color": "8c7fa9ff",
     "explosiveness": 0,
@@ -44,8 +41,7 @@
     "name": "lead",
     "id": "1"
   },
-  "metaglass":
-  {
+  "metaglass": {
     "type": "mindustry.content.Items$3",
     "color": "ebeef5ff",
     "explosiveness": 0,
@@ -66,8 +62,7 @@
     "name": "metaglass",
     "id": "2"
   },
-  "graphite":
-  {
+  "graphite": {
     "type": "mindustry.content.Items$4",
     "color": "b2c6d2ff",
     "explosiveness": 0,
@@ -88,8 +83,7 @@
     "name": "graphite",
     "id": "3"
   },
-  "sand":
-  {
+  "sand": {
     "type": "mindustry.content.Items$5",
     "color": "f7cba4ff",
     "explosiveness": 0,
@@ -110,8 +104,7 @@
     "name": "sand",
     "id": "4"
   },
-  "coal":
-  {
+  "coal": {
     "type": "mindustry.content.Items$6",
     "color": "272727ff",
     "explosiveness": 0.20000000298023224,
@@ -132,8 +125,7 @@
     "name": "coal",
     "id": "5"
   },
-  "titanium":
-  {
+  "titanium": {
     "type": "mindustry.content.Items$7",
     "color": "8da1e3ff",
     "explosiveness": 0,
@@ -154,8 +146,7 @@
     "name": "titanium",
     "id": "6"
   },
-  "thorium":
-  {
+  "thorium": {
     "type": "mindustry.content.Items$8",
     "color": "f9a3c7ff",
     "explosiveness": 0.20000000298023224,
@@ -176,8 +167,7 @@
     "name": "thorium",
     "id": "7"
   },
-  "scrap":
-  {
+  "scrap": {
     "type": "mindustry.content.Items$9",
     "color": "777777ff",
     "explosiveness": 0,
@@ -198,8 +188,7 @@
     "name": "scrap",
     "id": "8"
   },
-  "silicon":
-  {
+  "silicon": {
     "type": "mindustry.content.Items$10",
     "color": "53565cff",
     "explosiveness": 0,
@@ -220,8 +209,7 @@
     "name": "silicon",
     "id": "9"
   },
-  "plastanium":
-  {
+  "plastanium": {
     "type": "mindustry.content.Items$11",
     "color": "cbd97fff",
     "explosiveness": 0.20000000298023224,
@@ -242,8 +230,7 @@
     "name": "plastanium",
     "id": "10"
   },
-  "phase-fabric":
-  {
+  "phase-fabric": {
     "type": "mindustry.content.Items$12",
     "color": "f4ba6eff",
     "explosiveness": 0,
@@ -264,8 +251,7 @@
     "name": "phase-fabric",
     "id": "11"
   },
-  "surge-alloy":
-  {
+  "surge-alloy": {
     "type": "mindustry.content.Items$13",
     "color": "f3e979ff",
     "explosiveness": 0,
@@ -286,8 +272,7 @@
     "name": "surge-alloy",
     "id": "12"
   },
-  "spore-pod":
-  {
+  "spore-pod": {
     "type": "mindustry.content.Items$14",
     "color": "7457ceff",
     "explosiveness": 0,
@@ -308,8 +293,7 @@
     "name": "spore-pod",
     "id": "13"
   },
-  "blast-compound":
-  {
+  "blast-compound": {
     "type": "mindustry.content.Items$15",
     "color": "ff795eff",
     "explosiveness": 1.2000000476837158,
@@ -330,8 +314,7 @@
     "name": "blast-compound",
     "id": "14"
   },
-  "pyratite":
-  {
+  "pyratite": {
     "type": "mindustry.content.Items$16",
     "color": "ffaa5fff",
     "explosiveness": 0.4000000059604645,
