@@ -2,9 +2,7 @@ const Discord = require("discord.js");
 const fs = require("fs");
 
 exports.run = (client, message, args) => {
-  console.log(
-    client.user + " called content commands with" + JSON.stringify(args)
-  );
+  console.log("content commands is called with" + JSON.stringify(args));
 
   let stop = false;
   let jsonFiles = fs.readdirSync("./json");
@@ -29,7 +27,11 @@ exports.run = (client, message, args) => {
       let value = JSON.stringify(jsonData[args[1]]);
       JSON.parse(value, (k1, v1) => {
         if (args[2] !== undefined) {
-          if (k1.includes(args[2])) kvStrs[kvIndex++] = `${k1} : ${v1}`;
+          console("third parm is exist: " + args[2]);
+          if (k1.includes(args[2])) {
+            kvStrs[kvIndex++] = `${k1} : ${v1}`;
+          }
+          console.log(k1.includes(args[2]));
         } else {
           kvStrs[kvIndex++] = `${k1} : ${v1}`;
         }
