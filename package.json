@@ -1,7 +1,6 @@
 {
   "name": "bot",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "r": "node index.js"
@@ -10,5 +9,20 @@
     "discord.js": "^12.5.3",
     "request": "^2.88.2",
     "tcp-ping": "^0.1.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sharlottes/nodejsbot.git"
+  },
+  "keywords": [
+    "discord"
+  ],
+  "author": "Sharlotte",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sharlottes/nodejsbot/issues"
+  },
+  "homepage": "https://github.com/Sharlottes/nodejsbot#readme",
+  "description": ""
 }
