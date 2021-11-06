@@ -50,7 +50,7 @@ exports.run = (client, message, args) => {
     message.channel.send("**content type is not found!**");
     files.forEach((k) => {
       str += `• !content **${f.replace(".json", "")}** <content> <value>\n`;
-      if (str.length >= maxLength || files.indexOf(f) == files.length - 1) {
+      if (str.length >= maxLength || files.indexOf(f) == files.length - 2) {
         message.channel.send(
           new Discord.MessageEmbed()
             .setAuthor(`All Content Types`, helpImg)
@@ -64,7 +64,7 @@ exports.run = (client, message, args) => {
     message.channel.send(`**${args[0]} content is not found!**`);
     keys.forEach((k) => {
       str += `• !content ${args[0]} **${k}** <value>\n`;
-      if (str.length >= maxLength || keys.indexOf(k) == keys.length - 1) {
+      if (str.length >= maxLength || keys.indexOf(k) == keys.length - 2) {
         message.channel.send(
           new Discord.MessageEmbed()
             .setAuthor(`All ${args[0]} contents`, helpImg)
