@@ -25,7 +25,7 @@ exports.run = (client, message, args) => {
       return v;
     });
 
-    console.log(jsonData.keys());
+    console.log(Object.keys(jsonData));
 
     if (jsonData[args[1]] !== undefined) {
       let value = JSON.stringify(jsonData[args[1]]);
