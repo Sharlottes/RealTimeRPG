@@ -22,17 +22,15 @@ exports.run = (client, message, args) => {
     keys = Object.keys(jsonData);
 
     if (jsonData[args[1]] !== undefined) {
-      let value = JSON.stringify(jsonData[args[1]]);
-      JSON.parse(value, (k, v) => {
+      let jsonData2 = JSON.parse(JSON.stringify(jsonData[args[1]]));
+      Object.keys(jsonData2).forEach((k) => {
         if (args[2] !== undefined) {
           if (k.includes(args[2])) {
-            kvStrs[kvIndex++] = `${k} : ${v}`;
+            kvStrs[kvIndex++] = `${k} : ${jsonData2[k]}`;
           }
         } else {
-          kvStrs[kvIndex++] = `${k} : ${v}`;
+          kvStrs[kvIndex++] = `${k} : ${jsonData2[k]}`;
         }
-
-        return v;
       });
     }
 
@@ -92,6 +90,7 @@ exports.run = (client, message, args) => {
       }
     });
   }
+  message.reply("done");
 };
 
 exports.name = "content";
