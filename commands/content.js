@@ -18,14 +18,8 @@ exports.run = (client, message, args) => {
     if (stop || args[0] === undefined || args[0] != f.split(".")[0]) return;
 
     let jsonBuffer = fs.readFileSync("./json/" + f);
-    let jsonData = JSON.parse(jsonBuffer.toString(), (k, v) => {
-      var vstr = JSON.stringify(v);
-      if (JSON.stringify(v).slice(0, 1).includes("{") && !vstr.includes("{}"))
-        keys[keyIndex++] = k;
-      return v;
-    });
-
-    console.log(Object.keys(jsonData));
+    let jsonData = JSON.parse(jsonBuffer.toString());
+    keys = Object.keys(jsonData);
 
     if (jsonData[args[1]] !== undefined) {
       let value = JSON.stringify(jsonData[args[1]]);
