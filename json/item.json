@@ -1,5 +1,7 @@
+
 {
-  "copper": {
+  "copper":
+  {
     "type": "mindustry.content.Items$1",
     "color": "d99d73ff",
     "explosiveness": 0,
@@ -9,7 +11,7 @@
     "hardness": 1,
     "cost": 0.5,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@4a9419d7",
+    "stats": "mindustry.world.meta.Stats@6d6bc158",
     "localizedName": "Copper",
     "description": "Used in all types of construction and ammunition.",
     "details": "Copper. Abnormally abundant metal on Serpulo. Structurally weak unless reinforced.",
@@ -17,10 +19,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 1,
+    "uiIcon": "item-copper-ui",
+    "fullIcon": "item-copper",
     "name": "copper",
-    "id": "0"
+    "id": "0",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@677dbd89"
   },
-  "lead": {
+  "lead":
+  {
     "type": "mindustry.content.Items$2",
     "color": "8c7fa9ff",
     "explosiveness": 0,
@@ -30,7 +36,7 @@
     "hardness": 1,
     "cost": 0.699999988079071,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@d1f74b8",
+    "stats": "mindustry.world.meta.Stats@fff25f1",
     "localizedName": "Lead",
     "description": "Used in liquid transportation and electrical structures.",
     "details": "Dense. Inert. Extensively used in batteries.\nNote: Likely toxic to biological life forms. Not that there are many left here.",
@@ -38,10 +44,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 2,
+    "uiIcon": "item-lead-ui",
+    "fullIcon": "item-lead",
     "name": "lead",
-    "id": "1"
+    "id": "1",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@c00fff0"
   },
-  "metaglass": {
+  "metaglass":
+  {
     "type": "mindustry.content.Items$3",
     "color": "ebeef5ff",
     "explosiveness": 0,
@@ -51,7 +61,7 @@
     "hardness": 0,
     "cost": 1.5,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@41394595",
+    "stats": "mindustry.world.meta.Stats@263f04ca",
     "localizedName": "Metaglass",
     "description": "Used in liquid distribution/storage structures.",
     "details": "null",
@@ -59,10 +69,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 3,
+    "uiIcon": "item-metaglass-ui",
+    "fullIcon": "item-metaglass",
     "name": "metaglass",
-    "id": "2"
+    "id": "2",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@2ca47471"
   },
-  "graphite": {
+  "graphite":
+  {
     "type": "mindustry.content.Items$4",
     "color": "b2c6d2ff",
     "explosiveness": 0,
@@ -72,7 +86,7 @@
     "hardness": 0,
     "cost": 1,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@3a0807b7",
+    "stats": "mindustry.world.meta.Stats@5a021cb9",
     "localizedName": "Graphite",
     "description": "Used in electrical components and turret ammunition.",
     "details": "null",
@@ -80,10 +94,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 4,
+    "uiIcon": "item-graphite-ui",
+    "fullIcon": "item-graphite",
     "name": "graphite",
-    "id": "3"
+    "id": "3",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@51768776"
   },
-  "sand": {
+  "sand":
+  {
     "type": "mindustry.content.Items$5",
     "color": "f7cba4ff",
     "explosiveness": 0,
@@ -93,7 +111,7 @@
     "hardness": 0,
     "cost": 1,
     "lowPriority": true,
-    "stats": "mindustry.world.meta.Stats@21a5fd96",
+    "stats": "mindustry.world.meta.Stats@f31c0c6",
     "localizedName": "Sand",
     "description": "Used for production of other refined materials.",
     "details": "null",
@@ -101,10 +119,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 5,
+    "uiIcon": "item-sand-ui",
+    "fullIcon": "item-sand",
     "name": "sand",
-    "id": "4"
+    "id": "4",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@b93aad"
   },
-  "coal": {
+  "coal":
+  {
     "type": "mindustry.content.Items$6",
     "color": "272727ff",
     "explosiveness": 0.20000000298023224,
@@ -114,7 +136,7 @@
     "hardness": 2,
     "cost": 1,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@5769e7ae",
+    "stats": "mindustry.world.meta.Stats@4a9419d7",
     "localizedName": "Coal",
     "description": "Used for fuel and refined material production.",
     "details": "Appears to be fossilized plant matter, formed long before the seeding event.",
@@ -122,10 +144,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 6,
+    "uiIcon": "item-coal-ui",
+    "fullIcon": "item-coal",
     "name": "coal",
-    "id": "5"
+    "id": "5",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@2f3c6ac4"
   },
-  "titanium": {
+  "titanium":
+  {
     "type": "mindustry.content.Items$7",
     "color": "8da1e3ff",
     "explosiveness": 0,
@@ -135,7 +161,7 @@
     "hardness": 3,
     "cost": 1,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@5c77053b",
+    "stats": "mindustry.world.meta.Stats@2e8ab815",
     "localizedName": "Titanium",
     "description": "Used in liquid transportation structures, drills and factories.",
     "details": "null",
@@ -143,10 +169,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 7,
+    "uiIcon": "item-titanium-ui",
+    "fullIcon": "item-titanium",
     "name": "titanium",
-    "id": "6"
+    "id": "6",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@67af833b"
   },
-  "thorium": {
+  "thorium":
+  {
     "type": "mindustry.content.Items$8",
     "color": "f9a3c7ff",
     "explosiveness": 0.20000000298023224,
@@ -156,7 +186,7 @@
     "hardness": 4,
     "cost": 1.100000023841858,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@26b894bd",
+    "stats": "mindustry.world.meta.Stats@d1f74b8",
     "localizedName": "Thorium",
     "description": "Used in durable structures and as nuclear fuel.",
     "details": "null",
@@ -164,10 +194,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 8,
+    "uiIcon": "item-thorium-ui",
+    "fullIcon": "item-thorium",
     "name": "thorium",
-    "id": "7"
+    "id": "7",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@41394595"
   },
-  "scrap": {
+  "scrap":
+  {
     "type": "mindustry.content.Items$9",
     "color": "777777ff",
     "explosiveness": 0,
@@ -177,7 +211,7 @@
     "hardness": 0,
     "cost": 1,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@287f94b1",
+    "stats": "mindustry.world.meta.Stats@3a0807b7",
     "localizedName": "Scrap",
     "description": "Used in Melters and Pulverizers for refining into other materials.",
     "details": "Leftover remnants of old structures and units.",
@@ -185,10 +219,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 9,
+    "uiIcon": "item-scrap-ui",
+    "fullIcon": "item-scrap",
     "name": "scrap",
-    "id": "8"
+    "id": "8",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@21a5fd96"
   },
-  "silicon": {
+  "silicon":
+  {
     "type": "mindustry.content.Items$10",
     "color": "53565cff",
     "explosiveness": 0,
@@ -198,7 +236,7 @@
     "hardness": 0,
     "cost": 0.800000011920929,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@30b34287",
+    "stats": "mindustry.world.meta.Stats@5769e7ae",
     "localizedName": "Silicon",
     "description": "Used in solar panels, complex electronics and homing turret ammunition.",
     "details": "null",
@@ -206,10 +244,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 10,
+    "uiIcon": "item-silicon-ui",
+    "fullIcon": "item-silicon",
     "name": "silicon",
-    "id": "9"
+    "id": "9",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@5c77053b"
   },
-  "plastanium": {
+  "plastanium":
+  {
     "type": "mindustry.content.Items$11",
     "color": "cbd97fff",
     "explosiveness": 0.20000000298023224,
@@ -219,7 +261,7 @@
     "hardness": 0,
     "cost": 1.2999999523162842,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@5489c777",
+    "stats": "mindustry.world.meta.Stats@26b894bd",
     "localizedName": "Plastanium",
     "description": "Used in advanced units, insulation and fragmentation ammunition.",
     "details": "null",
@@ -227,10 +269,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 11,
+    "uiIcon": "item-plastanium-ui",
+    "fullIcon": "item-plastanium",
     "name": "plastanium",
-    "id": "10"
+    "id": "10",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@287f94b1"
   },
-  "phase-fabric": {
+  "phase-fabric":
+  {
     "type": "mindustry.content.Items$12",
     "color": "f4ba6eff",
     "explosiveness": 0,
@@ -240,7 +286,7 @@
     "hardness": 0,
     "cost": 1.2999999523162842,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@3676ac27",
+    "stats": "mindustry.world.meta.Stats@30b34287",
     "localizedName": "Phase Fabric",
     "description": "Used in advanced electronics and self-repairing structures.",
     "details": "null",
@@ -248,10 +294,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 12,
+    "uiIcon": "item-phase-fabric-ui",
+    "fullIcon": "item-phase-fabric",
     "name": "phase-fabric",
-    "id": "11"
+    "id": "11",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@5489c777"
   },
-  "surge-alloy": {
+  "surge-alloy":
+  {
     "type": "mindustry.content.Items$13",
     "color": "f3e979ff",
     "explosiveness": 0,
@@ -261,7 +311,7 @@
     "hardness": 0,
     "cost": 1.2000000476837158,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@62f87c44",
+    "stats": "mindustry.world.meta.Stats@3676ac27",
     "localizedName": "Surge Alloy",
     "description": "Used in advanced weaponry and reactive defense structures.",
     "details": "null",
@@ -269,10 +319,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 13,
+    "uiIcon": "item-surge-alloy-ui",
+    "fullIcon": "item-surge-alloy",
     "name": "surge-alloy",
-    "id": "12"
+    "id": "12",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@62f87c44"
   },
-  "spore-pod": {
+  "spore-pod":
+  {
     "type": "mindustry.content.Items$14",
     "color": "7457ceff",
     "explosiveness": 0,
@@ -290,10 +344,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 14,
+    "uiIcon": "item-spore-pod-ui",
+    "fullIcon": "item-spore-pod",
     "name": "spore-pod",
-    "id": "13"
+    "id": "13",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@525d79f0"
   },
-  "blast-compound": {
+  "blast-compound":
+  {
     "type": "mindustry.content.Items$15",
     "color": "ff795eff",
     "explosiveness": 1.2000000476837158,
@@ -303,7 +361,7 @@
     "hardness": 0,
     "cost": 1,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@525d79f0",
+    "stats": "mindustry.world.meta.Stats@5149f008",
     "localizedName": "Blast Compound",
     "description": "Used in bombs and explosive ammunition.",
     "details": "null",
@@ -311,10 +369,14 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 15,
+    "uiIcon": "item-blast-compound-ui",
+    "fullIcon": "item-blast-compound",
     "name": "blast-compound",
-    "id": "14"
+    "id": "14",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@7072bc39"
   },
-  "pyratite": {
+  "pyratite":
+  {
     "type": "mindustry.content.Items$16",
     "color": "ffaa5fff",
     "explosiveness": 0.4000000059604645,
@@ -324,7 +386,7 @@
     "hardness": 0,
     "cost": 1,
     "lowPriority": false,
-    "stats": "mindustry.world.meta.Stats@5149f008",
+    "stats": "mindustry.world.meta.Stats@158d255c",
     "localizedName": "Pyratite",
     "description": "Used in incendiary weapons and combustion-fueled generators.",
     "details": "null",
@@ -332,7 +394,10 @@
     "inlineDescription": true,
     "hideDetails": true,
     "iconId": 16,
+    "uiIcon": "item-pyratite-ui",
+    "fullIcon": "item-pyratite",
     "name": "pyratite",
-    "id": "15"
+    "id": "15",
+    "minfo": "mindustry.ctype.Content$ModContentInfo@2ca65ce4"
   }
 }

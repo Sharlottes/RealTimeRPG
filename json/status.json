@@ -1,5 +1,7 @@
+
 {
-  "none": {
+  "none":
+  {
     "type": "mindustry.type.StatusEffect",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -33,7 +35,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "burning": {
+  "burning":
+  {
     "type": "mindustry.content.StatusEffects$1",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -67,7 +70,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "freezing": {
+  "freezing":
+  {
     "type": "mindustry.content.StatusEffects$2",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -101,7 +105,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "unmoving": {
+  "unmoving":
+  {
     "type": "mindustry.content.StatusEffects$3",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -135,7 +140,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "slow": {
+  "slow":
+  {
     "type": "mindustry.content.StatusEffects$4",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -169,7 +175,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "wet": {
+  "wet":
+  {
     "type": "mindustry.content.StatusEffects$5",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -203,7 +210,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "muddy": {
+  "muddy":
+  {
     "type": "mindustry.content.StatusEffects$6",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -237,7 +245,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "melting": {
+  "melting":
+  {
     "type": "mindustry.content.StatusEffects$7",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -271,7 +280,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "sapped": {
+  "sapped":
+  {
     "type": "mindustry.content.StatusEffects$8",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -305,7 +315,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "electrified": {
+  "electrified":
+  {
     "type": "mindustry.content.StatusEffects$9",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -339,7 +350,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "spore-slowed": {
+  "spore-slowed":
+  {
     "type": "mindustry.content.StatusEffects$10",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -373,7 +385,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "tarred": {
+  "tarred":
+  {
     "type": "mindustry.content.StatusEffects$11",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -407,7 +420,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "overdrive": {
+  "overdrive":
+  {
     "type": "mindustry.content.StatusEffects$12",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -441,7 +455,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "overclock": {
+  "overclock":
+  {
     "type": "mindustry.content.StatusEffects$13",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -475,7 +490,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "shielded": {
+  "shielded":
+  {
     "type": "mindustry.content.StatusEffects$14",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -509,7 +525,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "boss": {
+  "boss":
+  {
     "type": "mindustry.content.StatusEffects$15",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -543,7 +560,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "shocked": {
+  "shocked":
+  {
     "type": "mindustry.content.StatusEffects$16",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -577,7 +595,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "blasted": {
+  "blasted":
+  {
     "type": "mindustry.content.StatusEffects$17",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -611,7 +630,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "corroded": {
+  "corroded":
+  {
     "type": "mindustry.content.StatusEffects$18",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -645,7 +665,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "disarmed": {
+  "disarmed":
+  {
     "type": "mindustry.content.StatusEffects$19",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
@@ -679,7 +700,8 @@
     "id": "### ERROR ###",
     "minfo": "### ERROR ###"
   },
-  "invincible": {
+  "invincible":
+  {
     "type": "mindustry.content.StatusEffects$20",
     "damageMultiplier": "### ERROR ###",
     "healthMultiplier": "### ERROR ###",
