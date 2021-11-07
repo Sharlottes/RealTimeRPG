@@ -25,11 +25,12 @@ exports.run = (client, message, args) => {
       return v;
     });
 
+    console.log(jsonData.keys());
+
     if (jsonData[args[1]] !== undefined) {
       let value = JSON.stringify(jsonData[args[1]]);
       JSON.parse(value, (k, v) => {
         if (args[2] !== undefined) {
-          console.log(k);
           if (k.includes(args[2])) {
             kvStrs[kvIndex++] = `${k} : ${v}`;
           }
