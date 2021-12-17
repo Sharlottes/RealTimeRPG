@@ -17,7 +17,7 @@ const database = firebase.database();
 exports.run = (client, message, args) => {
   try {
     firebase.database().goOnline();
-    await database.ref("/Archive/" + message.author.id).set({
+    database.ref("/Archive/" + message.author.id).set({
       Message: message.content,
       User: message.author.username,
       User_ID: message.author.id,
