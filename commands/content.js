@@ -1,6 +1,38 @@
 const Discord = require("discord.js");
 const fs = require("fs");
 
+function parse(value, key) {
+  let out = {
+    json: {},
+  };
+  let jsonData = JSON.parse(value);
+  
+  Object.keys(jsonData).forEach((k) => {
+      if (args[2] !== undefined) {
+          if (k.includes(args[2])) {
+            kvStrs[kvIndex++] = `${k} : ${jsonData2[k]}`;
+
+            if (arg[3] === "parse") {
+            }
+          }
+        } else {
+          kvStrs[kvIndex++] = `${k} : ${jsonData2[k]}`;
+        }
+      });
+    kvStrs.forEach((kv) => {
+      str += `${kv}\n`;
+      if (str.length >= maxLength || kvStrs.indexOf(kv) == kvStrs.length - 1) {
+        message.channel.send(
+          new Discord.MessageEmbed()
+            .setAuthor(`All ${args[0]} - ${args[1]} Values`, helpImg)
+            .setColor("#186de6")
+            .addField(`Values`, str)
+        );
+        str = "";
+      }
+  JSON.parse(value);
+}
+
 exports.run = (client, message, args) => {
   console.log("content commands is called with" + JSON.stringify(args));
 
@@ -10,7 +42,6 @@ exports.run = (client, message, args) => {
   let keys = [""];
   let files = [""];
   let fileIndex = 0,
-    keyIndex = 0,
     kvIndex = 0;
 
   jsonFiles.forEach((f) => {
@@ -27,6 +58,9 @@ exports.run = (client, message, args) => {
         if (args[2] !== undefined) {
           if (k.includes(args[2])) {
             kvStrs[kvIndex++] = `${k} : ${jsonData2[k]}`;
+
+            if (arg[3] === "parse") {
+            }
           }
         } else {
           kvStrs[kvIndex++] = `${k} : ${jsonData2[k]}`;
@@ -76,6 +110,19 @@ exports.run = (client, message, args) => {
             .addField(`Commands`, sstr)
         );
     }
+  } else if (args[3] === "parse") {
+    kvStrs.forEach((kv) => {
+      str += `${kv}\n`;
+      if (str.length >= maxLength || kvStrs.indexOf(kv) == kvStrs.length - 1) {
+        message.channel.send(
+          new Discord.MessageEmbed()
+            .setAuthor(`All ${args[0]} - ${args[1]} Values`, helpImg)
+            .setColor("#186de6")
+            .addField(`Values`, str)
+        );
+        str = "";
+      }
+    });
   } else {
     kvStrs.forEach((kv) => {
       str += `${kv}\n`;
