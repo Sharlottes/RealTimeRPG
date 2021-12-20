@@ -3,3 +3,6 @@
 // require 방식으로 하고 싶으면 이렇게 index 파일 만들지 말고 해당 모듈내에서 export default 혹은 export 해주면 댐.
 // 자세한 정보는 help.ts 참고
 export { default as help } from "./help";
+export { default as ping } from "./ping";
+export { default as content } from "./content";
+export { default as test } from "./test";
