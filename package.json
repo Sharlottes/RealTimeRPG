@@ -5,7 +5,8 @@
   "scripts": {
     "dev-server": "nodemon --exec ts-node src/index.ts",
     "watchMode": "tsc -w",
-    "r": "node index.js"
+    "r": "node index.js",
+    "deploy": "git add . && git commit -m \"update with deploy\" && git push && git push heroku master && wsl heroku logs --tail"
   },
   "dependencies": {
     "discord.js": "^12.5.3",
