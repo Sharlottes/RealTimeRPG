@@ -1,3 +1,8 @@
+# 외부 모듈
 node_modules/
 
-package-lock.json
+# 빌드 파일
+build/
+
+# 테스트 코드
+test/
