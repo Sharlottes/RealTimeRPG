@@ -25,6 +25,7 @@ for (file of fs.readdirSync("./commands")) {
   client.commands.set(cmd.name, cmd);
 }
 
+// 속성 뒤에 !는 해당 값이 널인지 확인하고 널이 아니면 실행
 client.on("ready", () => console.log(`Logged in as ${client.user!.tag}!`));
 
 client.on("message", (message: any) => {
