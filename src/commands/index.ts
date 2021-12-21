@@ -22,6 +22,3 @@ export default CommandList;
 export { default as Command } from "./Command"; // 명령어 인터페이스
 
 export { default as Help } from "./Help";
-export { default as ping } from "./ping";
-export { default as content } from "./content";
-export { default as test } from "./test";
