@@ -12,17 +12,24 @@ import commands from "./commands";
 const client: Client = new Discord.Client(); 
 const prefix = "!";
 
-// 속성 뒤에 !는 해당 값이 널인지 확인하고 널이 아니면 실행
-client.on("ready", () => console.log(`Logged in as ${client.user!.tag}!`));
+// 속성 뒤에 ?는 해당 값이 널인지 확인하고 널이 아니면 실행
+// ps. !가 아니라 ? 인데 지금 확인하고 고침..
+client.on("ready", () => console.log(`Logged in as ${client.user?.tag}!`));
 
 client.on("message", (message: any) => {
+  
   if (message.author.bot) return; //not botself
   if (!message.content.startsWith(prefix)) return; //need command tag
+  
 
+  // 명령어
   const args = message.content.slice(prefix.length).trim().split(" ");
-  const command = args.shift()!.toLowerCase();
-  let cmd = client.commands.get(command);
-  if (cmd) cmd.run(client, message, args);
+  const command = args.shift()?.toLowerCase();
+  
+  if(commands.has(command)) {
+    commands.get(command)?.run(client, message, args);
+  }
+
 });
 
 client.login(process.env.token);
