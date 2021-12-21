@@ -2,28 +2,15 @@
 // 이렇게 하면 불러온 모듈들이 모두 하나의 변수를 통해 참조?가 되지만 다른 방식으로 할 수도 있음.
 // import { Client } from "discord.js";
 // 위 같은 방식으로 불러오면 해당 패키지내의 모든 모듈을 불러오지 않고 해당 모듈 하나만 불러옴.
-import Discord from "discord.js";
+import Discord, { Client, Collection } from "discord.js";
 import fs from "fs";
 
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
-import { help } from "./commands";
+import commands from "./commands";
 
-// Discord.Client 타입으로 선언해도 되지만, Client 내에 commands 속성이 없길래 그냥 commands로 바꿈
-// 코딩시만 Discord.Client 타입으로 선언하고 컴파일 시에 any로 바꾸는 방식으로 해도 댐
-const client: any = new Discord.Client(); 
+// Discord.Client에 commands 속성이 없길래 그냥 다른 객체로 분리함.
+const client: Client = new Discord.Client(); 
 const prefix = "!";
-
-client.commands = new Discord.Collection();
-client.commands.set(help.name, help);
-
-
-// file이 string 형식으로 되길래 왠지 모르겠어서 얘도 걍 any 함.
-let file: any;
-for (file of fs.readdirSync("./commands")) {
-  if (file.name === "help") continue;
-  const cmd = require("./commands/" + file);
-  client.commands.set(cmd.name, cmd);
-}
 
 // 속성 뒤에 !는 해당 값이 널인지 확인하고 널이 아니면 실행
 client.on("ready", () => console.log(`Logged in as ${client.user!.tag}!`));
