@@ -11,7 +11,7 @@ class Help implements Command {
         this.description = "show avaliable commands";
     }
     
-    public run (client: Client, message: Message, args: string[]) {
+    public run (client: Client, message: Message, args: string[]): void {
         let helpImg = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png"
         let embed = new Discord.MessageEmbed().setAuthor("Avaliable Commands", helpImg).setColor("#186de6")
     
