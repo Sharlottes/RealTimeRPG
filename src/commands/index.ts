@@ -1,11 +1,23 @@
+export { default as Command } from "./Command"; // 명령어 인터페이스
+
+export { default as Help } from "./Help";
+export { default as Content } from "./Content";
+export { default as Test } from "./Test";
+export { default as Ping } from "./Ping";
+
+// 위까지는 다른 모듈들 정의
+// 아래서부턴 명령어 목록 선언
+
 import { Collection } from "discord.js";
 
-import Help from "./Help";
-import Command from "./Command";
+import { Command, Help, Content, Test, Ping } from ".";
 
 const CommandList: Collection<string, Command> = new Collection();
 const commands: Command[] = [
-    new Help()
+    new Help(),
+    new Content(),
+    new Test(),
+    new Ping()
 ];
 
 for(const command of commands) {
@@ -18,7 +30,3 @@ for(const command of commands) {
 // require 방식으로 하고 싶으면 이렇게 index 파일 만들지 말고 해당 모듈내에서 export default 혹은 export 해주면 댐.
 // 자세한 정보는 help.ts 참고
 export default CommandList;
-
-export { default as Command } from "./Command"; // 명령어 인터페이스
-
-export { default as Help } from "./Help";
