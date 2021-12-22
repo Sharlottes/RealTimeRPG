@@ -8,7 +8,7 @@ class Content implements Command {
     public readonly name: string;
     public readonly description: string;
 
-    constructor(...args: any[]) {
+    public constructor(...args: any[]) {
         this.name = "content";
         this.description =
           "show contents.\nex) !content, !content block, !content block air, !content block air health...";

@@ -6,7 +6,7 @@ class Help implements Command {
     public readonly name: string;
     public readonly description: string;
 
-    constructor(...params: any[]) {
+    public constructor(...params: any[]) {
         this.name = "help";
         this.description = "show avaliable commands";
     }

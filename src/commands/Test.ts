@@ -11,7 +11,7 @@ class Test implements Command {
 
     private firebaseConfig: firebase.AppOptions;
 
-    constructor(...params: any[]) {
+    public constructor(...params: any[]) {
         this.name = "test";
         this.description = "test smth";
 
