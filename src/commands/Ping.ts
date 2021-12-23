@@ -36,8 +36,8 @@ class Ping implements Command {
 
                             arr.forEach((str: string) => {
                                 const started = new Date().getTime();
-                                let splitStr: string[]= (str + '').split(":"),
-                                    port: number = splitStr[1] === undefined || Number(splitStr) === NaN ? 6567 : Number(splitStr[1]);
+                                const splitStr: string[]= (str + '').split(":"),
+                                    port: number = splitStr[1] === undefined || Number(splitStr[1]) === NaN ? 6567 : Number(splitStr[1]);
                                 tcpp.probe(splitStr[0], port, (err, available) => {
                                     field += `${str} - ${new Date().getTime() - started}ms\n`;
                                     if(arr.indexOf(str) == arr.length - 1) {
@@ -50,7 +50,7 @@ class Ping implements Command {
                 });
             } else {
                 const started = new Date().getTime(),
-                    port = args[1] === undefined ? 6567 : Number(args[1]);
+                    port = args[1] === undefined || Number(args[1]) === NaN ? 6567 : Number(args[1]);
                 tcpp.probe(args[0], port, (err, availalbe) => 
                     message.channel.send(`${args[0]}, ${new Date().getTime() - started}ms`));
             }
