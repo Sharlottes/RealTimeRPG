@@ -1,6 +1,7 @@
 import Discord from "discord.js";
 import firebase from "firebase-admin";
 
+import config from "./sdk.json";
 import { Command } from "./index";
 
 class Test implements Command {
@@ -14,8 +15,8 @@ class Test implements Command {
     public constructor(...params: any[]) {
         this.name = "test";
         this.description = "test smth";
-
-        this.firebaseConfig = {}
+        
+        this.firebaseConfig = config;
         this.app = firebase.initializeApp(this.firebaseConfig);
         this.database = firebase.database();
     }
