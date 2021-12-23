@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "r": "node index.js",
+    "r": "ts-node index.ts",
     "deploy": "git add . && git commit -m \"update with deploy\" && git push && git push heroku master && wsl heroku logs --tail",
     "watchMode": "tsc -w",
     "dev-server": "nodemon --exec ts-node src/index.ts",
