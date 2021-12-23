@@ -7,6 +7,15 @@ import Discord, { Client, Message } from "discord.js";
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
 import commands from "./commands";
 
+const args: Map<string, string> = new Map<string, string>();
+
+// 프로그램 실행 인자 추출
+process.argv.forEach((arg: string, index, array) => {
+  if(arg.slice(0, 2) == "--") {
+    args.set(arg.slice(2), array[index + 1]);
+  }
+});
+
 // Discord.Client에 commands 속성이 없길래 그냥 다른 객체로 분리함.
 const client: Client = new Discord.Client(); 
 const prefix = "!";
@@ -26,9 +35,18 @@ client.on("message", (message: Message) => {
   const command: string | undefined = args.shift()?.toLowerCase();
   
   if(command != undefined && commands.has(command)) {
+    console.log(message.channel.id);    
     commands.get(command)?.run(client, message, args);
   }
 
 });
 
-client.login(process.env.token);
+//client.login(process.env.token);
+client.login(args.get("token"));
+
+const app = {
+  client: client,
+  argDic: args
+}
+
+export default app;
