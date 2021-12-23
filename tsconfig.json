@@ -1,7 +1,8 @@
 {
   "include": [
     "src/**/*.js",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "assets/**/*"
   ],
   "exclude": [
     "test"
