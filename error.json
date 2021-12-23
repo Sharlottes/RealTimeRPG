@@ -1,0 +1,7 @@
+{
+    "scripts": {
+        "build: linux": "yarn run compile && pkg build/compile/index.js --target latest-linux-x64 --output build/output/bot-linux",
+        "build: macos": "yarn run compile && pkg build/compile/index.js --target latest-macos-x64 --output build/output/bot-macos",
+        "build: window": "yarn run compile && pkg build/compile/index.js --target latest-win-x64 --output build/output/bot-window.exe"
+    }
+}

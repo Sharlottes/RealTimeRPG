@@ -8,10 +8,7 @@
     "watchMode": "tsc -w",
     "dev-server": "nodemon --exec ts-node src/index.ts",
     "clear": "tsc --build --clean && if exist build\\compile ( rd /s /q build\\compile )",
-    "compile": "yarn run clear && tsc --build",
-    "build: linux": "yarn run compile && pkg build/compile/index.js --target node16-linux-x64 --output build/output/bot-linux",
-    "build: macos": "yarn run compile && pkg build/compile/index.js --target node16-macos-x64 --output build/output/bot-macos",
-    "build: window": "yarn run compile && pkg build/compile/index.js --target node16-win-x64 --output build/output/bot-window.exe"
+    "compile": "yarn run clear && tsc --build"
   },
   "dependencies": {
     "discord.js": "^12.5.3",
