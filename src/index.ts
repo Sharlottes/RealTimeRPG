@@ -7,11 +7,10 @@ import Discord, { Client, Message } from "discord.js";
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
 import commands from "./commands";
 import assets from "./assets"
+import config from "./config.json";
 
 const args: Map<string, any> = new Map<string, any>();
-
 // 기본 인자 설정
-args.set("debug", false);
 
 // 프로그램 실행 인자 추출
 process.argv.forEach((arg: string, index: number, array: string[]) => {
@@ -29,7 +28,7 @@ process.argv.forEach((arg: string, index: number, array: string[]) => {
   }
 });
 
-assets.init(args.get("debug"));
+assets.init(config.debug);
 
 // Discord.Client에 commands 속성이 없길래 그냥 다른 객체로 분리함.
 const client: Client = new Discord.Client(); 
@@ -49,19 +48,20 @@ client.on("message", (message: Message) => {
   const args: string[] = message.content.slice(prefix.length).trim().split(" ");
   const command: string | undefined = args.shift()?.toLowerCase();
   
-  if(command != undefined && commands.has(command)) {
-    console.log(message.channel.id);    
+  if(command != undefined && commands.has(command) && message.channel.name != undefined) {
+    
     commands.get(command)?.run(client, message, args);
   }
 
 });
 
 //client.login(process.env.token);
-client.login(args.get("token"));
+client.login(config.botToken);
 
 const app = {
   client: client,
-  option: args
+  option: args,
+  config: config
 }
 
 export default app;

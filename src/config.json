@@ -1,0 +1,10 @@
+{
+    "whiteList": true,
+    "debug": true,
+    "botToken": "<DiscordBotToken>",
+    "channels": {
+        "bots" : {
+            "allow": true
+        }
+    }
+}

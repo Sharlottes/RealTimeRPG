@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "r": "ts-node src/index.ts --token <DiscordBotToken>",
+    "r": "ts-node src/index.ts",
     "deploy": "scripts/deploy.bat",
     "watchMode": "tsc -w",
     "dev-server": "nodemon --exec ts-node src/index.ts",
