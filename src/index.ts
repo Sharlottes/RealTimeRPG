@@ -6,6 +6,7 @@ import Discord, { Client, Message } from "discord.js";
 
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
 import commands from "./commands";
+import assets from "./assets"
 
 const args: Map<string, any> = new Map<string, any>();
 
@@ -15,19 +16,20 @@ args.set("debug", false);
 // 프로그램 실행 인자 추출
 process.argv.forEach((arg: string, index: number, array: string[]) => {
   if(arg.slice(0, 2) == "--" && array.length > index + 1) {
-    const key: string = arg.slice(2),
-          value: string = array[index + 1];
-    if(value.slice(0, 2) != "--") {
-      if(value == "true" || value == "false") {
-        args.set(key, Boolean(value));
-      } else if(Number(value) != NaN) {
-        args.set(key, Number(value));
-      } else {
-        args.set(key, value);
-      }
+    const key: string = arg.slice(2);
+    const value: string = array[index + 1];
+    
+    if(value == "true" || value == "false") {
+      args.set(key, Boolean(value));
+    } else if(Number(value).toString() != "NaN") {
+      args.set(key, Number(value));
+    } else {
+      args.set(key, value);
     }
   }
 });
+
+assets.init(args.get("debug"));
 
 // Discord.Client에 commands 속성이 없길래 그냥 다른 객체로 분리함.
 const client: Client = new Discord.Client(); 
