@@ -9,3 +9,4 @@ test/
 
 # sdk
 **/sdk.json
+src/config.json
