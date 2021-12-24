@@ -1,11 +1,11 @@
 {
   "include": [
     "src/**/*.js",
-    "src/**/*.ts",
-    "assets/**/*"
+    "src/**/*.ts"
   ],
   "exclude": [
-    "test"
+    "test",
+    "scripts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */

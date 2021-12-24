@@ -4,11 +4,10 @@
   "main": "index.ts",
   "scripts": {
     "r": "ts-node src/index.ts --token <DiscordBotToken>",
-    "deploy": "git add . && git commit -m \"update with deploy\" && git push && git push heroku master && wsl heroku logs --tail",
+    "deploy": "scripts/deploy.bat",
     "watchMode": "tsc -w",
     "dev-server": "nodemon --exec ts-node src/index.ts",
-    "clear": "tsc --build --clean && if exist build\\compile ( rd /s /q build\\compile )",
-    "compile": "yarn run clear && tsc --build"
+    "compile": "scripts/compile.bat"
   },
   "dependencies": {
     "discord.js": "^12.5.3",
