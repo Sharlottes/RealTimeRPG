@@ -17,7 +17,15 @@ process.argv.forEach((arg: string, index, array) => {
   if(arg.slice(0, 2) == "--" && array.length > index + 1) {
     const key: string = arg.slice(2),
           value: string = array[index + 1];
-    args.set(key, value);
+    if(value.slice(0, 2) != "--") {
+      if(value == "true" || value == "false") {
+        args.set(key, Boolean(value));
+      } else if(Number(value) != NaN) {
+        args.set(key, Number(value));
+      } else {
+        args.set(key, value);
+      }
+    }
   }
 });
 
