@@ -12,6 +12,7 @@
   "dependencies": {
     "discord.js": "^12.5.3",
     "firebase-admin": "^10.0.1",
+    "properties-reader": "^2.2.0",
     "request": "^2.88.2",
     "tcp-ping": "^0.1.1"
   },
