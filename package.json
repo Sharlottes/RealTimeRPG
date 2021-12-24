@@ -41,5 +41,9 @@
     "url": "https://github.com/Sharlottes/nodejsbot/issues"
   },
   "homepage": "https://github.com/Sharlottes/nodejsbot#readme",
-  "description": ""
+  "description": "",
+  "nodemonConfig": {
+    "ignore": [],
+    "delay": 2500
+  }
 }
