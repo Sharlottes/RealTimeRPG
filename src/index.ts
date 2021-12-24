@@ -47,8 +47,9 @@ client.on("message", (message: Message) => {
   const args: string[] = message.content.slice(prefix.length).trim().split(" ");
   const command: string | undefined = args.shift()?.toLowerCase();
   
-  // 여기서 message.channel.name은 내가 임의로 타입 선언함.
-  if(command != undefined && commands.has(command) && message.channel.name != undefined) {
+  if(command != undefined && commands.has(command) && 
+    (message.channel instanceof Discord.TextChannel ||
+      message.channel instanceof Discord.NewsChannel)) {
     const whiteList: any = config.whiteList;
     if(whiteList != false && whiteList.includes(message.channel.name)) {
       commands.get(command)?.run(client, message, args);

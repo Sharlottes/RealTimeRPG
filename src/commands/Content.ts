@@ -1,6 +1,5 @@
-import { json } from "body-parser";
 import Discord, { Client, Message } from "discord.js";
-import fs, { readFile } from "fs";
+import fs from "fs";
 
 import { Command } from ".";
 
