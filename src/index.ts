@@ -7,12 +7,17 @@ import Discord, { Client, Message } from "discord.js";
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
 import commands from "./commands";
 
-const args: Map<string, string> = new Map<string, string>();
+const args: Map<string, any> = new Map<string, any>();
+
+// 기본 인자 설정
+args.set("debug", false);
 
 // 프로그램 실행 인자 추출
 process.argv.forEach((arg: string, index, array) => {
-  if(arg.slice(0, 2) == "--") {
-    args.set(arg.slice(2), array[index + 1]);
+  if(arg.slice(0, 2) == "--" && array.length > index + 1) {
+    const key: string = arg.slice(2),
+          value: string = array[index + 1];
+    args.set(key, value);
   }
 });
 
