@@ -59,7 +59,7 @@ client.login(args.get("token"));
 
 const app = {
   client: client,
-  argDic: args
+  option: args
 }
 
 export default app;
