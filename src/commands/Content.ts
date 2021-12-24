@@ -16,7 +16,7 @@ class Content implements Command {
     public run(client: Client, message: Message, args: string[]): void {
         console.log("content commands is called with" + JSON.stringify(args));
 
-        const jsonFiles: string[] = fs.readdirSync("./json");
+        const jsonFiles: string[] = fs.readdirSync("./assets/contents");
         const kvStrs: string[] = [""];
         const files: string[] = [""];
         let stop: boolean = false;
@@ -29,7 +29,7 @@ class Content implements Command {
             if(f !== undefined) { files[fileIndex++] = f; }
             if(stop || args[0] === undefined || args[0] != f.split(".")[0]) return;
 
-            const jsonBuffer: Buffer = fs.readFileSync("./json/" + f);
+            const jsonBuffer: Buffer = fs.readFileSync("./assets/contents/" + f);
             const jsonData: any = JSON.parse(jsonBuffer.toString());
             keys = Object.keys(jsonData);
 
