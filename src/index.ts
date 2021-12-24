@@ -13,7 +13,7 @@ const args: Map<string, any> = new Map<string, any>();
 args.set("debug", false);
 
 // 프로그램 실행 인자 추출
-process.argv.forEach((arg: string, index, array) => {
+process.argv.forEach((arg: string, index: number, array: string[]) => {
   if(arg.slice(0, 2) == "--" && array.length > index + 1) {
     const key: string = arg.slice(2),
           value: string = array[index + 1];
