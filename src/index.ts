@@ -1,3 +1,5 @@
+export { default as firebaseAdmin } from "./FirebaseAdmin"
+
 // 참조된 패키지들에서 모듈 가져오기.
 // 이렇게 하면 불러온 모듈들이 모두 하나의 변수를 통해 참조?가 되지만 다른 방식으로 할 수도 있음.
 // import { Client } from "discord.js";
@@ -5,9 +7,14 @@
 import Discord, { Client, Message } from "discord.js";
 
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
+import { firebaseAdmin } from ".";
 import commands from "./commands";
 import assets from "./assets"
 import config from "./config.json";
+
+// 파이어베이스 초기화
+
+const admin = firebaseAdmin;
 
 const args: Map<string, any> = new Map<string, any>();
 // 기본 인자 설정
@@ -39,7 +46,6 @@ const prefix = "!";
 client.on("ready", () => console.log(`Logged in as ${client.user?.tag}!`));
 
 client.on("message", (message: Message) => {
-  
   if (message.author.bot) return; //not botself
   if (!message.content.startsWith(prefix)) return; //need command tag
 
@@ -47,11 +53,12 @@ client.on("message", (message: Message) => {
   const args: string[] = message.content.slice(prefix.length).trim().split(" ");
   const command: string | undefined = args.shift()?.toLowerCase();
   
-  if(command != undefined && commands.has(command) && 
-    (message.channel instanceof Discord.TextChannel ||
-      message.channel instanceof Discord.NewsChannel)) {
+  if(command != undefined && commands.has(command)) {
     const whiteList: any = config.whiteList;
-    if(whiteList != false && whiteList.includes(message.channel.name)) {
+    let name: string = message.channel instanceof Discord.TextChannel || message.channel instanceof Discord.NewsChannel ?
+    message.channel.name : message.author.username;
+
+    if((whiteList == false || whiteList.includes(name)) || message.channel.type == "dm") {
       commands.get(command)?.run(client, message, args);
     }
   }

@@ -1,9 +1,7 @@
 {
     "debug": true,
-    "botToken": "<DiscordBotToken>",
-    "whiteList": [
-        "bots"
-    ],
+    "botToken": "NTYxNTY4MTUwNDE2NjU0MzYw.XJ-HGA.jxkP_6QQiYOxJl5Dh1Uxuj2AHE0",
+    "whiteList": false,
     "channels": {
         "bots" : {
         }
