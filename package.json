@@ -4,7 +4,6 @@
   "main": "index.ts",
   "scripts": {
     "r": "ts-node src/index.ts",
-    "deploy": "scripts/deploy.bat",
     "watchMode": "tsc -w",
     "dev-server": "nodemon --exec ts-node src/index.ts",
     "compile": "scripts/compile.bat"
