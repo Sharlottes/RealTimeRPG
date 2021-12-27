@@ -10,3 +10,4 @@ test/
 # sdk
 **/sdk.json
 src/config.json
+src/publicKey.json
