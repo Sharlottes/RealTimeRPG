@@ -3,7 +3,8 @@ import { Auth } from "firebase-admin/auth"
 
 import { Account } from "./auth"
 
-import config from "./sdk.json"
+import config from "./publicKey.json";
+import secret from "./sdk.json"
 
 class FirebaseAdmin {
     public readonly app: firebase.app.App;
@@ -13,7 +14,16 @@ class FirebaseAdmin {
     public readonly accounts: Map<string, Account>;
 
     public constructor() {
-        this.app = firebase.initializeApp(config);
+        const setup: firebase.AppOptions = {
+            ...config,
+            credential: firebase.credential.cert({
+                projectId: secret.project_id,
+                privateKey: secret.private_key,
+                clientEmail: secret.client_email
+            })
+        }
+
+        this.app = firebase.initializeApp(setup);
 
         this.database = firebase.database(this.app);
         this.auth = firebase.auth(this.app);
