@@ -9,6 +9,7 @@
     "compile": "scripts/compile.bat"
   },
   "dependencies": {
+    "@discordjs/builders": "^0.10.0",
     "@discordjs/rest": "^0.2.0-canary.0",
     "discord-api-types": "^0.26.0",
     "discord.js": "^12.5.3",
