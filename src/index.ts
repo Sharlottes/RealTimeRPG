@@ -41,24 +41,13 @@ assets.init(config.debug);
 // Discord.Client에 commands 속성이 없길래 그냥 다른 객체로 분리함.
 const client: Client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }); 
 
-function toSlashCommand(command: Command): SlashCommandBuilder {
-  const result = new SlashCommandBuilder()
-  .setName(command.name)
-  .setDescription(command.description || "no description");
-// 명령어 인수에 이름좀 붙여줘요.. ex) arg[0] 이럴경우 => type: string / id: name / require(필수 입력인 경우): true
-// 이렇게 해당 인수 위에 주석 붙여주심 댐
-// 그걸 지금 option으로 추가? 변경해야되갖구
-  command.build(result);
-
-  return result;
-}
 // 속성 뒤에 ?는 해당 값이 널인지 확인하고 널이 아니면 실행
 client.on("ready", () => {
   console.log(`Logged in as ${client.user?.tag}!`)
 
   // 봇 시작시 로딩
   commands.forEach(command => {
-    client.application?.commands.create(toSlashCommand(command).toJSON());
+    client.application?.commands.create(command.builder.toJSON());
   })
 });
 
