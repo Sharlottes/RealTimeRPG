@@ -1,35 +1,36 @@
-import Discord from "discord.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandInteraction } from "discord.js";
 import firebase from "firebase-admin";
 
 import { firebaseAdmin } from "../";
 import { Command } from "./index";
 
 class Test implements Command {
-    public readonly name: string;
-    public readonly description: string;
+    public readonly builder: SlashCommandBuilder;
     private database: firebase.database.Database;
 
     public constructor(...params: any[]) {
-        this.name = "test";
-        this.description = "test smth";
+        this.builder = new SlashCommandBuilder()
+            .setName("test")
+            .setDescription("test smth");
         
         this.database = firebaseAdmin.database;
     }
 
-    public run (client: Discord.Client, message: Discord.Message, args: string[]): void {
+    public run(interaction: CommandInteraction) {
         const database = this.database;
         
         try {
             firebase.database().goOnline();
     
-            database.ref("/Archive/" + message.author.id).set({
-                Message: message.content,
-                User: message.author.username,
-                User_ID: message.author.id,
+            database.ref("/Archive/" + interaction.user.id).set({
+                Message: interaction.toString(),
+                User: interaction.user.username,
+                User_ID: interaction.user.id,
             });
             firebase.database().goOffline();
     
-            message.channel.send(`hi!`);
+            interaction.reply({content: `hi!`, ephemeral: true});
         } catch(err) {
             console.log(err);
         }
