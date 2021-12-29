@@ -1,6 +1,5 @@
 export { default as Command } from "./Command"; // 명령어 인터페이스
 
-export { default as Help } from "./Help";
 export { default as Content } from "./Content";
 export { default as Test } from "./Test";
 export { default as Ping } from "./Ping";
@@ -11,12 +10,11 @@ export { default as Login } from "./Login";
 
 import { Collection } from "discord.js";
 
-import { Command, Help, Content, Test, Ping, Login } from ".";
+import { Command, Content, Test, Ping, Login } from ".";
 import Register from "./Register";
 
 const CommandList: Collection<string, Command> = new Collection();
 const commands: Command[] = [
-    new Help(),
     new Content(),
     new Test(),
     new Ping(),
