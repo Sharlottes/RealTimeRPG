@@ -1,6 +1,7 @@
 {
     "debug": true,
     "botToken": "<Discord-Bot-Token>",
+    "botId": "<Discord-Bot-Client-Id>",
     "whiteList": false,
     "channels": {
         "bots" : {
