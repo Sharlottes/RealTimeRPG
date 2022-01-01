@@ -11,21 +11,18 @@ export { default as Login } from "./Login";
 import { Collection } from "discord.js";
 
 import { Command, Content, Test, Ping, Login } from ".";
-import Register from "./Register";
 
 const CommandList: Collection<string, Command> = new Collection();
 const commands: Command[] = [
     new Content(),
     new Test(),
     new Ping(),
-    new Login(),
-    new Register()
+    new Login()
 ];
 
 for(const command of commands) {
-    CommandList.set(command.name, command);
+    CommandList.set(command.builder.name, command);
 }
-
 
 // 타입스크립트나 모듈 타입으로 코딩할 때 사용하는 내보내기 선언.
 // 의외로 쓰다보면 편함.
