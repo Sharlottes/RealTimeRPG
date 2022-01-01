@@ -1,17 +1,18 @@
-import { Client, Message } from "discord.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CacheType, CommandInteraction } from "discord.js";
 import { Command } from ".";
 
 class Login implements Command {
-    public readonly name: string;
-    public readonly description: string;
+    public readonly builder: SlashCommandBuilder;
     
     public constructor() {
-        this.name = "login";
-        this.description = "";
+        this.builder = new SlashCommandBuilder()
+            .setName("login")
+            .setDescription("desc");
     }
     
-    public run(client: Client, message: Message, args: string[]) {
-        
+    public run(interaction: CommandInteraction<CacheType>) {
+
     }
 }
 

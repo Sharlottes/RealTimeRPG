@@ -1,10 +1,10 @@
 import firebase from "firebase-admin"
 import { Auth } from "firebase-admin/auth"
 
-import { Account } from "./auth"
+import { Account } from "../auth"
 
-import config from "./publicKey.json";
-import secret from "./sdk.json"
+import config from "../publicKey.json";
+import secret from "../sdk.json"
 
 class FirebaseAdmin {
     public readonly app: firebase.app.App;
@@ -32,4 +32,6 @@ class FirebaseAdmin {
     }
 }
 
-export default new FirebaseAdmin();
+const admin = new FirebaseAdmin();
+
+export default admin;
