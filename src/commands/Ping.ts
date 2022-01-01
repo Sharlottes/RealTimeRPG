@@ -1,59 +1,85 @@
-import { Client, Message } from 'discord.js';
+import { CommandInteraction, CacheType } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
 import tcpp from "tcp-ping";
 import request from "request";
 
+import app from "../"
 import { Command } from '.'
 
 class Ping implements Command {
-    public readonly name: string;
-    public readonly description: string;
+    public readonly builder: SlashCommandBuilder;
 
     public constructor() {
-        this.name = "ping";
-        this.description = "check bot status";
+        this.builder = new SlashCommandBuilder()
+            .setName("ping")
+            .setDescription("check bot status");
+            
+        this.builder
+            .addStringOption(option => option
+                .setName("version")
+                .setDescription("server version")
+                .setRequired(true)
+                .addChoices([
+                    ["v6", "v6"],
+                    ["v7", "v7"],
+                    ["be", "be"],
+                    ["other", "other"]
+                ])
+            )
+            .addStringOption(option => option
+                .setName("address")
+                .setDescription("v6, v7, be or domain you want")
+                .setRequired(true)
+            )
+            .addIntegerOption(option => option
+                .setName("port")
+                .setDescription("the port number for domain")
+                .setRequired(false));
     }
 
-    public run(client: Client, message: Message, args: string[]) {
-        message.reply(`${client.ws.ping}ms`);
-        if(args[0] !== undefined) {
-            const versions: string[] = ["v7", "v6", "be"];
-            if(versions.includes(args[0])) {
-                const url: string = `https://raw.githubusercontent.com/Anuken/Mindustry/master/servers_${args[0]}.json`;
-                // const helpImg: string = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png";
+    public run(interaction: CommandInteraction<CacheType>) {
+        /*
+        interaction.options.getString("인수명", true) // 이런식으로 
+        // required 가 true면 해당 인수는 반드시 입력되는 인수
+        
+        클라 호출은 이걸루
+        app.client
+        */
+        interaction.reply(`${app.client.ws.ping}ms`);
+        const versions: string[] = ["v7", "v6", "be"];
+        const ver: string = interaction.options.getString('version', true);
+        if(versions.includes(ver)) {
+            const url: string = `https://raw.githubusercontent.com/Anuken/Mindustry/master/servers_${ver}.json`;
+            // const helpImg: string = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png";
 
-                request({url: url, json: true}, (error, respone, body) => {
-                    if(!error && respone.statusCode === 200) {
-                        const parsed: any = JSON.parse(JSON.stringify(body));
-
-                        parsed.forEach((v: any) => {
-                            const parsedParsed = JSON.parse(JSON.stringify(v));
-                            const name = parsedParsed["name"];
-                            const address = (parsedParsed["address"] + "")
-                                    .replace("[", "")
-                                    .replace("]", "");
-                            const arr = (address + '').split(",");
-                            let field = "";
-
-                            arr.forEach((str: string) => {
-                                const started = new Date().getTime();
-                                const splitStr: string[]= (str + '').split(":"),
-                                    port: number = splitStr[1] === undefined || Number(splitStr[1]) === NaN ? 6567 : Number(splitStr[1]);
-                                tcpp.probe(splitStr[0], port, (err, available) => {
-                                    field += `${str} - ${new Date().getTime() - started}ms\n`;
-                                    if(arr.indexOf(str) == arr.length - 1) {
-                                        message.channel.send(`**${name}**\n${field}`);
-                                    }
-                                });
-                            })
-                        });
-                    } else console.error(error);
-                });
-            } else {
-                const started = new Date().getTime(),
-                    port = args[1] === undefined || Number(args[1]) === NaN ? 6567 : Number(args[1]);
-                tcpp.probe(args[0], port, (err, availalbe) => 
-                    message.channel.send(`${args[0]}, ${new Date().getTime() - started}ms`));
-            }
+            //mindustry server list의 각 서버들에 ping 요청을 하여 나온 시간들을 출력.
+            request({url: url, json: true},  (error, respone, body) => {
+                if(!error && respone.statusCode === 200) {
+                    //요청 후 얻은 json 문자를 파싱하여 각 서버마다 반복문 돌림
+                    JSON.parse(body).forEach((v: {
+                            name: string,
+                            addresses: string[]
+                        }) => { // 한 서버당 주소가 여러개이므로 루프 또 돌림 ㄴㅇㄱ
+                        const field: string = v.addresses.map(async (address: string) => {
+                            const started = new Date().getTime();
+                            let [addressname, stringPort]: string[] = address.split(":");
+                            const port: number = parseInt(stringPort || "6567");
+                            let out: string = "";
+                            await tcpp.probe(addressname, port, (err, available) => {
+                                //콜백함수가 호출되면 addresses에 아래 문자열을 담음.
+                                out = `${address} - ${new Date().getTime() - started}ms\n`;
+                            });
+                            return out;
+                        }).join("\n"); //담은것들 개행문자로 구분해서 출력
+                        interaction.followUp(`**${name}**\n${field}`);
+                    });
+                } else console.error(error);
+            });
+        } else { //만약 서버리스트가 아니라 일반 도메인이라면
+            const started: number = new Date().getTime(),
+                port: number = interaction.options.getNumber('port', false) || 6567;
+            tcpp.probe(ver, port, (err, availalbe) => //똑같이 요청해서 출력
+                interaction.followUp(`${ver}, ${new Date().getTime() - started}ms`));
         }
     }
     
