@@ -1,5 +1,5 @@
+import { CommandInteraction, CacheType } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
 import firebase from "firebase-admin";
 
 import { firebaseAdmin } from "../";
@@ -9,15 +9,16 @@ class Test implements Command {
     public readonly builder: SlashCommandBuilder;
     private database: firebase.database.Database;
 
-    public constructor(...params: any[]) {
+    public constructor() {
         this.builder = new SlashCommandBuilder()
             .setName("test")
-            .setDescription("test smth");
-        
+            .setDescription("test smth")
+            .setDefaultPermission(false);
+            
         this.database = firebaseAdmin.database;
     }
 
-    public run(interaction: CommandInteraction) {
+    public run(interaction: CommandInteraction<CacheType>) {
         const database = this.database;
         
         try {
