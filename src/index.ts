@@ -1,22 +1,21 @@
-export { default as firebaseAdmin } from "./FirebaseAdmin"
+export { default as firebaseAdmin } from "./net/FirebaseAdmin"
 
 // 참조된 패키지들에서 모듈 가져오기.
 // 이렇게 하면 불러온 모듈들이 모두 하나의 변수를 통해 참조?가 되지만 다른 방식으로 할 수도 있음.
 // import { Client } from "discord.js";
 // 위 같은 방식으로 불러오면 해당 패키지내의 모든 모듈을 불러오지 않고 해당 모듈 하나만 불러옴.
 import Discord, { Client, Intents } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { Routes } from "discord-api-types/v9";
 
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
 import { firebaseAdmin } from ".";
-import commands, { Command } from "./commands";
+import commands from "./commands";
 import assets from "./assets"
 import config from "./config.json";
 
+
 // 파이어베이스 초기화
 
-const admin = firebaseAdmin;
+firebaseAdmin;
 const startArgs: Map<string, any> = new Map<string, any>();
 
 // 기본 인자 설정
@@ -53,28 +52,37 @@ client.on("ready", () => {
 
 // 명령어 구현부
 client.on("interactionCreate", async interaction => {
-  if(!interaction.isCommand()) return;
-
-  if(commands.has(interaction.commandName)) {
-    const whiteList: any = config.whiteList;
-    let channelName: string =
-      interaction.channel instanceof Discord.TextChannel ||
-      interaction.channel instanceof Discord.NewsChannel
-        ? interaction.channel.name
-        : interaction.user.username;
-
-    if((whiteList == false || whiteList.includes(channelName)) || interaction.channel?.type == "DM") {
-      commands.get(interaction.commandName)?.run(interaction);
-    } else {
-      interaction.reply("Commands are available only in the dm channel or the following channels.")
+  if(interaction.isCommand()) {
+    try {
+      if(commands.has(interaction.commandName)) {
+        const whiteList: any = config.whiteList;
+        let channelName: string =
+          interaction.channel instanceof Discord.TextChannel ||
+          interaction.channel instanceof Discord.NewsChannel
+            ? interaction.channel.name
+            : interaction.user.username;
+    
+        if((whiteList == false || whiteList.includes(channelName)) || interaction.channel?.type == "DM") {
+          commands.get(interaction.commandName)?.run(interaction);
+        } else {
+          interaction.reply("Commands are available only in the dm channel or the following channels.")
+        }
+      } else {
+        interaction.reply("Error... Undefined command!");
+      }
+    } catch(error) {
+      const err: any = error;
+      if(!interaction.replied) {
+        interaction.reply(err);
+      } else {
+        interaction.followUp(err);
+      }
+    } finally {
+      if(!interaction.replied) {
+        interaction.reply({content: "no reply.", ephemeral: true});
+      }
     }
-  } else {
-    interaction.reply("Error... Undefined command!");
-  }
-  
-  if(!interaction.replied) {
-    interaction.reply("no reply");
-  }
+  } else return;
 });
 
 /* 전 버전 방식 명령어 구현부
