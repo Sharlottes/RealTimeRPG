@@ -30,7 +30,7 @@ class Ping extends Command {
             .addStringOption(option => option
                 .setName("address")
                 .setDescription("v6, v7, be or domain you want")
-                .setRequired(true)
+                .setRequired(false)
             )
             .addIntegerOption(option => option
                 .setName("port")
