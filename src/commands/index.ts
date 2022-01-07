@@ -4,24 +4,55 @@ export { default as Content } from "./Content";
 export { default as Test } from "./Test";
 export { default as Ping } from "./Ping";
 export { default as Login } from "./Login";
+export { default as Refresh } from "./Refresh";
 
 // 위까지는 다른 모듈들 정의
 // 아래서부턴 명령어 목록 선언
 
 import { Collection } from "discord.js";
+import fs from "fs";
 
-import { Command, Content, Test, Ping, Login } from ".";
+import { Command } from ".";
+import config from "../config.json";
 
 const CommandList: Collection<string, Command> = new Collection();
-const commands: Command[] = [
-    new Content(),
-    new Test(),
-    new Ping(),
-    new Login()
+const ignores: string[] = [
+    "index.ts", "Command.ts"
 ];
 
-for(const command of commands) {
-    CommandList.set(command.builder.name, command);
+export function refreshCommand(): Promise<Collection<string, Command>> {
+    return new Promise(async (resolve, reject) => {
+        const time = new Date().getTime();
+        try {
+            console.log("[Command] Refresh start!")
+        
+            console.log("[Command] Clear command cach...");
+            CommandList.clear();
+        
+            const dirPath = config.debug ? "./src/commands/" : "./commands/";
+            const dir = fs.readdirSync(dirPath, {withFileTypes: true, encoding: "utf-8"})
+        
+            for(let i = 0, n = dir.length; i < n; i++) {
+                const file = dir[i];
+        
+                if(file.isFile() && !ignores.includes(file.name)) {
+                    const code = await import("./" + file.name);
+                    if(code.name != Command.name && typeof code.default == "function") {
+                        const command = new code.default();
+                        if(command instanceof Command) {
+                            console.log(`[Command] register [ /${command.builder.name} ] command.`);
+                            CommandList.set(command.builder.name, command);
+                        }
+                    }
+                }
+            }
+            resolve(CommandList);
+        } catch (error) {
+            reject(error);
+        } finally {
+            console.log(`[Command] Refresh is finished in ${(new Date().getTime() - time) / 1000}s`);
+        }
+    })
 }
 
 // 타입스크립트나 모듈 타입으로 코딩할 때 사용하는 내보내기 선언.
