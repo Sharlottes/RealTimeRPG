@@ -4,6 +4,5 @@
 @if exist build\compile (rd /s /q build\compile)
 @echo 컴파일 중...
 @start /b tsc --build
-@echo off
 @mkdir %cd%\build\compile\assets
 @xcopy %cd%\assets %cd%\build\compile\assets /s /e /h /k /y
