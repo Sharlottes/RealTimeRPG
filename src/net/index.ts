@@ -1,0 +1,1 @@
+export { default as firebaseAdmin } from "./FirebaseAdmin"

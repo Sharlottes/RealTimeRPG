@@ -9,6 +9,7 @@ import secret from "../sdk.json"
 class FirebaseAdmin {
     public readonly app: firebase.app.App;
     public readonly database: firebase.database.Database;
+    public readonly firestore: firebase.firestore.Firestore;
     public readonly auth: Auth;
 
     public readonly accounts: Map<string, Account>;
@@ -23,12 +24,15 @@ class FirebaseAdmin {
             })
         }
 
-        this.app = firebase.initializeApp(setup);
+        const app = this.app = firebase.initializeApp(setup);
 
-        this.database = firebase.database(this.app);
-        this.auth = firebase.auth(this.app);
+        const database = this.database = firebase.database(this.app);
+        const auth = this.auth = firebase.auth(this.app);
+        const firestore = this.firestore = firebase.firestore(this.app);
 
-        this.accounts = new Map<string, Account>();
+        const accounts = this.accounts = new Map<string, Account>();
+
+        database.goOnline();
     }
 }
 
