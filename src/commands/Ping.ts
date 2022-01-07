@@ -6,10 +6,11 @@ import request from "request";
 import app from "../"
 import { Command } from '.'
 
-class Ping implements Command {
+class Ping extends Command {
     public readonly builder: SlashCommandBuilder;
 
     public constructor() {
+        super();
         this.builder = new SlashCommandBuilder()
             .setName("ping")
             .setDescription("check bot status");
@@ -59,7 +60,7 @@ class Ping implements Command {
                     JSON.parse(body).forEach((v: {
                             name: string,
                             addresses: string[]
-                        }) => { // 한 서버당 주소가 여러개이므로 루프 또 돌림 ㄴㅇㄱ
+                        }) => { // 한 서버당 주소가 여러개이므로 루프 또 돌림 
                         const field: string = v.addresses.map(async (address: string) => {
                             const started = new Date().getTime();
                             let [addressname, stringPort]: string[] = address.split(":");

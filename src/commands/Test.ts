@@ -5,11 +5,13 @@ import firebase from "firebase-admin";
 import { firebaseAdmin } from "../";
 import { Command } from "./index";
 
-class Test implements Command {
+class Test extends Command {
     public readonly builder: SlashCommandBuilder;
     private database: firebase.database.Database;
 
     public constructor() {
+        super();
+
         this.builder = new SlashCommandBuilder()
             .setName("test")
             .setDescription("test smth")
