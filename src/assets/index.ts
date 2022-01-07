@@ -6,7 +6,7 @@ namespace Assets {
     const dictionary: Map<bundle.language, properties.Reader> = new Map();
 
     export function init(debugMode: boolean = false) {
-        rootDir = debugMode ? "./assets/" : "./";
+        rootDir = "./assets/";
         
         const langs: bundle.language[] = ["ko", "en"]
         
@@ -34,7 +34,7 @@ namespace Assets {
     export namespace content {
         export type contentType = "block" | "bullet" | "item" | "liquid" | "planet" | "sector" | "status" | "unit" | "weather";
         
-        export function get <T> (type: contentType = "block", callBack: (jsonData: any) => T): T {
+        export function get <T> (type: contentType = "block", callBack: (jsonData: any) => T = T => T): T {
             const jsonPath = `${rootDir}contents/${type}.json`;
             let jsonData;
 
