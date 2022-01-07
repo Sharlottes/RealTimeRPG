@@ -2,7 +2,7 @@ import { CommandInteraction, CacheType } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import firebase from "firebase-admin";
 
-import { firebaseAdmin } from "../";
+import { firebaseAdmin } from "../net/";
 import { Command } from "./index";
 
 class Test extends Command {
@@ -24,15 +24,11 @@ class Test extends Command {
         const database = this.database;
         
         try {
-            firebase.database().goOnline();
-    
             database.ref("/Archive/" + interaction.user.id).set({
                 Message: interaction.toString(),
                 User: interaction.user.username,
                 User_ID: interaction.user.id,
             });
-            firebase.database().goOffline();
-    
             interaction.reply({content: `hi!`, ephemeral: true});
         } catch(err) {
             console.log(err);
