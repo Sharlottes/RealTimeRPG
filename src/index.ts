@@ -1,5 +1,3 @@
-export { default as firebaseAdmin } from "./net/FirebaseAdmin"
-
 // 참조된 패키지들에서 모듈 가져오기.
 // 이렇게 하면 불러온 모듈들이 모두 하나의 변수를 통해 참조?가 되지만 다른 방식으로 할 수도 있음.
 // import { Client } from "discord.js";
@@ -7,8 +5,7 @@ export { default as firebaseAdmin } from "./net/FirebaseAdmin"
 import Discord, { Client, Intents } from "discord.js";
 
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
-import { firebaseAdmin } from ".";
-import commands from "./commands";
+import { firebaseAdmin } from "./net";
 import assets from "./assets"
 import config from "./config.json";
 
