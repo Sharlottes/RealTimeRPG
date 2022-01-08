@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "@discordjs/builders": "^0.10.0",
+    "@discordjs/rest": "^0.2.0-canary.0",
     "@types/properties-reader": "^2.1.1",
     "discord-api-types": "^0.26.0",
     "discord.js": "^13.5.0-dev.1640692992.4cc6331",
     "firebase-admin": "^10.0.1",
     "properties-reader": "^2.2.0",
     "request": "^2.88.2",
+    "socket.io": "^4.4.1",
     "tcp-ping": "^0.1.1"
   },
   "devDependencies": {
