@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "r": "ts-node src/index.ts",
+    "r": "ts-node -r tsconfig-paths/register src/index.ts",
     "watchMode": "tsc -w",
-    "dev-server": "nodemon --exec ts-node src/index.ts",
+    "dev-server": "nodemon --exec ts-node -r tsconfig-paths/register src/index.ts",
     "compile": "scripts/compile.bat"
   },
   "dependencies": {
