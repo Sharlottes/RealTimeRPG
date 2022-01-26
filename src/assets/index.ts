@@ -45,8 +45,7 @@ namespace Assets {
                 }
 
                 jsonData = JSON.parse(data);
-
-            })
+            });
 
             return callBack(jsonData);
         }

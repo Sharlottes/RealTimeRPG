@@ -3,84 +3,165 @@
 // import { Client } from "discord.js";
 // 위 같은 방식으로 불러오면 해당 패키지내의 모든 모듈을 불러오지 않고 해당 모듈 하나만 불러옴.
 import Discord, { Client, Intents } from "discord.js";
+import { REST } from "@discordjs/rest"
+import { Routes } from "discord-api-types/v9"
 
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
-import { firebaseAdmin } from "./net";
-import assets from "./assets"
-import config from "./config.json";
+import { firebaseAdmin } from "@뇌절봇/net";
+import CM from "@뇌절봇/commands";
+import assets from "@뇌절봇/assets"
+import config from "@뇌절봇/config.json"
 
+// test
+
+
+//
+
+export type CommandInfo = {
+    id: string;
+    application_id: string;
+    version: string;
+    default_permissions: null;
+    type: number;
+    name: string;
+    description: string;
+    guild_id: string;
+};
+
+const masterIDs: string[] = [
+    "462167403237867520"
+]
 
 // 파이어베이스 초기화
-
 firebaseAdmin;
-const startArgs: Map<string, any> = new Map<string, any>();
 
-// 기본 인자 설정
+// discord rest api 호출
+const rest = new REST({ version: '9' }).setToken(config.botToken);
+
+// 프로그램 초기화
+// App 선언 - 봇의 모든 코드를 관리함
+const app = {
+    client: new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }),
+    option: new Map<string, any>(),
+    config: config,
+    rest: rest
+};
+
+const { client, option } = app;
+
 
 // 프로그램 실행 인자 추출
 process.argv.forEach((arg: string, index: number, array: string[]) => {
-  if(arg.slice(0, 2) == "--" && array.length > index + 1) {
-    const key: string = arg.slice(2);
-    const value: string = array[index + 1];
+    if(arg.slice(0, 2) == "--" && array.length > index + 1) {
+        const key: string = arg.slice(2);
+        const value: string = array[index + 1];
     
-    if(value == "true" || value == "false") {
-      startArgs.set(key, Boolean(value));
-    } else if(Number(value).toString() != "NaN") {
-      startArgs.set(key, Number(value));
-    } else {
-      startArgs.set(key, value);
-    }
+        if(value == "true" || value == "false") {
+            option.set(key, Boolean(value));
+        } else if(Number(value).toString() != "NaN") {
+            option.set(key, Number(value));
+        } else {
+            option.set(key, value);
+        }
   }
 });
 
+// 애셋 파일 로딩
 assets.init(config.debug);
-// Discord.Client에 commands 속성이 없길래 그냥 다른 객체로 분리함.
-const client: Client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }); 
+
+// 기타 함수 선언
+
+// 길드 초기화
+function guildInit(guild: Discord.Guild) {
+    firebaseAdmin.firestore.collection(guild.id).doc("config").get().then(snapshot => {
+        if(!snapshot.exists) {
+            const root = firebaseAdmin.firestore.collection(guild.id);
+            root.doc("config").set({
+                name: guild.name,
+                version: config.version,
+                language: guild.preferredLocale
+            });
+
+            
+        }
+    });
+}
+
 
 // 속성 뒤에 ?는 해당 값이 널인지 확인하고 널이 아니면 실행
-client.on("ready", () => {
-  console.log(`Logged in as ${client.user?.tag}!`)
-
-  // 봇 시작시 로딩
-  commands.forEach(command => {
-    client.application?.commands.create(command.builder.toJSON());
-  })
+client.once("ready", () => {
+    console.log(`Logged in as ${client.user?.tag}(${client.application?.id})!`)
+    
+    // 봇 명령어 초기화
+    CM.refreshCommand("global");
+    
+    // 서버마다 데이터베이스 체크
+    client.guilds.cache.forEach(guild => {
+        guildInit(guild);
+    })
 });
+
+client.on("guildCreate", guild => {
+    guildInit(guild);
+})
 
 // 명령어 구현부
 client.on("interactionCreate", async interaction => {
-  if(interaction.isCommand()) {
-    try {
-      if(commands.has(interaction.commandName)) {
-        const whiteList: any = config.whiteList;
-        let channelName: string =
-          interaction.channel instanceof Discord.TextChannel ||
-          interaction.channel instanceof Discord.NewsChannel
-            ? interaction.channel.name
-            : interaction.user.username;
-    
-        if((whiteList == false || whiteList.includes(channelName)) || interaction.channel?.type == "DM") {
-          commands.get(interaction.commandName)?.run(interaction);
-        } else {
-          interaction.reply("Commands are available only in the dm channel or the following channels.")
+    if(interaction.isCommand()) {
+        await interaction.deferReply();
+        try {
+            if(CM.commands.has(interaction.commandName)) {
+                const whiteList = config.whiteList as false | string[];
+                const command = CM.commands.get(interaction.commandName);
+
+                let channelName: string =
+                    interaction.channel instanceof Discord.TextChannel ||
+                    interaction.channel instanceof Discord.NewsChannel
+                        ? interaction.channel.name
+                        : interaction.user.username;
+            
+                if((whiteList == false || whiteList.includes(channelName)) && (interaction.channel?.type == "DM" || !command?.dmOnly)) {
+                    command?.run(interaction);
+                } else {
+                    interaction.reply({
+                        content: "This command is available only in the dm channel or the following channels.",
+                        ephemeral: true
+                    })
+                }
+            } else {
+                interaction.reply({
+                    content: "Error... Undefined command!",
+                    ephemeral: true
+                });
+            }
+        } catch(error: any) {
+          if(!interaction.replied) {
+              interaction.editReply({content: error});
+          }
         }
-      } else {
-        interaction.reply("Error... Undefined command!");
-      }
-    } catch(error) {
-      const err: any = error;
-      if(!interaction.replied) {
-        interaction.reply(err);
-      } else {
-        interaction.followUp(err);
-      }
-    } finally {
-      if(!interaction.replied) {
-        interaction.reply({content: "no reply.", ephemeral: true});
-      }
-    }
-  } else return;
+    } else return;
 });
+
+client.on("messageCreate", async message => {
+    if(message.channel.type != "DM" && message.content == "!refresh" && message.guild != null) {
+        if (message.author.id == message.guild?.ownerId || masterIDs.includes(message.author.id)) {
+            try {
+                const time = new Date().getTime();
+                const guild = message.guild;
+                message.reply("refresh start! server: " + guild.name);
+                
+                CM.refreshCommand("guild", guild).then(() => {
+                    message.reply(`refresh finished in ${(new Date().getTime() - time) / 1000}ms`);
+                }).catch(e => {
+                    message.reply(e);
+                });
+            } catch (e: any) {
+                message.reply(e);
+            }
+        } else {
+        }
+    }
+})
 
 /* 전 버전 방식 명령어 구현부
 const prefix = "!";
@@ -103,12 +184,8 @@ client.on("message", (message: Message) => {
 });
 */
 
-client.login(config.botToken);
-
-const app = {
-  client: client,
-  option: startArgs,
-  config: config
-}
+CM.reloadCommands().then(() => {
+    client.login(config.botToken);
+});
 
 export default app;

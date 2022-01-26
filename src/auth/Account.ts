@@ -1,6 +1,7 @@
 import Discord from "discord.js";
+import types from ".";
 
-type Language = "ko" | "en";
+type Language = types.Language;
 
 class Account {
     public readonly name: string;

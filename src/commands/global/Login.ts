@@ -1,16 +1,15 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
 import { CacheType, CommandInteraction } from "discord.js";
-import { Command } from ".";
+
+import { Command } from "@뇌절봇/commands";
 
 class Login extends Command {
-    public readonly builder: SlashCommandBuilder;
-    
     public constructor() {
-        super();
+        super({category: "global"});
         
-        this.builder = new SlashCommandBuilder()
+        this.builder
             .setName("login")
-            .setDescription("desc");
+            .setDescription("desc")
+            .setDefaultPermission(true);
     }
     
     public run(interaction: CommandInteraction<CacheType>) {
