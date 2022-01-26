@@ -5,7 +5,7 @@
   "scripts": {
     "r": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts",
     "watchMode": "tsc -w",
-    "compile": "scripts/compile.bat"
+    "compile": "scripts\\compile.bat"
   },
   "dependencies": {
     "@discordjs/builders": "^0.10.0",
@@ -15,6 +15,7 @@
     "discord.js": "^13.5.0-dev.1640692992.4cc6331",
     "firebase-admin": "^10.0.1",
     "properties-reader": "^2.2.0",
+    "remote-kakao": "^2.0.0-alpha4",
     "request": "^2.88.2",
     "socket.io": "^4.4.1",
     "tcp-ping": "^0.1.1"
