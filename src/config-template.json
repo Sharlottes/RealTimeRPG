@@ -1,0 +1,10 @@
+{
+    "version": 1.0,
+    "debug": true,
+    "botToken": "<Discord-Bot-Token>",
+    "whiteList": "<false || string[]>",
+    "channels": {
+        "bots" : {
+        }
+    }
+}
