@@ -2,8 +2,8 @@ import { CommandInteraction, CacheType } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import firebase from "firebase-admin";
 
-import { firebaseAdmin } from "../net/";
-import { Command } from "./index";
+import { firebaseAdmin } from "../../net/";
+import { Command } from "..";
 
 class Test extends Command {
     public readonly builder: SlashCommandBuilder;

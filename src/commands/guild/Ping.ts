@@ -3,14 +3,15 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import tcpp from "tcp-ping";
 import request from "request";
 
-import app from "../"
-import { Command } from '.'
+import app from "@뇌절봇/index"
+import { Command } from '@뇌절봇/commands'
 
 class Ping extends Command {
     public readonly builder: SlashCommandBuilder;
 
     public constructor() {
         super();
+
         this.builder = new SlashCommandBuilder()
             .setName("ping")
             .setDescription("check bot status");
@@ -38,7 +39,8 @@ class Ping extends Command {
                 .setRequired(false));
     }
 
-    public run(interaction: CommandInteraction<CacheType>) {
+    public async run(interaction: CommandInteraction<CacheType>) {
+        await interaction.deferReply();
         /*
         interaction.options.getString("인수명", true) // 이런식으로 
         // required 가 true면 해당 인수는 반드시 입력되는 인수
@@ -46,7 +48,7 @@ class Ping extends Command {
         클라 호출은 이걸루
         app.client
         */
-        interaction.reply(`${app.client.ws.ping}ms`);
+        await interaction.editReply(`${app.client.ws.ping}ms`);
         const versions: string[] = ["v7", "v6", "be"];
         const ver: string = interaction.options.getString('version', true);
         if(versions.includes(ver)) {

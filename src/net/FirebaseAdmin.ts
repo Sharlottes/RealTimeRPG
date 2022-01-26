@@ -1,5 +1,4 @@
-import firebase from "firebase-admin"
-import { Auth } from "firebase-admin/auth"
+import firebase, { auth } from "firebase-admin"
 
 import { Account } from "../auth"
 
@@ -10,7 +9,7 @@ class FirebaseAdmin {
     public readonly app: firebase.app.App;
     public readonly database: firebase.database.Database;
     public readonly firestore: firebase.firestore.Firestore;
-    public readonly auth: Auth;
+    public readonly auth: auth.Auth;
 
     public readonly accounts: Map<string, Account>;
 
