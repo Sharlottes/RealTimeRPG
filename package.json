@@ -10,9 +10,10 @@
   "dependencies": {
     "@discordjs/builders": "^0.10.0",
     "@discordjs/rest": "^0.2.0-canary.0",
+    "@remote-kakao/core": "1.0.0-alpha.6",
     "@types/properties-reader": "^2.1.1",
     "discord-api-types": "^0.26.0",
-    "discord.js": "^13.5.0-dev.1640692992.4cc6331",
+    "discord.js": "^13.6.0",
     "firebase-admin": "^10.0.1",
     "properties-reader": "^2.2.0",
     "remote-kakao": "^2.0.0-alpha4",

@@ -11,3 +11,5 @@ test/
 **/sdk.json
 src/config.json
 src/publicKey.json
+secret.json
+error.json

@@ -1,5 +1,6 @@
 import fs from "fs";
 import properties from "properties-reader";
+import { Utils } from "../util";
 
 namespace Assets {
     let rootDir: string = "";
@@ -22,7 +23,15 @@ namespace Assets {
     export namespace bundle {
         export type language = "ko" | "en"
 
-        export function get(name: string = "", lang: language = "ko") {
+        export function find(lang: language = "en", key: string): string {
+            return String(dictionary.get(lang)?.get(key));
+        }
+        
+        export function format(lang: language = "en", key: string, ...args: any[]) {
+            return Utils.Strings.format(find(lang, key), args);
+        }
+
+        export function get(name: string = "", lang: language = "en") {
             if(dictionary.has(lang)) {
                 return dictionary.get(lang)?.get(name);
             } else {

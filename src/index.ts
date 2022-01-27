@@ -2,7 +2,7 @@
 // 이렇게 하면 불러온 모듈들이 모두 하나의 변수를 통해 참조?가 되지만 다른 방식으로 할 수도 있음.
 // import { Client } from "discord.js";
 // 위 같은 방식으로 불러오면 해당 패키지내의 모든 모듈을 불러오지 않고 해당 모듈 하나만 불러옴.
-import Discord, { Client, Intents } from "discord.js";
+import Discord, { CacheType, Client, Intents } from "discord.js";
 import { REST } from "@discordjs/rest"
 import { Routes } from "discord-api-types/v9"
 
@@ -12,10 +12,26 @@ import CM from "@뇌절봇/commands";
 import assets from "@뇌절봇/assets"
 import config from "@뇌절봇/config.json"
 
+//RTTRPG
+import { Server } from '@remote-kakao/core';
+import { onMessage, init } from './commands/guild/rpg_';
+import fs from "fs";
+import { Utils } from "./util";
 // test
 
 
 //
+export type Message = {
+    discordobj: Discord.Message | Discord.CommandInteraction<CacheType> | null,
+    room: string
+    content: string
+    sender: {
+        name: string
+        hash: any
+    },
+    isGroupChat: boolean,
+    replyText: (msg: any, room?:string)=>void
+}
 
 export type CommandInfo = {
     id: string;
@@ -28,8 +44,14 @@ export type CommandInfo = {
     guild_id: string;
 };
 
+
+const Strings = Utils.Strings;
+const configs = JSON.parse(fs.readFileSync("./secret.json").toString());
+const server = new Server({ useKakaoLink: true });
+
 const masterIDs: string[] = [
-    "462167403237867520"
+    "462167403237867520",
+    "473072758629203980"
 ]
 
 // 파이어베이스 초기화
@@ -123,20 +145,18 @@ client.on("interactionCreate", async interaction => {
                 if((whiteList == false || whiteList.includes(channelName)) && (interaction.channel?.type == "DM" || !command?.dmOnly)) {
                     command?.run(interaction);
                 } else {
-                    interaction.reply({
-                        content: "This command is available only in the dm channel or the following channels.",
-                        ephemeral: true
+                    interaction.editReply({
+                        content: "This command is available only in the dm channel or the following channels."
                     })
                 }
             } else {
-                interaction.reply({
-                    content: "Error... Undefined command!",
-                    ephemeral: true
+                interaction.editReply({
+                    content: "Error... Undefined command!"
                 });
             }
         } catch(error: any) {
           if(!interaction.replied) {
-              interaction.editReply({content: error});
+              interaction.editReply({content: "error: "+error});
           }
         }
     } else return;
@@ -150,10 +170,13 @@ client.on("messageCreate", async message => {
                 const guild = message.guild;
                 message.reply("refresh start! server: " + guild.name);
                 
-                CM.refreshCommand("guild", guild).then(() => {
+                (()=>{
+                    init();
+                    return CM.refreshCommand("guild", guild);
+                })().then(() => {
                     message.reply(`refresh finished in ${(new Date().getTime() - time) / 1000}ms`);
                 }).catch(e => {
-                    message.reply(e);
+                    message.reply(e+"");
                 });
             } catch (e: any) {
                 message.reply(e);
@@ -161,8 +184,35 @@ client.on("messageCreate", async message => {
         } else {
         }
     }
+    if(message.author.bot) return;
+    onMessage({
+      discordobj: message,
+      room: "",
+      content: message.content,
+      sender: {
+          name: message.author.username,
+          hash: message.author.id
+      },
+      isGroupChat: false,
+      replyText: (string: any, room?:string) => { try{message.reply(string);}catch(e){}}
+  });
 })
 
+server.on('ready', () => console.log(`remote-kakao server is ready!`));
+server.on('message', (message) => {
+  onMessage({
+      discordobj: null,
+      room: message.room,
+      content: message.content,
+      sender: {
+          name: message.sender.name,
+          hash: Strings.hashCode(message.sender.getProfileImage())
+      },
+      isGroupChat: message.isGroupChat,
+      replyText: (string: any, room?:string) => message.replyText(string, room)
+  });
+});
+server.start(3000, configs);
 /* 전 버전 방식 명령어 구현부
 const prefix = "!";
 client.on("message", (message: Message) => {
@@ -183,7 +233,6 @@ client.on("message", (message: Message) => {
   }
 });
 */
-
 CM.reloadCommands().then(() => {
     client.login(config.botToken);
 });

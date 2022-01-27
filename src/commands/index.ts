@@ -11,6 +11,8 @@ import { Command } from "@뇌절봇/commands";
 import app, { CommandInfo } from "@뇌절봇/index"
 import config from "@뇌절봇/config.json";
 
+import { init } from "./guild/rpg_";
+
 const ignores: string[] = [
     "index.ts", "Command.ts"
 ];
@@ -27,6 +29,7 @@ namespace CommandManager {
 
         if(!commands.has(commandName)) {
             commands.set(commandName, command);
+            console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} command.`);
             return true;
         } else {
             return false;
@@ -35,7 +38,6 @@ namespace CommandManager {
 
     export async function reloadCommands() {
         commands.clear();
-
         const globals: fs.Dirent[] = []; 
         fs.readdirSync((config.debug ? "./src" : ".") + "/commands/global/", { withFileTypes: true, encoding: "utf-8"})
         .forEach(file => {
@@ -62,7 +64,7 @@ namespace CommandManager {
                 }
             }
         }
-
+        
         return commands;
     }
 
@@ -105,6 +107,7 @@ namespace CommandManager {
             if(command.category == target) {
                 const data = command.setHiddenConfig(command.builder.toJSON());
                 createSeq.push(application.commands.create(data, target == "global" ? undefined : guild.id));
+                console.log(data);
             }
         })
 
