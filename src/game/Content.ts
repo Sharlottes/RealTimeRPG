@@ -1,6 +1,7 @@
 import { UserSecure } from "../modules";
 import { Utils } from "../util"
 import Assets from "../assets";
+import { Entity } from ".";
 
 const Bundle = Assets.bundle;
 type User = UserSecure.User;
@@ -153,17 +154,30 @@ namespace Contents {
       this.durability = durability;
     }
 
-    public attack(attacker: User, target: Heathy) {
+    public attack(user: User, target: Heathy) {
       let critical = Utils.Mathf.randbool(this.critical_chance);
 
-      if(attacker.inventory.weapon.durability) attacker.inventory.weapon.durability--;
-      return Bundle.format(attacker.lang, "battle.hit",
-          critical ? Bundle.find(attacker.lang, "battle.critical") : "",
-          this.localName(attacker),
+      return Bundle.format(user.lang, "battle.hit",
+          critical ? Bundle.find(user.lang, "battle.critical") : "",
+          this.localName(user),
           (this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
           target.health.toFixed(2),
           (target.health -= this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
         
+      );
+    }
+
+    
+    public attackEntity(user: User) {
+      let critical = Utils.Mathf.randbool(this.critical_chance);
+
+      return Bundle.format(user.lang, "battle.entityHit",
+          critical ? Bundle.find(user.lang, "battle.critical") : "",
+          this.localName(user),
+          (this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
+          user.id,
+          user.stats.health.toFixed(2),
+          (user.stats.health -= this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
       );
     }
   }
@@ -248,7 +262,7 @@ namespace Contents {
       ));
       this.items.push(new Weapon("aluminum_sword", 0.05, 15, 1.5, 1, 1.15, 0.25, 10).dropWalking(false).dropBattle(false));
       this.items.push(new Weapon("wooden_sword", 0.1, 10, 1.25, 1.5, 1.1, 0.15, 25).dropWalking(false).dropBattle(false));
-      this.items.push(new Weapon("punch", -1, -1, 1, 1, 0.1, 1.1, -1).dropBattle(false).dropShop(false).dropWalking(false));
+      this.items.push(new Weapon("punch", -1, -1, 1, 1, 1.1, 0.1, -1).dropBattle(false).dropShop(false).dropWalking(false));
     }
     public static getItems() {
       return this.items;

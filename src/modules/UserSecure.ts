@@ -1,5 +1,5 @@
 import Assets from '../assets';
-import { Contents } from "../game";
+import { Contents, Entity } from "../game";
 import { Utils } from "../util";
 import RTTRPG from '../index';
 import { Message } from "..";
@@ -30,8 +30,8 @@ function login(users: UserSecure.User[], target: UserSecure.User, msg: Message, 
 
 namespace UserSecure {
   export const defaultStat: UserSecure.Stat = {
-    health: 100,
-    health_max: 100,
+    health: 20,
+    health_max: 20,
     health_regen: 0.5,
     energy: 100,
     energy_max: 100,
@@ -92,6 +92,8 @@ namespace UserSecure {
     public lang: Assets.bundle.language = "en";
     public countover: number = 0;
     public foundItems: number[] = [];
+    public battleInterval: NodeJS.Timeout | undefined | void;
+    public enemy: Entity.UnitEntity | undefined;
 
     constructor(id: string, password: string, hash: number, lang: Assets.bundle.language = "en") {
       this.id = id;
@@ -111,8 +113,8 @@ namespace UserSecure {
     let [id, pw] = msg.discordobj 
       ? [(msg.discordobj as Discord.CommandInteraction<CacheType>).options.getString('id', true),(msg.discordobj as Discord.CommandInteraction<CacheType>).options.getString('pw', true)] 
       : msg.content.split(/\s/).slice(1);
-    const user = users.find((u) => u.id == id);
     if(id?.includes("@")) id = id.replace(/[@]/g, "");
+    const user = users.find((u) => u.id == id);
     if (!id || !pw) msg.replyText(Bundle.find(lang, "account.create_help"));
     else if (user)
       msg.replyText(Bundle.format(lang, "account.account_exist", id));

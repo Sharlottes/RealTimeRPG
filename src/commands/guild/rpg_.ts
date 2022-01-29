@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders"
-import Discord, { CacheType } from "discord.js";
+import Discord, { CacheType, CommandInteraction, Interaction, MessageActionRow, MessageActionRowComponent, MessageButton, MessageEmbed, MessageSelectMenu } from "discord.js";
 
 import { UserSecure } from "../../modules";
 import { Utils } from "../../util";
@@ -7,8 +7,8 @@ import { Entity, Contents } from "../../game";
 import Assets from "../../assets";
 import { Message } from "../..";
 
-import CM from "../"
-import { Command } from "../"
+import CM from "../";
+import { ITrigger, PagesBuilder, PagesManager } from 'discord.js-pages';
 import { CommandCategory } from '../Command';
 
 type User = UserSecure.User;
@@ -27,6 +27,7 @@ const prefix: string = "/";
 const latestMsgs: LatestMsg[] = [];
 const Commands: Map<Assets.bundle.language, Map<string, Function>[]> = new Map();
 const rooms: string[] = ["Sharlotted Bot Test"]
+const pagesManager = new PagesManager();
 
 let users: UserSecure.User[] = read();
 
@@ -38,7 +39,7 @@ type LatestMsg = {
 class EventSelection {
   name: string;
   localName: (user: User)=>string;
-  callback: (msg: Message, user: User, target: UnitEntity)=>void;
+  callback: (msg: Message, user: User, target: UnitEntity)=>void|boolean;
 
   constructor(name: string | ((user: User)=>string), callback: (msg: Message, user: User, target: UnitEntity)=>void) {
     this.name = name instanceof Function ? "" : name;
@@ -49,10 +50,10 @@ class EventSelection {
 
 class EventData {
   ratio: number;
-  func: (msg: Message, user?: User, target?: Unit) => void;
+  func: (user?: User, target?: Unit) => void;
   selection?: EventSelection[];
 
-  constructor(ratio: number, callback: (msg: Message, user?: User, target?: Unit) => void, selections?: EventSelection[]) {
+  constructor(ratio: number, callback: (user?: User, target?: Unit) => void, selections?: EventSelection[]) {
     this.ratio = ratio;
     this.func = callback;
     this.selection = selections;
@@ -97,7 +98,7 @@ function weaponChangeCmd(msg: Message, user: User, lang: Assets.bundle.language)
 };
 
 function walkingCmd(msg: Message, user: User, lang: Assets.bundle.language) {
-  if(user&&user.status.callback && user.status.name == "selecting") return;
+  if(user.status.name == "selecting") return (msg.discordobj as Discord.CommandInteraction<CacheType>)?.followUp("you cannot walk while selecting!");
   if (user.stats.energy < 7) {
     if (user.countover >= 3) {
       msg.replyText(Bundle.find(lang, "calmdown"));
@@ -120,7 +121,7 @@ function registerCmd(builder: SlashCommandBuilder, callback: Function, requireUs
     run: interaction => {
       let user = users.find((u) => u.hash == parseInt(interaction.user.id));
       if(requireUser&&!user) 
-        interaction.reply(Bundle.find((interaction.locale as Assets.bundle.language) || "en", "account.account_notLogin"));
+        interaction.followUp(Bundle.find((interaction.locale as Assets.bundle.language) || "en", "account.account_notLogin"));
       else callback({
         discordobj: interaction,
         room: "",
@@ -130,7 +131,11 @@ function registerCmd(builder: SlashCommandBuilder, callback: Function, requireUs
             hash: interaction.user.id
         },
         isGroupChat: false,
-        replyText: (msg: any, room?:string)=>interaction.editReply({content: msg})
+        replyText: (msg: any, room?:string)=>{
+          if(msg.type=="edit") interaction.editReply(msg.content);
+          else if(msg.embed) interaction.followUp({embeds: msg.embed});
+          else interaction.followUp(msg.content||msg);        
+        }
       }, user, user?.lang);
     },
     setHiddenConfig: arg => arg,
@@ -141,6 +146,7 @@ function registerCmd(builder: SlashCommandBuilder, callback: Function, requireUs
 export function init() {
   users.forEach(user => {
     if(!user.foundItems) user.foundItems = [];
+    if(user.stats.health <= 0) user.stats.health = user.stats.health_max;
   });
   Contents.Items.init();
   Contents.Units.init();
@@ -188,6 +194,7 @@ export function init() {
     return s;
   })(), weaponChangeCmd);
 
+  registerCmd(new SlashCommandBuilder().setName("walk").setDescription("just walk around"), walkingCmd);
   registerCmd(new SlashCommandBuilder().setName("accounts").setDescription("show all accounts"), (msg: Message)=>msg.replyText(users.map((u) => u.id).join(" | ")));
   registerCmd(new SlashCommandBuilder().setName("signout").setDescription("sign current account out"), (msg: Message)=>UserSecure.signout(msg, users), true);
   registerCmd((()=>{
@@ -232,12 +239,120 @@ function makeSelection(user: User, entity: UnitEntity, selections: EventSelectio
   return selections.map((e, i) => i + ". " + e.localName(user)).join("\n");
 }
 
-function battle(msg: Message, user: User, unit: Unit) {
-  msg.replyText(Bundle.format(user.lang, "battle.start", user.id, unit.localName(user)));
-  msg.replyText(makeSelection(user, new UnitEntity(unit), battleSelection));
+const battleSelection = [
+  new EventSelection("attack", (msg, user, t) => {
+    let target = user.enemy || t;
+    if (user.cooldown > 0) {
+      if(msg.builder) 
+        msg.builder.setDescription(msg.builder.description+"```diff\n+ "+Bundle.format(user.lang, "battle.cooldown", user.cooldown.toFixed(2))+"\n```");
+      else 
+        msg.replyText(Bundle.format(user.lang, "battle.cooldown", user.cooldown.toFixed(2))+"\n"+makeSelection(user, target, battleSelection));
+      return false;
+    }
+
+    let weapon: Contents.Weapon = ItemStack.getItem(user.inventory.weapon);
+    if (!weapon) return false;
+    
+    if(user.inventory.weapon.durability) user.inventory.weapon.durability--;
+    if(msg.builder) 
+      msg.builder.setDescription(msg.builder.description+"```diff\n+ "+weapon.attack(user, target)+"\n```");
+    else
+    msg.replyText(weapon.attack(user, target));
+
+    if (!user.inventory.weapon.durability || user.inventory.weapon.durability < 0) {
+      if(user.inventory.weapon.id !== 5) {
+        if(msg.builder) 
+          msg.builder.setDescription(msg.builder.description+"```diff\n+ "+Bundle.format(user.lang, "battle.broken", weapon.localName(user))+"\n```");
+        else
+          msg.replyText(Bundle.format(user.lang, "battle.broken", weapon.localName(user)));
+        user.inventory.weapon.id = 5;
+      }
+    }
+
+    if (target.health <= 0) {
+      const result = "```diff\n+ "+(target.health < 0 ? Bundle.find(user.lang, "battle.overkill") + " " : "") + Bundle.format(user.lang, "battle.win", target.health.toFixed(2))+"\n```\n```ini\n["+battlewin(user, Contents.Units.find(target.id))+"]```";
+      
+      if(msg.builder) 
+        msg.builder.setDescription(msg.builder.description+result);
+      else
+        msg.replyText(result);
+
+      user.enemy = undefined;
+      msg.builder = null;
+      user.status.clearSelection();
+      return true;
+    } else if(!msg.discordobj) msg.replyText(makeSelection(user, target, battleSelection));
+
+    return false;
+  })
+];
+
+function battle(msg: Message, user: User, entity: UnitEntity) {
+  const str = Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(entity.id).localName(user));
+  let interval: NodeJS.Timer;
+  let buttons: Discord.MessageActionRow;
+  if(Contents.Items.find(entity.items.weapon.id)) {
+    interval = setInterval(entity => {
+      if (entity.cooldown <= 0) {
+        entity.cooldown = (Contents.Items.find(entity.items.weapon.id) as Contents.Weapon).cooldown;
+        if(msg.builder) {
+          msg.builder.setDescription(msg.builder.description+"```diff\n- "+(Contents.Items.find(entity.items.weapon.id) as Contents.Weapon).attackEntity(user)+"\n```");
+          (msg.discordobj as CommandInteraction).editReply({embeds: [msg.builder]});
+        } else
+          msg.replyText({ content: (Contents.Items.find(entity.items.weapon.id) as Contents.Weapon).attackEntity(user), type: "edit" });
+      }
+      else entity.cooldown -= 100 / 1000;
+
+      if (user.stats.health <= 0) {
+        if(msg.builder) {
+          msg.builder.setDescription(msg.builder.description+"```diff\n- "+Bundle.format(user.lang, "battle.lose", user.stats.health.toFixed(2))+"\n```");
+          buttons?.components.forEach(c=>c.setDisabled(true));
+          (msg.discordobj as CommandInteraction).editReply({embeds: [msg.builder]});
+
+          user.enemy = undefined;
+          msg.builder = null;
+          user.status.clearSelection();
+        } else msg.replyText(Bundle.format(user.lang, "battle.lose", user.stats.health.toFixed(2)));
+        
+        user.stats.health = 0.1 * user.stats.health_max;
+        user.status.clearSelection();
+        clearInterval(interval);
+      }
+    }, 100, entity);
+  }
+
+  if(msg&&msg.discordobj&&msg.builder){
+    buttons = new MessageActionRow().setComponents(battleSelection.map((e,i)=>new MessageButton().setCustomId(e.localName(user)+i).setLabel(e.localName(user)).setStyle('PRIMARY')));
+    user.enemy = undefined;
+    msg.builder
+      .setDescription(str)
+      .setComponents(buttons)
+      .setTriggers(battleSelection.map((e,i)=>{
+        const obj = {
+          name: e.localName(user)+i,
+          callback(interactionCallback, button) {
+              msg.discordobj = interactionCallback as Discord.Interaction;
+              if(!battleSelection) return;
+              let select = battleSelection[parseInt(obj.name.replace(/\D/g,""))];
+              if (select) {
+                const entity = user.enemy || new UnitEntity(Contents.Units.getUnits()[0]);
+                if(!user.enemy) user.enemy = entity;
+                if(msg.builder&&select.callback(msg, user, entity)) {
+                  buttons.components.forEach(c=>c.setDisabled(true));
+                  if(interval) clearInterval(interval);
+                  msg.builder = null;
+                }
+              }
+          }
+        } as ITrigger<MessageActionRowComponent>;
+
+        return obj;
+      }));
+  }
+  else msg.replyText(str+"\n"+makeSelection(user, entity, battleSelection));
 }
 
-function battlewin(msg: Message, user: User, unit: Unit) {
+function battlewin(user: User, unit: Unit) {
   let items = [];
   for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level + 2)+1); i++) {
     let item = getOne(Contents.Items.getItems().filter((i) => i.dropableOnBattle()), "rare");
@@ -247,14 +362,13 @@ function battlewin(msg: Message, user: User, unit: Unit) {
       else items.push({ item: item, amount: 1 });
     }
   }
-  msg.replyText(Bundle.format(user.lang, "battle.result", 
+  let str = Bundle.format(user.lang, "battle.result", 
     user.exp,
     (user.exp += unit.level * (1 + unit.rare) * 10),
     items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, "unit.item")}`).join("\n")
-  ));
-  let text = items.map((i) => giveItem(user, i.item)).filter(e=>e).join("\n");
-  if(text) msg.replyText(text);
+  ) + items.map((i) => giveItem(user, i.item)).filter(e=>e).join("\n");
   save();
+  return str;
 }
 
 function giveItem(user: User, item: Item, amount: number=1): string | null {
@@ -273,7 +387,7 @@ function giveItem(user: User, item: Item, amount: number=1): string | null {
 const exchangeSelection: EventSelection[] = [
   new EventSelection("buy", (msg, user, target) => {
     let repeat = (m: Message, u: UserSecure.User, t: UnitEntity) => {
-      m.replyText(makeSelection(u, t, target.items.items.map((entity) => {
+      msg.replyText(makeSelection(u, t, target.items.items.map((entity) => {
         let item = ItemStack.getItem(entity);
         let money = item.cost * 25;
 
@@ -282,11 +396,11 @@ const exchangeSelection: EventSelection[] = [
           (m, u, t) => {
             let amount = Number((m.content.split(/\s/)[1] || "1").replace(/\D/g, "") || 1);
             if (amount > entity.amount)
-              m.replyText(Bundle.format(u.lang, "shop.notEnough_item", item.localName(user), amount, entity.amount));
+              msg.replyText(Bundle.format(u.lang, "shop.notEnough_item", item.localName(user), amount, entity.amount));
             else if (u.money < amount * money)
-              m.replyText(Bundle.format(u.lang, "shop.notEnough_money", amount * money, u.money));
+              msg.replyText(Bundle.format(u.lang, "shop.notEnough_money", amount * money, u.money));
             else {
-              m.replyText(Bundle.format(u.lang, "shop.buyed", item.localName(user), amount, u.money, (u.money -= money * amount)));
+              msg.replyText(Bundle.format(u.lang, "shop.buyed", item.localName(user), amount, u.money, (u.money -= money * amount)));
               entity.amount = entity.amount-amount;
               const given = giveItem(u, item, amount);
               if(given) m.replyText(given);
@@ -294,41 +408,40 @@ const exchangeSelection: EventSelection[] = [
               save();
             }
               
-            repeat(m, u, t);
+            repeat(msg, u, t);
           }
         )
       })
-      .concat(new EventSelection("back", (m, u, t) => m.replyText(makeSelection(u, t, exchangeSelection))))));
+      .concat(new EventSelection("back", (m, u, t) => msg.replyText(makeSelection(u, t, exchangeSelection))))));
     };
 
     repeat(msg, user, target);
   }),
   new EventSelection("sell", (msg, user, target) => {
     let repeat = (m: Message, u: UserSecure.User, t: UnitEntity) => {
-      m.replyText(makeSelection(u, t, u.inventory.items.map((entity) => {
+      msg.replyText(makeSelection(u, t, u.inventory.items.map((entity) => {
         let item = ItemStack.getItem(entity);
         let money = item.cost * 10;
 
         return new EventSelection(
           u=>`${item.localName(u)}: ${money+Bundle.format(u.lang, "unit.money")} (${entity.amount+Bundle.format(u.lang, "unit.item")} ${Bundle.format(u.lang, "unit.item_left")})`,
           (m: Message, u: UserSecure.User, t: UnitEntity) => {
-            let [, a] = m.content.split(/\s/);
-            let amount = Number((a || "1").replace(/\D/g, "") || 1);
+            let amount = Number((m.content.split(/\s/)[1] || "1").replace(/\D/g, "") || 1);
                 
             if (amount > entity.amount)
-              m.replyText(Bundle.format(u.lang, "shop.notEnough_item", item.localName(u), amount, entity.amount));
+              msg.replyText(Bundle.format(u.lang, "shop.notEnough_item", item.localName(u), amount, entity.amount));
             else {
-              m.replyText(Bundle.format(u.lang, "shop.selled", item.localName(u), amount, u.money, (u.money += money * amount)));
+              msg.replyText(Bundle.format(u.lang, "shop.selled", item.localName(u), amount, u.money, (u.money += money * amount)));
               entity.amount = entity.amount-amount;
               if (!entity.amount) u.inventory.items.splice(u.inventory.items.indexOf(entity), 1);
               save();
             }
 
-            repeat(m, u, t);
+            repeat(msg, u, t);
           }
         );
       })
-      .concat(new EventSelection("back", (m, u, t) => m.replyText(makeSelection(u, t, exchangeSelection))))));
+      .concat(new EventSelection("back", (m, u, t) => msg.replyText(makeSelection(u, t, exchangeSelection))))));
     };
 
     repeat(msg, user, target);
@@ -336,53 +449,17 @@ const exchangeSelection: EventSelection[] = [
   new EventSelection("back", (msg, user) => msg.replyText(Bundle.find(user.lang, "shop.end")))
 ];
 
-const battleSelection = [
-  new EventSelection("attack", (msg, user, target) => {
-    if (user.cooldown > 0) {
-      msg.replyText(Bundle.format(user.lang, "battle.cooldown", user.cooldown.toFixed(2)));
-      msg.replyText(makeSelection(user, target, battleSelection));
-      return;
-    }
-
-    let weapon: Contents.Weapon = ItemStack.getItem(user.inventory.weapon);
-    if (!weapon) return;
-    msg.replyText(weapon.attack(user, target));
-    if (!user.inventory.weapon.durability || user.inventory.weapon.durability < 0) {
-      if(user.inventory.weapon.id !== 5) {
-        msg.replyText(Bundle.format(user.lang, "battle.broken", weapon.localName(user)));
-        user.inventory.weapon.id = 5;
-        save();
-      }
-    }
-
-    if (target.health <= 0) {
-      msg.replyText((target.health < 0 ? Bundle.find(user.lang, "battle.overkill") + " " : "") + Bundle.format(user.lang, "battle.win", target.health.toFixed(2)));
-      battlewin(msg, user, Contents.Units.find(target.id));
-    } else msg.replyText(makeSelection(user, target, battleSelection));
-  })
-];
 
 const eventData = [
-  new EventData(10, (msg, user)=> msg.replyText(Bundle.find(user?.lang, "battle.ignore"))),
-  new EventData(35, (msg, user) => {
+  new EventData(5, user=> Bundle.find(user?.lang, "battle.ignore")),
+  new EventData(15, user=> {
     if(!user) return;
     let money = 2 + Math.floor(Math.random() * 10);
     user.money += money;
-    msg.replyText(Bundle.format(user.lang, "event.money", money));
-  }),
-  new EventData(5, (msg, user) => {
-      msg.replyText(Bundle.find(user?.lang, "event.goblin"));
-      selectionTimeout.set(user as User, setTimeout((msg: Message, user: User) => {
-          if (user.status.name == "selecting") {
-            let money = Math.floor(Mathf.range(2, 15));
-            user.money -= money;
-            user.status.clearSelection();
 
-            msg.replyText(Bundle.format(user.lang, "event.goblin_timeout", money));
-          }
-        }, 10 * 1000, [msg, user]
-      ));
-    },
+    return Bundle.format(user.lang, "event.money", money);
+  }),
+  new EventData(10, user=> Bundle.find(user?.lang, "event.goblin"),
     [
       new EventSelection("run", (m, u) => {
         if (Mathf.randbool()) {
@@ -390,7 +467,7 @@ const eventData = [
           u.money -= money;
           m.replyText(Bundle.format(u.lang, "event.goblin_run_failed", money));
         } else {
-          m.replyText(Bundle.find(u.lang, "event.goblin_run_failed"));
+          m.replyText(Bundle.find(u.lang, "event.goblin_run_success"));
         }
       }),
       new EventSelection("talking", (m, u) => {
@@ -411,16 +488,14 @@ const eventData = [
       })
     ]
   ),
-  new EventData(50, (msg, user) => {
+  new EventData(25, user=> {
     if(!user) return;
-    let item = getOne(Contents.Items.getItems().filter((i) => i.dropableOnWalking()), "rare");
-    msg.replyText(Bundle.format(user.lang, "event.item", item.localName(user)));
-    const given = giveItem(user, item);
-    if(given) msg.replyText(given);
+    const item = getOne(Contents.Items.getItems().filter((i) => i.dropableOnWalking()), "rare");
+    return Bundle.format(user.lang, "event.item", item.localName(user)) + (giveItem(user, item)||"");
   }),
-  new EventData(10, (msg, user) => msg.replyText(Bundle.find(user?.lang, "event.obstruction")),
+  new EventData(20, user=> Bundle.find(user?.lang, "event.obstruction"),
     [
-      new EventSelection("battle", (m, u) => battle(m, u, Contents.Units.find(0))),
+      new EventSelection("battle", (m, u) => battle(m, u, new UnitEntity(Contents.Units.find(0)))),
       new EventSelection("run", (m, u) => m.replyText(Bundle.find(u.lang, "event.obstruction_run")))
     ]
   ),
@@ -474,22 +549,46 @@ const inter = setInterval(() => {
     u.stats.energy = Math.min(u.stats.energy_max, u.stats.energy + u.stats.energy_regen / 100);
   });
 }, 10);
-const selectionTimeout: Map<User, number> = new Map();
 
 function startEvent(event: EventData, msg: Message, user: User) {
-  event.func(msg, user, Contents.Units.find(0)); //dummy unit
+  const str = event.func(user);
+  
+  msg.replyText(str);
   if (event.selection) {
     user.status.name = "selecting";
-    user.status.callback = (m, u) => {
-      if(!event.selection) return;
-      let select = event.selection[parseInt(m.content.replace(/\D/g, ""))];
-      if (select) {
-        user.status.clearSelection();
-        select.callback(msg, user, new UnitEntity(Contents.Units.getUnits()[0]));
-        if (selectionTimeout.get(user)) clearTimeout(selectionTimeout.get(user));
-      }
-    };
-    msg.replyText(event.selection.map((e, i) => i + ". " + e.localName(user)).join("\n"));
+    if(msg.discordobj){
+      const buttons = new MessageActionRow().setComponents(event.selection.map((e,i)=>new MessageButton().setCustomId(e.localName(user)+i).setLabel(e.localName(user)).setStyle('PRIMARY')));
+      msg.builder = new PagesBuilder(msg.discordobj as Discord.CommandInteraction)
+        .setTitle(str+"")
+        .setDescription(event.selection.map((e, i) => i + ". " + e.localName(user)).join("\n"))
+        .setPages(()=>new MessageEmbed())
+        .setDefaultButtons([])
+        .setComponents(buttons)
+        .setTriggers(event.selection.map((e,i)=>{
+          const obj = {
+            name: e.localName(user)+i,
+            callback(interactionCallback, button) {
+                buttons.components.forEach(c=>c.setDisabled(true));
+                msg.discordobj = interactionCallback as Discord.Interaction;
+                if(!event.selection) return;
+                event.selection[parseInt(obj.name.replace(/\D/g,""))]?.callback(msg, user, new UnitEntity(Contents.Units.getUnits()[0]));
+            }
+          } as ITrigger<MessageActionRowComponent>;
+
+          return obj;
+        }));
+      msg.builder.build();
+    } else {
+      user.status.callback = (m, u) => {
+        if(!event.selection) return;
+        let select = event.selection[parseInt(m.content.replace(/\D/g, ""))];
+        if (select) {
+          user.status.clearSelection();
+          select.callback(msg, user, new UnitEntity(Contents.Units.getUnits()[0]));
+        }
+      };
+      msg.replyText(event.selection.map((e, i) => i + ". " + e.localName(user)).join("\n"));
+    }
   }
 }
 

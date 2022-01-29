@@ -17,12 +17,13 @@ import { Server } from '@remote-kakao/core';
 import { onMessage, init } from './commands/guild/rpg_';
 import fs from "fs";
 import { Utils } from "./util";
+import { PagesBuilder } from 'discord.js-pages';
 // test
 
 
 //
 export type Message = {
-    discordobj: Discord.Message | Discord.CommandInteraction<CacheType> | null,
+    discordobj: Discord.Message | Discord.Interaction<any> | null,
     room: string
     content: string
     sender: {
@@ -30,7 +31,8 @@ export type Message = {
         hash: any
     },
     isGroupChat: boolean,
-    replyText: (msg: any, room?:string)=>void
+    replyText: (msg: any, room?:string)=>void,
+    builder: PagesBuilder | null
 }
 
 export type CommandInfo = {
@@ -159,6 +161,8 @@ client.on("interactionCreate", async interaction => {
               interaction.editReply({content: "error: "+error});
           }
         }
+    } else if(interaction.isSelectMenu()&&interaction.customId==="select"){
+
     } else return;
 });
 
@@ -174,7 +178,7 @@ client.on("messageCreate", async message => {
                     init();
                     return CM.refreshCommand("guild", guild);
                 })().then(() => {
-                    message.reply(`refresh finished in ${(new Date().getTime() - time) / 1000}ms`);
+                    message.reply(`refresh finished in ${(new Date().getTime() - time) / 1000}s`);
                 }).catch(e => {
                     message.reply(e+"");
                 });
@@ -194,7 +198,8 @@ client.on("messageCreate", async message => {
           hash: message.author.id
       },
       isGroupChat: false,
-      replyText: (string: any, room?:string) => { try{message.reply(string);}catch(e){}}
+      replyText: (string: any, room?:string) => { try{message.reply(string);}catch(e){}},
+      builder: null
   });
 })
 
@@ -209,7 +214,8 @@ server.on('message', (message) => {
           hash: Strings.hashCode(message.sender.getProfileImage())
       },
       isGroupChat: message.isGroupChat,
-      replyText: (string: any, room?:string) => message.replyText(string, room)
+      replyText: (string: any, room?:string) => message.replyText(string, room),
+      builder: null
   });
 });
 server.start(3000, configs);
@@ -233,7 +239,11 @@ client.on("message", (message: Message) => {
   }
 });
 */
-CM.reloadCommands().then(() => {
+(()=>{
+    const pros = CM.reloadCommands();
+    init();
+    return pros;
+})().then(() => {
     client.login(config.botToken);
 });
 

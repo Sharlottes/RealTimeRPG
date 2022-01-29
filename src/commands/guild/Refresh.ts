@@ -26,7 +26,7 @@ class Refresh extends Command {
                 interaction.editReply("refresh start! server: " + guild.name);
                 
                 CM.refreshCommand("guild", guild).then(() => {
-                    interaction.followUp(`refresh finished in ${(new Date().getTime() - time) / 1000}ms`);
+                    interaction.followUp(`refresh finished in ${(new Date().getTime() - time) / 1000}s`);
                 });
             } else {
                 interaction.editReply({

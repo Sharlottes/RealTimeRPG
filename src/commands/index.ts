@@ -64,7 +64,6 @@ namespace CommandManager {
                 }
             }
         }
-        
         return commands;
     }
 
@@ -82,7 +81,6 @@ namespace CommandManager {
     
     export async function refreshCommand(target: "global" | "guild", guild?: Guild)
     : Promise<ApplicationCommand<{guild: GuildResolvable;}>[]> {
-        // 기존 명령어 삭제
         const application = app.client.application;
         if(application == null || guild == undefined) return [];
 
@@ -91,7 +89,6 @@ namespace CommandManager {
             Routes.applicationGuildCommands(application.id, guild.id);
     
         const data = await app.rest.get(commandPath) as CommandInfo[];
-        
         const promiese = [];
         for(let i = 0; i < data.length; i++) {
             const command: CommandInfo = data[i];
@@ -107,7 +104,7 @@ namespace CommandManager {
             if(command.category == target) {
                 const data = command.setHiddenConfig(command.builder.toJSON());
                 createSeq.push(application.commands.create(data, target == "global" ? undefined : guild.id));
-                console.log(data);
+                console.log(`${data.name} is recreated.`);
             }
         })
 
