@@ -4,7 +4,6 @@
 // 위 같은 방식으로 불러오면 해당 패키지내의 모든 모듈을 불러오지 않고 해당 모듈 하나만 불러옴.
 import Discord, { CacheType, Client, Intents } from "discord.js";
 import { REST } from "@discordjs/rest"
-import { Routes } from "discord-api-types/v9"
 
 // 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
 import { firebaseAdmin } from "@뇌절봇/net";
@@ -13,24 +12,14 @@ import assets from "@뇌절봇/assets"
 import config from "@뇌절봇/config.json"
 
 //RTTRPG
-import { Server } from '@remote-kakao/core';
-import { onMessage, init } from './commands/guild/rpg_';
-import fs from "fs";
-import { Utils } from "./util";
+import { getUsers, init } from './commands/guild/rpg_';
 import { PagesBuilder } from 'discord.js-pages';
 // test
 
 
 //
 export type Message = {
-    discordobj: Discord.Message | Discord.Interaction<any> | null,
-    room: string
-    content: string
-    sender: {
-        name: string
-        hash: any
-    },
-    isGroupChat: boolean,
+    interaction: Discord.CommandInteraction<any>,
     replyText: (msg: any, room?:string)=>void,
     builder: PagesBuilder | null
 }
@@ -45,11 +34,6 @@ export type CommandInfo = {
     description: string;
     guild_id: string;
 };
-
-
-const Strings = Utils.Strings;
-const configs = JSON.parse(fs.readFileSync("./secret.json").toString());
-const server = new Server({ useKakaoLink: true });
 
 const masterIDs: string[] = [
     "462167403237867520",
@@ -161,84 +145,37 @@ client.on("interactionCreate", async interaction => {
               interaction.editReply({content: "error: "+error});
           }
         }
-    } else if(interaction.isSelectMenu()&&interaction.customId==="select"){
+    }
 
-    } else return;
+    return;
 });
 
 client.on("messageCreate", async message => {
-    if(message.channel.type != "DM" && message.content == "!refresh" && message.guild != null) {
-        if (message.author.id == message.guild?.ownerId || masterIDs.includes(message.author.id)) {
-            try {
-                const time = new Date().getTime();
-                const guild = message.guild;
-                message.reply("refresh start! server: " + guild.name);
-                
-                (()=>{
-                    init();
-                    return CM.refreshCommand("guild", guild);
-                })().then(() => {
-                    message.reply(`refresh finished in ${(new Date().getTime() - time) / 1000}s`);
-                }).catch(e => {
-                    message.reply(e+"");
-                });
-            } catch (e: any) {
-                message.reply(e);
-            }
-        } else {
+    if(message.channel.type != "DM" && message.content == "!refresh" && message.guild != null && 
+        (message.author.id == message.guild?.ownerId || masterIDs.includes(message.author.id))) {
+        try {
+            const time = new Date().getTime();
+            const guild = message.guild;
+            message.reply("refresh start! server: " + guild.name);
+            
+            (()=>{
+                const p = CM.refreshCommand("guild", guild);
+                init();
+                return p;
+            })().then(() => {
+                message.reply(`refresh finished in ${(Date.now() - time) / 1000}s`);
+            }).catch(e => {
+                message.reply(e+"");
+            });
+        } catch (e: any) {
+            message.reply(e);
         }
     }
+
+
     if(message.author.bot) return;
-    onMessage({
-      discordobj: message,
-      room: "",
-      content: message.content,
-      sender: {
-          name: message.author.username,
-          hash: message.author.id
-      },
-      isGroupChat: false,
-      replyText: (string: any, room?:string) => { try{message.reply(string);}catch(e){}},
-      builder: null
-  });
-})
-
-server.on('ready', () => console.log(`remote-kakao server is ready!`));
-server.on('message', (message) => {
-  onMessage({
-      discordobj: null,
-      room: message.room,
-      content: message.content,
-      sender: {
-          name: message.sender.name,
-          hash: Strings.hashCode(message.sender.getProfileImage())
-      },
-      isGroupChat: message.isGroupChat,
-      replyText: (string: any, room?:string) => message.replyText(string, room),
-      builder: null
-  });
 });
-server.start(3000, configs);
-/* 전 버전 방식 명령어 구현부
-const prefix = "!";
-client.on("message", (message: Message) => {
-  if (message.author.bot) return; //not botself
-  if (!message.content.startsWith(prefix)) return; //need command tag
 
-  // 명령어
-  const args: string[] = message.content.slice(prefix.length).trim().split(" ");
-  const command: string | undefined = args.shift()?.toLowerCase();
-  
-  if(command != undefined && commands.has(command)) {
-    const whiteList: any = config.whiteList;
-    let name: string = message.channel instanceof Discord.TextChannel || message.channel instanceof Discord.NewsChannel ?
-    message.channel.name : message.author.username;
-
-    if((whiteList == false || whiteList.includes(name)) || message.channel.type == "DM") {
-    }
-  }
-});
-*/
 (()=>{
     const pros = CM.reloadCommands();
     init();

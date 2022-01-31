@@ -11,8 +11,6 @@ import { Command } from "@뇌절봇/commands";
 import app, { CommandInfo } from "@뇌절봇/index"
 import config from "@뇌절봇/config.json";
 
-import { init } from "./guild/rpg_";
-
 const ignores: string[] = [
     "index.ts", "Command.ts"
 ];

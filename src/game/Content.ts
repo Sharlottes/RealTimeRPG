@@ -250,6 +250,8 @@ namespace Contents {
     private static readonly items: Item[] = [];
 
     public static init() {
+      this.items.length = 0;
+      itemCount = 0;
       this.items.push(new Weapon("stone", 0.25, 1.5, 1.15, 1.2, 0.2, 1.05, 1));
       this.items.push(new Item("fragment", 0.5, 0.5));
       this.items.push(new Potion("energy_bar", 0.25, 2,
@@ -278,6 +280,8 @@ namespace Contents {
     private static readonly units: Unit[] = [];
 
     public static init() {
+      this.units.length = 0;
+      unitCount = 0;
       this.units.push(new Unit("obstruction", 5, 0.1, 1, []));
       this.units.push(new Unit("goblin", 2, 0.3, 1, []));
     }
