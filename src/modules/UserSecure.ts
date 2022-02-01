@@ -19,11 +19,11 @@ function login(users: UserSecure.User[], target: UserSecure.User, msg: Message, 
       u.hash = 0;
       return u;
     });
-    msg.replyText(Bundle.find(lang, "account.auto_logout"));
+    msg.interaction.followUp(Bundle.find(lang, "account.auto_logout"));
   }
   target.hash = Number(hash);
   Database.writeObject("./Database/user_data", users);
-  msg.replyText(Bundle.find(lang, "account.login_success"));
+  msg.interaction.followUp(Bundle.find(lang, "account.login_success"));
 }
 
 
@@ -93,6 +93,8 @@ namespace UserSecure {
     public foundItems: number[] = [];
     public battleInterval: NodeJS.Timeout | undefined | void;
     public enemy: Entity.UnitEntity | undefined;
+    public battleLog: string[] = [];
+    public allLog: boolean = false;
 
     constructor(id: string, password: string, hash: number | string, lang: Assets.bundle.language = "en") {
       this.id = id;
@@ -113,14 +115,14 @@ namespace UserSecure {
     const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
     const user = users.find((u) => u.id == id);
 
-    if (!id || !pw) msg.replyText(Bundle.find(lang, "account.create_help"));
+    if (!id || !pw) msg.interaction.followUp(Bundle.find(lang, "account.create_help"));
     else if (user)
-      msg.replyText(Bundle.format(lang, "account.account_exist", id));
+      msg.interaction.followUp(Bundle.format(lang, "account.account_exist", id));
     else {
       const target = new UserSecure.User(id, pw, hash);
       users.push(target);
       login(users, target, msg, lang);
-      msg.replyText(Bundle.find(lang, "account.create_success"));
+      msg.interaction.followUp(Bundle.find(lang, "account.create_success"));
     }
   };
 
@@ -129,16 +131,16 @@ namespace UserSecure {
     const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('id', true).replace(/[@]/g, "");
     const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
     const user = users.find((u) => u.id == id);
-    if (!id || !pw) msg.replyText(Bundle.find(lang, "account.remove_help"));
-    else if (!user) msg.replyText(Bundle.find(lang, "account.account_notFound"));
+    if (!id || !pw) msg.interaction.followUp(Bundle.find(lang, "account.remove_help"));
+    else if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
     else if (user.password !== pw)
-      msg.replyText(Bundle.find(lang, "account.account_incorrect"));
+      msg.interaction.followUp(Bundle.find(lang, "account.account_incorrect"));
     else if (user.hash !== Number(hash))
-      msg.replyText(Bundle.find(lang, "account.account_notLogin"));
+      msg.interaction.followUp(Bundle.find(lang, "account.account_notLogin"));
     else {
       users.splice(users.indexOf(user), 1);
       Database.writeObject("./Database/user_data", users);
-      msg.replyText(Bundle.find(lang, "account.remove_success"));
+      msg.interaction.followUp(Bundle.find(lang, "account.remove_success"));
     }
   };
 
@@ -147,12 +149,12 @@ namespace UserSecure {
     const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('id', true).replace(/[@]/g, "");
     const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
     const user = users.find((u) => u.id == id);
-    if (!id || !pw) msg.replyText(Bundle.find(lang, "account.login_help"));
-    else if (!user) msg.replyText(Bundle.find(lang, "account.account_notFound"));
+    if (!id || !pw) msg.interaction.followUp(Bundle.find(lang, "account.login_help"));
+    else if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
     else if (user.password !== pw)
-      msg.replyText(Bundle.find(lang, "account.account_incorrect"));
+      msg.interaction.followUp(Bundle.find(lang, "account.account_incorrect"));
     else if (user.hash)
-      msg.replyText(
+      msg.interaction.followUp(
         user.hash == Number(hash)
           ? Bundle.find(lang, "account.account_have")
           : Bundle.find(lang, "account.account_has")
@@ -163,10 +165,10 @@ namespace UserSecure {
   export function signout(msg: Message, users: User[], lang: Assets.bundle.language = "en") {
     const hash = msg.interaction.user.id;
     const user = users.find((u) => u.hash == Number(hash));
-    if (!user) msg.replyText(Bundle.find(lang, "account.account_notLogin"));
+    if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notLogin"));
     else {
       user.hash = 0;
-      msg.replyText(Bundle.find(lang, "account.logout_success"));
+      msg.interaction.followUp(Bundle.find(lang, "account.logout_success"));
       Database.writeObject("user_data", users);
     }
   };
@@ -178,20 +180,20 @@ namespace UserSecure {
     const changeto = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
     const user = users.find((u) => u.id == id);
     if (!id || !pw || !type || !(type.toLowerCase() == "id" || type.toLowerCase() == "pw") || !changeto)
-      msg.replyText(Bundle.find(lang, "account.change_help"));
+      msg.interaction.followUp(Bundle.find(lang, "account.change_help"));
     else if (!user) 
-      msg.replyText(Bundle.find(lang, "account.account_notFound"));
+      msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
     else if (type.toLowerCase() == "pw") {
       if (users.find((u) => u.id == changeto))
-        msg.replyText(Bundle.format(lang, "account.account_exist", id));
+        msg.interaction.followUp(Bundle.format(lang, "account.account_exist", id));
       else {
-        msg.replyText(
+        msg.interaction.followUp(
           Bundle.format(lang, "account.change_id", user.id, changeto)
         );
         user.id = changeto;
       }
     } else if (type.toLowerCase() == "id") {
-      msg.replyText(
+      msg.interaction.followUp(
         Bundle.format(lang, "account.change_pw", user.id, changeto)
       );
       user.password = changeto;
@@ -205,13 +207,13 @@ namespace UserSecure {
     const langto: Assets.bundle.language = msg.content.split(/\s/)[1] as Assets.bundle.language;
     const user = users.find((u) => user.hash == Number(hash));
 
-    if (!user) return msg.replyText(Bundle.find(lang, "account.account_notLogin"));
+    if (!user) return msg.interaction.followUp(Bundle.find(lang, "account.account_notLogin"));
     if (!langto)
-      return msg.replyText(
+      return msg.interaction.followUp(
         Bundle.format(lang, "account.lang_help", "ko | en")
       );
 
-    msg.replyText(Bundle.format(lang, "account.lang_success", lang, langto));
+    msg.interaction.followUp(Bundle.format(lang, "account.lang_success", lang, langto));
     user.lang = langto;
     Database.writeObject("./Database/user_data", users);
   };

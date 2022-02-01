@@ -12,15 +12,11 @@ import assets from "@뇌절봇/assets"
 import config from "@뇌절봇/config.json"
 
 //RTTRPG
-import { getUsers, init } from './commands/guild/rpg_';
+import { init } from './game/rpg_';
 import { PagesBuilder } from 'discord.js-pages';
-// test
 
-
-//
 export type Message = {
     interaction: Discord.CommandInteraction<any>,
-    replyText: (msg: any, room?:string)=>void,
     builder: PagesBuilder | null
 }
 
