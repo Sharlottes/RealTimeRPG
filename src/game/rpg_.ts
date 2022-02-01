@@ -208,39 +208,33 @@ const battleSelection: EventSelection[] = [
       const weapon: Contents.Weapon = ItemStack.getItem(user.inventory.weapon);
 
       if (user.cooldown > 0) {
-        var logs = (user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog;
         user.battleLog.push("```diff\n+ "+Bundle.format(user.lang, "battle.cooldown", user.cooldown.toFixed(2))+"\n```");
-        msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+logs.join(""));
       }
-      else { 
-        //쿨다운 끝나면 공격
-          var logs = (user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog;
-          user.battleLog.push("```diff\n+ "+weapon.attack(user, target)+"\n```");
-          msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+logs.join(""));
+      else { //쿨다운 끝나면 공격
+        user.battleLog.push("```diff\n+ "+weapon.attack(user, target)+"\n```");
 
         //내구도 감소, 만약 내구도가 없거나 0 이하로 내려가면 주먹으로 교체.
         if(user.inventory.weapon.durability) user.inventory.weapon.durability--;
         if ((!user.inventory.weapon.durability || user.inventory.weapon.durability <= 0) && user.inventory.weapon.id !== 5) {
-          var logs = (user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog;
           user.battleLog.push("```diff\n+ "+Bundle.format(user.lang, "battle.broken", weapon.localName(user))+"\n```");
-          msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+logs.join(""));
           user.inventory.weapon.id = 5;
         }
 
-        //적이 죽으면 전투 끝, true리턴
-        if (target.health <= 0) {
-          if(msg.builder) {
-           var logs = (user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog;
-            user.battleLog.push("```diff\n+ "+(target.health < 0 ? Bundle.find(user.lang, "battle.overkill") + " " : "") + Bundle.format(user.lang, "battle.win", target.health.toFixed(2))+"\n```\n```ini\n["+battlewin(user, Contents.Units.find(target.id))+"]```");
-            msg.builder.setDgescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+logs.join(""));
-          }
+        //적이 죽으면 전투 끝
+        if (target.health <= 0 && msg.builder) {
+          msg.builder.setDescription(
+            Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"
+            +((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length-1) : user.battleLog).join("")+"\n"+
+            "```diff\n+ "+(target.health < 0 ? Bundle.find(user.lang, "battle.overkill") + " " : "") + Bundle.format(user.lang, "battle.win", target.health.toFixed(2))+"\n```\n```ini\n["+battlewin(user, Contents.Units.find(target.id))+"]```");
           msg.interaction.editReply({embeds: [msg.builder], components: []});
           user.enemy = undefined;
           msg.builder = null;
           user.battleLog = [];
           user.status.clearSelection();
+          return;
         };
       }
+      msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length-1) : user.battleLog).join(""));
     }
   },
   {
@@ -250,7 +244,13 @@ const battleSelection: EventSelection[] = [
       if(button) {
         button.components[1].setDisabled(true);
         button.components[2].setDisabled(false);
-        msg.interaction.editReply({components: [button]});
+        if(msg.builder) {
+          if(user.enemy) msg.builder
+            .setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length-1) : user.battleLog).join(""))
+            .setComponents([button]);
+            msg.interaction.editReply({embeds: [msg.builder], components: [button]});
+        }
+        else msg.interaction.editReply({components: []});
       }
     },
     style: `SECONDARY`
@@ -261,8 +261,14 @@ const battleSelection: EventSelection[] = [
       user.allLog = false;
       if(button) {
         button.components[1].setDisabled(false);
-        button.components[2].setDisabled(true);
-        msg.interaction.editReply({components: [button]});
+        button.components[2].setDisabled(true);      
+        if(msg.builder) {
+          if(user.enemy) msg.builder
+            .setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length-1) : user.battleLog).join(""))
+            .setComponents([button]);
+            msg.interaction.editReply({embeds: [msg.builder], components: [button]})
+        }
+        else msg.interaction.editReply({components: []});
       }
     },
     style: `SECONDARY`
@@ -311,10 +317,10 @@ function battle(msg: Message, user: User, entity: UnitEntity) {
 
     battleSelection.forEach((select, i) => {
         const name = Assets.bundle.find(user.lang, `select.${select.name}`);
-        buttons.addComponents(new MessageButton().setCustomId(name+i).setLabel(name).setStyle('PRIMARY'));
+        buttons.addComponents(new MessageButton().setCustomId(name+i).setLabel(name).setStyle(select.style||'PRIMARY'));
         triggers.push({
             name: name+i,
-            callback: ()=> select.callback(user, msg)
+            callback: ()=> select.callback(user, msg, buttons)
         });
     });
 
@@ -331,20 +337,24 @@ function battle(msg: Message, user: User, entity: UnitEntity) {
       entity.cooldown -= 100 / 1000
       if (entity.cooldown <= 0) {
         entity.cooldown = (Contents.Items.find(entity.items.weapon.id) as Contents.Weapon).cooldown;
-        var logs = (user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog;
         user.battleLog.push("```diff\n- "+(Contents.Items.find(entity.items.weapon.id) as Contents.Weapon).attackEntity(user)+"\n```");
-        msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(entity.id).localName(user))+"\n"+logs.join(""));
+        var logs = (user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length-1) : user.battleLog;
+        msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(entity.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+logs.join(""));
         msg.interaction.editReply({embeds: [msg.builder]}); //다른 스레드에서 실행되니 임베드를 업데이트
       };
     
       if (user.stats.health <= 0 || !user.enemy) {
         if(user.stats.health <= 0) {
-          var logs = (user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog;
-          user.battleLog.push("```diff\n- "+Bundle.format(user.lang, "battle.lose", user.stats.health.toFixed(2))+"\n```");
-          msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(entity.id).localName(user))+"\n"+logs.join(""));
+          msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(entity.id).localName(user))+"\n"+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length-1) : user.battleLog).join("")+"\n"+"```diff\n- "+Bundle.format(user.lang, "battle.lose", user.stats.health.toFixed(2))+"\n```");
           user.stats.health = 0.1 * user.stats.health_max;
         }
         clearInterval(interval);
+        msg.interaction.editReply({embeds: [msg.builder], components: []});
+        user.enemy = undefined;
+        msg.builder = null;
+        user.battleLog = [];
+        user.status.clearSelection();
+        return;
       }
     }, 100, entity);
   }
