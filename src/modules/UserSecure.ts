@@ -90,7 +90,7 @@ namespace UserSecure {
     public inventory: Inventory = defaultInven; 
     public lang: Assets.bundle.language = "en";
     public countover: number = 0;
-    public foundItems: number[] = [];
+    public foundContents: Map<string, number[]> = new Map().set("item", []).set("unit", []);
     public battleInterval: NodeJS.Timeout | undefined | void;
     public enemy: Entity.UnitEntity | undefined;
     public battleLog: string[] = [];

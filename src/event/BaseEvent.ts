@@ -15,7 +15,7 @@ export class BaseEvent implements Event {
     }
 
     start(user: UserSecure.User, msg: Message) {
-        if(this.title) msg.interaction.editReply(Assets.bundle.find(user?.lang, this.title));
+        if(this.title) msg.interaction.editReply(Assets.bundle.find(user.lang, this.title));
         this.onStart(user, msg);
     }
 }

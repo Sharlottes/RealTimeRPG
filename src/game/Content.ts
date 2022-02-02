@@ -2,6 +2,7 @@ import { UserSecure } from "../modules";
 import { Utils } from "../util"
 import Assets from "../assets";
 import { Entity } from ".";
+import { giveItem } from './rpg_';
 
 const Bundle = Assets.bundle;
 type User = UserSecure.User;
@@ -43,7 +44,7 @@ namespace Contents {
       this.name = name;
       this.localName = (user?: User)=>Bundle.find(user?user.lang:"en", `content.${type}.${name}.name`);
       this.description = (user?: User)=>Bundle.find(user?user.lang:"en", `content.${type}.${name}.description`);
-      this.details = (user?: User)=>Bundle.find(user?user.lang:"en", `content.${type}.${name}.description`);
+      this.details = (user?: User)=>Bundle.find(user?user.lang:"en", `content.${type}.${name}.details`);
     }
   }
 
@@ -252,19 +253,42 @@ namespace Contents {
     public static init() {
       this.items.length = 0;
       itemCount = 0;
-      this.items.push(new Weapon("stone", 0.25, 1.5, 1.15, 1.2, 0.2, 1.05, 1));
-      this.items.push(new Item("fragment", 0.5, 0.5));
-      this.items.push(new Potion("energy_bar", 0.25, 2,
-        [
-          new Buff(10, "energy", (user: User, amount: number, buff: Buff) => {
-            user.stats.energy += amount * buff.value;
-            return `* ${buff.localName(user)} +${amount * buff.value}`;
-          })
-        ] 
-      ));
-      this.items.push(new Weapon("aluminum_sword", 0.05, 15, 1.5, 1, 1.15, 0.25, 10).dropWalking(false).dropBattle(false));
-      this.items.push(new Weapon("wooden_sword", 0.1, 10, 1.25, 1.5, 1.1, 0.15, 25).dropWalking(false).dropBattle(false));
+      this.items.push(new Weapon("stone", 0.3, 1.5, 1.15, 1.2, 0.2, 1.05, 1));
+      this.items.push(new Item("fragment", 0.4, 0.5));
+      this.items.push(new Potion("energy_bar", 0.2, 2, [
+        new Buff(10, "energy", (user: User, amount: number, buff: Buff) => {
+          user.stats.energy += amount * buff.value;
+          if(user.stats.energy > user.stats.energy_max) {
+            user.stats.energy = user.stats.energy_max;
+            giveItem(user, this.items[2], amount - Math.floor((user.stats.energy-user.stats.energy_max)/buff.value));
+            
+            return `* ${buff.localName(user)} +${amount * buff.value-(user.stats.energy-user.stats.energy_max)}`;
+          }
+          return `* ${buff.localName(user)} +${amount * buff.value}`;
+        })
+      ]));
+      this.items.push(new Weapon("aluminum_sword", 0.1, 15, 1.5, 1, 1.15, 0.25, 10).dropWalking(false).dropBattle(false));
+      this.items.push(new Weapon("wooden_sword", 0.15, 10, 1.25, 1.5, 1.1, 0.15, 25).dropWalking(false).dropBattle(false));
       this.items.push(new Weapon("punch", -1, -1, 1, 1, 1.1, 0.1, -1).dropBattle(false).dropShop(false).dropWalking(false));
+      this.items.push(new Potion("experience_bottle", 0.1, 2.5, [
+        new Buff(10, "exp", (user: User, amount: number, buff: Buff) => {
+          user.exp += amount * buff.value;
+          return `* ${buff.localName(user)} +${amount * buff.value}`;
+        })
+      ]).dropWalking(false));
+      this.items.push(new Potion("mochi-cookie", 0.15, 3.5, [
+        new Buff(10, "health", (user: User, amount: number, buff: Buff) => {
+          user.stats.health += amount * buff.value;
+          if(user.stats.health > user.stats.health_max) {
+            user.stats.health = user.stats.health_max;
+            giveItem(user, this.items[7], amount - Math.floor((user.stats.health-user.stats.health_max)/buff.value));
+            
+            return `* ${buff.localName(user)} +${amount * buff.value-(user.stats.health-user.stats.health_max)}`;
+          }
+          return `* ${buff.localName(user)} +${amount * buff.value}`;
+        })
+      ]));
+      this.items.push(new Item("cix_bottle", 0.05, 25));
     }
     public static getItems() {
       return this.items;
@@ -282,8 +306,8 @@ namespace Contents {
     public static init() {
       this.units.length = 0;
       unitCount = 0;
-      this.units.push(new Unit("obstruction", 5, 0.1, 1, []));
-      this.units.push(new Unit("goblin", 2, 0.3, 1, []));
+      this.units.push(new Unit("obstruction", 5, 1, 0.1, []));
+      this.units.push(new Unit("goblin", 2, 1, 0.3, []));
     }
 
     public static getUnits() {

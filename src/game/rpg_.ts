@@ -9,7 +9,7 @@ import { Message } from "..";
 import { BaseEvent, Event, EventSelection, SelectEvent } from "../event";
 
 import CM from "../commands";
-import { ITrigger } from 'discord.js-pages';
+import { ITrigger, PagesBuilder } from 'discord.js-pages';
 import { CommandCategory } from '../commands/Command';
 
 type User = UserSecure.User;
@@ -61,11 +61,7 @@ function consumeCmd(msg: Message, user: User, lang: Assets.bundle.language) {
   if(result) msg.interaction.followUp(result);
   save();
 };
-/*
-function contentInfoCmd(msg: Message, user: User, lang: Assets.bundle.language) {
-  msg.interaction.followUp(getContentInfo(user, msg) as string);
-};
-*/
+
 function weaponChangeCmd(msg: Message, user: User, lang: Assets.bundle.language) {
   let weapon = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
   if (!weapon) msg.interaction.followUp(prefix+Bundle.find(lang, "command.swap_help"));
@@ -88,27 +84,40 @@ function walkingCmd(msg: Message, user: User, lang: Assets.bundle.language) {
   save();
 };
 
+function contentInfoCmd(msg: Message, user: User) {
+  const type = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('type', false);
+  const showAll = type !== "item" && type !== "unit";
+  let infoes: string[] = [];
+  const out = [];
+
+  if(showAll || type === "unit") infoes = infoes.concat(Contents.Units.getUnits().map(cont=>"```"+info(user, cont)+"```"));
+  if(showAll || type === "item") infoes = infoes.concat(Contents.Items.getItems().map(cont=>"```"+info(user, cont)+"```"));
+  
+  for(var i = 0; i < Math.floor(infoes.length/4); i++)
+    out.push(infoes.slice(i*4,Math.min(infoes.length, (i+1)*4)));
+  new PagesBuilder(msg.interaction).setPages(out.map(infoes=>new MessageEmbed().setDescription(infoes.join("")))).setDefaultButtons([`back`, `next`]).build();
+}
+
 function registerCmd(builder: SlashCommandBuilder, callback: Function, requireUser: boolean = true, dmOnly: boolean = false, cate: CommandCategory = "guild") {
   CM.register({
     category: cate,
     dmOnly: dmOnly&&false,
     debug: false,
     run: interaction => {
-      let user = users.find((u) => u.hash == parseInt(interaction.user.id));
+      const obj = {
+        interaction: interaction,
+        builder: null
+      };
+      const user = users.find((u) => u.hash == parseInt(interaction.user.id));
       if(requireUser&&!user) 
         interaction.followUp(Bundle.find((interaction.locale as Assets.bundle.language) || "en", "account.account_notLogin"));
-      else callback({
-        interaction: interaction,
-        sender: {
-            name: interaction.user.username,
-            hash: interaction.user.id
-        },
-        replyText: (msg: any, room?:string)=>{
-          if(msg.type=="edit") interaction.editReply(msg.content);
-          else if(msg.embed) interaction.followUp({embeds: msg.embed});
-          else interaction.followUp(msg.content||msg);        
-        }
-      }, user, user?.lang);
+      else {
+        if(user) latestMsgs.push({
+          id: user.id, 
+          msg: obj
+        });
+        callback(obj, user, user?.lang);
+      }
     },
     setHiddenConfig: arg => arg,
     builder: builder
@@ -117,7 +126,9 @@ function registerCmd(builder: SlashCommandBuilder, callback: Function, requireUs
 
 export function init() {
   users.forEach(user => {
-    if(!user.foundItems) user.foundItems = [];
+    if(!user.foundContents.get) user.foundContents = new Map().set("item", user.inventory.items.map(i=>i.id)).set("unit", []);
+    if(!user.foundContents.get("item")) user.foundContents.set("item", []);
+    if(!user.foundContents.get("unit")) user.foundContents.set("unit", []);
     if(user.stats.health <= 0) user.stats.health = user.stats.health_max;
     user.inventory.items.forEach((entity,i)=>{
       const exist = user.inventory.items.find(e=>e!=entity&&e.id==entity.id);
@@ -164,7 +175,11 @@ export function init() {
     s.addStringOption(option => option.setName("target").setDescription("target weapon name").setRequired(true).addChoices(Contents.Items.getItems().filter(i=>(i as unknown as Contents.Weapon).damage).map(u=>[u.localName(), u.localName()])));
     return s;
   })(), weaponChangeCmd);
-
+  registerCmd((()=>{
+    var s = new SlashCommandBuilder().setName("info").setDescription("show content information");
+    s.addStringOption(option => option.setName("type").setDescription("the content type").addChoices([["item", "item"], ["unit", "unit"]]));
+    return s;
+  })(), contentInfoCmd);
   registerCmd(new SlashCommandBuilder().setName("walk").setDescription("just walk around"), walkingCmd);
   registerCmd(new SlashCommandBuilder().setName("accounts").setDescription("show all accounts"), (msg: Message)=>msg.interaction.followUp(users.map((u) => u.id).join(" | ")));
   registerCmd(new SlashCommandBuilder().setName("signout").setDescription("sign current account out"), (msg: Message)=>UserSecure.signout(msg, users), true);
@@ -195,7 +210,7 @@ export function init() {
     return s;
   })(), (msg: Message)=>UserSecure.change(msg, users), true, true);
   console.log("init done");
-  save();
+  //save();
 }
 
 const battleSelection: EventSelection[] = [
@@ -223,9 +238,10 @@ const battleSelection: EventSelection[] = [
         //적이 죽으면 전투 끝
         if (target.health <= 0 && msg.builder) {
           msg.builder.setDescription(
-            Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"
-            +((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-4), user.battleLog.length-1) : user.battleLog).join("")+"\n"+
-            "```diff\n+ "+(target.health < 0 ? Bundle.find(user.lang, "battle.overkill") + " " : "") + Bundle.format(user.lang, "battle.win", target.health.toFixed(2))+"\n```\n```ini\n["+battlewin(user, Contents.Units.find(target.id))+"]```");
+            Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))
+            +"\n"+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog).join("")
+            +"\n```diff\n+ "+(target.health < 0 ? Bundle.find(user.lang, "battle.overkill") + " " : "") + Bundle.format(user.lang, "battle.win", target.health.toFixed(2))+"\n```"
+            +"\n```ini\n["+battlewin(user, Contents.Units.find(target.id))+"]```");
           msg.interaction.editReply({embeds: [msg.builder], components: []});
           user.enemy = undefined;
           msg.builder = null;
@@ -234,7 +250,7 @@ const battleSelection: EventSelection[] = [
           return;
         };
       }
-      msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-4), user.battleLog.length-1) : user.battleLog).join(""));
+      msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog).join(""));
     }
   },
   {
@@ -246,7 +262,7 @@ const battleSelection: EventSelection[] = [
         button.components[2].setDisabled(false);
         if(msg.builder) {
           if(user.enemy) msg.builder
-            .setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-4), user.battleLog.length-1) : user.battleLog).join(""))
+            .setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog).join(""))
             .setComponents([button])
             .addComponents(new MessageSelectMenu().setCustomId(`swap`).setPlaceholder("swap weapon to ...").addOptions(user.inventory.items.filter(e=>(Contents.Items.find(e.id) as Contents.Weapon).damage).map(stack=>{
               return {
@@ -270,7 +286,7 @@ const battleSelection: EventSelection[] = [
         button.components[2].setDisabled(true);      
         if(msg.builder) {
           if(user.enemy) msg.builder
-            .setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-4), user.battleLog.length-1) : user.battleLog).join(""))
+            .setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog).join(""))
             .setComponents([button])
             .addComponents(new MessageSelectMenu().setCustomId(`swap`).setPlaceholder("swap weapon to ...").addOptions(user.inventory.items.filter(e=>(Contents.Items.find(e.id) as Contents.Weapon).damage).map(stack=>{
               return {
@@ -323,7 +339,8 @@ function exchange(msg: Message, user: User, entity: UnitEntity) {
 function battle(msg: Message, user: User, entity: UnitEntity) {
   const buttons: MessageActionRow = new MessageActionRow();
   user.enemy = entity;
-
+  user.battleLog = [];
+  
   if(msg.builder){
     const triggers: ITrigger<MessageActionRowComponent>[] = [];
 
@@ -361,7 +378,7 @@ function battle(msg: Message, user: User, entity: UnitEntity) {
               user.inventory.weapon.id = weapon.id;
               giveItem(user, weapon);
               user.battleLog.push("```\n"+Bundle.format(user.lang, "switch_change", weaponTo, weaponFrom)+"\n```")
-              if(user.enemy) msg.builder?.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-4), user.battleLog.length-1) : user.battleLog).join(""));
+              if(user.enemy) msg.builder?.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(user.enemy.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog).join(""));
               if(msg.builder) msg.interaction.editReply({embeds: [msg.builder]});
               save();
             }
@@ -378,14 +395,14 @@ function battle(msg: Message, user: User, entity: UnitEntity) {
       if (entity.cooldown <= 0) {
         entity.cooldown = (Contents.Items.find(entity.items.weapon.id) as Contents.Weapon).cooldown;
         user.battleLog.push("```diff\n- "+(Contents.Items.find(entity.items.weapon.id) as Contents.Weapon).attackEntity(user)+"\n```");
-        var logs = (user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-4), user.battleLog.length-1) : user.battleLog;
+        var logs = (user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog;
         msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(entity.id).localName(user))+"\n"+((user.allLog||user.battleLog.length<=4) ? "" :"```+ "+user.battleLog.length+"logs```\n")+logs.join(""));
         msg.interaction.editReply({embeds: [msg.builder]}); //다른 스레드에서 실행되니 임베드를 업데이트
       };
     
       if (user.stats.health <= 0 || !user.enemy) {
         if(user.stats.health <= 0) {
-          msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(entity.id).localName(user))+"\n"+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-4), user.battleLog.length-1) : user.battleLog).join("")+"\n"+"```diff\n- "+Bundle.format(user.lang, "battle.lose", user.stats.health.toFixed(2))+"\n```");
+          msg.builder.setDescription(Bundle.format(user.lang, "battle.start", user.id, Contents.Units.find(entity.id).localName(user))+"\n"+((user.battleLog.length>=4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length-5), user.battleLog.length) : user.battleLog).join("")+"\n"+"```diff\n- "+Bundle.format(user.lang, "battle.lose", user.stats.health.toFixed(2))+"\n```");
           user.stats.health = 0.1 * user.stats.health_max;
         }
         clearInterval(interval);
@@ -402,7 +419,7 @@ function battle(msg: Message, user: User, entity: UnitEntity) {
 
 function battlewin(user: User, unit: Unit) {
   let items = [];
-  for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level + 2)+1); i++) {
+  for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level * 4))+1; i++) {
     let item = getOne(Contents.Items.getItems().filter((i) => i.dropableOnBattle()), "rare");
     if (item) {
       let obj = items.find((i) => i.item == item);
@@ -422,12 +439,14 @@ export function giveItem(user: User, item: Item, amount: number=1): string | nul
   let exist = user.inventory.items.find((i) => ItemStack.equals(i, item));
   if (exist) exist.amount += amount;
   else user.inventory.items.push(new ItemStack(item.id, amount, (item as unknown as Contents.Durable).durability));
-  save();
 
-  if(!user.foundItems.includes(item.id)) {
-    user.foundItems.push(item.id);
+  if(!user.foundContents.get("item")?.includes(item.id)) {
+    user.foundContents.get("item")?.push(item.id);
+    save();
     return Bundle.format(user.lang, "firstget", item.localName(user));
   }
+  
+  save();
   return null;
 }
 
@@ -548,8 +567,6 @@ const exchangeSelection: EventSelection[] = [
             
             if (amount > ent.amount)
               msg.builder?.setDescription(msg.builder.description+"```diff\n- "+Bundle.format(user.lang, "shop.notEnough_item", item.localName(user), amount, ent.amount)+"```");
-            else if (user.money < amount * money)
-              msg.builder?.setDescription(msg.builder.description+"```diff\n- "+Bundle.format(user.lang, "shop.notEnough_money", amount * money, user.money)+"```");
             else {
               msg.builder?.setDescription(msg.builder.description+"```diff\n+ "+Bundle.format(user.lang, "shop.sold", item.localName(user), amount, user.money, (user.money += money * amount))+"```");
               ent.amount -= amount;
@@ -617,16 +634,16 @@ const exchangeSelection: EventSelection[] = [
 
 
 const eventData: Event[] = [
-  new BaseEvent(5, "battle.ignore"),
-  new BaseEvent(15, "", (user, msg)=> {
+  new BaseEvent(2.5, "battle.ignore"),
+  new BaseEvent(20, "", (user, msg)=> {
     let money = 2 + Math.floor(Math.random() * 10);
     user.money += money;
     msg.interaction.followUp(Bundle.format(user.lang, "event.money", money));
   }),
   
-  new BaseEvent(25, "", (user, msg)=> {
+  new BaseEvent(30, "", (user, msg)=> {
     const item = getOne(Contents.Items.getItems().filter((i) => i.dropableOnWalking()), "rare");
-    msg.interaction.followUp(Bundle.format(user.lang, "event.item", item.localName(user)) + (giveItem(user, item)||""));
+    msg.interaction.followUp(Bundle.format(user.lang, "event.item", item.localName(user)) +"\n"+(giveItem(user, item)||""));
   }),
   new SelectEvent(10, "event.goblin",
     [
@@ -660,7 +677,7 @@ const eventData: Event[] = [
       }
     ]
   ),
-  new SelectEvent(22220, "event.obstruction",
+  new SelectEvent(20, "event.obstruction",
     [ 
       {
         name: "battle",
@@ -698,9 +715,9 @@ function levelup(user: User) {
       user.level,
       user.level + 1,
       user.stats.health_max,
-      (user.stats.health_max += Math.pow(user.level, 0.6) * 5),
+      Math.round((user.stats.health_max += Math.pow(user.level, 0.6) * 5) * 100) / 100,
       user.stats.energy_max,
-      (user.stats.energy_max += Math.pow(user.level, 0.4) * 2.5)
+      Math.round((user.stats.energy_max += Math.pow(user.level, 0.4) * 2.5) * 100) / 100
   );
   latestMsgs.find(u=>u.id==user.id)?.msg.interaction.followUp(str);
   user.stats.health = user.stats.health_max;
@@ -735,46 +752,17 @@ function search(msg: Message, user: User) {
 
 function info(user: User, content: Item|Unit) {
   return (
-    (user.foundItems.includes(content.id)
-      ? content.localName(user) 
-      : content.localName(user).replace(/./g, "?")) +
+    (user.foundContents.get(content instanceof Contents.Item ? "item" : "unit")?.includes(content.id)
+      ? content.localName(user) : "unknown") +
     "\n" +
-    (user.foundItems.includes(content.id)
-      ? content.description(user)
-      : content.description(user).replace(/./g, "?")) +
-    (content.details 
-      ? "\n------------\n  " + (user.foundItems.includes(content.id)
-        ? content.details(user)
-        : content.details(user).replace(/./g, "?")) + "\n------------"
+    (user.foundContents.get(content instanceof Contents.Item ? "item" : "unit")?.includes(content.id)
+      ? content.description(user) : "unknown") +
+    (content.details(user) 
+      ? "\n------------\n  " + (user.foundContents.get(content instanceof Contents.Item ? "item" : "unit")?.includes(content.id)
+        ? content.details(user) : "unknown") + "\n------------"
       : "")
   );
 }
-/* //TODO: make content info
-function getContentInfo(user: User, msg: Message) {
-  const [, type] = msg.content.split(/\s/);
-  if (type != "아이템" && type != "유닛")
-    return msg.interaction.followUp("!도감 (아이템|유닛) [이름]");
-
-  let str = "";
-  let name = msg.content.split(/\s/).slice(2).join(" ");
-  if (type == "유닛") {
-    if (name && !Contents.Units.getUnits().some((u) => u.localName(user) == name))
-      return msg.interaction.followUp(Strings.format("유닛 {0}(을)를 찾을 수 없습니다.", name));
-    str = Strings.format("유닛\n===============\n\n{0}\n\n", [name
-        ? info(user, Contents.Units.getUnits().find((u) => u.localName(user) == name) as Unit)
-        : Contents.Units.getUnits().map((c) => info(user, c)).join("\n\n")
-    ]);
-  } else if (type == "아이템") {
-    if (name && !Contents.Items.getItems().some((u) => u.localName(user) == name))
-      return msg.interaction.followUp(Strings.format("아이템 {0}(을)를 찾을 수 없습니다.", name));
-    str = Strings.format("아이템\n===============\n\n{0}\n\n", name 
-      ? info(user,Contents.Items.getItems().find((u) => u.localName(user) == name) as Item)
-      : Contents.Items.getItems().map((c) => info(user, c)).join("\n\n")
-    );
-  }
-  return str;
-}
-*/
 
 export function getUsers() {
   return users;
@@ -814,13 +802,13 @@ function getUserInfo(user: User) {
 
     weapon.cooldown,
     weapon.damage,
-    (weapon.critical_ratio * 100).toFixed(2),
-    (weapon.critical_chance * 100).toFixed(2)
+    (weapon.critical_chance * 100).toFixed(2),
+    (weapon.critical_ratio * 100).toFixed(2)
   );
 }
 
 function switchWeapon(user: User, msg: Message, name: string) {
-  let item = Contents.Items.getItems().find((i) => i.localName(user) == name);
+  let item = Contents.Items.getItems().find((i) => i.localName(user) == name) as Contents.Weapon | undefined;
   if (!item) msg.interaction.followUp(Bundle.format(user.lang, "switch_notFound", name));
   else {
     let entity = user.inventory.items.find((entity) => ItemStack.getItem(entity) == item);
@@ -839,7 +827,7 @@ function switchWeapon(user: User, msg: Message, name: string) {
       
       
         user.inventory.weapon.id = item.id;
-
+        user.inventory.weapon.durability = item.durability;
       save();
     }
   }
@@ -851,7 +839,8 @@ function read() {
     u.inventory.weapon = ItemStack.from(u.inventory.weapon);
     u.inventory.items.forEach(stack => stack = ItemStack.from(stack));
     u.status = new UserSecure.Status();
-    u.battleLog = [];
+    if(!u.battleLog) u.battleLog = [];
+    if(!u.foundContents) u.foundContents = new Map().set("item", u.inventory.items.map(i=>i.id)).set("unit", []);
     return u;
   });
 }

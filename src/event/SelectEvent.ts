@@ -19,8 +19,8 @@ export class SelectEvent extends BaseEvent {
         this.selections = selections;
     }
 
-    addSelection(selections: EventSelection) {
-        this.selections.push(selections);
+    addSelection(selection: EventSelection) {
+        this.selections.push(selection);
         return this;
     }
 
@@ -35,7 +35,7 @@ export class SelectEvent extends BaseEvent {
             triggers.push({
                 name: name+i,
                 callback: ()=> { 
-                    //buttons.components.forEach(c=>c.setDisabled(true));
+                    if(msg.builder) msg.interaction.editReply({embeds: [msg.builder], components: []});
                     select.callback(user, msg, buttons);
                 }
             });
@@ -44,7 +44,7 @@ export class SelectEvent extends BaseEvent {
 
         user.status.name = "selecting";
         msg.builder = new PagesBuilder(msg.interaction)
-        .setPages(new MessageEmbed()).setTitle(Assets.bundle.find(user?.lang, this.title)).setDescription(description) //make embed
+        .setPages(new MessageEmbed()).setTitle(Assets.bundle.find(user.lang, this.title)).setDescription(description) //make embed
         .setDefaultButtons([]) //remove default components
         .setComponents([buttons]).setTriggers(triggers); //make new components
         msg.builder.build();
