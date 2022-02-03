@@ -96,7 +96,7 @@ namespace CommandManager {
         await Promise.all(promiese);
 
         // 명령어 재선언
-        const createSeq: any[] = [];
+        const createSeq: Promise<ApplicationCommand>[] = [];
         
         commands.forEach(command => {
             if(command.category == target) {

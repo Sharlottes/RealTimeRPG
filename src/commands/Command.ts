@@ -35,9 +35,10 @@ abstract class Command {
         this.builder.setDefaultPermission(false);
     }
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public /*virtual*/ setHiddenConfig(option: any): any {
         return option;
     }
-};
+}
 
 export default Command;

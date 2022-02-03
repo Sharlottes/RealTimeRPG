@@ -35,7 +35,7 @@ class Content extends Command {
         const contents: string[] = Object.keys(data);
         const name: string = args.shift() || "";
         if(contents.includes(name)) {
-            let result = data[name];
+            const result = data[name];
             if(typeof result === "object") {
                 if(Array.isArray(result)) {
                     if(!args.slice().shift() || args.slice().shift()?.replace(/\D/g, "").trim()=="") interaction.reply("["+result.join(", ")+"]");
@@ -59,9 +59,8 @@ class Content extends Command {
     }
     
     public run(interaction: CommandInteraction<CacheType>): void {
-        const args: string[] = interaction.options.getString('values', true).split(".");
-        const contentType: any = interaction.options.getString("type", true);
-        const jsonData = assets.content.get(contentType);
+        const args = interaction.options.getString('values', true).split(".");
+        const jsonData = assets.content.get(interaction.options.getString("type", true) as assets.content.contentType);
         this.checkcont(jsonData, args, interaction);
 
 

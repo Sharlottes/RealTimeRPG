@@ -3,10 +3,10 @@ import properties from "properties-reader";
 import { Utils } from "../util";
 
 namespace Assets {
-    let rootDir: string = "";
+    let rootDir = "";
     const dictionary: Map<bundle.language, properties.Reader> = new Map();
 
-    export function init(debugMode: boolean = false) {
+    export function init(debugMode = false) {
         rootDir = "./assets/";
         
         const langs: bundle.language[] = ["ko", "en"]
@@ -27,11 +27,11 @@ namespace Assets {
             return String(dictionary.get(lang)?.get(key));
         }
         
-        export function format(lang: language = "en", key: string, ...args: any[]) {
-            return Utils.Strings.format(find(lang, key), args);
+        export function format(lang: language = "en", key: string, ...args: unknown[]) {
+            return Utils.Strings.format(find(lang, key), String(args));
         }
 
-        export function get(name: string = "", lang: language = "en") {
+        export function get(name = "", lang: language = "en") {
             if(dictionary.has(lang)) {
                 return dictionary.get(lang)?.get(name);
             } else {
@@ -43,6 +43,7 @@ namespace Assets {
     export namespace content {
         export type contentType = "block" | "bullet" | "item" | "liquid" | "planet" | "sector" | "status" | "unit" | "weather";
         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         export function get <T> (type: contentType = "block", callBack: (jsonData: any) => T = T => T): T {
             const jsonPath = `${rootDir}contents/${type}.json`;
             let jsonData;
@@ -61,7 +62,7 @@ namespace Assets {
     }
 
     export namespace sprite {
-        export function get(name: string = "") {
+        export function get(name = "") {
             const spritePath = rootDir + "sprites/";
             return fs.readFileSync(spritePath + name, "utf-8");
         }

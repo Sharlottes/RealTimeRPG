@@ -1,4 +1,4 @@
-import { UserSecure } from "../modules";
+import { User } from "../modules";
 import { Message } from '../index';
 import { BaseEvent } from "./BaseEvent";
 import { MessageActionRow, MessageButton, MessageEmbed, MessageActionRowComponent, MessageButtonStyleResolvable } from "discord.js";
@@ -7,14 +7,14 @@ import Assets from "@뇌절봇/assets";
 
 export type EventSelection = {
     name: string;
-    callback: (user: UserSecure.User, msg: Message, button?: MessageActionRow)=>void;
+    callback: (user: User, msg: Message, button?: MessageActionRow)=>void;
     style?: MessageButtonStyleResolvable;
 }
 
 export class SelectEvent extends BaseEvent {
     private readonly selections: EventSelection[];
 
-    constructor(ratio: number, title: string, selections: EventSelection[], callback?: (user: UserSecure.User, msg: Message)=>void) {
+    constructor(ratio: number, title: string, selections: EventSelection[], callback?: (user: User, msg: Message)=>void) {
         super(ratio, title, callback);
         this.selections = selections;
     }
@@ -24,10 +24,10 @@ export class SelectEvent extends BaseEvent {
         return this;
     }
 
-    start(user: UserSecure.User, msg: Message): void {
+    start(user: User, msg: Message): void {
         const buttons: MessageActionRow = new MessageActionRow();
         const triggers: ITrigger<MessageActionRowComponent>[] = [];
-        let description: string = "";
+        let description = "";
 
         this.selections.forEach((select, i) => {
             const name = Assets.bundle.find(user.lang, `select.${select.name}`);
@@ -52,4 +52,4 @@ export class SelectEvent extends BaseEvent {
 
         super.start(user, msg);
     }
-};
+}

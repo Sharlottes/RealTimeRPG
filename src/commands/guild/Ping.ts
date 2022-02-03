@@ -52,7 +52,7 @@ class Ping extends Command {
         const versions: string[] = ["v7", "v6", "be"];
         const ver: string = interaction.options.getString('version', true);
         if(versions.includes(ver)) {
-            const url: string = `https://raw.githubusercontent.com/Anuken/Mindustry/master/servers_${ver}.json`;
+            const url = `https://raw.githubusercontent.com/Anuken/Mindustry/master/servers_${ver}.json`;
             // const helpImg: string = "https://images-ext-1.discordapp.net/external/RyofVqSAVAi0H9-1yK6M8NGy2grU5TWZkLadG-rwqk0/https/i.imgur.com/EZRAPxR.png";
 
             //mindustry server list의 각 서버들에 ping 요청을 하여 나온 시간들을 출력.
@@ -65,9 +65,9 @@ class Ping extends Command {
                         }) => { // 한 서버당 주소가 여러개이므로 루프 또 돌림 
                         const field: string = v.addresses.map(async (address: string) => {
                             const started = new Date().getTime();
-                            let [addressname, stringPort]: string[] = address.split(":");
+                            const [addressname, stringPort]: string[] = address.split(":");
                             const port: number = parseInt(stringPort || "6567");
-                            let out: string = "";
+                            let out = "";
                             await tcpp.probe(addressname, port, (err, available) => {
                                 //콜백함수가 호출되면 addresses에 아래 문자열을 담음.
                                 out = `${address} - ${new Date().getTime() - started}ms\n`;

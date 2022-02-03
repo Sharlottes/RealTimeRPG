@@ -1,0 +1,28 @@
+{
+    "env": {
+        "node": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": ["./tsconfig.json"],
+        "ecmaVersion": 2015,
+        "sourceType": "module"
+    },
+    "ignorePatterns": ["node_modules/", "src/net/", "src/commands/guild/"],
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-unused-vars": [
+            0, { "vars": "all", "args": "after-used" }
+        ],
+        "no-empty": "warn"
+    }
+}

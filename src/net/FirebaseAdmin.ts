@@ -24,11 +24,9 @@ class FirebaseAdmin {
         }
 
         const app = this.app = firebase.initializeApp(setup);
-
         const database = this.database = firebase.database(this.app);
         const auth = this.auth = firebase.auth(this.app);
         const firestore = this.firestore = firebase.firestore(this.app);
-
         const accounts = this.accounts = new Map<string, Account>();
 
         database.goOnline();

@@ -1,8 +1,11 @@
-import { CacheType, CommandInteraction } from "discord.js";
-
 import { Command } from "@뇌절봇/commands";
+import { CommandInteraction, CacheType } from "discord.js";
 
 class Login extends Command {
+    public run(interaction: CommandInteraction<CacheType>): void {
+        throw new Error("Method not implemented.");
+    }
+    
     public constructor() {
         super({category: "global"});
         
@@ -10,10 +13,6 @@ class Login extends Command {
             .setName("login")
             .setDescription("desc")
             .setDefaultPermission(true);
-    }
-    
-    public run(interaction: CommandInteraction<CacheType>) {
-
     }
 }
 

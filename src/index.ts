@@ -16,7 +16,7 @@ import { init } from './game/rpg_';
 import { PagesBuilder } from 'discord.js-pages';
 
 export type Message = {
-    interaction: Discord.CommandInteraction<any>,
+    interaction: Discord.CommandInteraction<CacheType>,
     builder: PagesBuilder | null
 }
 
@@ -46,7 +46,7 @@ const rest = new REST({ version: '9' }).setToken(config.botToken);
 // App 선언 - 봇의 모든 코드를 관리함
 const app = {
     client: new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }),
-    option: new Map<string, any>(),
+    option: new Map<string, boolean|number|string>(),
     config: config,
     rest: rest
 };
@@ -118,7 +118,7 @@ client.on("interactionCreate", async interaction => {
                 const whiteList = config.whiteList as false | string[];
                 const command = CM.commands.get(interaction.commandName);
 
-                let channelName: string =
+                const channelName: string =
                     interaction.channel instanceof Discord.TextChannel ||
                     interaction.channel instanceof Discord.NewsChannel
                         ? interaction.channel.name
@@ -136,10 +136,8 @@ client.on("interactionCreate", async interaction => {
                     content: "Error... Undefined command!"
                 });
             }
-        } catch(error: any) {
-          if(!interaction.replied) {
-              interaction.editReply({content: "error: "+error});
-          }
+        } catch(error) {
+          interaction.editReply({content: "error: "+error});
         }
     }
 
@@ -163,8 +161,8 @@ client.on("messageCreate", async message => {
             }).catch(e => {
                 message.reply(e+"");
             });
-        } catch (e: any) {
-            message.reply(e);
+        } catch (error) {
+            message.reply({content: "error: "+error});
         }
     }
 

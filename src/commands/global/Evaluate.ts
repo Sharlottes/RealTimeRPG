@@ -1,6 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommandInteraction, CacheType } from "discord.js";
-import fs from "fs";
-
 import { Command } from "@뇌절봇/commands";
 
 class Evaluate extends Command {
@@ -30,9 +29,6 @@ class Evaluate extends Command {
             "462167403237867520",
             "473072758629203980"
         ]
-        if(allows.includes(interaction.user.id)) {
-            
-        }
     }
 }
 

@@ -34,14 +34,14 @@ namespace Permission {
     export async function setCommandPermission(args: permWithUserIDs): Promise<void>;
     export async function setCommandPermission(args: permWithRollIDs): Promise<void>;
 
-    export async function setCommandPermission(args: any) {
+    export async function setCommandPermission(args: permWithUserIDs|permWithRollIDs) {
         let args0 = true;
         let args1: boolean | undefined = undefined;
         Object.keys(args).forEach(key => {
             if(!args0 || args1 === true) args1 = key == "rollID";
             else args0 = args0 ? argNames[0].includes(key) : false;   
         });
-
+        /*
         if(args0) {
             const {commandID, userID, guildID, permission}: permWithUserIDs = args;
             
@@ -49,6 +49,7 @@ namespace Permission {
             const {commandID, rollID, guildID, permission}: permWithRollIDs = args;
 
         }
+        */
     }
 }
 

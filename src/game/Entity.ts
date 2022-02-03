@@ -1,19 +1,43 @@
-import { UserSecure } from "../modules";
-import { Contents } from "../game";
+import { Inventory, defaultInven } from "../modules";
+import { Unit, ItemStack } from "../game";
+import { Heathy } from '../@type';
+import { Units } from './contents/Content';
 
 namespace Entity {
-  export class UnitEntity {
+  export class UnitEntity implements Heathy {
     id: number;
     health: number;
-    items: UserSecure.Inventory;
-    cooldown: number = 0;
-    constructor(unit: Contents.Unit) {
+    maxHealth: number;
+    healthRegen: number;
+    items: Inventory;
+    cooldown = 0;
+    constructor(unit: Unit) {
       this.id = unit.id;
       this.health = unit.health;
-      this.items = UserSecure.defaultInven;
+      this.maxHealth = unit.health;
+      this.healthRegen = unit.healthRegen;
+      this.items = defaultInven;
+    }
+    getHealth(): number {
+      return this.health;
+    }
+    setHealth(health: number): number {
+      return this.health = health;
+    }
+    getMaxHealth(): number {
+      return this.maxHealth;
+    }
+    setMaxHealth(max: number): number {
+      return this.maxHealth = max;
+    }
+    getHealthRegen(): number {
+      return this.healthRegen;
+    }
+    setHealthRegen(regen: number): number {
+      return this.healthRegen = regen;
     }
 
-    setWeapon(weapon: Contents.ItemStack) {
+    setWeapon(weapon: ItemStack) {
       this.items.weapon = weapon;
       return this;
     }
