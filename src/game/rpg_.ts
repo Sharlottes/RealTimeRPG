@@ -307,10 +307,10 @@ const battleSelection: EventSelection[] = [
 
 function exchange(msg: Message, user: User, entity: UnitEntity) {
 	for (let i = 0; i < 20; i++) {
-		const item = getOne<>(Items.getItems().filter((i) => i.dropableOnShop() && i.id !== 5 && (item instanceof Durable)));
+		const item = getOne(Items.getItems().filter((i) => i.dropableOnShop() && i.id !== 5 && (typeof i)));
 		const exist = entity.items.items.find((e) => e.id == item.id);
 		if (exist) exist.amount++;
-		else entity.items.items.push(new ItemStack(item.id, 1, item.durability));
+		else entity.items.items.push(new ItemStack(item.id, 1, (item as unknown as Durable).durability));
 	}
 
 	user.enemy = entity;
@@ -442,7 +442,7 @@ function battlewin(user: User, unit: Unit) {
 export function giveItem(user: User, item: Item, amount = 1): string | null {
 	const exist = user.inventory.items.find((i) => ItemStack.equals(i, item));
 	if (exist) exist.amount += amount;
-	else user.inventory.items.push(new ItemStack(item.id, amount, (item as unknown as Durable).getDurability()));
+	else user.inventory.items.push(new ItemStack(item.id, amount, (item as unknown as Durable).durability));
 
 	if (!user.foundContents.get('item')?.includes(item.id)) {
 		user.foundContents.get('item')?.push(item.id);
@@ -764,7 +764,7 @@ export function getUsers() {
 function getInventory(user: User) {
 	return `${Bundle.find(user.lang, 'inventory')}\n-----------\n${user.inventory.items.map((i) => {
 		const item = ItemStack.getItem(i);
-		return `• ${item.localName(user)} ${i.amount > 0 ? `(${`${i.amount} ${Bundle.find(user.lang, 'unit.item')}`})` : ''}\n   ${item.description(user)}${(item as unknown as Durable).getDurability() ? `(${Bundle.find(user.lang, 'durability')}: ${i.durability}/${(item as unknown as Durable).getDurability()})` : ''}`;
+		return `• ${item.localName(user)} ${i.amount > 0 ? `(${`${i.amount} ${Bundle.find(user.lang, 'unit.item')}`})` : ''}\n   ${item.description(user)}${(item as unknown as Durable).durability ? `(${Bundle.find(user.lang, 'durability')}: ${i.durability}/${(item as unknown as Durable).durability})` : ''}`;
 	}).join('\n\n')}`;
 }
 

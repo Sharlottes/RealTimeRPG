@@ -6,35 +6,38 @@ import { Units } from './contents/Content';
 namespace Entity {
   export class UnitEntity implements Heathy {
     id: number;
-    health: number;
-    maxHealth: number;
-    healthRegen: number;
     items: Inventory;
     cooldown = 0;
     constructor(unit: Unit) {
       this.id = unit.id;
       this.health = unit.health;
-      this.maxHealth = unit.health;
+      this.healthMax = unit.health;
       this.healthRegen = unit.healthRegen;
       this.items = defaultInven;
     }
-    getHealth(): number {
+    
+    get health() {
       return this.health;
     }
-    setHealth(health: number): number {
-      return this.health = health;
+
+    set health(health: number) {
+      this.health = health;
     }
-    getMaxHealth(): number {
-      return this.maxHealth;
+
+    get healthMax() {
+      return this.health;
     }
-    setMaxHealth(max: number): number {
-      return this.maxHealth = max;
+
+    set healthMax(max: number) {
+      this.health = max;
     }
-    getHealthRegen(): number {
+
+    get healthRegen() {
       return this.healthRegen;
     }
-    setHealthRegen(regen: number): number {
-      return this.healthRegen = regen;
+
+    set healthRegen(regen: number) {
+      this.healthRegen = regen;
     }
 
     setWeapon(weapon: ItemStack) {

@@ -117,7 +117,6 @@ export class Weapon extends Item implements Durable {
 	public readonly cooldown: number;
 	public readonly critical_ratio: number;
 	public readonly critical_chance: number;
-	public durability: number;
 
 	constructor(
 		name: string,
@@ -137,12 +136,12 @@ export class Weapon extends Item implements Durable {
 		this.durability = durability;
 	}
 
-	getDurability(): number {
+	get durability() {
 		return this.durability;
 	}
 
-	setDurability(durability: number): number {
-		return this.durability = durability;
+	set durability(durability: number) {
+		this.durability = durability;
 	}
 
 	public attack(user: User, target: Heathy) {
@@ -152,9 +151,8 @@ export class Weapon extends Item implements Durable {
 			critical ? Bundle.find(user.lang, 'battle.critical') : '',
 			this.localName(user),
 			(this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
-			target.getHealth().toFixed(2),
-			target.setHealth(target.getHealth() - this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
-			
+			target.health.toFixed(2),
+			(target.health -= this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2)
 		);
 	}
 
@@ -174,8 +172,6 @@ export class Weapon extends Item implements Durable {
 }
 
 export class Unit extends Content implements Heathy {
-	public health: number;
-	public healthRegen: number;
 	public level: number;
 	public rare: number;
 	public readonly items: ItemStack[] = [];
@@ -198,23 +194,29 @@ export class Unit extends Content implements Heathy {
 		this.items = items;
 		this.id = unitCount++;
 	}
-	getHealth(): number {
+
+	get health() {
 		return this.health;
 	}
-	setHealth(health: number): number {
-		return this.health = health;
+
+	set health(health: number) {
+		this.health = health;
 	}
-	getMaxHealth(): number {
+
+	get healthMax() {
 		return this.health;
 	}
-	setMaxHealth(max: number): number {
-		return this.health = max;
+
+	set healthMax(max: number) {
+		this.health = max;
 	}
-	getHealthRegen(): number {
+
+	get healthRegen() {
 		return this.healthRegen;
 	}
-	setHealthRegen(regen: number): number {
-		return this.healthRegen = regen;
+
+	set healthRegen(regen: number) {
+		this.healthRegen = regen;
 	}
 }
 

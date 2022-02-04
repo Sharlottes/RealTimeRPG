@@ -1,19 +1,13 @@
 export declare interface Heathy { 
-    getHealth(): number;
-    setHealth(health: number) : number;
-    getMaxHealth(): number;
-    setMaxHealth(max: number) : number; 
-    getHealthRegen(): number;
-    setHealthRegen(regen: number) : number;
+    health: number;
+    healthMax: number;
+    healthRegen: number;
 }
 
 export interface Energy {
-    getEnergy():number;
-    setEnergy(energy: number) : number;
-    getMaxEnergy(): number;
-    setMaxEnergy(max: number) : number; 
-    getEnergyRegen(): number;
-    setEnergyRegen(regen: number) : number;
+    energy: number;
+    energyMax: number;
+    energyRegen: number;
 }
 
 export interface Consumable {
@@ -21,8 +15,7 @@ export interface Consumable {
 }
 
 export interface Durable {
-    getDurability(): number;
-    setDurability(durability: number): number;
+    durability: number;
 }
 
 export interface Dropable {
