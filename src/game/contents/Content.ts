@@ -9,10 +9,10 @@ let itemCount = 0;
 let unitCount = 0;
 
 export class Content {
-	public readonly name: string;
-	public readonly localName: (user?: User)=>string;
-	public readonly description: (user?: User)=>string;
-	public readonly details: (user?: User)=>string;
+	readonly name: string;
+	readonly localName: (user?: User)=>string;
+	readonly description: (user?: User)=>string;
+	readonly details: (user?: User)=>string;
 
 	constructor(name: string, type = 'other') {
 		this.name = name;
@@ -23,9 +23,9 @@ export class Content {
 }
 
 export class Item extends Content implements Dropable, Rationess {
-	public readonly rare: number;
-	public readonly cost: number;
-	public readonly id: number;
+	readonly rare: number;
+	readonly cost: number;
+	readonly id: number;
 	private dropOnWalk = true;
 	private dropOnBattle = true;
 	private dropOnShop = true;
@@ -41,38 +41,38 @@ export class Item extends Content implements Dropable, Rationess {
 		this.id = itemCount++;
 	}
 
-	public dropableOnBattle() {
+	dropableOnBattle() {
 		return this.dropOnBattle;
 	}
-	public dropableOnWalking() {
+	dropableOnWalking() {
 		return this.dropOnWalk;
 	}
-	public dropableOnShop() {
+	dropableOnShop() {
 		return this.dropOnShop;
 	}
 
-	public dropBattle(bool: boolean) {
+	dropBattle(bool: boolean) {
 		this.dropOnBattle = bool;
 		return this;
 	}
-	public dropWalking(bool: boolean) {
+	dropWalking(bool: boolean) {
 		this.dropOnWalk = bool;
 		return this;
 	}
-	public dropShop(bool: boolean) {
+	dropShop(bool: boolean) {
 		this.dropOnShop = bool;
 		return this;
 	}
 
-	public getRatio() {
+	getRatio() {
 		return this.rare;
 	}
 }
 
 export class Buff {
-	public readonly value: number;
-	public readonly localName: (user: User)=>string;
-	public readonly callback: (user: User, amount: number, buff: Buff) => string;
+	readonly value: number;
+	readonly localName: (user: User)=>string;
+	readonly callback: (user: User, amount: number, buff: Buff) => string;
 
 	constructor(
 		value: number,
@@ -85,7 +85,7 @@ export class Buff {
 		this.callback = callback;
 	}
 
-	public buff(user: User, amount: number) {
+	buff(user: User, amount: number) {
 		return this.callback(user, amount, this);
 	}
 }
@@ -103,20 +103,22 @@ export class Potion extends Item implements Consumable, Rationess {
 		this.buffes = buffes;
 	}
 
-	public consume(user: User, amount = 1) {
+	consume(user: User, amount = 1) {
 		return Bundle.format(user.lang, 'consume', this.localName(user), amount, this.buffes.map((b) => b.buff(user, amount)).join('\n  '));
 	}
 
-	public getRatio() {
+	getRatio() {
 		return this.rare;
 	}
 }
 
 export class Weapon extends Item implements Durable {
-	public readonly damage: number;
-	public readonly cooldown: number;
-	public readonly critical_ratio: number;
-	public readonly critical_chance: number;
+	readonly damage: number;
+	readonly cooldown: number;
+	readonly critical_ratio: number;
+	readonly critical_chance: number;
+
+	durability: number;
 
 	constructor(
 		name: string,
@@ -136,15 +138,8 @@ export class Weapon extends Item implements Durable {
 		this.durability = durability;
 	}
 
-	get durability() {
-		return this.durability;
-	}
 
-	set durability(durability: number) {
-		this.durability = durability;
-	}
-
-	public attack(user: User, target: Heathy) {
+	attack(user: User, target: Heathy) {
 		const critical = Utils.Mathf.randbool(this.critical_chance);
 
 		return Bundle.format(user.lang, 'battle.hit',
@@ -157,7 +152,7 @@ export class Weapon extends Item implements Durable {
 	}
 
 	
-	public attackEntity(user: User) {
+	attackEntity(user: User) {
 		const critical = Utils.Mathf.randbool(this.critical_chance);
 
 		return Bundle.format(user.lang, 'battle.entityHit',
@@ -172,10 +167,12 @@ export class Weapon extends Item implements Durable {
 }
 
 export class Unit extends Content implements Heathy {
-	public level: number;
-	public rare: number;
-	public readonly items: ItemStack[] = [];
-	public id: number;
+	level: number;
+	rare: number;
+	readonly items: ItemStack[] = [];
+	id: number;
+	health: number;
+	healthRegen: number;
 
 	constructor(
 		name: string,
@@ -194,30 +191,6 @@ export class Unit extends Content implements Heathy {
 		this.items = items;
 		this.id = unitCount++;
 	}
-
-	get health() {
-		return this.health;
-	}
-
-	set health(health: number) {
-		this.health = health;
-	}
-
-	get healthMax() {
-		return this.health;
-	}
-
-	set healthMax(max: number) {
-		this.health = max;
-	}
-
-	get healthRegen() {
-		return this.healthRegen;
-	}
-
-	set healthRegen(regen: number) {
-		this.healthRegen = regen;
-	}
 }
 
 export class ItemStack {
@@ -231,22 +204,22 @@ export class ItemStack {
 		this.durability = durability;
 	}
 
-	public static from(stack: ItemStack) {
+	static from(stack: ItemStack) {
 		return new ItemStack(stack.id, stack.amount, stack.durability);
 	}
 
-	public static with(items: number[]) {
+	static with(items: number[]) {
 		const stacks: ItemStack[] = [];
 		for (let i = 0; i < items.length; i += 2) {
 			stacks[i / 2] = new ItemStack(items[i], items[i + 1]);
 		}
 		return stacks;
 	}
-	public static equals(stack: ItemStack, item: Item, amount?: number) {
+	static equals(stack: ItemStack, item: Item, amount?: number) {
 		return stack.id == item.id && (!amount || stack.amount == amount);
 	}
 
-	public static consume(stack: ItemStack, user: User, amount = 1) {
+	static consume(stack: ItemStack, user: User, amount = 1) {
 		const item = Items.find(stack.id);
 		if (item) {
 			stack.amount--;
@@ -255,7 +228,7 @@ export class ItemStack {
 		}
 	}
 
-	public static getItem<T extends Item>(stack: ItemStack): T {
+	static getItem<T extends Item>(stack: ItemStack): T {
 		return Items.find(stack.id) ;
 	}
 }
@@ -263,7 +236,7 @@ export class ItemStack {
 export class Items {
 	private static readonly items: Item[] = [];
 
-	public static init() {
+	static init() {
 		this.items.length = 0;
 		itemCount = 0;
 		this.items.push(new Weapon('stone', 0.3, 1.5, 1.15, 1.2, 0.2, 1.05, 1));
@@ -303,11 +276,11 @@ export class Items {
 		]));
 		this.items.push(new Item('cix_bottle', 0.05, 25));
 	}
-	public static getItems() {
+	static getItems() {
 		return this.items;
 	}
 
-	public static find<T extends Item>(id: number): T {
+	static find<T extends Item>(id: number): T {
 		return this.items[id] as T;
 	}
 }
@@ -316,18 +289,18 @@ export class Items {
 export class Units {
 	private static readonly units: Unit[] = [];
 
-	public static init() {
+	static init() {
 		this.units.length = 0;
 		unitCount = 0;
 		this.units.push(new Unit('obstruction', 5, 0, 1, 0.1, []));
 		this.units.push(new Unit('goblin', 2, 0, 1, 0.3, []));
 	}
 
-	public static getUnits() {
+	static getUnits() {
 		return this.units;
 	}
 
-	public static find<T extends Unit>(id: number): T {
+	static find<T extends Unit>(id: number): T {
 		return this.units[id] as T;
 	}
 }

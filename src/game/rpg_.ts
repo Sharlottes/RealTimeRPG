@@ -24,12 +24,12 @@ const { UnitEntity } = Entity;
 const { Mathf } = Utils;
 const { Database } = Utils;
 const prefix = '/';
-const latestMsgs: LatestMsg[] = [];
-
 const users: User[] = read();
 
+const latestMsgs: LatestMsg[] = [];
+
 type LatestMsg = {
-  id: string,
+  user: User,
   msg: Message
 };
 
@@ -708,6 +708,18 @@ export function getOne<T extends Rationess>(arr: T[]): T {
 		if (random < 0) return arr[i];
 	}
 	return arr[0];
+}
+
+/**
+ * latestMsgs 배열에서 특정 조건에 부합하는 메시지를 찾습니다. 
+ * 검색 인자에 적합한 객체가 없을 경우 undefined를 반환합니다. 있을 경우 메시지를 반환합니다
+ * @param {User | string |  (value: LatestMsg, index: number, obj: LatestMsg[])=>boolean} predicate 최근 메시지 객체에서 찾을 유저 객체, id 또는 콜백 함수
+ * @returns {Message} 가장 최근의 메시지 객체를 반환합니다.
+ */
+function findMessage(predicate: (User | string | ((value: LatestMsg, index: number, obj: LatestMsg[])=>boolean))): Message | undefined {
+	if(typeof(predicate) === "string") return latestMsgs.find((u) => u.user.id == predicate)?.msg;
+	if(typeof(predicate) === "function") return latestMsgs.find(predicate)?.msg;
+	else return latestMsgs.find(u=>u.user==predicate)?.msg;
 }
 
 function levelup(user: User) {

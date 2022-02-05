@@ -1,3 +1,4 @@
+/*
 import { User } from '../../modules'; // ㅇㅁㅇ
 
 export interface Heathy {
@@ -32,3 +33,4 @@ export interface Dropable {
     dropableOnWalking(): boolean;
     dropableOnShop(): boolean;
 }
+*/

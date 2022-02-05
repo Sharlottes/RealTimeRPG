@@ -27,8 +27,8 @@ namespace Assets {
             return String(dictionary.get(lang)?.get(key));
         }
         
-        export function format(lang: language = "en", key: string, ...args: unknown[]) {
-            return Utils.Strings.format(find(lang, key), String(args));
+        export function format(lang: language = "en", key: string, ...args: any[]) {
+            return Utils.Strings.format(find(lang, key), args);
         }
 
         export function get(name = "", lang: language = "en") {

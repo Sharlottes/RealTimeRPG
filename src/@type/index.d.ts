@@ -1,12 +1,10 @@
 export declare interface Heathy { 
     health: number;
-    healthMax: number;
     healthRegen: number;
 }
 
 export interface Energy {
     energy: number;
-    energyMax: number;
     energyRegen: number;
 }
 
