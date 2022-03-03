@@ -13,3 +13,5 @@ src/config.json
 src/publicKey.json
 secret.json
 error.json
+
+window_connect.bat

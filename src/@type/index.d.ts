@@ -1,4 +1,4 @@
-export declare interface Heathy { 
+export interface Heathy { 
     health: number;
     healthRegen: number;
 }
@@ -21,6 +21,24 @@ export interface Dropable {
     dropableOnWalking(): boolean;
     dropableOnShop(): boolean;
 }
+
+export interface Rationess {
+	getRatio(): number;
+}
+
+export interface Event {
+    onStart(r): unknown;
+}
+
+export type EventData = {
+    ratio: number,
+    title?: string
+}
+
+export type LatestMsg = {
+  user: User,
+  msg: Message
+};
 
 /*
 declare const importPackage: (...pkgs: (android | androidx | java | javax)[]) => any;

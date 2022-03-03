@@ -1,10 +1,10 @@
 import { User } from "../modules";
-import { Message } from '../index';
 import { BaseEvent } from "./BaseEvent";
 import { MessageActionRow, MessageButton, MessageEmbed, MessageActionRowComponent, MessageSelectMenuOptions, InteractionButtonOptions, MessageSelectMenu, MessageComponentInteraction } from "discord.js";
 import { PagesBuilder, ITrigger } from "discord.js-pages";
 import Assets from "@뇌절봇/assets";
 import { findMessage } from "@뇌절봇/game/rpg_";
+import { EventData } from "@뇌절봇/@type";
 
 export class EventSelection {
     readonly name: string;
@@ -23,8 +23,8 @@ export class EventSelection {
 export class SelectEvent extends BaseEvent {
     private readonly selections: EventSelection[][];
 
-    constructor(ratio: number, title: string, selections: EventSelection[][], callback?: (user: User)=>void) {
-        super(ratio, title, callback);
+    constructor(data: EventData, selections: EventSelection[][], callback?: (user: User)=>void) {
+        super(data, callback);
         this.selections = selections;
     }
 
@@ -55,7 +55,9 @@ export class SelectEvent extends BaseEvent {
                     action.addComponents(new MessageSelectMenu(((typeof(select.options)==='function'?select.options(user):select.options) as MessageSelectMenuOptions)).setCustomId(name+i));
                 triggers.push({
                     name: name+i,
-                    callback: (interactionCallback, currentRow)=> select.callback(user, actions, interactionCallback, currentRow)
+                    callback: (interactionCallback, currentRow)=> {
+                        select.callback(user, actions, interactionCallback, currentRow);
+                    }
                 });
                 descriptions += `${i}. ${name}\n`;
             });
@@ -78,7 +80,7 @@ export class SelectEvent extends BaseEvent {
 
         user.status.name = "selecting";
         msg.builder = new PagesBuilder(msg.interaction)
-        .setPages(new MessageEmbed()).setTitle(Assets.bundle.find(user.lang, this.title)).setDescription(data.descriptions) //make embed
+        .setPages(new MessageEmbed()).setTitle(this.data.title?Assets.bundle.find(user.lang, `event.${this.data.title}`):"").setDescription(data.descriptions) //make embed
         .setDefaultButtons([]) //remove default components
         .setComponents(data.actions).setTriggers(data.triggers); //make new components
         msg.builder.build();

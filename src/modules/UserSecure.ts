@@ -1,8 +1,10 @@
 import Assets from '../assets';
-import { Entity, ItemStack } from "../game";
+import { Item, Items, ItemStack, UnitEntity, Weapon } from "../game";
 import { Utils } from "../util";
 import { Message } from "..";
 import Discord, { CacheType } from 'discord.js';
+import { findMessage, save } from '@뇌절봇/game/rpg_';
+import { Durable } from '@뇌절봇/@type';
 
 const Bundle = Assets.bundle;
 const Database = Utils.Database;
@@ -86,7 +88,7 @@ export class User {
   public countover = 0;
   public foundContents: Map<string, number[]> = new Map().set("item", []).set("unit", []);
   public battleInterval: NodeJS.Timeout | undefined | void;
-  public enemy: Entity.UnitEntity | undefined;
+  public enemy: UnitEntity | undefined;
   public battleLog: string[] = [];
   public allLog = false;
 
@@ -99,6 +101,119 @@ export class User {
     this.energy = 50;
     this.level = 1;
     this.exp = 0;
+  }
+ 
+  public init() {
+    if (!this.foundContents.get) this.foundContents = new Map().set('item', this.inventory.items.map((i) => i.id)).set('unit', []);
+		if (!this.foundContents.get('item')) this.foundContents.set('item', []);
+		if (!this.foundContents.get('unit')) this.foundContents.set('unit', []);
+		if (this.stats.health <= 0) this.stats.health = this.stats.health_max;
+		this.inventory.items.forEach((entity, i) => {
+			const exist = this.inventory.items.find((e) => e != entity && e.id == entity.id);
+			if (exist) {
+				exist.amount += entity.amount;
+				this.inventory.items.splice(i, 1);
+			}
+		});
+  }
+
+  public giveItem(item: Item, amount = 1): string | null {
+    const exist = this.inventory.items.find((i) => ItemStack.equals(i, item));
+    if (exist) exist.amount += amount;
+    else this.inventory.items.push(new ItemStack(item.id, amount, (item as unknown as Durable).durability));
+
+    if (!this.foundContents.get('item')?.includes(item.id)) {
+      this.foundContents.get('item')?.push(item.id);
+      save();
+      return Bundle.format(this.lang, 'firstget', item.localName(this));
+    }
+
+    save();
+    return null;
+  }
+
+  public levelup() {
+    const str = Bundle.format(
+      this.lang,
+      'levelup',
+      this.id,
+      this.level,
+      this.level + 1,
+      this.stats.health_max,
+      Math.round((this.stats.health_max += this.level ** 0.6 * 5) * 100) / 100,
+      this.stats.energy_max,
+      Math.round((this.stats.energy_max += this.level ** 0.4 * 2.5) * 100) / 100,
+    );
+    findMessage(this)?.interaction.followUp(str);
+    this.stats.health = this.stats.health_max;
+    this.stats.energy = this.stats.energy_max;
+    this.level++;
+    save();
+  }
+
+  public getInventory() {
+    return `${Bundle.find(this.lang, 'inventory')}\n-----------\n${this.inventory.items.map((i) => {
+      const item = ItemStack.getItem(i);
+      return `• ${item.localName(this)} ${i.amount > 0 ? `(${`${i.amount} ${Bundle.find(this.lang, 'unit.item')}`})` : ''}\n   ${item.description(this)}${(item as unknown as Durable).durability ? `(${Bundle.find(this.lang, 'durability')}: ${i.durability}/${(item as unknown as Durable).durability})` : ''}`;
+    }).join('\n\n')}`;
+  }
+
+  public getUserInfo() {
+    let weapon: Weapon = ItemStack.getItem(this.inventory.weapon);
+    if (!weapon) {
+      this.inventory.weapon.id = 5;
+      weapon = Items.find(5);
+      save();
+    }
+
+    return Bundle.format(
+      this.lang,
+      'status_info',
+      this.id,
+      this.level,
+      this.exp,
+      this.level ** 2 * 50,
+      this.money,
+      this.stats.energy.toFixed(1),
+      this.stats.energy_max,
+      this.stats.energy_regen,
+      this.stats.health.toFixed(1),
+      this.stats.health_max,
+      this.stats.health_regen,
+      weapon.localName(this),
+      this.inventory.weapon.durability && weapon.durability
+        ? `(${Bundle.find(this.lang, 'durability')}: ${this.inventory.weapon.durability}/${weapon.durability})`
+        : '',
+
+      weapon.cooldown,
+      weapon.damage,
+      (weapon.critical_chance * 100).toFixed(2),
+      (weapon.critical_ratio * 100).toFixed(2),
+    );
+  }
+
+  public switchWeapon(msg: Message, name: string) {
+    const item = Items.getItems().find((i) => i.localName(this) == name) as Weapon | undefined;
+    if (!item) msg.interaction.followUp(Bundle.format(this.lang, 'switch_notFound', name));
+    else {
+      const entity = this.inventory.items.find((entity) => ItemStack.getItem(entity) == item);
+      if (!entity) msg.interaction.followUp(Bundle.format(this.lang, 'switch_notHave', name));
+      else {
+        entity.amount--;
+        if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
+
+        const exist: Item = ItemStack.getItem(this.inventory.weapon);
+        if (exist) {
+          msg.interaction.followUp(Bundle.format(this.lang, 'switch_change', name, exist.localName(this)));
+          const given = this.giveItem(item);
+          if (given) msg.interaction.followUp(given);
+        } else { msg.interaction.followUp(Bundle.format(this.lang, 'switch_equip', name)); }
+
+        this.inventory.weapon.id = item.id;
+        this.inventory.weapon.durability = item.durability;
+        save();
+      }
+    }
   }
 }
 

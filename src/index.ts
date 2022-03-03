@@ -1,11 +1,6 @@
-// 참조된 패키지들에서 모듈 가져오기.
-// 이렇게 하면 불러온 모듈들이 모두 하나의 변수를 통해 참조?가 되지만 다른 방식으로 할 수도 있음.
-// import { Client } from "discord.js";
-// 위 같은 방식으로 불러오면 해당 패키지내의 모든 모듈을 불러오지 않고 해당 모듈 하나만 불러옴.
 import Discord, { CacheType, Client, Intents } from "discord.js";
 import { REST } from "@discordjs/rest"
 
-// 직접 쓴 코드도 같은 방식으로 불러올 수 있음.
 import { firebaseAdmin } from "@뇌절봇/net";
 import CM from "@뇌절봇/commands";
 import assets from "@뇌절봇/assets"
@@ -13,6 +8,7 @@ import config from "@뇌절봇/config.json"
 
 //RTTRPG
 import { init } from './game/rpg_';
+
 import { PagesBuilder } from 'discord.js-pages';
 
 export type Message = {
@@ -137,7 +133,8 @@ client.on("interactionCreate", async interaction => {
                 });
             }
         } catch(error) {
-          interaction.editReply({content: "error: "+error});
+            interaction.editReply({content: "error: "+error});
+            console.log(error);
         }
     }
 

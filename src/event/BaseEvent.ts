@@ -1,26 +1,23 @@
-import { Event } from ".";
+import { Event, EventData, Rationess } from "../@type";
 import { User } from "../modules";
-import { Message } from '../index';
 import Assets from "@뇌절봇/assets";
-import { findMessage, Rationess } from "@뇌절봇/game/rpg_";
+import { findMessage } from "@뇌절봇/game/rpg_";
 
 export class BaseEvent implements Event, Rationess {
-    ratio: number;
-    title: string;
+    data: EventData;
     onStart: (user: User)=>void;
 
-    constructor(ratio: number, title: string, callback?: (user: User)=>void) {
+    constructor(data: EventData, callback?: (user: User)=>void) {
         this.onStart = callback || (()=>{return});
-        this.ratio = ratio;
-        this.title = title;
+        this.data = data;
     }
 
     start(user: User) {
-        if(this.title) findMessage(user)?.interaction.editReply(Assets.bundle.find(user.lang, this.title));
+        if(this.data.title) findMessage(user)?.interaction.editReply(Assets.bundle.find(user.lang, `event.${this.data.title}`));
         this.onStart(user);
     }
     
     getRatio(): number {
-        return this.ratio;
+        return this.data.ratio;
     }
 }
