@@ -8,7 +8,7 @@ import { Durable } from '@뇌절봇/@type';
 import Assets from '../assets';
 import { EventSelection, SelectEvent } from '../event';
 
-import { findMessage, getOne, giveItem, save } from './rpg_';
+import { findMessage, getOne, save } from './rpg_';
 
 const Bundle = Assets.bundle;
 
@@ -53,7 +53,7 @@ const exchangeSelection: EventSelection[][] = [[
 							ent.amount -= amount;
 							(button.setCustomId(`${item.localName(user)}${i}${ii}`) as Discord.MessageButton).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
 
-							const isNew = giveItem(user, item, amount);
+							const isNew = user.giveItem(item, amount);
 							if (isNew) msg.builder?.setDescription(`${msg.builder.description}\`\`\`diff\n+ ${isNew}\`\`\``);
 							if (!ent.amount) {
 								user.enemy.items.items.splice(i, 1);

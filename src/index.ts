@@ -1,4 +1,4 @@
-import Discord, { CacheType, Client, Intents } from "discord.js";
+import Discord, { Client, Intents } from "discord.js";
 import { REST } from "@discordjs/rest"
 
 import { firebaseAdmin } from "@뇌절봇/net";
@@ -8,24 +8,6 @@ import config from "@뇌절봇/config.json"
 
 //RTTRPG
 import { init } from './game/rpg_';
-
-import { PagesBuilder } from 'discord.js-pages';
-
-export type Message = {
-    interaction: Discord.CommandInteraction<CacheType>,
-    builder: PagesBuilder | null
-}
-
-export type CommandInfo = {
-    id: string;
-    application_id: string;
-    version: string;
-    default_permissions: null;
-    type: number;
-    name: string;
-    description: string;
-    guild_id: string;
-};
 
 const masterIDs: string[] = [
     "462167403237867520",

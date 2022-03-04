@@ -1,6 +1,6 @@
-import { Inventory, defaultInven } from "../modules";
+import { defaultInven } from "../modules";
 import { Unit, ItemStack } from "../game";
-import { Heathy } from '../@type';
+import { Heathy, Inventory } from '../@type';
 
 export class UnitEntity implements Heathy {
   id: number;

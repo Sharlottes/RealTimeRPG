@@ -42,7 +42,7 @@ export class SelectEvent extends BaseEvent {
         const actions: MessageActionRow[] = [];
         const triggers: ITrigger<MessageActionRowComponent>[] = [];
         let descriptions = "";
-
+ 
         selections.forEach(e=>{
             const action = new MessageActionRow();
             e.forEach((select, i) => {
@@ -51,8 +51,12 @@ export class SelectEvent extends BaseEvent {
                     const option = (select.options?(typeof(select.options)==='function'?select.options(user):select.options):{style: 'PRIMARY'}) as InteractionButtonOptions;
                     if(option&&!option.style) option.style = 'PRIMARY';
                     action.addComponents(new MessageButton(option).setCustomId(name+i).setLabel(name));
-                } else if(select.type === "select") 
-                    action.addComponents(new MessageSelectMenu(((typeof(select.options)==='function'?select.options(user):select.options) as MessageSelectMenuOptions)).setCustomId(name+i));
+                } else if(select.type === "select") {
+                    const option = (typeof(select.options)==='function'?select.options(user):select.options) as MessageSelectMenuOptions;
+                    console.log(option);
+                    action.addComponents(new MessageSelectMenu(option).setCustomId(name+i));
+                }
+                
                 triggers.push({
                     name: name+i,
                     callback: (interactionCallback, currentRow)=> {

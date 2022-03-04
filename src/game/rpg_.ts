@@ -1,9 +1,7 @@
-import { Status, User } from '../modules';
+import { User } from '../modules';
 import { Utils } from '../util';
 import { Items, Units, Vars } from '.';
-import { ItemStack } from './contents';
-import { LatestMsg, Rationess } from '@뇌절봇/@type';
-import { Message } from '..';
+import { LatestMsg, Rationess, Message } from '@뇌절봇/@type';
 import CommandManager from './CommandManager';
 
 const { Database } = Utils;
@@ -47,15 +45,7 @@ export function findMessage(predicate: (User | string | ((value: LatestMsg, inde
 }
 
 export function read() {
-	const users: User[] = Database.readObject<Array<User>>('./Database/user_data');
-	return users.map((u) => {
-		u.inventory.weapon = ItemStack.from(u.inventory.weapon);
-		u.inventory.items.forEach((stack) => stack = ItemStack.from(stack));
-		u.status = new Status();
-		if (!u.battleLog) u.battleLog = [];
-		if (!u.foundContents) u.foundContents = new Map().set('item', u.inventory.items.map((i) => i.id)).set('unit', []);
-		return u;
-	});
+	return Database.readObject<Array<User>>('./Database/user_data');
 }
 
 export function save() {
@@ -64,16 +54,13 @@ export function save() {
 			user.levelup();
 		}
 	});
-	Database.writeObject('./Database/user_data', Vars.users);
+
+	Database.writeObject('./Database/user_data', Vars.users.map(user=>{
+		user.battleInterval = undefined;
+		return user;
+	}));
 }
 
 setInterval(() => {
-	Vars.users.forEach((u) => {
-		if (u.cooldown > 0) u.cooldown -= 1 / 100;
-
-		u.stats.energy = Math.min(u.stats.energy_max, u.stats.energy + u.stats.energy_regen / 100);
-		u.stats.health = Math.min(u.stats.health_max, u.stats.health + u.stats.health_regen / 100);
-	});
+	Vars.users.forEach(u => u.update());
 }, 10);
-
-init();

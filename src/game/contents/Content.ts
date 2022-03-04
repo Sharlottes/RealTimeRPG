@@ -1,8 +1,7 @@
 import { User } from '@뇌절봇/modules';
 import { Utils } from '@뇌절봇/util';
 import Assets from '@뇌절봇/assets';
-import { giveItem, Rationess } from '@뇌절봇/game/rpg_';
-import { Dropable, Consumable, Durable, Heathy } from '@뇌절봇/@type';
+import { Dropable, Consumable, Durable, Heathy, Rationess } from '@뇌절봇/@type';
 
 const Bundle = Assets.bundle;
 let itemCount = 0;
@@ -246,7 +245,7 @@ export class Items {
 				user.stats.energy += amount * buff.value;
 				if(user.stats.energy > user.stats.energy_max) {
 					user.stats.energy = user.stats.energy_max;
-					giveItem(user, this.items[2], amount - Math.floor((user.stats.energy-user.stats.energy_max)/buff.value));
+					user.giveItem(this.items[2], amount - Math.floor((user.stats.energy-user.stats.energy_max)/buff.value));
 					
 					return `* ${buff.localName(user)} +${amount * buff.value-(user.stats.energy-user.stats.energy_max)}`;
 				}
@@ -267,7 +266,7 @@ export class Items {
 				user.stats.health += amount * buff.value;
 				if(user.stats.health > user.stats.health_max) {
 					user.stats.health = user.stats.health_max;
-					giveItem(user, this.items[7], amount - Math.floor((user.stats.health-user.stats.health_max)/buff.value));
+					user.giveItem(this.items[7], amount - Math.floor((user.stats.health-user.stats.health_max)/buff.value));
 					
 					return `* ${buff.localName(user)} +${amount * buff.value-(user.stats.health-user.stats.health_max)}`;
 				}

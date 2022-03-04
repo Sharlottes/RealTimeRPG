@@ -1,10 +1,10 @@
 import Assets from '../assets';
 import { Item, Items, ItemStack, UnitEntity, Weapon } from "../game";
 import { Utils } from "../util";
-import { Message } from "..";
 import Discord, { CacheType } from 'discord.js';
 import { findMessage, save } from '@뇌절봇/game/rpg_';
-import { Durable } from '@뇌절봇/@type';
+import { Durable, Inventory, Stat, Message } from '@뇌절봇/@type';
+import { PagesBuilder } from 'discord.js-pages';
 
 const Bundle = Assets.bundle;
 const Database = Utils.Database;
@@ -41,21 +41,6 @@ export const defaultInven: Inventory = {
   weapon: new ItemStack(5) //주먹 ID
 }
 
-export type Stat = {
-  health: number;
-  health_max: number;
-  health_regen: number;
-  energy: number;
-  energy_max: number;
-  energy_regen: number;
-  strength: number;
-  defense: number;
-};
-
-export type Inventory = {
-  items: ItemStack[];
-  weapon: ItemStack;
-};
 
 export class Status {
   name: string | undefined;
@@ -87,27 +72,36 @@ export class User {
   public lang: Assets.bundle.language = "en";
   public countover = 0;
   public foundContents: Map<string, number[]> = new Map().set("item", []).set("unit", []);
-  public battleInterval: NodeJS.Timeout | undefined | void;
+  public battleInterval?: NodeJS.Timeout;
   public enemy: UnitEntity | undefined;
   public battleLog: string[] = [];
   public allLog = false;
+  public selectBuilder?: PagesBuilder;
 
-  constructor(id: string, password: string, hash: number | string, lang: Assets.bundle.language = "en") {
-    this.id = id;
-    this.password = password;
-    this.hash = Number(hash);
-    this.lang = lang;
+  constructor(data: {
+    id: string, 
+    password: string, 
+    hash: number | string,
+    lang?: Assets.bundle.language
+  }) {
+    this.id = data.id;
+    this.password = data.password;
+    this.hash = Number(data.hash);
+    this.lang = data.lang || "en";
     this.money = 0;
     this.energy = 50;
     this.level = 1;
     this.exp = 0;
   }
- 
+
   public init() {
     if (!this.foundContents.get) this.foundContents = new Map().set('item', this.inventory.items.map((i) => i.id)).set('unit', []);
 		if (!this.foundContents.get('item')) this.foundContents.set('item', []);
 		if (!this.foundContents.get('unit')) this.foundContents.set('unit', []);
+		if (!this.battleLog) this.battleLog = [];
+		if (!this.foundContents) this.foundContents = new Map().set('item', this.inventory.items.map((i) => i.id)).set('unit', []);
 		if (this.stats.health <= 0) this.stats.health = this.stats.health_max;
+
 		this.inventory.items.forEach((entity, i) => {
 			const exist = this.inventory.items.find((e) => e != entity && e.id == entity.id);
 			if (exist) {
@@ -115,8 +109,16 @@ export class User {
 				this.inventory.items.splice(i, 1);
 			}
 		});
+		this.status = new Status();
   }
 
+  public update() {
+		if (this.cooldown > 0) this.cooldown -= 1 / 100;
+
+		this.stats.energy = Math.min(this.stats.energy_max, this.stats.energy + this.stats.energy_regen / 100);
+		this.stats.health = Math.min(this.stats.health_max, this.stats.health + this.stats.health_regen / 100);
+  }
+  
   public giveItem(item: Item, amount = 1): string | null {
     const exist = this.inventory.items.find((i) => ItemStack.equals(i, item));
     if (exist) exist.amount += amount;
@@ -227,7 +229,7 @@ export function create(msg: Message, users: User[], lang: Assets.bundle.language
   else if (user)
     msg.interaction.followUp(Bundle.format(lang, "account.account_exist", id));
   else {
-    const target = new User(id, pw, hash);
+    const target = new User({id: id, password: pw, hash: hash});
     users.push(target);
     login(users, target, msg, lang);
     msg.interaction.followUp(Bundle.find(lang, "account.create_success"));

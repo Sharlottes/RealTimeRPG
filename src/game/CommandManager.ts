@@ -6,9 +6,8 @@ import { change, create, remove, signin, signout, User } from '../modules';
 import { Utils } from '../util';
 import { UnitEntity, Items, Units, Weapon, Vars } from '.';
 import { Unit, Item, ItemStack } from './contents';
-import { Consumable } from '@뇌절봇/@type';
+import { Consumable, Message } from '@뇌절봇/@type';
 import Assets from '../assets';
-import { Message } from '..';
 import { BaseEvent, EventSelection, SelectEvent } from '../event';
 
 import CM from '../commands';
@@ -68,7 +67,7 @@ const eventData: BaseEvent[] = [
 		]]
 	),
 	new SelectEvent({
-		ratio: 20,
+		ratio: 2220,
 		title: 'obstruction',
 	},[[
 			new EventSelection('battle', (user) => battle(user, new UnitEntity(Units.find(0)))),
