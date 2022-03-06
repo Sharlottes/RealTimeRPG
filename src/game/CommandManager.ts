@@ -38,7 +38,7 @@ const eventData: BaseEvent[] = [
 		msg.interaction.followUp(`${Bundle.format(user.lang, 'event.item', item.localName(user))}\n${user.giveItem(item) || ''}`);
 	}),
 	new SelectEvent({
-		ratio: 15,
+		ratio: 22215,
 		title: 'goblin'
 	},
 		[[

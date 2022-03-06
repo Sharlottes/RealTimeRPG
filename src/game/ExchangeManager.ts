@@ -22,51 +22,56 @@ const exchangeSelection: EventSelection[][] = [[
 		}
 
 		const triggers: ITrigger<MessageActionRowComponent>[] = [];
-		const buttons = out.map((items, ii) => new MessageActionRow().setComponents((items.map((entity, i) => {
-			const ent = user.enemy?.items.items.find((e) => e.id == entity.id);
-			if (!ent) return;
+		const buttons = out.map((items, ii) => {
+				const row = new MessageActionRow().setComponents((items.map((entity, i) => {
+				const ent = user.enemy?.items.items.find((e) => e.id == entity.id);
+				if (!ent) return;
 
-			const item = ItemStack.getItem(ent);
-			const money = item.cost * 25;
+				const item = ItemStack.getItem(ent);
+				const money = item.cost * 25;
 
-			triggers.push({
-				name: `${item.localName(user)}${i}${ii}`,
-				callback(interactionCallback, button) {
-					buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(true)));
-					buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(false));
-					user.status.callback = (amount: number) => {
-						if (!user.enemy || !user.selectBuilder) return;
+				triggers.push({
+					name: `${item.localName(user)}${i}${ii}`,
+					callback(interactionCallback, button) {
+						buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(true)));
+						buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(false));
+						user.status.callback = (amount: number) => {
+							if (!user.enemy || !user.selectBuilder) return;
 
-						buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(false)));
-						buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(true));
-						user.status.callback = undefined;
-						if (amount > ent.amount) { 
-							user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_item', item.localName(user), amount, ent.amount)}\`\`\``); 
-						} 
-						else if (user.money < amount * money) { 
-							user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_money', amount * money, user.money)}\`\`\``); 
-						} 
-						else {
-							user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n+ ${Bundle.format(user.lang, 'shop.buyed', item.localName(user), amount, user.money, (user.money -= money * amount))}\`\`\``);
-							ent.amount -= amount;
-							(button.setCustomId(`${item.localName(user)}${i}${ii}`) as Discord.MessageButton).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
+							buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(false)));
+							buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(true));
+							user.status.callback = undefined;
+							if (amount > ent.amount) { 
+								user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_item', item.localName(user), amount, ent.amount)}\`\`\``); 
+							} 
+							else if (user.money < amount * money) { 
+								user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_money', amount * money, user.money)}\`\`\``); 
+							} 
+							else {
+								user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n+ ${Bundle.format(user.lang, 'shop.buyed', item.localName(user), amount, user.money, (user.money -= money * amount))}\`\`\``);
+								ent.amount -= amount;
+								(button as Discord.MessageButton).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
 
-							const isNew = user.giveItem(item, amount);
-							if (isNew) user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n+ ${isNew}\`\`\``);
-							if (!ent.amount) {
-								user.enemy.items.items.splice(i, 1);
-								buttons[ii].spliceComponents(i, 1);
-								user.selectBuilder.setComponents(buttons);
+								const isNew = user.giveItem(item, amount);
+								if (isNew) user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n+ ${isNew}\`\`\``);
+								if (!ent.amount) {
+									user.enemy.items.items.splice(user.enemy.items.items.indexOf(entity), 1);
+									
+									if(row.components.length==1) buttons.splice(buttons.indexOf(row), 1);
+									else row.spliceComponents(row.components.indexOf(button), 1);
+									user.selectBuilder.setComponents(buttons);
+								}
+
+								save();
 							}
-
-							save();
-						}
-						user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder]});
-					};
-				},
-			});
-			return new MessageButton().setCustomId(`${item.localName(user)}${i}${ii}`).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
-		}) as MessageActionRowComponentResolvable[]).filter((e) => e)));
+							user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder], components: buttons});
+						};
+					},
+				});
+				return new MessageButton().setCustomId(`${item.localName(user)}${i}${ii}`).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
+			}) as MessageActionRowComponentResolvable[]).filter((e) => e));
+			return row;
+		});
 		
 		const back = SelectEvent.toActionData([[backSelection(exchangeSelection)]], user);
 		user.selectBuilder?.setComponents(buttons).setTriggers(triggers).addComponents(back.actions).addTriggers(back.triggers)
@@ -88,45 +93,49 @@ const exchangeSelection: EventSelection[][] = [[
 			}
 
 			const triggers: ITrigger<MessageActionRowComponent>[] = [];
-			const buttons = out.map((items, ii) => new MessageActionRow().setComponents((items.map((entity, i) => {
-				const ent = user.inventory.items.find((e) => e.id == entity.id);
-				if (!ent) return;
+			const buttons = out.map((items, ii) => {
+				const row = new MessageActionRow().setComponents((items.map((entity, i) => {
+					const ent = user.inventory.items.find((e) => e.id == entity.id);
+					if (!ent) return;
 
-				const item = ItemStack.getItem(ent);
-				const money = item.cost * 10;
+					const item = ItemStack.getItem(ent);
+					const money = item.cost * 10;
 
-				triggers.push({
-					name: `${item.localName(user)}${i}${ii}`,
-					callback(interactionCallback, button) {
-						buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(true)));
-						buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(false));
+					triggers.push({
+						name: `${item.localName(user)}${i}${ii}`,
+						callback(interactionCallback, button) {
+							buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(true)));
+							buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(false));
 
-						user.status.callback = (amount: number) => {
-							if(!user.selectBuilder) return;
-							buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(false)));
-							buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(true));
-							user.status.callback = undefined;
+							user.status.callback = (amount: number) => {
+								if(!user.selectBuilder) return;
+								buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(false)));
+								buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(true));
+								user.status.callback = undefined;
 
-							if (amount > ent.amount) {
-								user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_item', item.localName(user), amount, ent.amount)}\`\`\``); 
-							} else {
-								user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n+ ${Bundle.format(user.lang, 'shop.sold', item.localName(user), amount, user.money, (user.money += money * amount))}\`\`\``);
-								ent.amount -= amount;
-								if (!ent.amount) {
-									user.inventory.items.splice(i, 1);
-									buttons[ii].spliceComponents(i, 1);
-									user.selectBuilder.setComponents(buttons);
+								if (amount > ent.amount) {
+									user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_item', item.localName(user), amount, ent.amount)}\`\`\``); 
+								} else {
+									user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n+ ${Bundle.format(user.lang, 'shop.sold', item.localName(user), amount, user.money, (user.money += money * amount))}\`\`\``);
+									ent.amount -= amount;
+									if (!ent.amount) {
+										user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
+										if(row.components.length==1) buttons.splice(buttons.indexOf(row), 1);
+										else row.spliceComponents(row.components.indexOf(button), 1);
+										user.selectBuilder.setComponents(buttons);
+									}
+									(button as Discord.MessageButton).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
+
+									save();
 								}
-								(button.setCustomId(`${item.localName(user)}${i}${ii}`) as Discord.MessageButton).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
-
-								save();
-							}
-							user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder], components: buttons});
-						};
-					},
-				});
-				return new MessageButton().setCustomId(`${item.localName(user)}${i}${ii}`).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
-			}) as MessageActionRowComponentResolvable[]).filter((e) => e)));
+								user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder], components: buttons});
+							};
+						},
+					});
+					return new MessageButton().setCustomId(`${item.localName(user)}${i}${ii}`).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
+				}) as MessageActionRowComponentResolvable[]).filter((e) => e))
+				return row;
+			});
 			
 			const back = SelectEvent.toActionData([[backSelection(exchangeSelection)]], user);
 			user.selectBuilder?.setComponents(buttons).setTriggers(triggers).addComponents(back.actions).addTriggers(back.triggers)
