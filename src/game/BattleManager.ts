@@ -2,8 +2,8 @@ import { InteractionButtonOptions, MessageSelectMenu, MessageSelectMenuOptions, 
 
 import { User } from '../modules';
 import { Utils } from '../util';
-import { UnitEntity, Items, Units, Weapon } from '.';
-import { Item, ItemStack } from './contents';
+import { UnitEntity, Items, Units } from '.';
+import { Item, ItemStack, Weapon } from './contents';
 import Assets from '../assets';
 import { EventSelection, SelectEvent } from '../event';
 
@@ -44,7 +44,7 @@ const battleSelection : EventSelection[][] = [
 
 					//전투 보상은 최소 1개, 최대 적 레벨의 4배만큼의 랜덤한 아이템
 					for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level * 4)) + 1; i++) {
-						const item = getOne(Items.getItems().filter((i) => i.dropableOnBattle()));
+						const item = getOne(Items.items.filter((i) => i.dropOnBattle));
 						const obj = items.find((i) => i.item == item);
 						if (obj) obj.amount++;
 						else items.push({ item, amount: 1 });
@@ -146,7 +146,7 @@ function battleEnd(user: User) {
 	if(user.enemy.health <= 0) {
 		//전투 보상은 최소 1개, 최대 적 레벨의 4배만큼의 랜덤한 아이템
 		for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level * 4)) + 1; i++) {
-			const item = getOne(Items.getItems().filter((i) => i.dropableOnBattle()));
+			const item = getOne(Items.items.filter((i) => i.dropOnBattle));
 			const obj = items.find((i) => i.item == item);
 			if (obj) obj.amount++;
 			else items.push({ item, amount: 1 });

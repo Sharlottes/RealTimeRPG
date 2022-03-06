@@ -1,5 +1,5 @@
 import Assets from '../assets';
-import { Item, Items, ItemStack, UnitEntity, Weapon } from "../game";
+import { Items, ItemStack, UnitEntity } from "../game";
 import { Utils } from "../util";
 import Discord, { CacheType, MessageAttachment, MessageEmbed, MessageButton } from 'discord.js';
 import { findMessage, save } from '@뇌절봇/game/rpg_';
@@ -8,6 +8,7 @@ import { PagesBuilder } from 'discord.js-pages';
 import { filledBar } from 'string-progressbar';
 import Canvas from 'canvas';
 import { MessageActionRow } from 'discord.js';
+import { Item, Weapon } from '@뇌절봇/game/contents';
 
 const Bundle = Assets.bundle;
 const Database = Utils.Database;
@@ -216,7 +217,7 @@ export class User {
   }
 
   public switchWeapon(msg: Message, name: string) {
-    const item = Items.getItems().find((i) => i.localName(this) == name) as Weapon | undefined;
+    const item = Items.items.find((i) => i.localName(this) == name) as Weapon | undefined;
     if (!item) msg.interaction.followUp(Bundle.format(this.lang, 'switch_notFound', name));
     else {
       const entity = this.inventory.items.find((entity) => ItemStack.getItem(entity) == item);

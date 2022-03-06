@@ -4,8 +4,8 @@ import Discord, { CacheType, MessageEmbed } from 'discord.js';
 import { PagesBuilder } from 'discord.js-pages';
 import { change, create, remove, signin, signout, User } from '../modules';
 import { Utils } from '../util';
-import { UnitEntity, Items, Units, Weapon, Vars } from '.';
-import { Unit, Item, ItemStack } from './contents';
+import { UnitEntity, Items, Units, Vars } from '.';
+import { Unit, Item, ItemStack, Weapon } from './contents';
 import { Consumable, Message } from '@뇌절봇/@type';
 import Assets from '../assets';
 import { BaseEvent, EventSelection, SelectEvent } from '../event';
@@ -34,7 +34,7 @@ const eventData: BaseEvent[] = [
 	}, (user) => {
 		const msg = findMessage(user);
 		if(!msg) return;
-		const item = getOne(Items.getItems().filter((i) => i.dropableOnWalking()));
+		const item = getOne(Items.items.filter((i) => i.dropOnWalk));
 		msg.interaction.followUp(`${Bundle.format(user.lang, 'event.item', item.localName(user))}\n${user.giveItem(item) || ''}`);
 	}),
 	new SelectEvent({
@@ -167,8 +167,8 @@ function contentInfoCmd(user: User) {
 	let infoes: string[] = [];
 	const out = [];
 
-	if (showAll || type === 'unit') infoes = infoes.concat(Units.getUnits().map((cont) => `\`\`\`${info(user, cont)}\`\`\``));
-	if (showAll || type === 'item') infoes = infoes.concat(Items.getItems().map((cont) => `\`\`\`${info(user, cont)}\`\`\``));
+	if (showAll || type === 'unit') infoes = infoes.concat(Units.units.map((cont) => `\`\`\`${info(user, cont)}\`\`\``));
+	if (showAll || type === 'item') infoes = infoes.concat(Items.items.map((cont) => `\`\`\`${info(user, cont)}\`\`\``));
 
 	for (let i = 0; i < Math.floor(infoes.length / 4); i++) { out.push(infoes.slice(i * 4, Math.min(infoes.length, (i + 1) * 4))); }
 	new PagesBuilder(msg.interaction).setPages(out.map((infoes) => new MessageEmbed().setDescription(infoes.join('')))).setDefaultButtons(['back', 'next']).build();
@@ -241,12 +241,12 @@ namespace CommandManager {
     })(), inventoryCmd, true, true);
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('consume').setDescription('consume item');
-      s.addStringOption((option) => option.setName('target').setDescription('target item name').setRequired(true).addChoices(Items.getItems().filter((i) => (i as unknown as Consumable).consume).map((u) => [u.localName(), u.localName()])));
+      s.addStringOption((option) => option.setName('target').setDescription('target item name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Consumable).consume).map((u) => [u.localName(), u.localName()])));
       return s;
     })(), consumeCmd, true, true);
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('swap').setDescription('swap the weapon');
-      s.addStringOption((option) => option.setName('target').setDescription('target weapon name').setRequired(true).addChoices(Items.getItems().filter((i) => (i as unknown as Weapon).damage).map((u) => [u.localName(), u.localName()])));
+      s.addStringOption((option) => option.setName('target').setDescription('target weapon name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Weapon).damage).map((u) => [u.localName(), u.localName()])));
       return s;
     })(), weaponChangeCmd, true, true);
     registerCmd((() => {

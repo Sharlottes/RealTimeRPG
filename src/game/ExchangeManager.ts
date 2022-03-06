@@ -28,7 +28,7 @@ const exchangeSelection: EventSelection[][] = [[
 				if (!ent) return;
 
 				const item = ItemStack.getItem(ent);
-				const money = item.cost * 25;
+				const money = (100-item.rare) * 25;
 
 				triggers.push({
 					name: `${item.localName(user)}${i}${ii}`,
@@ -99,7 +99,7 @@ const exchangeSelection: EventSelection[][] = [[
 					if (!ent) return;
 
 					const item = ItemStack.getItem(ent);
-					const money = item.cost * 10;
+					const money = (100-item.rare) * 10;
 
 					triggers.push({
 						name: `${item.localName(user)}${i}${ii}`,
@@ -175,7 +175,7 @@ export function exchange(user: User, entity: UnitEntity) {
 
 	//고블린 인벤토리 생성
 	for (let i = 0; i < 20; i++) {
-		const item = getOne(Items.getItems().filter((i) => i.dropableOnShop() && i.id !== 5 && (typeof i)));
+		const item = getOne(Items.items.filter((i) => i.dropOnShop && i.id !== 5 && (typeof i)));
 		const exist = entity.items.items.find((e) => e.id == item.id);
 		if (exist) exist.amount++;
 		else entity.items.items.push(new ItemStack(item.id, 1, (item as unknown as Durable).durability));
