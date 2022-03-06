@@ -90,7 +90,7 @@ export class User {
   public inventory: Inventory = defaultInven; 
   public lang: Assets.bundle.language = "en";
   public countover = 0;
-  public foundContents: Map<string, number[]> = new Map().set("item", []).set("unit", []);
+  public foundContents: {items: number[], units: number[]} = {items: [], units: []};
   public battleInterval?: NodeJS.Timeout;
   public enemy: UnitEntity | undefined;
   public battleLog: string[] = [];
@@ -114,11 +114,9 @@ export class User {
   }
 
   public init() {
-    if (!this.foundContents.get) this.foundContents = new Map().set('item', this.inventory.items.map((i) => i.id)).set('unit', []);
-		if (!this.foundContents.get('item')) this.foundContents.set('item', []);
-		if (!this.foundContents.get('unit')) this.foundContents.set('unit', []);
 		if (!this.battleLog) this.battleLog = [];
-		if (!this.foundContents) this.foundContents = new Map().set('item', this.inventory.items.map((i) => i.id)).set('unit', []);
+		if(!this.foundContents.items) this.foundContents.items = this.inventory.items.map((i) => i.id);
+		if(!this.foundContents.units) this.foundContents.units = [];
 		if (this.stats.health <= 0) this.stats.health = this.stats.health_max;
 
 		this.inventory.items.forEach((entity, i) => {
@@ -143,8 +141,8 @@ export class User {
     if (exist) exist.amount += amount;
     else this.inventory.items.push(new ItemStack(item.id, amount, (item as unknown as Durable).durability));
 
-    if (!this.foundContents.get('item')?.includes(item.id)) {
-      this.foundContents.get('item')?.push(item.id);
+    if (!this.foundContents.items.includes(item.id)) {
+      this.foundContents.items.push(item.id);
       save();
       return Bundle.format(this.lang, 'firstget', item.localName(this));
     }

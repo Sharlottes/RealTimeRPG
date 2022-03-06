@@ -146,13 +146,13 @@ function walkingCmd(user: User) {
 
 function info(user: User, content: Item|Unit) {
 	return (
-		`${user.foundContents.get(content instanceof Item ? 'item' : 'unit')?.includes(content.id)
+		`${user.foundContents[content instanceof Item ? 'items' : 'units'].includes(content.id)
 			? content.localName(user) : 'unknown'
 		}\n${
-			user.foundContents.get(content instanceof Item ? 'item' : 'unit')?.includes(content.id)
+			user.foundContents[content instanceof Item ? 'items' : 'units'].includes(content.id)
 				? content.description(user) : 'unknown'
 		}${content.details(user)
-			? `\n------------\n  ${user.foundContents.get(content instanceof Item ? 'item' : 'unit')?.includes(content.id)
+			? `\n------------\n  ${user.foundContents[content instanceof Item ? 'items' : 'units'].includes(content.id)
 				? content.details(user) : 'unknown'}\n------------`
 			: ''}`
 	);
