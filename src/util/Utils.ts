@@ -85,7 +85,7 @@ namespace Utils {
       context.font = options.font||"40px Arial";
       context.textAlign = "center";
       context.textBaseline = "middle";
-      context.fillText(`${options.text} ${progress.toFixed(2)}%`, centerX, centerY);
+      context.fillText(`${options.text} ${(progress*100).toFixed()}%`, centerX, centerY);
 
       context.fillStyle = options.fontStyle||"#F47C7C";
       context.font = options.smolfont||"40px Arial";
@@ -96,7 +96,7 @@ namespace Utils {
       context.beginPath();
       context.strokeStyle = options.barStyle||"#49f";
       context.lineWidth = options.barWidth;
-      context.arc(centerX, centerY, rad, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2/100, false);
+      context.arc(centerX, centerY, rad, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2, false);
       context.stroke();
 
       return context;
