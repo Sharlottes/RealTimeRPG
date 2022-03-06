@@ -38,7 +38,7 @@ const eventData: BaseEvent[] = [
 		msg.interaction.followUp(`${Bundle.format(user.lang, 'event.item', item.localName(user))}\n${user.giveItem(item) || ''}`);
 	}),
 	new SelectEvent({
-		ratio: 22215,
+		ratio: 15,
 		title: 'goblin'
 	},
 		[[
@@ -87,6 +87,7 @@ const eventData: BaseEvent[] = [
 function statusCmd(user: User) {
 	const msg = findMessage(user);
 	if(!msg) return;
+	
 	const targetid = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', false);
 	const target: User | undefined = targetid ? Vars.users.find((u) => u.id == targetid) : user;
 	if (!target) return msg.interaction.followUp(Bundle.format(user.lang, 'account.account_notFound', targetid));
@@ -96,6 +97,7 @@ function statusCmd(user: User) {
 function inventoryCmd(user: User) {
 	const msg = findMessage(user);
 	if(!msg) return;
+
 	const targetid = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', false);
 	const target: User | undefined = targetid ? Vars.users.find((u) => u.id == targetid) : user;
 	if (!target) return msg.interaction.followUp(Bundle.format(user.lang, 'account.account_notFound', targetid));
@@ -105,9 +107,8 @@ function inventoryCmd(user: User) {
 function consumeCmd(user: User) {
 	const msg = findMessage(user);
 	if(!msg) return;
+	
 	const name = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
-	if (!name) return msg.interaction.followUp(Vars.prefix + Bundle.find(user.lang, 'command.consume_help'));
-
 	const stack: ItemStack | undefined = user.inventory.items.find((i) => ItemStack.getItem(i).localName(user) == name);
 	if (!stack) return msg.interaction.followUp(Bundle.format(user.lang, 'account.notFound', name));
 	const result = ItemStack.consume(stack, user);
@@ -118,9 +119,9 @@ function consumeCmd(user: User) {
 function weaponChangeCmd(user: User) {
 	const msg = findMessage(user);
 	if(!msg) return;
+
 	const weapon = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
-	if (!weapon) msg.interaction.followUp(Vars.prefix + Bundle.find(user.lang, 'command.swap_help'));
-	else user.switchWeapon(msg, weapon);
+	user.switchWeapon(msg, weapon);
 }
 
 function walkingCmd(user: User) {
@@ -202,7 +203,7 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>void
 
 			if (requireUser) { 
 				if (user) (callback as (msg: User)=>void)(user);
-				else interaction.followUp(Bundle.find((interaction.locale as Assets.bundle.language) || 'en', 'account.account_notLogin')); 
+				else interaction.followUp(Bundle.find('en', 'account.account_notLogin')); 
 			} else (callback as (msg: Message)=>void)(msg);
 		},
 		setHiddenConfig: (arg) => arg,

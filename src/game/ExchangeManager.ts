@@ -23,7 +23,7 @@ const exchangeSelection: EventSelection[][] = [[
 
 		const triggers: ITrigger<MessageActionRowComponent>[] = [];
 		const buttons = out.map((items, ii) => {
-				const row = new MessageActionRow().setComponents((items.map((entity, i) => {
+			const row = new MessageActionRow().setComponents((items.map((entity, i) => {
 				const ent = user.enemy?.items.items.find((e) => e.id == entity.id);
 				if (!ent) return;
 

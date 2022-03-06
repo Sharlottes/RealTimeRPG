@@ -75,7 +75,6 @@ export class SelectEvent extends BaseEvent {
         }
     }
 
-
     start(user: User): void {
 		const msg = findMessage(user);
 		if(!msg) return;

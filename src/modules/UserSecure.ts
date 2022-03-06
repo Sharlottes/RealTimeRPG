@@ -59,22 +59,6 @@ export class Status {
     this.callback = undefined;
   }
 }
-// Pass the entire Canvas object because you'll need access to its width and context
-const applyText = (canvas: Canvas.Canvas, text: string) => {
-	const context = canvas.getContext('2d');
-
-	// Declare a base size of the font
-	let fontSize = 70;
-
-	do {
-		// Assign the font to the context and decrement it so it can be measured again
-		context.font = `${fontSize -= 10}px sans-serif`;
-		// Compare pixel width of the text to the canvas minus the approximate avatar size
-	} while (context.measureText(text).width > canvas.width - 300);
-
-	// Return the result to use in the actual canvas
-	return context.font;
-};
 
 export class User {
   public id: string;
@@ -84,7 +68,7 @@ export class User {
   public energy: number;
   public level: number;
   public exp: number;
-  public cooldown = 0; //무기 쿨다운
+  public cooldown = 0;
   public stats: Stat = defaultStat;
   public status: Status = new Status();
   public inventory: Inventory = defaultInven; 
@@ -114,19 +98,8 @@ export class User {
   }
 
   public init() {
-		if (!this.battleLog) this.battleLog = [];
 		if(!this.foundContents.items) this.foundContents.items = this.inventory.items.map((i) => i.id);
 		if(!this.foundContents.units) this.foundContents.units = [];
-		if (this.stats.health <= 0) this.stats.health = this.stats.health_max;
-
-		this.inventory.items.forEach((entity, i) => {
-			const exist = this.inventory.items.find((e) => e != entity && e.id == entity.id);
-			if (exist) {
-				exist.amount += entity.amount;
-				this.inventory.items.splice(i, 1);
-			}
-		});
-		this.status = new Status();
   }
 
   public update() {
@@ -273,9 +246,7 @@ export function create(msg: Message, users: User[], lang: Assets.bundle.language
   const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
   const user = users.find((u) => u.id == id);
 
-  if (!id || !pw) msg.interaction.followUp(Bundle.find(lang, "account.create_help"));
-  else if (user)
-    msg.interaction.followUp(Bundle.format(lang, "account.account_exist", id));
+  if (user) msg.interaction.followUp(Bundle.format(lang, "account.account_exist", id));
   else {
     const target = new User({id: id, password: pw, hash: hash});
     users.push(target);
@@ -289,8 +260,8 @@ export function remove(msg: Message, users: User[], lang: Assets.bundle.language
   const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('id', true).replace(/[@]/g, "");
   const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
   const user = users.find((u) => u.id == id);
-  if (!id || !pw) msg.interaction.followUp(Bundle.find(lang, "account.remove_help"));
-  else if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
+  
+  if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
   else if (user.password !== pw)
     msg.interaction.followUp(Bundle.find(lang, "account.account_incorrect"));
   else if (user.hash !== Number(hash))
@@ -307,9 +278,9 @@ export function signin(msg: Message, users: User[], lang: Assets.bundle.language
   const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('id', true).replace(/[@]/g, "");
   const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
   const user = users.find((u) => u.id == id);
-  if (!id || !pw) msg.interaction.followUp(Bundle.find(lang, "account.login_help"));
-  else if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
-  else if (user.password !== pw)
+
+  if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
+  else if (user.password !== pw) 
     msg.interaction.followUp(Bundle.find(lang, "account.account_incorrect"));
   else if (user.hash)
     msg.interaction.followUp(
@@ -323,6 +294,7 @@ export function signin(msg: Message, users: User[], lang: Assets.bundle.language
 export function signout(msg: Message, users: User[], lang: Assets.bundle.language = "en") {
   const hash = msg.interaction.user.id;
   const user = users.find((u) => u.hash == Number(hash));
+
   if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notLogin"));
   else {
     user.hash = 0;
@@ -337,10 +309,8 @@ export function change(msg: Message, users: User[], lang: Assets.bundle.language
   const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
   const changeto = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
   const user = users.find((u) => u.id == id);
-  if (!id || !pw || !type || !(type.toLowerCase() == "id" || type.toLowerCase() == "pw") || !changeto)
-    msg.interaction.followUp(Bundle.find(lang, "account.change_help"));
-  else if (!user) 
-    msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
+  
+  if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
   else if (type.toLowerCase() == "pw") {
     if (users.find((u) => u.id == changeto))
       msg.interaction.followUp(Bundle.format(lang, "account.account_exist", id));
@@ -366,14 +336,11 @@ export function setLang(msg: Message, users: User[], lang: Assets.bundle.languag
   const user = users.find((u) => user.hash == Number(hash));
 
   if (!user) return msg.interaction.followUp(Bundle.find(lang, "account.account_notLogin"));
-  if (!langto)
-    return msg.interaction.followUp(
-      Bundle.format(lang, "account.lang_help", "ko | en")
-    );
-
-  msg.interaction.followUp(Bundle.format(lang, "account.lang_success", lang, langto));
-  user.lang = langto;
-  Database.writeObject("./Database/user_data", users);
+  else {
+    user.lang = langto;
+    msg.interaction.followUp(Bundle.format(lang, "account.lang_success", lang, langto));
+    Database.writeObject("./Database/user_data", users);
+  }
 };
 */
 

@@ -31,7 +31,6 @@ const app = {
 
 const { client, option } = app;
 
-
 // 프로그램 실행 인자 추출
 process.argv.forEach((arg: string, index: number, array: string[]) => {
     if(arg.slice(0, 2) == "--" && array.length > index + 1) {
@@ -51,8 +50,6 @@ process.argv.forEach((arg: string, index: number, array: string[]) => {
 // 애셋 파일 로딩
 assets.init(config.debug);
 
-// 기타 함수 선언
-
 // 길드 초기화
 function guildInit(guild: Discord.Guild) {
     firebaseAdmin.firestore.collection(guild.id).doc("config").get().then(snapshot => {
@@ -63,14 +60,10 @@ function guildInit(guild: Discord.Guild) {
                 version: config.version,
                 language: guild.preferredLocale
             });
-
-            
         }
     });
 }
 
-
-// 속성 뒤에 ?는 해당 값이 널인지 확인하고 널이 아니면 실행
 client.once("ready", () => {
     console.log(`Logged in as ${client.user?.tag}(${client.application?.id})!`)
     
@@ -144,7 +137,6 @@ client.on("messageCreate", async message => {
             message.reply({content: "error: "+error});
         }
     }
-
 
     if(message.author.bot) return;
 });
