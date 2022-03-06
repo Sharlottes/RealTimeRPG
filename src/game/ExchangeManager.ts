@@ -8,7 +8,7 @@ import { Durable } from '@뇌절봇/@type';
 import Assets from '../assets';
 import { EventSelection, SelectEvent } from '../event';
 
-import { findMessage, getOne, save } from './rpg_';
+import { getOne, save } from './rpg_';
 
 const Bundle = Assets.bundle;
 
@@ -32,38 +32,36 @@ const exchangeSelection: EventSelection[][] = [[
 			triggers.push({
 				name: `${item.localName(user)}${i}${ii}`,
 				callback(interactionCallback, button) {
-					const msg = findMessage(user);
-					if(!msg) return;
 					buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(true)));
 					buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(false));
 					user.status.callback = (amount: number) => {
-						if (!user.enemy) return;
+						if (!user.enemy || !user.selectBuilder) return;
 
 						buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(false)));
 						buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(true));
 						user.status.callback = undefined;
 						if (amount > ent.amount) { 
-							msg.builder?.setDescription(`${msg.builder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_item', item.localName(user), amount, ent.amount)}\`\`\``); 
+							user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_item', item.localName(user), amount, ent.amount)}\`\`\``); 
 						} 
 						else if (user.money < amount * money) { 
-							msg.builder?.setDescription(`${msg.builder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_money', amount * money, user.money)}\`\`\``); 
+							user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_money', amount * money, user.money)}\`\`\``); 
 						} 
 						else {
-							msg.builder?.setDescription(`${msg.builder.description}\`\`\`diff\n+ ${Bundle.format(user.lang, 'shop.buyed', item.localName(user), amount, user.money, (user.money -= money * amount))}\`\`\``);
+							user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n+ ${Bundle.format(user.lang, 'shop.buyed', item.localName(user), amount, user.money, (user.money -= money * amount))}\`\`\``);
 							ent.amount -= amount;
 							(button.setCustomId(`${item.localName(user)}${i}${ii}`) as Discord.MessageButton).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
 
 							const isNew = user.giveItem(item, amount);
-							if (isNew) msg.builder?.setDescription(`${msg.builder.description}\`\`\`diff\n+ ${isNew}\`\`\``);
+							if (isNew) user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n+ ${isNew}\`\`\``);
 							if (!ent.amount) {
 								user.enemy.items.items.splice(i, 1);
 								buttons[ii].spliceComponents(i, 1);
-								msg.builder?.setComponents(buttons);
+								user.selectBuilder.setComponents(buttons);
 							}
 
 							save();
 						}
-						msg.builder?.interaction.editReply({embeds: [msg.builder], components: buttons});
+						user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder]});
 					};
 				},
 			});
@@ -71,7 +69,7 @@ const exchangeSelection: EventSelection[][] = [[
 		}) as MessageActionRowComponentResolvable[]).filter((e) => e)));
 		
 		const back = SelectEvent.toActionData([[backSelection(exchangeSelection)]], user);
-		findMessage(user)?.builder?.setComponents(buttons).setTriggers(triggers).addComponents(back.actions).addTriggers(back.triggers)
+		user.selectBuilder?.setComponents(buttons).setTriggers(triggers).addComponents(back.actions).addTriggers(back.triggers)
 			.addComponents(new MessageSelectMenu().setCustomId('selectBuy').setPlaceholder('1 items').addOptions(new Array(10).fill(0).map((e, i) => ({
 				label: `${i + 1} items`,
 				value: `${i + 1}`,
@@ -104,27 +102,26 @@ const exchangeSelection: EventSelection[][] = [[
 						buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(false));
 
 						user.status.callback = (amount: number) => {
-							const msg = findMessage(user);
-							if(!msg) return;
+							if(!user.selectBuilder) return;
 							buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(false)));
 							buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(true));
 							user.status.callback = undefined;
 
 							if (amount > ent.amount) {
-								msg.builder?.setDescription(`${msg.builder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_item', item.localName(user), amount, ent.amount)}\`\`\``); 
+								user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n- ${Bundle.format(user.lang, 'shop.notEnough_item', item.localName(user), amount, ent.amount)}\`\`\``); 
 							} else {
-								msg.builder?.setDescription(`${msg.builder.description}\`\`\`diff\n+ ${Bundle.format(user.lang, 'shop.sold', item.localName(user), amount, user.money, (user.money += money * amount))}\`\`\``);
+								user.selectBuilder.setDescription(`${user.selectBuilder.description}\`\`\`diff\n+ ${Bundle.format(user.lang, 'shop.sold', item.localName(user), amount, user.money, (user.money += money * amount))}\`\`\``);
 								ent.amount -= amount;
 								if (!ent.amount) {
 									user.inventory.items.splice(i, 1);
 									buttons[ii].spliceComponents(i, 1);
-									msg.builder?.setComponents(buttons);
+									user.selectBuilder.setComponents(buttons);
 								}
 								(button.setCustomId(`${item.localName(user)}${i}${ii}`) as Discord.MessageButton).setLabel(`${item.localName(user)}: ${money + Bundle.format(user.lang, 'unit.money')} (${ent.amount + Bundle.format(user.lang, 'unit.item')} ${Bundle.format(user.lang, 'unit.item_left')})`).setStyle('PRIMARY');
 
 								save();
 							}
-							msg.builder?.interaction.editReply({embeds: [msg.builder], components: buttons});
+							user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder], components: buttons});
 						};
 					},
 				});
@@ -132,7 +129,7 @@ const exchangeSelection: EventSelection[][] = [[
 			}) as MessageActionRowComponentResolvable[]).filter((e) => e)));
 			
 			const back = SelectEvent.toActionData([[backSelection(exchangeSelection)]], user);
-			findMessage(user)?.builder?.setComponents(buttons).setTriggers(triggers).addComponents(back.actions).addTriggers(back.triggers)
+			user.selectBuilder?.setComponents(buttons).setTriggers(triggers).addComponents(back.actions).addTriggers(back.triggers)
 				.addComponents(new MessageSelectMenu().setCustomId('selectSell').setPlaceholder('1 items').addOptions(new Array(10).fill(0).map((e, i) => ({
 					label: `${i + 1} items`,
 					value: `${i + 1}`,
@@ -146,29 +143,26 @@ const exchangeSelection: EventSelection[][] = [[
 				});
 	}),
 	new EventSelection('back', async (user) => {
-		const msg = findMessage(user);
-		if(!msg || !msg.builder) return;
-		msg.builder.setDescription(`${msg.builder.description}\n\`\`\`\n${Bundle.find(user.lang, 'shop.end')}\n\`\`\``);
-		msg.builder.setComponents([]);
-		msg.builder = null;
+		if(!user.selectBuilder) return;
+		user.selectBuilder.setDescription(`${user.selectBuilder.description}\n\`\`\`\n${Bundle.find(user.lang, 'shop.end')}\n\`\`\``);
+		user.selectBuilder.setComponents([]);
+		user.selectBuilder = undefined;
 		user.enemy = undefined;
 		user.status.clearSelection();
 	})
 ]];
 
 const backSelection = (selection: EventSelection[][]) => new EventSelection('backSelect', (user, components, interactionCallback)=> {
-	const msg = findMessage(user);
-	if(!msg || !msg.builder) return;
+	if(!user.selectBuilder) return;
 	const data = SelectEvent.toActionData(selection, user);
 
-	msg.builder.setComponents(data.actions).setTriggers(data.triggers);
+	user.selectBuilder.setComponents(data.actions).setTriggers(data.triggers);
 }, 'button', {
 	style: 'SECONDARY'
 } as MessageButtonOptions);
 
 export function exchange(user: User, entity: UnitEntity) {
-	const msg = findMessage(user);
-	if(!msg || !msg.builder) return;
+	if(!user.selectBuilder) return;
 
 	//고블린 인벤토리 생성
 	for (let i = 0; i < 20; i++) {
@@ -182,7 +176,7 @@ export function exchange(user: User, entity: UnitEntity) {
 	const data = SelectEvent.toActionData(exchangeSelection, user);
 
 	//임베드 출력
-	msg.builder
+	user.selectBuilder
 		.setDescription(Bundle.find(user.lang, 'event.goblin_exchange'))
 		.setComponents(data.actions).setTriggers(data.triggers);
 }

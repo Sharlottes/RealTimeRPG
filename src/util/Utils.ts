@@ -1,4 +1,5 @@
 import fs from "fs";
+import Canvas from 'canvas';
 
 namespace Utils {
   export class Mathf {
@@ -53,6 +54,53 @@ namespace Utils {
         }
         return JSON.parse(fs.readFileSync(fileName).toString()) as T;
       }
+  }
+
+  export class Canvas {
+    // Draw a white outer ring
+    public static donutProgressBar(canvas: Canvas.Canvas, options: {
+      progress: {max: number, now: number}, 
+      barWidth: number, 
+      barStyle?: string | CanvasGradient | CanvasPattern, 
+      font?: string, 
+      text?: string,
+      smolfont?: string,
+      fontStyle?: string | CanvasGradient | CanvasPattern
+    }) {
+      const context = canvas.getContext('2d');
+      const centerX = canvas.width / 2, centerY = canvas.height / 2;
+      const rad = (Math.min(canvas.width, canvas.height)-options.barWidth)/2;
+      const progress = options.progress.now/options.progress.max;
+       
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      context.beginPath();
+      context.strokeStyle = "#A5DEF1";
+      context.lineWidth = options.barWidth;
+      context.arc(centerX, centerY, rad, 0, Math.PI * 2, false);
+      context.stroke();
+      context.closePath();
+      
+      context.fillStyle = options.fontStyle||"#F47C7C";
+      context.font = options.font||"40px Arial";
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(`${options.text} ${progress.toFixed(2)}%`, centerX, centerY);
+
+      context.fillStyle = options.fontStyle||"#F47C7C";
+      context.font = options.smolfont||"40px Arial";
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(`${options.progress.now}/${options.progress.max}`, centerX, centerY+rad/2);
+
+      context.beginPath();
+      context.strokeStyle = options.barStyle||"#49f";
+      context.lineWidth = options.barWidth;
+      context.arc(centerX, centerY, rad, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2/100, false);
+      context.stroke();
+
+      return context;
+    }
   }
 }
 export default Utils;

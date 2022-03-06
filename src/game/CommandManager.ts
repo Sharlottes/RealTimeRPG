@@ -38,7 +38,7 @@ const eventData: BaseEvent[] = [
 		msg.interaction.followUp(`${Bundle.format(user.lang, 'event.item', item.localName(user))}\n${user.giveItem(item) || ''}`);
 	}),
 	new SelectEvent({
-		ratio: 10,
+		ratio: 15,
 		title: 'goblin'
 	},
 		[[
@@ -67,7 +67,7 @@ const eventData: BaseEvent[] = [
 		]]
 	),
 	new SelectEvent({
-		ratio: 2220,
+		ratio: 20,
 		title: 'obstruction',
 	},[[
 			new EventSelection('battle', (user) => battle(user, new UnitEntity(Units.find(0)))),
@@ -83,13 +83,14 @@ const eventData: BaseEvent[] = [
 		]]
 	),
 ];
+
 function statusCmd(user: User) {
 	const msg = findMessage(user);
 	if(!msg) return;
 	const targetid = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', false);
 	const target: User | undefined = targetid ? Vars.users.find((u) => u.id == targetid) : user;
 	if (!target) return msg.interaction.followUp(Bundle.format(user.lang, 'account.account_notFound', targetid));
-	msg.interaction.followUp(target.getUserInfo());
+	target.getUserInfo(msg);
 }
 
 function inventoryCmd(user: User) {

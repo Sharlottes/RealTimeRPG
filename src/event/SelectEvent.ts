@@ -89,7 +89,8 @@ export class SelectEvent extends BaseEvent {
         .setComponents(data.actions).setTriggers(data.triggers); //make new components
         msg.builder.build();
         msg.interaction.editReply({embeds: [msg.builder], components: data.actions});
-
+        
+        user.selectBuilder = msg.builder;
         super.start(user);
     }
 }

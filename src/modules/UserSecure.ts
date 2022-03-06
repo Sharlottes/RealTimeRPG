@@ -1,10 +1,13 @@
 import Assets from '../assets';
 import { Item, Items, ItemStack, UnitEntity, Weapon } from "../game";
 import { Utils } from "../util";
-import Discord, { CacheType } from 'discord.js';
+import Discord, { CacheType, MessageAttachment, MessageEmbed, MessageButton } from 'discord.js';
 import { findMessage, save } from '@뇌절봇/game/rpg_';
 import { Durable, Inventory, Stat, Message } from '@뇌절봇/@type';
 import { PagesBuilder } from 'discord.js-pages';
+import { filledBar } from 'string-progressbar';
+import Canvas from 'canvas';
+import { MessageActionRow } from 'discord.js';
 
 const Bundle = Assets.bundle;
 const Database = Utils.Database;
@@ -56,6 +59,22 @@ export class Status {
     this.callback = undefined;
   }
 }
+// Pass the entire Canvas object because you'll need access to its width and context
+const applyText = (canvas: Canvas.Canvas, text: string) => {
+	const context = canvas.getContext('2d');
+
+	// Declare a base size of the font
+	let fontSize = 70;
+
+	do {
+		// Assign the font to the context and decrement it so it can be measured again
+		context.font = `${fontSize -= 10}px sans-serif`;
+		// Compare pixel width of the text to the canvas minus the approximate avatar size
+	} while (context.measureText(text).width > canvas.width - 300);
+
+	// Return the result to use in the actual canvas
+	return context.font;
+};
 
 export class User {
   public id: string;
@@ -160,38 +179,69 @@ export class User {
     }).join('\n\n')}`;
   }
 
-  public getUserInfo() {
-    let weapon: Weapon = ItemStack.getItem(this.inventory.weapon);
-    if (!weapon) {
-      this.inventory.weapon.id = 5;
-      weapon = Items.find(5);
-      save();
-    }
+  public async getUserInfo(msg: Message) {
+    const user = msg.interaction.user;
 
-    return Bundle.format(
-      this.lang,
-      'status_info',
-      this.id,
-      this.level,
-      this.exp,
-      this.level ** 2 * 50,
-      this.money,
-      this.stats.energy.toFixed(1),
-      this.stats.energy_max,
-      this.stats.energy_regen,
-      this.stats.health.toFixed(1),
-      this.stats.health_max,
-      this.stats.health_regen,
-      weapon.localName(this),
-      this.inventory.weapon.durability && weapon.durability
-        ? `(${Bundle.find(this.lang, 'durability')}: ${this.inventory.weapon.durability}/${weapon.durability})`
-        : '',
+    const canvas = Canvas.createCanvas(1000, 1000);
+    Utils.Canvas.donutProgressBar(canvas, {
+      progress: {
+        now: this.exp,
+        max: this.level ** 2 * 50
+      },
+      barWidth: 100,
+      font: "bold 150px sans-serif",
+      text: `${this.level}Lv`,
+      smolfont: "bold 125px sans-serif",
+      fontStyle: '#ffffff'
+    });
+    const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
+    const weapon: Weapon = ItemStack.getItem(this.inventory.weapon);
+    const button2 = new MessageButton().setCustomId('weapon_info').setLabel('get Weapon Info').setStyle('PRIMARY');
+    const button1 = new MessageButton().setCustomId('inventory_info').setLabel('get Inventory Info').setStyle('PRIMARY');
+    const statusEmbed = new MessageEmbed()
+      .setColor('#0099ff')
+      .setTitle('User Status Information')
+      .setAuthor({name: user.username, iconURL: user.displayAvatarURL(), url: user.displayAvatarURL()})
+      .setThumbnail("attachment://profile-image.png")
+      .addFields(
+        { name: "Health", value: `${filledBar(this.stats.health_max, this.stats.health, 10, "\u2593", "\u2588")[0]}\n${this.stats.health.toFixed(2)}/${this.stats.health_max}    (${this.stats.health_regen}/s)`, inline: true},
+        { name: "Energy", value: `${filledBar(this.stats.energy_max, this.stats.energy, 10, "\u2593", "\u2588")[0]}\n${this.stats.energy.toFixed(2)}/${this.stats.energy_max}    (${this.stats.energy_regen}/s)`, inline: true},
+        { name: '\u200B', value: '\u200B'},
+        { name: 'Equipped Weapon', value: weapon.localName(this), inline: true },
+        { name: 'Current Money', value: this.money+'$', inline: true },
+        { name: 'Inventory', value: this.inventory.items.length+'/50', inline: true }
+      );
 
-      weapon.cooldown,
-      weapon.damage,
-      (weapon.critical_chance * 100).toFixed(2),
-      (weapon.critical_ratio * 100).toFixed(2),
-    );
+    const builder = new PagesBuilder(msg.interaction);
+    builder.setPages(statusEmbed);
+    builder
+      .setDescription('\u200B')
+      .setDefaultButtons([])
+      .setComponents(new MessageActionRow().addComponents([button1, button2])).addTriggers([{
+        name: 'weapon_info',
+        callback: (inter, cos) => {
+          cos.setDisabled(true);
+          const weaponEmbed = new MessageEmbed()
+            .setColor('#b8b8b8')
+            .setTitle(`Weapon: \`${weapon.localName(this)}\` Information`)
+            .setAuthor({name: user.username, iconURL: user.displayAvatarURL(), url: user.displayAvatarURL()})
+            .addFields(        
+              { name: 'critical', value: `${(weapon.critical_ratio * 100).toFixed(2)}% damages in ${(weapon.critical_chance * 100).toFixed(2)} chance`},
+              { name: 'damage', value: weapon.damage+'', inline: true},
+              { name: 'cooldown', value: weapon.cooldown+'', inline: true},
+              { name: 'durability', value: `${filledBar(weapon.durability||0, this.inventory.weapon.durability||0, 10, "\u2593", "\u2588")[0]}\n${Bundle.find(this.lang, 'durability')}: ${this.inventory.weapon.durability||0}/${weapon.durability||0}`, inline: true},
+            )
+          msg.interaction.followUp({embeds: [weaponEmbed]});
+        }
+      },{
+        name: 'inventory_info',
+        callback: (inter, cos) => {
+          cos.setDisabled(true);
+          msg.interaction.followUp(this.getInventory());
+        }
+      }])
+    builder.build();
+    msg.interaction.editReply({files: [attachment]});
   }
 
   public switchWeapon(msg: Message, name: string) {

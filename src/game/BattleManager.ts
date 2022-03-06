@@ -183,12 +183,9 @@ function battleEnd(user: User) {
 }
 
 export function battle(user: User, entity: UnitEntity) {
-	const msg = findMessage(user);
-	if(!msg) throw new Error("user msg is not exist!");
-	if(!msg.builder) throw new Error("msg builder is not exist!");
+	if(!user.selectBuilder) throw new Error("msg builder is not exist!");
 	
 	//update user data
-	user.selectBuilder = msg.builder;
 	user.enemy = entity;
 	user.battleLog = [];
 

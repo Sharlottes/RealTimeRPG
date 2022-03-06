@@ -50,7 +50,7 @@ export function read() {
 
 export function save() {
 	Vars.users.forEach((user) => {
-		if (user.exp > user.level ** 2 * 50) {
+		if (user.exp >= user.level ** 2 * 50) {
 			user.levelup();
 		}
 	});
