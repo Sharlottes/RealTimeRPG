@@ -199,7 +199,8 @@ export function battle(user: User, entity: UnitEntity) {
 	if (weapon) {
 		user.battleInterval = setInterval(() => {
 			if (!user.enemy || !user.selectBuilder) return;
-		
+			if (user.stats.health <= 0) return battleEnd(user);
+
 			user.enemy.cooldown -= 100 / 1000;
 			if (user.enemy.cooldown <= 0 && user.enemy.health > 0) {
 				user.enemy.cooldown = weapon.cooldown;
@@ -211,7 +212,6 @@ export function battle(user: User, entity: UnitEntity) {
 					${logs.join('')}`);
 				user.selectBuilder.interaction.editReply({ embeds: [user.selectBuilder] }); 
 			}
-			if (user.stats.health <= 0) battleEnd(user);
 		}, 100);
 	}
 }
