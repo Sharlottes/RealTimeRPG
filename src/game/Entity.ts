@@ -12,7 +12,7 @@ export class UnitEntity {
 
   constructor(unit: Unit) {
     this.id = unit.id;
-    this.stats = unit.stats;
+    this.stats = Object.assign(unit.stats);
     this.items = defaultInven;
   }
 

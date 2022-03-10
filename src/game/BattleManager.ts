@@ -7,7 +7,7 @@ import { Item, ItemStack, Weapon } from './contents';
 import Assets from '../assets';
 import { EventSelection, SelectEvent } from '../event';
 
-import { findMessage, getOne, save } from './rpg_';
+import { getOne, save } from './rpg_';
 
 const Bundle = Assets.bundle;
 const { Mathf } = Utils;
@@ -31,43 +31,24 @@ const battleSelection : EventSelection[][] = [
 					user.inventory.weapon.id = 5;
 				}
 
-				//임베드에 공격 메시지 추가
-				user.selectBuilder.setDescription(`
-					${Bundle.format(user.lang, 'battle.start', user.id, Units.find(user.enemy.id).localName(user))}\n
-					${(user.allLog || user.battleLog.length <= 4) ? '' : `\`\`\`+ ${user.battleLog.length}logs\`\`\``}\n
-					${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}`);
+				//임베드 전투로그 업데이트
+				user.selectBuilder.setFields([
+					{
+						name: `Battle Status`,
+						value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
+					},
+					{
+						name: `Logs (${user.battleLog.length})`, 
+						value: `${((user.battleLog.length >= 4 && !user.allLog) 
+							? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
+							: user.battleLog).join('')
+						}`
+					}
+				]);
 
 				// 적이 죽으면 전투 끝
 				if (user.enemy.stats.health <= 0) {
-					const unit = Units.find(user.enemy.id);
-					const items: { item: Item; amount: number; }[] = [];
-
-					//전투 보상은 최소 1개, 최대 적 레벨의 4배만큼의 랜덤한 아이템
-					for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level * 4)) + 1; i++) {
-						const item = getOne(Items.items.filter((i) => i.dropOnBattle));
-						const obj = items.find((i) => i.item == item);
-						if (obj) obj.amount++;
-						else items.push({ item, amount: 1 });
-					}
-
-					//임베드에 전투 결과 메시지 추가
-					user.selectBuilder.setDescription(
-						`
-						${Bundle.format(user.lang, 'battle.start', user.id, unit.localName(user))}
-						\n${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}
-						\`\`\`diff\n+${user.enemy.stats.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\`
-						\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
-						\n${items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')}]\`\`\`
-						`
-					);
-
-					//유저데이터 초기화 및 저장
-					user.selectBuilder.setComponents([]);
-					user.selectBuilder = undefined;
-					user.enemy = undefined;
-					user.battleLog = [];
-					user.status.clearSelection();
-					save();
+					battleEnd(user);
 					return;
 				}
 				user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder]});
@@ -79,8 +60,20 @@ const battleSelection : EventSelection[][] = [
 			actions[0].components[1].setDisabled(true);
 			actions[0].components[2].setDisabled(false);
 			if (user.enemy) {
-				user.selectBuilder
-					.setDescription(`${Bundle.format(user.lang, 'battle.start', user.id, Units.find(user.enemy.id).localName(user))}\n${(user.allLog || user.battleLog.length <= 4) ? '' : `\`\`\`+ ${user.battleLog.length}logs\`\`\`\n`}${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}`)
+					user.selectBuilder
+					.setFields([
+						{
+							name: `Battle Status`,
+							value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
+						},
+						{
+							name: `Logs (${user.battleLog.length})`, 
+							value: `${((user.battleLog.length >= 4 && !user.allLog) 
+								? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
+								: user.battleLog).join('')
+							}`
+						}
+					])
 					.setComponents(actions)
 					.addComponents(new MessageSelectMenu().setCustomId('swap').setPlaceholder('swap weapon to ...').addOptions(user.inventory.items.filter((e) =>  Items.find(e.id) instanceof Weapon).map((stack) => ({
 						label: Items.find(stack.id)?.name,
@@ -95,7 +88,19 @@ const battleSelection : EventSelection[][] = [
 			actions[0].components[2].setDisabled(true);
 			if (user.enemy) {
 				user.selectBuilder
-					.setDescription(`${Bundle.format(user.lang, 'battle.start', user.id, Units.find(user.enemy.id).localName(user))}\n${(user.allLog || user.battleLog.length <= 4) ? '' : `\`\`\`+ ${user.battleLog.length}logs\`\`\`\n`}${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}`)
+					.setFields([
+						{
+							name: `Battle Status`,
+							value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
+						},
+						{
+							name: `Logs (${user.battleLog.length})`, 
+							value: `${((user.battleLog.length >= 4 && !user.allLog) 
+								? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
+								: user.battleLog).join('')
+							}`
+						}
+					])
 					.setComponents(actions)
 					.addComponents(new MessageSelectMenu().setCustomId('swap').setPlaceholder('swap weapon to ...').addOptions(user.inventory.items.filter((e) => Items.find(e.id) instanceof Weapon).map((stack) => ({
 						label: Items.find(stack.id)?.name,
@@ -120,7 +125,20 @@ const battleSelection : EventSelection[][] = [
 				user.inventory.weapon.id = weapon.id;
 				user.giveItem(weapon);
 				user.battleLog.push(`\`\`\`\n${Bundle.format(user.lang, 'switch_change', weaponTo, weaponFrom)}\n\`\`\``);
-				user.selectBuilder.setDescription(`${Bundle.format(user.lang, 'battle.start', user.id, Units.find(user.enemy.id).localName(user))}\n${(user.allLog || user.battleLog.length <= 4) ? '' : `\`\`\`+ ${user.battleLog.length}logs\`\`\`\n`}${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}`);
+				user.selectBuilder.setFields([
+					{
+						name: `Battle Status`,
+						value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
+					},
+					{
+						name: `Logs (${user.battleLog.length})`, 
+						value: `${((user.battleLog.length >= 4 && !user.allLog) 
+							? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
+							: user.battleLog).join('')
+						}`
+					}
+				])
+			
 				save();
 			}
 		}, 'select', u=>{
@@ -152,22 +170,47 @@ function battleEnd(user: User) {
 			else items.push({ item, amount: 1 });
 		}
 
+		user.battleLog.push(`\`\`\`diff\n+ ${user.enemy.stats.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\``);
+		
 		//임베드에 전투 결과 메시지 추가
-		user.selectBuilder.setDescription(`
-			${Bundle.format(user.lang, 'battle.start', user.id, unit.localName(user))}\n
-			${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}
-			\`\`\`diff\n+ ${user.enemy.stats.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\`
-			\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
-			\n${items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')}]\`\`\`
-		`);
+		user.selectBuilder.setFields([
+			{
+				name: `Battle Status`,
+				value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
+			},
+			{
+				name: `Logs (${user.battleLog.length})`, 
+				value: `${((user.battleLog.length >= 4 && !user.allLog) 
+					? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
+					: user.battleLog).join('')
+				}`
+			},
+			{
+				name: 'Battle End', 
+				value: 
+				`\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
+				\n${items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')}]\`\`\``
+			}
+		]);
 	}
 	else if(user.stats.health <= 0) {
-			user.stats.health = 0.1 * user.stats.health_max;
-			user.selectBuilder.setDescription(`
-				${Bundle.format(user.lang, 'battle.start', user.id, Units.find(user.enemy.id).localName(user))}\n
-				${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}\n
-				\`\`\`diff\n- ${Bundle.format(user.lang, 'battle.lose', user.stats.health.toFixed(2))}\n\`\`\`
-			`);
+		user.stats.health = 0.1 * user.stats.health_max;
+		user.battleLog.push(`\`\`\`diff\n- ${Bundle.format(user.lang, 'battle.lose', user.stats.health.toFixed(2))}\n\`\`\``);
+
+		//임베드에 전투 결과 메시지 추가
+		user.selectBuilder.setFields([
+			{
+				name: `Battle Status`,
+				value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
+			},
+			{
+				name: `Logs (${user.battleLog.length})`, 
+				value: `${((user.battleLog.length >= 4 && !user.allLog) 
+					? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
+					: user.battleLog).join('')
+				}`
+			}
+		]);
 	}
 	else throw new Error("battle is ended with no-one-dead");
 	
@@ -186,7 +229,7 @@ export function battle(user: User, entity: UnitEntity) {
 	if(!user.selectBuilder) throw new Error("msg builder is not exist!");
 	
 	//update user data
-	user.enemy = entity;
+	user.enemy = entity; 
 	user.battleLog = [];
 
 	const data = SelectEvent.toActionData(battleSelection, user);
@@ -205,11 +248,19 @@ export function battle(user: User, entity: UnitEntity) {
 			if (user.enemy.cooldown <= 0 && user.enemy.stats.health > 0) {
 				user.enemy.cooldown = weapon.cooldown;
 				user.battleLog.push(`\`\`\`diff\n- ${weapon.attackEntity(user)}\n\`\`\``);
-				const logs = (user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog;
-				user.selectBuilder.setDescription(`
-					${Bundle.format(user.lang, 'battle.start', user.id, Units.find(user.enemy.id).localName(user))}\n
-					${(user.allLog || user.battleLog.length <= 4) ? '' : `\`\`\`+ ${user.battleLog.length}logs\`\`\`\n`}
-					${logs.join('')}`);
+				user.selectBuilder.setFields([
+					{
+						name: `Battle Status`,
+						value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
+					},
+					{
+						name: `Logs (${user.battleLog.length})`, 
+						value: `${((user.battleLog.length >= 4 && !user.allLog) 
+							? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
+							: user.battleLog).join('')
+						}`
+					}
+				]);
 				user.selectBuilder.interaction.editReply({ embeds: [user.selectBuilder] }); 
 			}
 		}, 100);

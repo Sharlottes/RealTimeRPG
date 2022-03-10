@@ -57,7 +57,50 @@ namespace Utils {
   }
 
   export class Canvas {
-    // Draw a white outer ring
+    public static unicodeProgressBar(progress: number, max: number, showPercent = false) {
+      const per = (progress / max) * 100;
+      let perN = per;
+      const O = "\u2591".repeat(10).split("");
+      let R = 0;
+
+      for (let i = 0; i < per; i += 10) {
+          R++;
+          perN -= 10;
+      }
+
+      const Ro = R;
+      for (; R >= 1; R--) {
+          O[R - 1] = "\u2588";
+      }
+
+      if (perN < 0) {
+        if (perN <= -10 + 1.25) O[Ro - 1] = "\u258f";
+        else {
+          if (perN <= -10 + 2.5) O[Ro - 1] = "\u258e";
+          else {
+            if (perN <= -10 + 3.75) O[Ro - 1] = "\u258d";
+            else {
+              if (perN <= -10 + 5) O[Ro - 1] = "\u258c";
+              else {
+                if (perN <= -10 + 6.25) O[Ro - 1] = "\u258b";
+                else {
+                  if (perN <= -10 + 7.5) O[Ro - 1] = "\u258a";
+                  else {
+                    if (perN <= -10 + 8.75) O[Ro - 1] = "\u2589";
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if (per.toFixed(1) == "NaN" || O.length <= 10) 
+        return `[${O.join("")}] ${(showPercent?per.toFixed(2) + "%":"")}`;
+      else 
+        return `[${O.join("").substr(0, 10)}] ${(showPercent?per.toFixed(2) + "%":"")}`;
+    }
+    
     public static donutProgressBar(canvas: Canvas.Canvas, options: {
       progress: {max: number, now: number}, 
       barWidth: number, 

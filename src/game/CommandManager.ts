@@ -48,10 +48,11 @@ const eventData: BaseEvent[] = [
 				if (Mathf.randbool()) {
 					const money = Math.floor(Mathf.range(2, 10));
 					user.money -= money;
-					msg.interaction.followUp(Bundle.format(user.lang, 'event.goblin_run_failed', money));
+					msg.builder?.addFields([{name: "Result:", value: "```\n"+Bundle.format(user.lang, 'event.goblin_run_failed', money)+"\n```"}]);
 				} else {
-					msg.interaction.followUp(Bundle.find(user.lang, 'event.goblin_run_success'));
+					msg.builder?.addFields([{name: "Result:", value: "```\n"+Bundle.find(user.lang, 'event.goblin_run_success')+"\n```"}]);
 				}
+				user.selectBuilder?.setComponents([]);
 				user.status.clearSelection();
 			}),
 			new EventSelection('talking', (user) => {
@@ -60,7 +61,8 @@ const eventData: BaseEvent[] = [
 
 				const money = Math.floor(Mathf.range(2, 5));
 				user.money -= money;
-				msg.interaction.followUp(Bundle.format(user.lang, 'event.goblin_talking', money));
+				msg.builder?.addFields([{name: "Result:", value: (Bundle.format(user.lang, 'event.goblin_talking', money))}]);
+				msg.builder?.setComponents([]);
 				user.status.clearSelection();
 			}),
 			new EventSelection('exchange', (user) => exchange(user, new UnitEntity(Units.find(1))))
