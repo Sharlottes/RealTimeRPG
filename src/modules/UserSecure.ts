@@ -101,6 +101,7 @@ export class User {
   public init() {
 		if(!this.foundContents.items) this.foundContents.items = this.inventory.items.map((i) => i.id);
 		if(!this.foundContents.units) this.foundContents.units = [];
+    this.status = new Status();
   }
 
   public update() {

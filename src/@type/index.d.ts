@@ -39,9 +39,8 @@ export interface Event {
 }
 
 export type EventData = {
-    ratio: number,
     title?: string
-}
+} & Rationess
 
 export type LatestMsg = {
   user: User,

@@ -22,7 +22,7 @@ const battleSelection : EventSelection[][] = [
 				user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(user.lang, 'battle.cooldown', user.cooldown.toFixed(2))}\n\`\`\``);
 			} else {
 				// 쿨다운 끝나면 공격
-				user.battleLog.push(`\`\`\`diff\n+ ${weapon.attack(user, user.enemy)}\n\`\`\``);
+				user.battleLog.push(`\`\`\`diff\n+ ${weapon.attack(user, user.enemy.stats)}\n\`\`\``);
 
 				// 내구도 감소, 만약 내구도가 없거나 0 이하로 내려가면 주먹으로 교체.
 				if (user.inventory.weapon.durability) user.inventory.weapon.durability--;
@@ -38,7 +38,7 @@ const battleSelection : EventSelection[][] = [
 					${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}`);
 
 				// 적이 죽으면 전투 끝
-				if (user.enemy.health <= 0) {
+				if (user.enemy.stats.health <= 0) {
 					const unit = Units.find(user.enemy.id);
 					const items: { item: Item; amount: number; }[] = [];
 
@@ -55,8 +55,8 @@ const battleSelection : EventSelection[][] = [
 						`
 						${Bundle.format(user.lang, 'battle.start', user.id, unit.localName(user))}
 						\n${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}
-						\`\`\`diff\n+${user.enemy.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.health.toFixed(2))}\`\`\`
-						\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.rare) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
+						\`\`\`diff\n+${user.enemy.stats.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\`
+						\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
 						\n${items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')}]\`\`\`
 						`
 					);
@@ -143,7 +143,7 @@ function battleEnd(user: User) {
 	if(!user.selectBuilder) throw new Error("msg builder is not exist!");
 	const items: { item: Item, amount: number }[] = [];
 	
-	if(user.enemy.health <= 0) {
+	if(user.enemy.stats.health <= 0) {
 		//전투 보상은 최소 1개, 최대 적 레벨의 4배만큼의 랜덤한 아이템
 		for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level * 4)) + 1; i++) {
 			const item = getOne(Items.items.filter((i) => i.dropOnBattle));
@@ -156,8 +156,8 @@ function battleEnd(user: User) {
 		user.selectBuilder.setDescription(`
 			${Bundle.format(user.lang, 'battle.start', user.id, unit.localName(user))}\n
 			${((user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog).join('')}
-			\`\`\`diff\n+ ${user.enemy.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.health.toFixed(2))}\`\`\`
-			\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.rare) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
+			\`\`\`diff\n+ ${user.enemy.stats.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\`
+			\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
 			\n${items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')}]\`\`\`
 		`);
 	}
@@ -202,7 +202,7 @@ export function battle(user: User, entity: UnitEntity) {
 			if (user.stats.health <= 0) return battleEnd(user);
 
 			user.enemy.cooldown -= 100 / 1000;
-			if (user.enemy.cooldown <= 0 && user.enemy.health > 0) {
+			if (user.enemy.cooldown <= 0 && user.enemy.stats.health > 0) {
 				user.enemy.cooldown = weapon.cooldown;
 				user.battleLog.push(`\`\`\`diff\n- ${weapon.attackEntity(user)}\n\`\`\``);
 				const logs = (user.battleLog.length >= 4 && !user.allLog) ? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) : user.battleLog;

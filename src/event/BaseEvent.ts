@@ -1,9 +1,9 @@
-import { Event, EventData, Rationess } from "../@type";
+import { Event, EventData } from "../@type";
 import { User } from "../modules";
 import Assets from "@뇌절봇/assets";
 import { findMessage } from "@뇌절봇/game/rpg_";
 
-export class BaseEvent implements Event, Rationess {
+export class BaseEvent implements Event {
     data: EventData;
     onStart: (user: User)=>void;
 

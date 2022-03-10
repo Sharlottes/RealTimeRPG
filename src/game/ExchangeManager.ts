@@ -28,7 +28,7 @@ const exchangeSelection: EventSelection[][] = [[
 				if (!ent) return;
 
 				const item = ItemStack.getItem(ent);
-				const money = (100-item.rare) * 25;
+				const money = (100-item.ratio) * 25;
 
 				triggers.push({
 					name: `${item.localName(user)}${i}${ii}`,
@@ -99,7 +99,7 @@ const exchangeSelection: EventSelection[][] = [[
 					if (!ent) return;
 
 					const item = ItemStack.getItem(ent);
-					const money = (100-item.rare) * 10;
+					const money = (100-item.ratio) * 10;
 
 					triggers.push({
 						name: `${item.localName(user)}${i}${ii}`,

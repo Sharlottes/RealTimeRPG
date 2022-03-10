@@ -2,20 +2,17 @@ import { defaultInven } from "../modules";
 import { ItemStack } from "../game";
 import { Heathy, Inventory } from '../@type';
 import { Unit } from "./contents";
+import { Stat } from '../@type/index';
 
-export class UnitEntity implements Heathy {
+export class UnitEntity {
   id: number;
   items: Inventory;
   cooldown = 0;
-  health: number;
-  healthMax: number;
-  healthRegen: number;
+  stats: Stat;
 
   constructor(unit: Unit) {
     this.id = unit.id;
-    this.health = unit.health;
-    this.healthMax = unit.health;
-    this.healthRegen = unit.healthRegen;
+    this.stats = unit.stats;
     this.items = defaultInven;
   }
 

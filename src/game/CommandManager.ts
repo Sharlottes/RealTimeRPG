@@ -128,21 +128,21 @@ function walkingCmd(user: User) {
 	const msg = findMessage(user);
 	if(!msg) return;
 
-	if (user.status.name !== 'selecting') {
-		if (user.stats.energy >= 7) {
-			user.countover = 0;
-			user.stats.energy -= 7;
-			getOne(eventData).start(user);
+	if (user.stats.energy >= 7) {
+		user.countover = 0;
+		user.stats.energy -= 7;
+		getOne(eventData.map(e=>e.data), (data,i)=>{
+			eventData[i].start(user);
+		});
+	} else {
+		if (user.countover >= 3) {
+			msg.interaction.followUp(Bundle.find(user.lang, 'calmdown'));
 		} else {
-			if (user.countover >= 3) {
-				msg.interaction.followUp(Bundle.find(user.lang, 'calmdown'));
-			} else {
-				user.countover++;
-				msg.interaction.followUp(Bundle.format(user.lang, 'notEnergy', user.stats.energy.toFixed(1), 7));
-			}
+			user.countover++;
+			msg.interaction.followUp(Bundle.format(user.lang, 'notEnergy', user.stats.energy.toFixed(1), 7));
 		}
-		save();
 	}
+	save();
 }
 
 function info(user: User, content: Item|Unit) {
