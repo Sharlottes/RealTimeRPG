@@ -53,7 +53,6 @@ export class SelectEvent extends BaseEvent {
                     action.addComponents(new MessageButton(option).setCustomId(name+i).setLabel(name));
                 } else if(select.type === "select") {
                     const option = (typeof(select.options)==='function'?select.options(user):select.options) as MessageSelectMenuOptions;
-                    console.log(option);
                     action.addComponents(new MessageSelectMenu(option).setCustomId(name+i));
                 }
                 

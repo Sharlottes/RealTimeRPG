@@ -76,7 +76,6 @@ export class User {
   public lang: Assets.bundle.language = "en";
   public countover = 0;
   public foundContents: {items: number[], units: number[]} = {items: [], units: []};
-  public battleInterval?: NodeJS.Timeout;
   public enemy: UnitEntity | undefined;
   public battleLog: string[] = [];
   public allLog = false;

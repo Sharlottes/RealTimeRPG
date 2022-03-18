@@ -15,7 +15,7 @@ const { Mathf } = Utils;
 const battleSelection : EventSelection[][] = [
 	[
 		new EventSelection('attack', (user) => {
-			if(!user.selectBuilder || !user.enemy) return;
+			if(!user.selectBuilder || !user.enemy) throw new Error('builder or enemy is not exist');
 			const weapon: Weapon = ItemStack.getItem(user.inventory.weapon);
 
 			if (user.cooldown > 0) {
@@ -82,7 +82,7 @@ const battleSelection : EventSelection[][] = [
 			}
 		}, 'button', {style: 'SECONDARY'} as InteractionButtonOptions),
 		new EventSelection('hide-logs', (user, actions) => {	
-			if(!user.selectBuilder) return;
+			if(!user.selectBuilder) throw new Error('enemy is not exist');
 			user.allLog = false;
 			actions[0].components[1].setDisabled(false);
 			actions[0].components[2].setDisabled(true);
@@ -213,11 +213,12 @@ function battleEnd(user: User) {
 		]);
 	}
 	else throw new Error("battle is ended with no-one-dead");
-	
+
 	//유저데이터 초기화 및 저장
-	if(user.battleInterval) clearInterval(user.battleInterval);
-	user.battleInterval = undefined;
+	const interval = user.enemy.battleInterval;
+	if(interval) clearInterval(interval);
 	user.enemy = undefined;
+	
 	user.battleLog = [];
 	user.status.clearSelection();
 	user.selectBuilder.setComponents([]);
@@ -239,8 +240,8 @@ export function battle(user: User, entity: UnitEntity) {
 		.setComponents(data.actions).setTriggers(data.triggers);
 
 	const weapon: Weapon | undefined = Items.find<Weapon>(user.enemy.items.weapon.id);
-	if (weapon) {
-		user.battleInterval = setInterval(() => {
+	if (weapon&&!user.enemy.battleInterval) {
+		user.enemy.battleInterval = setInterval(() => {
 			if (!user.enemy || !user.selectBuilder) return;
 			if (user.stats.health <= 0) return battleEnd(user);
 

@@ -9,10 +9,11 @@ export class UnitEntity {
   items: Inventory;
   cooldown = 0;
   stats: Stat;
+  battleInterval?: NodeJS.Timeout;
 
   constructor(unit: Unit) {
     this.id = unit.id;
-    this.stats = Object.assign(unit.stats);
+    this.stats = Object.assign({}, unit.stats);
     this.items = defaultInven;
   }
 

@@ -69,7 +69,7 @@ const eventData: BaseEvent[] = [
 		]]
 	),
 	new SelectEvent({
-		ratio: 20,
+		ratio: 22220,
 		title: 'obstruction',
 	},[[
 			new EventSelection('battle', (user) => battle(user, new UnitEntity(Units.find(0)))),

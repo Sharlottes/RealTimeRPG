@@ -60,7 +60,7 @@ export function save() {
 	});
 
 	Database.writeObject('./Database/user_data', Vars.users.map(user=>{
-		user.battleInterval = undefined;
+		if(user.enemy) user.enemy.battleInterval = undefined;
 		return user;
 	}));
 }
