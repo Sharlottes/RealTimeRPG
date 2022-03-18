@@ -117,11 +117,9 @@ export class User {
 
     if (!this.foundContents.items.includes(item.id)) {
       this.foundContents.items.push(item.id);
-      save();
       return Bundle.format(this.lang, 'firstget', item.localName(this));
     }
 
-    save();
     return null;
   }
 
