@@ -14,7 +14,7 @@ const { Mathf } = Utils;
 
 const battleSelection : EventSelection[][] = [
 	[
-		new EventSelection('attack', (user) => {
+		new EventSelection('attack', async (user) => {
 			if(!user.selectBuilder || !user.enemy) throw new Error('builder or enemy is not exist');
 			const weapon: Weapon = ItemStack.getItem(user.inventory.weapon);
 
@@ -33,7 +33,7 @@ const battleSelection : EventSelection[][] = [
 
 				//임베드 전투로그 업데이트
 				updateEmbed(user);
-				user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder]});
+				await user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder]});
 
 				// 적이 죽으면 전투 끝
 				if (user.enemy.stats.health <= 0)	battleEnd(user);
@@ -98,9 +98,9 @@ function updateEmbed(user: User) {
 	if(!user.enemy) throw new Error("user enemy is not exist!");
 	const log = `${((user.battleLog.length >= 4 && !user.allLog) 
 				? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-				: user.battleLog.slice(0, 10)).join('')}`
+				: user.battleLog.slice(Math.max(0, user.battleLog.length - 10), user.battleLog.length)).join('')}`
 
-	user.selectBuilder.setFields([
+	return user.selectBuilder.setFields([
 		{
 			name: `Battle Status`,
 			value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
@@ -130,8 +130,7 @@ function battleEnd(user: User) {
 		user.battleLog.push(`\`\`\`diff\n+ ${user.enemy.stats.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\``);
 		
 		//임베드에 전투 결과 메시지 추가
-		updateEmbed(user);
-		user.selectBuilder.addFields(
+		updateEmbed(user).addFields(
 			{
 				name: 'Battle End', 
 				value: 
@@ -163,7 +162,6 @@ function battleEnd(user: User) {
 export function battle(user: User, entity: UnitEntity) {
 	if(!user.selectBuilder) throw new Error("msg builder is not exist!");
 	
-	
 	//update user data
 	user.enemy = entity; 
 	user.battleLog = [];
@@ -177,7 +175,7 @@ export function battle(user: User, entity: UnitEntity) {
 	const weapon: Weapon | undefined = Items.find<Weapon>(user.enemy.items.weapon.id);
 
 	if (weapon&&!user.enemy.battleInterval) {
-		user.enemy.battleInterval = setInterval(() => {
+		user.enemy.battleInterval = setInterval(async () => {
 			if (!user.enemy || !user.selectBuilder) return;
 			if (user.stats.health <= 0) return battleEnd(user);
 
@@ -186,7 +184,7 @@ export function battle(user: User, entity: UnitEntity) {
 				user.enemy.cooldown = weapon.cooldown;
 				user.battleLog.push(`\`\`\`diff\n- ${weapon.attackEntity(user)}\n\`\`\``);
 				updateEmbed(user);
-				user.selectBuilder.interaction.editReply({ embeds: [user.selectBuilder] }); 
+				await user.selectBuilder.interaction.editReply({ embeds: [user.selectBuilder] }); 
 			}
 		}, 100);
 	}
