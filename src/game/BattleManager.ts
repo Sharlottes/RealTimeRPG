@@ -74,11 +74,7 @@ const battleSelection : EventSelection[][] = [
 							}`
 						}
 					])
-					.setComponents(actions)
-					.addComponents(new MessageSelectMenu().setCustomId('swap').setPlaceholder('swap weapon to ...').addOptions(user.inventory.items.filter((e) =>  Items.find(e.id) instanceof Weapon).map((stack) => ({
-						label: Items.find(stack.id)?.name,
-						value: `${stack.id}`,
-					}))));
+					.setComponents(actions);
 			}
 		}, 'button', {style: 'SECONDARY'} as InteractionButtonOptions),
 		new EventSelection('hide-logs', (user, actions) => {	
@@ -101,11 +97,7 @@ const battleSelection : EventSelection[][] = [
 							}`
 						}
 					])
-					.setComponents(actions)
-					.addComponents(new MessageSelectMenu().setCustomId('swap').setPlaceholder('swap weapon to ...').addOptions(user.inventory.items.filter((e) => Items.find(e.id) instanceof Weapon).map((stack) => ({
-						label: Items.find(stack.id)?.name,
-						value: `${stack.id}`,
-					}))));
+					.setComponents(actions);
 			}
 		}, 'button', {style: 'SECONDARY'} as InteractionButtonOptions)
 	],

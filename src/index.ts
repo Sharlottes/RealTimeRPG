@@ -5,6 +5,8 @@ import { firebaseAdmin } from "@뇌절봇/net";
 import CM from "@뇌절봇/commands";
 import assets from "@뇌절봇/assets"
 import config from "@뇌절봇/config.json"
+import { Server } from '@remote-kakao/core';
+import fs from 'fs';
 
 //RTTRPG
 import { init } from './game/rpg_';
@@ -16,6 +18,10 @@ const masterIDs: string[] = [
 
 // 파이어베이스 초기화
 firebaseAdmin;
+
+
+const configs = JSON.parse(fs.readFileSync("./secret.json").toString());
+const server = new Server({ useKakaoLink: false });
 
 // discord rest api 호출
 const rest = new REST({ version: '9' }).setToken(config.botToken);
@@ -137,9 +143,13 @@ client.on("messageCreate", async message => {
             message.reply({content: "error: "+error});
         }
     }
-
-    if(message.author.bot) return;
 });
+
+server.on('ready', () => console.log(`remote-kakao server is ready!`));
+server.on('message', async (message) => {
+  console.log(message);
+});
+server.start();
 
 (()=>{
     const pros = CM.reloadCommands();
