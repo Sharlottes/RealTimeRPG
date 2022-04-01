@@ -32,19 +32,7 @@ const battleSelection : EventSelection[][] = [
 				}
 
 				//임베드 전투로그 업데이트
-				user.selectBuilder.setFields([
-					{
-						name: `Battle Status`,
-						value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
-					},
-					{
-						name: `Logs (${user.battleLog.length})`, 
-						value: `${((user.battleLog.length >= 4 && !user.allLog) 
-							? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-							: user.battleLog).join('')
-						}`
-					}
-				]);
+				updateEmbed(user);
 
 				// 적이 죽으면 전투 끝
 				if (user.enemy.stats.health <= 0) {
@@ -60,21 +48,8 @@ const battleSelection : EventSelection[][] = [
 			actions[0].components[1].setDisabled(true);
 			actions[0].components[2].setDisabled(false);
 			if (user.enemy) {
-					user.selectBuilder
-					.setFields([
-						{
-							name: `Battle Status`,
-							value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
-						},
-						{
-							name: `Logs (${user.battleLog.length})`, 
-							value: `${((user.battleLog.length >= 4 && !user.allLog) 
-								? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-								: user.battleLog).join('')
-							}`
-						}
-					])
-					.setComponents(actions);
+				updateEmbed(user);
+				user.selectBuilder.setComponents(actions);
 			}
 		}, 'button', {style: 'SECONDARY'} as InteractionButtonOptions),
 		new EventSelection('hide-logs', (user, actions) => {	
@@ -83,21 +58,8 @@ const battleSelection : EventSelection[][] = [
 			actions[0].components[1].setDisabled(false);
 			actions[0].components[2].setDisabled(true);
 			if (user.enemy) {
-				user.selectBuilder
-					.setFields([
-						{
-							name: `Battle Status`,
-							value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
-						},
-						{
-							name: `Logs (${user.battleLog.length})`, 
-							value: `${((user.battleLog.length >= 4 && !user.allLog) 
-								? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-								: user.battleLog).join('')
-							}`
-						}
-					])
-					.setComponents(actions);
+				updateEmbed(user);
+				user.selectBuilder.setComponents(actions);
 			}
 		}, 'button', {style: 'SECONDARY'} as InteractionButtonOptions)
 	],
@@ -117,20 +79,7 @@ const battleSelection : EventSelection[][] = [
 				user.inventory.weapon.id = weapon.id;
 				user.giveItem(weapon);
 				user.battleLog.push(`\`\`\`\n${Bundle.format(user.lang, 'switch_change', weaponTo, weaponFrom)}\n\`\`\``);
-				user.selectBuilder.setFields([
-					{
-						name: `Battle Status`,
-						value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
-					},
-					{
-						name: `Logs (${user.battleLog.length})`, 
-						value: `${((user.battleLog.length >= 4 && !user.allLog) 
-							? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-							: user.battleLog).join('')
-						}`
-					}
-				])
-			
+				updateEmbed(user);
 				save();
 			}
 		}, 'select', u=>{
@@ -146,6 +95,24 @@ const battleSelection : EventSelection[][] = [
 		})
 	]
 ];
+
+function updateEmbed(user: User) {
+	if(!user.selectBuilder) throw new Error("user selectBuilder is not exist!");
+	if(!user.enemy) throw new Error("user enemy is not exist!");
+	user.selectBuilder.setFields([
+		{
+			name: `Battle Status`,
+			value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
+		},
+		{
+			name: `Logs (${user.battleLog.length})`, 
+			value: `${((user.battleLog.length >= 4 && !user.allLog) 
+				? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
+				: user.battleLog).join('')
+			}`
+		}
+	]);
+}
 
 function battleEnd(user: User) {
 	if(!user.enemy) throw new Error("enemy unit is not exist!");
@@ -165,44 +132,21 @@ function battleEnd(user: User) {
 		user.battleLog.push(`\`\`\`diff\n+ ${user.enemy.stats.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\``);
 		
 		//임베드에 전투 결과 메시지 추가
-		user.selectBuilder.setFields([
-			{
-				name: `Battle Status`,
-				value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
-			},
-			{
-				name: `Logs (${user.battleLog.length})`, 
-				value: `${((user.battleLog.length >= 4 && !user.allLog) 
-					? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-					: user.battleLog).join('')
-				}`
-			},
+		updateEmbed(user);
+		user.selectBuilder.addFields(
 			{
 				name: 'Battle End', 
 				value: 
-				`\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
-				\n${items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')}]\`\`\``
+					`\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
+					\n${items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')}]\`\`\``
 			}
-		]);
+		);
 	}
 	else if(user.stats.health <= 0) {
+		//임베드에 전투 결과 메시지 추가
 		user.stats.health = 0.1 * user.stats.health_max;
 		user.battleLog.push(`\`\`\`diff\n- ${Bundle.format(user.lang, 'battle.lose', user.stats.health.toFixed(2))}\n\`\`\``);
-
-		//임베드에 전투 결과 메시지 추가
-		user.selectBuilder.setFields([
-			{
-				name: `Battle Status`,
-				value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
-			},
-			{
-				name: `Logs (${user.battleLog.length})`, 
-				value: `${((user.battleLog.length >= 4 && !user.allLog) 
-					? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-					: user.battleLog).join('')
-				}`
-			}
-		]);
+		updateEmbed(user);
 	}
 	else throw new Error("battle is ended with no-one-dead");
 
@@ -241,19 +185,7 @@ export function battle(user: User, entity: UnitEntity) {
 			if (user.enemy.cooldown <= 0 && user.enemy.stats.health > 0) {
 				user.enemy.cooldown = weapon.cooldown;
 				user.battleLog.push(`\`\`\`diff\n- ${weapon.attackEntity(user)}\n\`\`\``);
-				user.selectBuilder.setFields([
-					{
-						name: `Battle Status`,
-						value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
-					},
-					{
-						name: `Logs (${user.battleLog.length})`, 
-						value: `${((user.battleLog.length >= 4 && !user.allLog) 
-							? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-							: user.battleLog).join('')
-						}`
-					}
-				]);
+				updateEmbed(user);
 				user.selectBuilder.interaction.editReply({ embeds: [user.selectBuilder] }); 
 			}
 		}, 100);
