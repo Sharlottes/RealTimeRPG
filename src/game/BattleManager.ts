@@ -1,4 +1,4 @@
-import { InteractionButtonOptions, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData } from 'discord.js';
+import { InteractionButtonOptions, MessageSelectMenuOptions, MessageSelectOptionData } from 'discord.js';
 
 import { User } from '../modules';
 import { Utils } from '../util';
@@ -33,13 +33,10 @@ const battleSelection : EventSelection[][] = [
 
 				//임베드 전투로그 업데이트
 				updateEmbed(user);
+				user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder]});
 
 				// 적이 죽으면 전투 끝
-				if (user.enemy.stats.health <= 0) {
-					battleEnd(user);
-					return;
-				}
-				user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder]});
+				if (user.enemy.stats.health <= 0)	battleEnd(user);
 			} 
 		}),
 		new EventSelection('show-logs', (user, actions) => {
@@ -99,6 +96,10 @@ const battleSelection : EventSelection[][] = [
 function updateEmbed(user: User) {
 	if(!user.selectBuilder) throw new Error("user selectBuilder is not exist!");
 	if(!user.enemy) throw new Error("user enemy is not exist!");
+	const log = `${((user.battleLog.length >= 4 && !user.allLog) 
+				? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
+				: user.battleLog.slice(0, 10)).join('')}`
+
 	user.selectBuilder.setFields([
 		{
 			name: `Battle Status`,
@@ -106,10 +107,7 @@ function updateEmbed(user: User) {
 		},
 		{
 			name: `Logs (${user.battleLog.length})`, 
-			value: `${((user.battleLog.length >= 4 && !user.allLog) 
-				? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-				: user.battleLog).join('')
-			}`
+			value: log
 		}
 	]);
 }
@@ -165,17 +163,19 @@ function battleEnd(user: User) {
 export function battle(user: User, entity: UnitEntity) {
 	if(!user.selectBuilder) throw new Error("msg builder is not exist!");
 	
+	
 	//update user data
 	user.enemy = entity; 
 	user.battleLog = [];
 
 	const data = SelectEvent.toActionData(battleSelection, user);
-	
+
 	user.selectBuilder
 		.setDescription(Bundle.format(user.lang, 'battle.start', user.id, Units.find(user.enemy.id).localName(user)))
 		.setComponents(data.actions).setTriggers(data.triggers);
 
 	const weapon: Weapon | undefined = Items.find<Weapon>(user.enemy.items.weapon.id);
+
 	if (weapon&&!user.enemy.battleInterval) {
 		user.enemy.battleInterval = setInterval(() => {
 			if (!user.enemy || !user.selectBuilder) return;
