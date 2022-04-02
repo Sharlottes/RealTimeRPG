@@ -15,20 +15,18 @@ const { Mathf } = Utils;
 const battleSelection : EventSelection[][] = [
 	[
 		new EventSelection('attack', async (user) => {
-			if(!user.selectBuilder || !user.enemy) throw new Error('builder or enemy is not exist');
+			if(!user.selectBuilder || !user.enemy) return;
 			const weapon: Weapon = ItemStack.getItem(user.inventory.weapon);
 
 			if (user.cooldown > 0) {
 				user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(user.lang, 'battle.cooldown', user.cooldown.toFixed(2))}\n\`\`\``);
 			} else { // 쿨다운 끝나면 공격
-				console.log(user.inventory.weapon);
-
 				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
 				if(user.inventory.weapon.id !== 5) {
 					if (user.inventory.weapon.durability > 0) user.inventory.weapon.durability--;
 					else {
 						user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(user.lang, 'battle.broken', weapon.localName(user))}\n\`\`\``);
-						user.inventory.weapon.id = 5;
+						user.switchWeapon(Items.find<Weapon>(5), true);
 					}
 				}
 
@@ -75,8 +73,7 @@ const battleSelection : EventSelection[][] = [
 				entity.amount--;
 				if (!entity.amount) user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
 
-				user.inventory.weapon.id = weapon.id;
-				user.inventory.weapon.durability = weapon.durability;
+				user.switchWeapon(weapon, true);
 				console.log(user.inventory.weapon);
 				user.giveItem(weapon);
 				user.battleLog.push(`\`\`\`\n${Bundle.format(user.lang, 'switch_change', weaponTo, weaponFrom)}\n\`\`\``);

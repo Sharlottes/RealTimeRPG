@@ -32,7 +32,7 @@ function login(users: User[], target: User, msg: Message, lang: Assets.bundle.la
 export const defaultStat: Stat = {
   health: 20,
   health_max: 20,
-  health_regen: 0.5,
+  health_regen: 0.005,
   energy: 100,
   energy_max: 100,
   energy_regen: 1,
@@ -214,27 +214,26 @@ export class User {
     msg.interaction.editReply({files: [attachment]});
   }
 
-  public switchWeapon(msg: Message, name: string) {
-    const item = Items.items.find((i) => i.localName(this) == name) as Weapon | undefined;
-    if (!item) msg.interaction.followUp(Bundle.format(this.lang, 'switch_notFound', name));
+  public switchWeapon(weapon: string|Weapon, mute = false) {
+    const msg = findMessage(this);
+    if(!msg) throw new Error("user message object is not exist!");
+    const item: Weapon = typeof weapon === 'string' ? Items.find<Weapon>((i) => i.localName(this) == weapon) : weapon;
+    const name = item.localName(this);
+    const entity = this.inventory.items.find((entity) => ItemStack.getItem(entity) == item);
+    if (!entity) msg.interaction.followUp(Bundle.format(this.lang, 'switch_notHave', name));
     else {
-      const entity = this.inventory.items.find((entity) => ItemStack.getItem(entity) == item);
-      if (!entity) msg.interaction.followUp(Bundle.format(this.lang, 'switch_notHave', name));
-      else {
-        entity.amount--;
-        if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
+      entity.amount--;
+      if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
 
-        const exist: Item = ItemStack.getItem(this.inventory.weapon);
-        if (exist) {
-          msg.interaction.followUp(Bundle.format(this.lang, 'switch_change', name, exist.localName(this)));
-          const given = this.giveItem(item);
-          if (given) msg.interaction.followUp(given);
-        } else { msg.interaction.followUp(Bundle.format(this.lang, 'switch_equip', name)); }
+      const exist: Item = ItemStack.getItem(this.inventory.weapon);
+      if (exist) {
+        if(!mute) msg.interaction.followUp(Bundle.format(this.lang, 'switch_change', name, exist.localName(this)));
+        this.giveItem(item);
+      } else { msg.interaction.followUp(Bundle.format(this.lang, 'switch_equip', name)); }
 
-        this.inventory.weapon.id = item.id;
-        this.inventory.weapon.durability = item.durability;
-        save();
-      }
+      this.inventory.weapon.id = item.id;
+      this.inventory.weapon.durability = item.durability;
+      save();
     }
   }
 }

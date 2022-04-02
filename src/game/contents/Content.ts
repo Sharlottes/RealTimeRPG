@@ -242,8 +242,12 @@ export class Items {
 		this.items.push(new Item({ name: 'cix_bottle', ratio: 0.05 }));
 	}
 
-	static find<T extends Item>(id: number): T {
-		return this.items[id] as T;
+	static find<T extends Item>(id: number | ((item: Item)=> boolean)): T {
+		if(typeof id === 'number') return this.items[id] as T;
+		
+		const item = this.items.find(id) as T;
+		if(!item) throw new Error("that item is not exist!");
+		else return item;
 	}
 }
 

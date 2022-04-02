@@ -123,7 +123,7 @@ function weaponChangeCmd(user: User) {
 	if(!msg) return;
 
 	const weapon = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
-	user.switchWeapon(msg, weapon);
+	user.switchWeapon(weapon);
 }
 
 function walkingCmd(user: User) {
