@@ -20,18 +20,20 @@ const battleSelection : EventSelection[][] = [
 
 			if (user.cooldown > 0) {
 				user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(user.lang, 'battle.cooldown', user.cooldown.toFixed(2))}\n\`\`\``);
-			} else {
-				// 쿨다운 끝나면 공격
-				user.battleLog.push(`\`\`\`diff\n+ ${weapon.attack(user, user.enemy.stats)}\n\`\`\``);
+			} else { // 쿨다운 끝나면 공격
+				console.log(user.inventory.weapon);
 
-				// 내구도 감소, 만약 내구도가 없거나 0 이하로 내려가면 주먹으로 교체.
-				if (user.inventory.weapon.durability) user.inventory.weapon.durability--;
-				if ((!user.inventory.weapon.durability || user.inventory.weapon.durability <= 0) && user.inventory.weapon.id !== 5) {
-					user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(user.lang, 'battle.broken', weapon.localName(user))}\n\`\`\``);
-					user.inventory.weapon.id = 5;
+				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
+				if(user.inventory.weapon.id !== 5) {
+					if (user.inventory.weapon.durability > 0) user.inventory.weapon.durability--;
+					else {
+						user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(user.lang, 'battle.broken', weapon.localName(user))}\n\`\`\``);
+						user.inventory.weapon.id = 5;
+					}
 				}
 
 				//임베드 전투로그 업데이트
+				user.battleLog.push(`\`\`\`diff\n+ ${weapon.attack(user, user.enemy.stats)}\n\`\`\``);
 				updateEmbed(user);
 				await user.selectBuilder.interaction.editReply({embeds: [user.selectBuilder]});
 
@@ -64,7 +66,7 @@ const battleSelection : EventSelection[][] = [
 		new EventSelection('swap', (user, actions, interactionCallback) => {
 			if (interactionCallback.isSelectMenu()) {
 				const id = Number(interactionCallback.values[0]);
-				const weapon = Items.find(id);
+				const weapon: Weapon = Items.find(id);
 				const entity = user.inventory.items.find((e) => e.id == id);
 				const weaponFrom = ItemStack.getItem(user.inventory.weapon).localName(user);
 				const weaponTo = weapon.localName(user);
@@ -74,6 +76,8 @@ const battleSelection : EventSelection[][] = [
 				if (!entity.amount) user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
 
 				user.inventory.weapon.id = weapon.id;
+				user.inventory.weapon.durability = weapon.durability;
+				console.log(user.inventory.weapon);
 				user.giveItem(weapon);
 				user.battleLog.push(`\`\`\`\n${Bundle.format(user.lang, 'switch_change', weaponTo, weaponFrom)}\n\`\`\``);
 				updateEmbed(user);
@@ -112,7 +116,7 @@ function updateEmbed(user: User) {
 	]);
 }
 
-function battleEnd(user: User) {
+async function battleEnd(user: User) {
 	if(!user.enemy) throw new Error("enemy unit is not exist!");
 	const unit = Units.find(user.enemy.id);
 	if(!user.selectBuilder) throw new Error("msg builder is not exist!");
@@ -155,6 +159,7 @@ function battleEnd(user: User) {
 	user.battleLog = [];
 	user.status.clearSelection();
 	user.selectBuilder.setComponents([]);
+	await user.selectBuilder.interaction.editReply({ embeds: [user.selectBuilder], components: [] }); 
 	user.selectBuilder = undefined;
 	save();
 }

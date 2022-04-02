@@ -54,7 +54,7 @@ export type Stat = {
 
 export type Inventory = {
   items: ItemStack[]
-  weapon: ItemStack
+  weapon: ItemStack&Durable
 }
 
 export type Message = {
