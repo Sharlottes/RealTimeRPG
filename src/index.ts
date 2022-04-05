@@ -144,13 +144,13 @@ client.on("messageCreate", async message => {
         }
     }
 });
-
+/*
 server.on('ready', () => console.log(`remote-kakao server is ready!`));
 server.on('message', async (message) => {
   console.log(message);
 });
 server.start();
-
+*/
 (()=>{
     const pros = CM.reloadCommands();
     init();

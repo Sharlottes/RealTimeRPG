@@ -1,7 +1,7 @@
 import Assets from '../assets';
 import { Items, ItemStack, UnitEntity } from "../game";
 import { Utils } from "../util";
-import Discord, { CacheType, MessageAttachment, MessageEmbed, MessageButton } from 'discord.js';
+import Discord, { CacheType, MessageAttachment, MessageEmbed, MessageButton, MessageOptions, MessagePayload, TextChannel, Message as DMessage } from 'discord.js';
 import { findMessage, save } from '@뇌절봇/game/rpg_';
 import { Durable, Inventory, Stat, Message } from '@뇌절봇/@type';
 import { PagesBuilder } from 'discord.js-pages';
@@ -9,6 +9,7 @@ import { filledBar } from 'string-progressbar';
 import Canvas from 'canvas';
 import { MessageActionRow } from 'discord.js';
 import { Item, Weapon } from '@뇌절봇/game/contents';
+import { APIMessage } from 'discord-api-types';
 
 const Bundle = Assets.bundle;
 const Database = Utils.Database;
@@ -95,6 +96,37 @@ export class User {
     this.energy = 50;
     this.level = 1;
     this.exp = 0;
+  }
+
+  /**
+  * @param lifetime uses second unit
+  */
+  public send(options: string | MessagePayload | MessageOptions, lifetime = -1, type: 'followUp'|'editReply'='editReply',channel?: TextChannel) {
+    const msg = findMessage(this);
+    if(channel) channel.send(options);
+    else if(msg) {
+      if(msg.interaction.deferred||msg.interaction.replied) (msg.interaction[type](options) as Promise<DMessage|APIMessage>).then(message=>{
+        if(lifetime>0) setTimeout(()=>{
+          if(message instanceof DMessage) { 
+            if(message.deletable) message.delete();
+          }
+        }, lifetime*1000);
+      });
+      else msg.interaction.reply(options);
+    }
+    if(lifetime>0 && (channel||(msg&&!(msg.interaction.deferred||msg.interaction.replied)))) setTimeout(inter=>{
+      if(!inter) throw new Error('where is interaction');
+      if(inter instanceof TextChannel) {
+        inter.messages.cache.find(msg=> msg.embeds.length > 0 && msg.author.bot)?.delete();
+      } 
+      else inter?.deleteReply();
+    }, lifetime*1000, channel??msg?.interaction);
+  }
+
+  public edit(options: string | MessagePayload | MessageOptions, channel?: TextChannel) {
+    const msg = findMessage(this);
+    if(channel) channel.messages.cache.find(msg=> msg.embeds.length > 0 && msg.author.bot)?.edit(options);
+    else msg?.interaction.editReply(options);
   }
 
   public init() {
@@ -201,13 +233,13 @@ export class User {
               { name: 'cooldown', value: weapon.cooldown+'', inline: true},
               { name: 'durability', value: `${filledBar(weapon.durability||0, this.inventory.weapon.durability||0, 10, "\u2593", "\u2588")[0]}\n${Bundle.find(this.lang, 'durability')}: ${this.inventory.weapon.durability||0}/${weapon.durability||0}`, inline: true},
             )
-          msg.interaction.followUp({embeds: [weaponEmbed]});
+          this.send({embeds: [weaponEmbed]});
         }
       },{
         name: 'inventory_info',
         callback: (inter, cos) => {
           cos.setDisabled(true);
-          msg.interaction.followUp(this.getInventory());
+          this.send(this.getInventory());
         }
       }])
     builder.build();
@@ -220,16 +252,18 @@ export class User {
     const item: Weapon = typeof weapon === 'string' ? Items.find<Weapon>((i) => i.localName(this) == weapon) : weapon;
     const name = item.localName(this);
     const entity = this.inventory.items.find((entity) => ItemStack.getItem(entity) == item);
-    if (!entity) msg.interaction.followUp(Bundle.format(this.lang, 'switch_notHave', name));
+    if (!entity) this.send(Bundle.format(this.lang, 'switch_notHave', name), 3, 'followUp');
     else {
       entity.amount--;
       if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
 
       const exist: Item = ItemStack.getItem(this.inventory.weapon);
       if (exist) {
-        if(!mute) msg.interaction.followUp(Bundle.format(this.lang, 'switch_change', name, exist.localName(this)));
+        if(!mute) this.send(Bundle.format(this.lang, 'switch_change', name, exist.localName(this)), 3, 'followUp');
         this.giveItem(item);
-      } else { msg.interaction.followUp(Bundle.format(this.lang, 'switch_equip', name)); }
+      } else if(!mute) { 
+        this.send(Bundle.format(this.lang, 'switch_equip', name), 3, 'followUp'); 
+      }
 
       this.inventory.weapon.id = item.id;
       this.inventory.weapon.durability = item.durability;

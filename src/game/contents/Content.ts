@@ -57,29 +57,17 @@ export class Weapon extends Item implements Durable {
 		this.durability = data.durability;
 	}
 
-	//TODO: attackEntity 삭제
-	attack(user: User, target: Heathy) {
+	attack(user: User, target?: Heathy) { //non-target means user is attacked
 		const critical = Utils.Mathf.randbool(this.critical_chance);
-
+		const hp: Heathy = target?target:user.stats;
+		
 		return Bundle.format(user.lang, 'battle.hit',
 			critical ? Bundle.find(user.lang, 'battle.critical') : '',
-			this.localName(user),
+			target?'the enemy is':'you are',
 			(this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
-			target.health.toFixed(2),
-			(target.health -= this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2)
-		);
-	}
-
-	attackEntity(user: User) {
-		const critical = Utils.Mathf.randbool(this.critical_chance);
-
-		return Bundle.format(user.lang, 'battle.entityHit',
-			critical ? Bundle.find(user.lang, 'battle.critical') : '',
 			this.localName(user),
-			(this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
-			user.id,
-			user.stats.health.toFixed(2),
-			(user.stats.health -= this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
+			hp.health.toFixed(2),
+			(hp.health -= this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2)
 		);
 	}
 }
@@ -240,6 +228,18 @@ export class Items {
 			})
 		]));
 		this.items.push(new Item({ name: 'cix_bottle', ratio: 0.05 }));
+		this.items.push(new Potion({ name: 'cat_meet', ratio: 0.005 }, [
+			new Buff(4, 'health', (user: User, amount: number, buff: Buff) => {
+				user.stats.health += amount * buff.value;
+				if(user.stats.health > user.stats.health_max) {
+					user.stats.health = user.stats.health_max;
+					user.giveItem(this.items[2], amount - Math.floor((user.stats.health-user.stats.health_max)/buff.value));
+					
+					return `* ${buff.localName(user)} +${amount * buff.value-(user.stats.health-user.stats.health_max)}`;
+				}
+				return `* ${buff.localName(user)} +${amount * buff.value}`;
+			})
+		]));
 	}
 
 	static find<T extends Item>(id: number | ((item: Item)=> boolean)): T {
