@@ -26,15 +26,13 @@ const { client, option } = app;
 
 // 길드 초기화
 function guildInit(guild: Discord.Guild) {
-    return firebaseAdmin.firestore.collection(guild.id).doc("config").get().then(snapshot => {
-        if(!snapshot.exists) {
-            const root = firebaseAdmin.firestore.collection(guild.id);
-            root.doc("config").set({
-                name: guild.name,
-                version: config.version,
-                language: guild.preferredLocale
-            });
-        }
+    const doc = firebaseAdmin.firestore.collection(guild.id).doc("config");
+    return doc.get().then(snapshot => {
+        if(!snapshot.exists) doc.set({
+            name: guild.name,
+            version: config.version,
+            language: guild.preferredLocale
+        });
     });
 }
 
@@ -98,11 +96,11 @@ client.on("messageCreate", async message => {
         (message.author.id == message.guild.ownerId || masterIDs.includes(message.author.id))) {
         const time = new Date().getTime();
         const guild = message.guild;
-        message.reply("refresh start! server: " + guild.name);
-        
+
+        message.reply(`refresh start! server: ${guild.name}`);
         CM.refreshCommand("guild", guild).then(init)
         .then(() => message.reply(`refresh finished in ${(Date.now() - time) / 1000}s`))
-        .catch(e => message.reply(e+"")); 
+        .catch(e => message.reply((e as object).toString())); 
     }
 });
 

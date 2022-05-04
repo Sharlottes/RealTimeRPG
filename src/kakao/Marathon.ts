@@ -1,5 +1,3 @@
-import fs from "fs"
-
 export class User {
     public name: string;
     public runStack = 0;

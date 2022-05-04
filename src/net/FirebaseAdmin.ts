@@ -3,7 +3,7 @@ import firebase, { auth } from "firebase-admin"
 import { Account } from "../auth"
 
 import config from "../publicKey.json";
-import secret from "../sdk.json"
+import secret from "../sdk.json";
 
 class FirebaseAdmin {
     public readonly app: firebase.app.App;

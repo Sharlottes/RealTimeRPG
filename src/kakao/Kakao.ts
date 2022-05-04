@@ -2,6 +2,7 @@ import { Server, Message } from '@remote-kakao/core';
 import { BaseCommand, linkChannel, onKaKaoMessage } from '@뇌절봇/kakao';
 import { manager } from '@뇌절봇/kakao/CommandManager';
 import fs from 'fs';
+import secret from "../secret.json";
 
 
 function errorHandle(reply: Promise<Record<string, unknown>>) {
@@ -50,8 +51,8 @@ namespace Kakao {
                 console.log(e);
             }
         });
-        server.start(4000, JSON.parse(fs.readFileSync("./secret.json").toString())); 
+        server.start(4000, secret.kakao); 
     }
 }
 
-export default Kakao; 
+export default Kakao;
