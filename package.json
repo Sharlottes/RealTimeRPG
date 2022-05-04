@@ -11,7 +11,7 @@
   "dependencies": {
     "@discordjs/builders": "^0.10.0",
     "@discordjs/rest": "^0.2.0-canary.0",
-    "@remote-kakao/core": "^1.0.0-alpha.0",
+    "@remote-kakao/core": "^1.0.0-alpha.6",
     "@types/properties-reader": "^2.1.1",
     "canvas": "^2.9.0",
     "discord-api-types": "^0.26.0",

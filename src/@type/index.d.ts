@@ -89,3 +89,13 @@ export type UnitData = {
     items: ItemStack[]
     stats: Stat
 } & Rationess
+
+export type CommandOption = 'string' | 'float' | 'int'
+
+export interface String {
+    trip(): number;
+}
+
+export interface Array {
+    splitIndex(index: number);
+}

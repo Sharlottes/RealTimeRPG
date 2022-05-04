@@ -5,23 +5,24 @@ import { firebaseAdmin } from "@뇌절봇/net";
 import CM from "@뇌절봇/commands";
 import assets from "@뇌절봇/assets"
 import config from "@뇌절봇/config.json"
-import { Server } from '@remote-kakao/core';
-import fs from 'fs';
 
 //RTTRPG
 import { init } from './game/rpg_';
+import Kakao from "./kakao/Kakao";
+import { onDiscordMessage } from "./kakao";
+
+/*
+Array.prototype.splitIndex = function(index: number) {
+  return [this.slice(0, index), this.slice(index, this.length-1)];
+}
+*/
 
 const masterIDs: string[] = [
     "462167403237867520",
     "473072758629203980"
-]
-
+];
 // 파이어베이스 초기화
 firebaseAdmin;
-
-
-const configs = JSON.parse(fs.readFileSync("./secret.json").toString());
-const server = new Server({ useKakaoLink: false });
 
 // discord rest api 호출
 const rest = new REST({ version: '9' }).setToken(config.botToken);
@@ -123,6 +124,8 @@ client.on("interactionCreate", async interaction => {
 });
 
 client.on("messageCreate", async message => {
+    if(message.author.id != client.user?.id) onDiscordMessage(message);
+
     if(message.channel.type != "DM" && message.content == "!refresh" && message.guild != null && 
         (message.author.id == message.guild?.ownerId || masterIDs.includes(message.author.id))) {
         try {
@@ -138,19 +141,15 @@ client.on("messageCreate", async message => {
                 message.reply(`refresh finished in ${(Date.now() - time) / 1000}s`);
             }).catch(e => {
                 message.reply(e+"");
-            });
-        } catch (error) {
+            }); 
+        } catch (error) { 
             message.reply({content: "error: "+error});
         }
     }
 });
-/*
-server.on('ready', () => console.log(`remote-kakao server is ready!`));
-server.on('message', async (message) => {
-  console.log(message);
-});
-server.start();
-*/
+
+//Kakao.init();
+
 (()=>{
     const pros = CM.reloadCommands();
     init();

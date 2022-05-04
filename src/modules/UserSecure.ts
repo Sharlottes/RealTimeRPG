@@ -190,11 +190,16 @@ export class User {
         now: this.exp,
         max: this.level ** 2 * 50
       },
-      barWidth: 100,
+      bar: 100,
+      font: {
       font: "bold 150px sans-serif",
       text: `${this.level}Lv`,
-      smolfont: "bold 125px sans-serif",
-      fontStyle: '#ffffff'
+      },
+      sideFont: {
+        font: "bold 125px sans-serif",
+        style: '#ffffff',
+        text: ""
+      }
     });
     const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
     const weapon: Weapon = ItemStack.getItem(this.inventory.weapon);

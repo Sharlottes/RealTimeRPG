@@ -103,42 +103,60 @@ namespace Utils {
     
     public static donutProgressBar(canvas: Canvas.Canvas, options: {
       progress: {max: number, now: number}, 
-      barWidth: number, 
-      barStyle?: string | CanvasGradient | CanvasPattern, 
-      font?: string, 
-      text?: string,
-      smolfont?: string,
-      fontStyle?: string | CanvasGradient | CanvasPattern
+      bar: number | {
+        width: number,
+        style?: string | CanvasGradient | CanvasPattern
+      },
+      font: string | {
+        text: string,
+        font: string,
+        style?: string | CanvasGradient | CanvasPattern
+      },
+      sideFont: string | {
+        text: string,
+        font: string,
+        style?: string | CanvasGradient | CanvasPattern
+      },
     }) {
+      const { bar, font, sideFont } = options;
+      const width = typeof bar === 'number' ? bar : bar.width;
+      const style = typeof bar === 'number' ? undefined : bar.style;
+      const fontText = typeof font === 'string' ? font : font.text;
+      const fontStyle = typeof font === 'string' ? undefined : font.style;
+      const fontFont = typeof font === 'string' ? undefined : font.font;
+      const smolFontText = typeof sideFont === 'string' ? sideFont : sideFont.text;
+      const smolFontStyle = typeof sideFont === 'string' ? undefined : sideFont.style;
+      const smolFontFont = typeof sideFont === 'string' ? undefined : sideFont.font;
+
       const context = canvas.getContext('2d');
       const centerX = canvas.width / 2, centerY = canvas.height / 2;
-      const rad = (Math.min(canvas.width, canvas.height)-options.barWidth)/2;
+      const rad = (Math.min(canvas.width, canvas.height)-width)/2;
       const progress = options.progress.now/options.progress.max;
        
       context.clearRect(0, 0, canvas.width, canvas.height);
 
       context.beginPath();
       context.strokeStyle = "#A5DEF1";
-      context.lineWidth = options.barWidth;
+      context.lineWidth = width;
       context.arc(centerX, centerY, rad, 0, Math.PI * 2, false);
       context.stroke();
       context.closePath();
       
-      context.fillStyle = options.fontStyle||"#F47C7C";
-      context.font = options.font||"40px Arial";
+      context.fillStyle = fontStyle||"#F47C7C";
+      context.font = fontFont||"40px Arial";
       context.textAlign = "center";
       context.textBaseline = "middle";
-      context.fillText(`${options.text} ${(progress*100).toFixed()}%`, centerX, centerY);
+      context.fillText(`${fontText} ${(progress*100).toFixed()}%`, centerX, centerY);
 
-      context.fillStyle = options.fontStyle||"#F47C7C";
-      context.font = options.smolfont||"40px Arial";
+      context.fillStyle = smolFontStyle||"#F47C7C";
+      context.font = smolFontFont||"40px Arial";
       context.textAlign = "center";
       context.textBaseline = "middle";
-      context.fillText(`${options.progress.now}/${options.progress.max}`, centerX, centerY+rad/2);
+      context.fillText(`${smolFontText} ${options.progress.now}/${options.progress.max}`, centerX, centerY+rad/2);
 
       context.beginPath();
-      context.strokeStyle = options.barStyle||"#49f";
-      context.lineWidth = options.barWidth;
+      context.strokeStyle = style||"#49f";
+      context.lineWidth = width;
       context.arc(centerX, centerY, rad, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2, false);
       context.stroke();
 
