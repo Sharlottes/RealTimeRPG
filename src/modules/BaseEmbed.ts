@@ -9,10 +9,10 @@ export class BaseEmbed extends PagesBuilder {
       this.setDefaultButtons([]);
       this.addComponents(new MessageActionRow().addComponents([
         new MessageButton().setCustomId('remove_embed').setLabel('Cancel').setStyle('SECONDARY')
-      ])).addTriggers({
+      ])).addTriggers({ 
         name: 'remove_embed',
-        callback: (interaction, componenets) => {
-          this.interaction.deleteReply().catch(() => null);
+        callback: (inter, componenets) => {
+          inter.deleteReply().catch(() => null); 
         }
       })
     }

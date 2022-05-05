@@ -7,7 +7,7 @@ import { Item, ItemStack, Weapon } from './contents';
 import Assets from '../assets';
 import { EventSelection, SelectEvent } from '../event';
 
-import { getOne, save } from './rpg_';
+import { getOne, save, findMessage } from './rpg_';
 
 const Bundle = Assets.bundle;
 const { Mathf } = Utils;
@@ -15,11 +15,13 @@ const { Mathf } = Utils;
 const battleSelection : EventSelection[][] = [
 	[
 		new EventSelection('attack', (user) => {
-			if(!user.selectBuilder || !user.enemy) return;
+			const msg = findMessage(user);
+			if(!user.selectBuilder || !user.enemy || !msg) return;
+			const locale = user.getLocale(msg);
 
 			// 쿨다운 끝나면 공격
 			if (user.cooldown > 0) {
-				user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(user.lang, 'battle.cooldown', user.cooldown.toFixed(2))}\n\`\`\``);
+				user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(locale, 'battle.cooldown', user.cooldown.toFixed(2))}\n\`\`\``);
 				user.edit({ embeds: [user.selectBuilder] });
 			} else {
 				const weapon: Weapon = ItemStack.getItem(user.inventory.weapon);
@@ -29,14 +31,14 @@ const battleSelection : EventSelection[][] = [
 					if (user.inventory.weapon.durability > 0) user.inventory.weapon.durability--;
 					else {
 						const punch = Items.find<Weapon>(5);
-						user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(user.lang, 'battle.broken', weapon.localName(user))}\n\`\`\``);
+						user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(locale, 'battle.broken', weapon.localName(user))}\n\`\`\``);
 						user.inventory.weapon.id = punch.id;
 						user.inventory.weapon.durability = punch.durability;
 					}
 				}	
 
 				//임베드 전투로그 업데이트
-				user.battleLog.push(`\`\`\`diff\n+ ${weapon.attack(user, user.enemy.stats)}\n\`\`\``);
+				user.battleLog.push(`\`\`\`diff\n+ ${weapon.attack(user, user.enemy)}\n\`\`\``);
 				updateEmbed(user);
 				user.edit({ embeds: [user.selectBuilder] });
 
@@ -75,7 +77,7 @@ const battleSelection : EventSelection[][] = [
 				if (!entity.amount) user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
 
 				user.switchWeapon(weapon);
-				user.battleLog.push(`\`\`\`\n${Bundle.format(user.lang, 'switch_change', weaponTo, weaponFrom)}\n\`\`\``);
+				user.battleLog.push(`\`\`\`\n${Bundle.format(user.getLocale(), 'switch_change', weaponTo, weaponFrom)}\n\`\`\``);
 				updateEmbed(user);
 				save();
 			}
@@ -112,11 +114,14 @@ function updateEmbed(user: User) {
 }
 
 function battleEnd(user: User) {
+	const msg = findMessage(user);
+	if(!msg) return;
 	if(!user.enemy) throw new Error("enemy unit is not exist!");
 	if(!user.selectBuilder) throw new Error("msg builder is not exist!");
 	const unit = Units.find(user.enemy.id);
 	const items: { item: Item, amount: number }[] = [];
-	
+	const locale = user.getLocale(msg);
+
 	if(user.enemy.stats.health <= 0) {
 		//전투 보상은 최소 1개, 최대 적 레벨의 4배만큼의 랜덤한 아이템
 		for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level * 4)) + 1; i++) {
@@ -126,14 +131,14 @@ function battleEnd(user: User) {
 			else items.push({ item, amount: 1 });
 		}
 
-		user.battleLog.push(`\`\`\`diff\n+ ${user.enemy.stats.health < 0 ? Bundle.find(user.lang, 'battle.overkill') : ''} ${Bundle.format(user.lang, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\``);
+		user.battleLog.push(`\`\`\`diff\n+ ${user.enemy.stats.health < 0 ? Bundle.find(locale, 'battle.overkill') : ''} ${Bundle.format(locale, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\``);
 		
 		//임베드에 전투 결과 메시지 추가
 		updateEmbed(user).addFields(
 			{
 				name: 'Battle End', 
 				value: 
-					`\`\`\`ini\n[${Bundle.format(user.lang, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(user.lang, 'unit.item')}`).join('\n'))}
+					`\`\`\`ini\n[${Bundle.format(locale, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(locale, 'unit.item')}`).join('\n'))}
 					\n${items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')}]\`\`\``
 			}
 		);
@@ -141,7 +146,7 @@ function battleEnd(user: User) {
 	else if(user.stats.health <= 0) {
 		//임베드에 전투 결과 메시지 추가
 		user.stats.health = 0.1 * user.stats.health_max;
-		user.battleLog.push(`\`\`\`diff\n- ${Bundle.format(user.lang, 'battle.lose', user.stats.health.toFixed(2))}\n\`\`\``);
+		user.battleLog.push(`\`\`\`diff\n- ${Bundle.format(locale, 'battle.lose', user.stats.health.toFixed(2))}\n\`\`\``);
 		updateEmbed(user);
 	}
 	else throw new Error("battle is ended with no-one-dead");
@@ -167,7 +172,7 @@ export function battle(user: User, entity: UnitEntity) {
 	const weapon: Weapon | undefined = Items.find<Weapon>(user.enemy.items.weapon.id);
 	const data = SelectEvent.toActionData(battleSelection, user);
 	user.selectBuilder
-		.setDescription(Bundle.format(user.lang, 'battle.start', user.id, Units.find(user.enemy.id).localName(user)))
+		.setDescription(Bundle.format(user.getLocale(), 'battle.start', user.user.username, Units.find(user.enemy.id).localName(user)))
 		.setComponents(data.actions).setTriggers(data.triggers);
 		user.selectBuilder
 	//user.send({ embeds: [user.selectBuilder], components: data.actions });

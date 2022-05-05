@@ -1,7 +1,7 @@
 import { User } from '../modules';
 import { Utils } from '../util';
 import { Items, Units, Vars } from '.';
-import { LatestMsg, Rationess, Message } from '@뇌절봇/@type';
+import { LatestMsg, Rationess, Message, UserSave } from '@뇌절봇/@type';
 import CommandManager from './CommandManager';
 
 const { Database } = Utils;
@@ -47,21 +47,17 @@ export function findMessage(predicate: (User | ((value: LatestMsg, index: number
 	return Vars.latestMsgs.find(u=>u.user==predicate)?.msg;
 }
 
-export function read() {
-	return Database.readObject<Array<User>>('./Database/user_data');
-}
-
 export function save() {
+	const saves: UserSave[] = [];
 	Vars.users.forEach((user) => {
 		if (user.exp >= user.level ** 2 * 50) {
 			user.levelup();
 		}
+
+		saves.push(user.save());
 	});
 
-	Database.writeObject('./Database/user_data', Vars.users.map(user=>{
-		if(user.enemy) user.enemy.battleInterval = undefined;
-		return user;
-	}));
+	Database.writeObject('./Database/user_data', saves);
 }
 
 setInterval(() => {

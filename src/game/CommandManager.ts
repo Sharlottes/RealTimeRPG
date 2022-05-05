@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
+import { Embed, SlashCommandBuilder } from '@discordjs/builders';
 import Discord, { CacheType, MessageEmbed } from 'discord.js';
 
 import { PagesBuilder } from 'discord.js-pages';
@@ -108,7 +108,7 @@ function consumeCmd(user: User) {
 	
 	const name = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
 	const stack: ItemStack | undefined = user.inventory.items.find((i) => ItemStack.getItem(i).localName(user) == name);
-	if (!stack) return new BaseEmbed(msg.interaction).addField('ERROR', Bundle.format(user.getLocale(msg), 'account.notFound', name));
+	if (!stack) return new BaseEmbed(msg.interaction).addField('ERROR', Bundle.format(user.getLocale(msg), 'notFound', name));
 	const result = ItemStack.consume(stack, user);
 	if (result) msg.interaction.followUp(result);
 	save();
@@ -147,35 +147,42 @@ function info(user: User, content: Item|Unit) {
 	const msg = findMessage(user);
 	if(!msg) return;
 
-	return (
-		`${user.foundContents[content instanceof Item ? 'items' : 'units'].includes(content.id)
-			? content.localName(user) : 'unknown'
-		}\n${
-			user.foundContents[content instanceof Item ? 'items' : 'units'].includes(content.id)
-				? content.description(user) : 'unknown'
-		}${content.details(user)
-			? `\n------------\n  ${user.foundContents[content instanceof Item ? 'items' : 'units'].includes(content.id)
-				? content.details(user) : 'unknown'}\n------------`
-			: ''}`
-	);
+	if(content instanceof Item) {
+		if(user.foundContents.items.includes(content.id)) return content.localName(user)+'\n'+content.description(user)+'\n'+(content.details(user)||'')
+		else return 'unknown';
+	}
+	if(content instanceof Unit) {
+		if(user.foundContents.units.includes(content.id)) return content.localName(user)+'\n'+content.description(user)+'\n'+(content.details(user)||'')
+		else return 'unknown';
+	}
 }
 
 function contentInfoCmd(user: User) {
 	const msg = findMessage(user);
 	if(!msg) return;
+
 	const type = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('type', false);
-	const showAll = type !== 'item' && type !== 'unit';
-	let infoes: string[] = [];
-	const out = [];
+	const embeds = [];
 
-	if (showAll || type === 'unit') infoes = infoes.concat(Units.units.map((cont) => `\`\`\`${info(user, cont)}\`\`\``));
-	if (showAll || type === 'item') infoes = infoes.concat(Items.items.map((cont) => `\`\`\`${info(user, cont)}\`\`\``));
-
-	for (let i = 0; i < Math.floor(infoes.length / 4); i++) { 
-		out.push(infoes.slice(i * 4, Math.min(infoes.length, (i + 1) * 4))); 
+	if(!type || type == 'unit') {
+		const unitEmbed = new MessageEmbed();
+		for(const unit of Units.units) {
+			if(!user.foundContents.units.includes(unit.id)) continue;
+			unitEmbed.addField(unit.localName(user), unit.description(user)+'\n\n'+(unit.details(user)||''));
+		}
+		embeds.push(unitEmbed);
 	}
 
-	return new BaseEmbed(msg.interaction).setPages(out.map((infoes) => new MessageEmbed().setDescription(infoes.join('')))).setDefaultButtons(['back', 'next']);
+	if(!type || type == 'item') {
+		const itemEmbed = new MessageEmbed();
+		for(const item of Items.items) {
+			if(!user.foundContents.items.includes(item.id)) continue;
+			itemEmbed.addField(item.localName(user), item.description(user)+'\n\n'+(item.details(user)||''));
+		}
+		embeds.push(itemEmbed);
+	}
+
+	return new BaseEmbed(msg.interaction).setPages(embeds).setDefaultButtons(['back', 'next']);
 }
 
 function registerCmd(builder: SlashCommandBuilder, callback: (user: User) => PagesBuilder|string|undefined, requireUser?: boolean, ignoreSelection?: boolean): void;
@@ -190,7 +197,7 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>Page
 				interaction,
 				builder: null,
 			};
-			const user = Vars.users.find((u) => u.user.id == interaction.user.id) || new User(interaction.user);
+			const user = Vars.users.find((u) => u.id == interaction.user.id) || Vars.users[Vars.users.push(new User(interaction.user))-1];
 			const exist = Vars.latestMsgs.find(l=>l.user == user);
 
 			//update latestMsgs
@@ -216,6 +223,7 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>Page
 				else if(typeof embed === 'string') new BaseEmbed(msg.interaction).setDescription(embed).build();
 				else new BaseEmbed(msg.interaction).setTitle('ERROR').setDescription('something got crashed!').build();
 			}
+			save();
 		},
 		setHiddenConfig: (arg) => arg,
 		builder,
@@ -232,12 +240,12 @@ namespace CommandManager {
     registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your or someone\'s own inventory'), inventoryCmd, true, true);
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('consume').setDescription('consume item');
-      s.addStringOption((option) => option.setName('target').setDescription('target item name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Consumable).consume).map((u) => [u.localName(), u.localName()])));
+      s.addStringOption((option) => option.setName('target').setDescription('target item name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Consumable).consume).map((u) => [u.name, u.name])));
       return s;
     })(), consumeCmd, true, true);
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('swap').setDescription('swap the weapon');
-      s.addStringOption((option) => option.setName('target').setDescription('target weapon name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Weapon).damage).map((u) => [u.localName(), u.localName()])));
+      s.addStringOption((option) => option.setName('target').setDescription('target weapon name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Weapon).damage).map((u) => [u.name, u.name])));
       return s;
     })(), weaponChangeCmd, true, true);
     registerCmd((() => {

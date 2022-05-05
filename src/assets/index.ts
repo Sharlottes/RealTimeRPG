@@ -24,7 +24,7 @@ namespace Assets {
         export type language = "ko" | "en"
 
         export function find(lang = "en", key: string): string {
-            return String(dictionary.get(lang)?.get(key));
+            return String(dictionary.get(dictionary.has(lang) ? lang : 'en')?.get(key));
         }
         
         export function format(lang = "en", key: string, ...args: unknown[]) {

@@ -8,6 +8,7 @@ import config from "@뇌절봇/config.json"
 
 import { init } from './game/rpg_';
 import { onDiscordMessage } from "./kakao";
+import Vars from './Vars';
 
 const masterIDs = [
     "462167403237867520",
@@ -21,6 +22,7 @@ const app = {
     config: config,
     rest: new REST({ version: '9' }).setToken(config.botToken)
 };
+export default app;
 
 const { client, option } = app;
 
@@ -52,7 +54,11 @@ for(let i = 0; i < process.argv.length; i += 2) {
 
 // 애셋 파일 로딩
 assets.init(config.debug);
-console.log('asset initialization has been done')
+console.log('asset initialization has been done');
+
+//전역 변수 로딩
+Vars.init();
+console.log('vars initialization has been done');
 
 client.once("ready", () => {
     console.log(`Logged in as ${client.user?.tag}(${client.application?.id})!`)
@@ -103,5 +109,3 @@ client.on("messageCreate", async message => {
 CM.reloadCommands().then(init).then(()=>client.login(config.botToken));
 
 //Kakao.init();
-
-export default app;

@@ -1,1 +1,1 @@
-[]
+[{"id":"473072758629203980","money":5,"level":1,"exp":11,"stats":{"health":9.895200000000335,"health_max":20,"health_regen":0.005,"energy":95.86000000000146,"energy_max":100,"energy_regen":1,"strength":0,"defense":0},"inventory":{"items":[{"id":0,"amount":3,"durability":1},{"id":1,"amount":1},{"id":2,"amount":1}],"weapon":{"id":5,"amount":1}},"fountContents":{"items":[-1,0,1,2],"units":[-1]}}]

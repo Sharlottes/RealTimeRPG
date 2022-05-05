@@ -2,20 +2,21 @@ import { User } from '@뇌절봇/modules';
 import Assets from '@뇌절봇/assets';
 import { Consumable, Dropable, Durable, Heathy, ItemData, Rationess, Stat, UnitData } from '@뇌절봇/@type';
 import { Utils } from '@뇌절봇/util';
+import { UnitEntity } from '../Entity';
 
 const Bundle = Assets.bundle;
 
 export class Content {
 	readonly name: string;
-	readonly localName: (user?: User)=>string;
-	readonly description: (user?: User)=>string;
-	readonly details: (user?: User)=>string;
+	readonly localName: (user: User)=>string;
+	readonly description: (user: User)=>string;
+	readonly details: (user: User)=>string;
 
 	constructor(name: string, type = 'other') {
 		this.name = name;
-		this.localName = (user?: User)=>Bundle.find(user?user.lang:'en', `content.${type}.${name}.name`);
-		this.description = (user?: User)=>Bundle.find(user?user.lang:'en', `content.${type}.${name}.description`);
-		this.details = (user?: User)=>Bundle.find(user?user.lang:'en', `content.${type}.${name}.details`);
+		this.localName = (user: User)=>Bundle.find(user.getLocale(), `content.${type}.${name}.name`);
+		this.description = (user: User)=>Bundle.find(user.getLocale(), `content.${type}.${name}.description`);
+		this.details = (user: User)=>Bundle.find(user.getLocale(), `content.${type}.${name}.details`);
 	}
 }
 
@@ -57,13 +58,14 @@ export class Weapon extends Item implements Durable {
 		this.durability = data.durability;
 	}
 
-	attack(user: User, target?: Heathy) { //non-target means user is attacked
+	attack(user: User, target?: UnitEntity) { //non-target means user is attacked
 		const critical = Utils.Mathf.randbool(this.critical_chance);
-		const hp: Heathy = target?target:user.stats;
-		
-		return Bundle.format(user.lang, 'battle.hit',
-			critical ? Bundle.find(user.lang, 'battle.critical') : '',
-			target?'the enemy is':'you are',
+		const hp: Heathy = target?target.stats:user.stats;
+		const locale = user.getLocale(); 
+
+		return Bundle.format(locale, 'battle.hit',
+			critical ? Bundle.find(locale, 'battle.critical') : '',
+			target ? Units.find(target.id).localName(user) : user.user.username,
 			(this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
 			this.localName(user),
 			hp.health.toFixed(2),
@@ -73,11 +75,11 @@ export class Weapon extends Item implements Durable {
 }
 
 export class Unit extends Content implements Rationess {
-  level: number;
+  readonly level: number;
 	readonly ratio: number;
+	readonly id: number;
 	readonly items: ItemStack[] = [];
 	readonly stats: Stat;
-	readonly id: number;
 
 	constructor(data: UnitData) {
 		super(data.name, 'unit');
@@ -91,7 +93,7 @@ export class Unit extends Content implements Rationess {
 
 export class Buff {
 	readonly value: number;
-	readonly localName: (user: User)=>string;
+	readonly localName: (user: User) => string;
 	readonly callback: (user: User, amount: number, buff: Buff) => string;
 
 	constructor(
@@ -101,7 +103,7 @@ export class Buff {
 	) {
 		this.value = value;
 		
-		this.localName = (user: User)=>Bundle.find(user.lang, `buff.${name}.name`);
+		this.localName = (user: User)=>Bundle.find(user.getLocale(), `buff.${name}.name`);
 		this.callback = callback;
 	}
 
@@ -119,7 +121,7 @@ export class Potion extends Item implements Consumable, Rationess {
 	}
 
 	consume(user: User, amount = 1) {
-		return Bundle.format(user.lang, 'consume', this.localName(user), amount, this.buffes.map((b) => b.buff(user, amount)).join('\n  '));
+		return Bundle.format(user.getLocale(), 'consume', this.localName(user), amount, this.buffes.map((b) => b.buff(user, amount)).join('\n  '));
 	}
 }
 

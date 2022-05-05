@@ -157,7 +157,6 @@ export class User {
     this.giveItem(weapon);
     this.inventory.weapon.id = weapon.id;
     this.inventory.weapon.durability = weapon.durability;
-    save();
     
     return Bundle.format(locale, 'switch_change', weapon.localName(this), Items.find(entity.id).localName(this));
   }

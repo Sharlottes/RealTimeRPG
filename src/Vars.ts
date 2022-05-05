@@ -5,8 +5,12 @@ import { UserSave } from './@type/index';
 
 namespace Vars {
   export const prefix = '/';
-  export const users: User[] = Utils.Database.readObject<UserSave[]>('./Database/user_data').map(User.with);
+  export let users: User[] = [];
   export const latestMsgs: LatestMsg[] = [];
+
+  export function init() {
+    users = Utils.Database.readObject<UserSave[]>('./Database/user_data').map(User.with);
+  }
 }
 
-export default Vars;
+export default Vars; 
