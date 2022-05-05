@@ -1,34 +1,20 @@
 import Assets from '../assets';
 import { Items, ItemStack, UnitEntity } from "../game";
 import { Utils } from "../util";
-import Discord, { CacheType, MessageAttachment, MessageEmbed, MessageButton, MessageOptions, MessagePayload, TextChannel, Message as DMessage } from 'discord.js';
+import Discord, { CacheType, MessageAttachment, MessageEmbed, MessageButton, MessageOptions, MessagePayload, TextChannel, Message as DMessage, Base } from 'discord.js';
 import { findMessage, save } from '@뇌절봇/game/rpg_';
-import { Durable, Inventory, Stat, Message } from '@뇌절봇/@type';
+import { Durable, Inventory, Stat, Message, UserSave } from '@뇌절봇/@type';
 import { PagesBuilder } from 'discord.js-pages';
 import { filledBar } from 'string-progressbar';
 import Canvas from 'canvas';
 import { MessageActionRow } from 'discord.js';
 import { Item, Weapon } from '@뇌절봇/game/contents';
 import { APIMessage } from 'discord-api-types';
+import { BaseEmbed } from './BaseEmbed';
+import app from '..';
 
 const Bundle = Assets.bundle;
 const Database = Utils.Database;
-
-function login(users: User[], target: User, msg: Message, lang: Assets.bundle.language) {
-  const hash = msg.interaction.user.id;
-  const others = users.filter((u) => u !== target && u.hash == Number(hash));
-  if (others.length) {
-    users = users.map((u) => {
-      if (u == target || u.hash !== Number(hash)) return u;
-      u.hash = 0;
-      return u;
-    });
-    msg.interaction.followUp(Bundle.find(lang, "account.auto_logout"));
-  }
-  target.hash = Number(hash);
-  Database.writeObject("./Database/user_data", users);
-  msg.interaction.followUp(Bundle.find(lang, "account.login_success"));
-}
 
 export const defaultStat: Stat = {
   health: 20,
@@ -63,64 +49,36 @@ export class Status {
 }
 
 export class User {
+  public money = 0;
+  public level = 1;
+  public exp = 0;
   public id: string;
-  public password: string;
-  public hash: number;
-  public money: number;
-  public energy: number;
-  public level: number;
-  public exp: number;
-  public cooldown = 0;
+  public user: Discord.User;
   public stats: Stat = defaultStat;
   public status: Status = new Status();
   public inventory: Inventory = defaultInven; 
-  public lang: Assets.bundle.language = "en";
-  public countover = 0;
-  public foundContents: {items: number[], units: number[]} = {items: [], units: []};
   public enemy: UnitEntity | undefined;
-  public battleLog: string[] = [];
-  public allLog = false;
   public selectBuilder?: PagesBuilder;
+  public foundContents = {items: [-1], units: [-1]};
+  public battleLog = [''];
+  public allLog = false;
+  public cooldown = 0;
+  public countover = 0;
 
-  constructor(data: {
-    id: string, 
-    password: string, 
-    hash: number | string,
-    lang?: Assets.bundle.language
-  }) {
-    this.id = data.id;
-    this.password = data.password;
-    this.hash = Number(data.hash);
-    this.lang = data.lang || "en";
-    this.money = 0;
-    this.energy = 50;
-    this.level = 1;
-    this.exp = 0;
+  constructor(user: Discord.User|string) {
+    if(typeof user === 'string') {
+      this.user = app.client.users.cache.find(u=>u.id === user) as Discord.User;
+      this.id = user;
+    }
+    else {
+      this.user = user;
+      this.id = user.id;
+    }
   }
 
-  /**
-  * @param lifetime uses second unit
-  */
-  public send(options: string | MessagePayload | MessageOptions, lifetime = -1, type: 'followUp'|'editReply'='editReply',channel?: TextChannel) {
-    const msg = findMessage(this);
-    if(channel) channel.send(options);
-    else if(msg) {
-      if(msg.interaction.deferred||msg.interaction.replied) (msg.interaction[type](options) as Promise<DMessage|APIMessage>).then(message=>{
-        if(lifetime>0) setTimeout(()=>{
-          if(message instanceof DMessage) { 
-            if(message.deletable) message.delete();
-          }
-        }, lifetime*1000);
-      });
-      else msg.interaction.reply(options);
-    }
-    if(lifetime>0 && (channel||(msg&&!(msg.interaction.deferred||msg.interaction.replied)))) setTimeout(inter=>{
-      if(!inter) throw new Error('where is interaction');
-      if(inter instanceof TextChannel) {
-        inter.messages.cache.find(msg=> msg.embeds.length > 0 && msg.author.bot)?.delete();
-      } 
-      else inter?.deleteReply();
-    }, lifetime*1000, channel??msg?.interaction);
+
+  public getLocale(msg = findMessage(this)) {
+    return msg?.interaction.locale;
   }
 
   public edit(options: string | MessagePayload | MessageOptions, channel?: TextChannel) {
@@ -136,10 +94,38 @@ export class User {
   }
 
   public update() {
-		if (this.cooldown > 0) this.cooldown -= 1 / 100;
+		if(this.cooldown > 0) this.cooldown -= 1 / 100;
 
 		this.stats.energy = Math.min(this.stats.energy_max, this.stats.energy + this.stats.energy_regen / 100);
 		this.stats.health = Math.min(this.stats.health_max, this.stats.health + this.stats.health_regen / 100);
+  }
+
+  public static with(data: UserSave) {
+    const user = new User(data.id);
+    user.read(data);
+    return user;
+  }
+
+  public save(): UserSave {
+    return {
+      id: this.id,
+      money: this.money,
+      level: this.level,
+      exp: this.exp,
+      stats: this.stats,
+      inventory: this.inventory,
+      fountContents: this.foundContents 
+    }
+  }
+
+  public read(data: UserSave) {
+    this.id = data.id;
+    this.money = data.money;
+    this.level = data.level;
+    this.exp = data.exp;
+    this.stats = data.stats;
+    this.inventory = data.inventory;
+    this.foundContents = data.fountContents;
   }
   
   public giveItem(item: Item, amount = 1): string | null {
@@ -149,17 +135,38 @@ export class User {
 
     if (!this.foundContents.items.includes(item.id)) {
       this.foundContents.items.push(item.id);
-      return Bundle.format(this.lang, 'firstget', item.localName(this));
+      return Bundle.format(this.getLocale(), 'firstget', item.localName(this));
     }
 
     return null;
   }
 
+  /**
+   * 기존 무기를 새 무기로 전환
+   * @param weapon 장착할 새 무기
+   * @returns {string} 변경 메시지
+   */
+  public switchWeapon(weapon: Weapon) {
+    const entity = this.inventory.items.find((entity) => ItemStack.getItem(entity) == weapon);
+    const locale = this.getLocale();
+
+    if (!entity) return Bundle.format(locale, 'switch_notHave', weapon.localName(this));
+    entity.amount--;
+    if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
+
+    this.giveItem(weapon);
+    this.inventory.weapon.id = weapon.id;
+    this.inventory.weapon.durability = weapon.durability;
+    save();
+    
+    return Bundle.format(locale, 'switch_change', weapon.localName(this), Items.find(entity.id).localName(this));
+  }
+
   public levelup() {
     const str = Bundle.format(
-      this.lang,
+      this.getLocale(),
       'levelup',
-      this.id,
+      this.user.username,
       this.level,
       this.level + 1,
       this.stats.health_max,
@@ -174,14 +181,18 @@ export class User {
     save();
   }
 
-  public getInventory() {
-    return `${Bundle.find(this.lang, 'inventory')}\n-----------\n${this.inventory.items.map((i) => {
-      const item = ItemStack.getItem(i);
-      return `• ${item.localName(this)} ${i.amount > 0 ? `(${`${i.amount} ${Bundle.find(this.lang, 'unit.item')}`})` : ''}\n   ${item.description(this)}${(item as unknown as Durable).durability ? `(${Bundle.find(this.lang, 'durability')}: ${i.durability}/${(item as unknown as Durable).durability})` : ''}`;
-    }).join('\n\n')}`;
+  public getInventoryInfo(msg: Message) {
+    let embed = new MessageEmbed().setTitle(Bundle.find(this.getLocale(msg), 'inventory'));
+    this.inventory.items.forEach(stack => {
+      if(stack.amount <= 0) return; 
+      const type = ItemStack.getItem(stack);
+      if(!type) return; 
+      embed = embed.addField(type.localName(this), `${stack.amount} ${Bundle.find(this.getLocale(msg), 'unit.item')}`, true);
+    });
+    return new BaseEmbed(msg.interaction).setPages(embed);
   }
 
-  public async getUserInfo(msg: Message) {
+  public getUserInfo(msg: Message) {
     const user = msg.interaction.user;
 
     const canvas = Canvas.createCanvas(1000, 1000);
@@ -203,8 +214,6 @@ export class User {
     });
     const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
     const weapon: Weapon = ItemStack.getItem(this.inventory.weapon);
-    const button2 = new MessageButton().setCustomId('weapon_info').setLabel('get Weapon Info').setStyle('PRIMARY');
-    const button1 = new MessageButton().setCustomId('inventory_info').setLabel('get Inventory Info').setStyle('PRIMARY');
     const statusEmbed = new MessageEmbed()
       .setColor('#0099ff')
       .setTitle('User Status Information')
@@ -219,12 +228,14 @@ export class User {
         { name: 'Inventory', value: this.inventory.items.length+'/50', inline: true }
       );
 
-    const builder = new PagesBuilder(msg.interaction);
+    const builder = new BaseEmbed(msg.interaction);
     builder.setPages(statusEmbed);
     builder
       .setDescription('\u200B')
-      .setDefaultButtons([])
-      .setComponents(new MessageActionRow().addComponents([button1, button2])).addTriggers([{
+      .addComponents(new MessageActionRow().addComponents([
+        new MessageButton().setCustomId('weapon_info').setLabel('get Weapon Info').setStyle('PRIMARY'), 
+        new MessageButton().setCustomId('inventory_info').setLabel('get Inventory Info').setStyle('PRIMARY')
+      ])).addTriggers([{
         name: 'weapon_info',
         callback: (inter, cos) => {
           cos.setDisabled(true);
@@ -236,45 +247,38 @@ export class User {
               { name: 'critical', value: `${(weapon.critical_ratio * 100).toFixed(2)}% damages in ${(weapon.critical_chance * 100).toFixed(2)} chance`},
               { name: 'damage', value: weapon.damage+'', inline: true},
               { name: 'cooldown', value: weapon.cooldown+'', inline: true},
-              { name: 'durability', value: `${filledBar(weapon.durability||0, this.inventory.weapon.durability||0, 10, "\u2593", "\u2588")[0]}\n${Bundle.find(this.lang, 'durability')}: ${this.inventory.weapon.durability||0}/${weapon.durability||0}`, inline: true},
+              { name: 'durability', value: `${filledBar(weapon.durability||0, this.inventory.weapon.durability||0, 10, "\u2593", "\u2588")[0]}\n${Bundle.find(this.getLocale(msg), 'durability')}: ${this.inventory.weapon.durability||0}/${weapon.durability||0}`, inline: true},
             )
-          this.send({embeds: [weaponEmbed]});
+          new BaseEmbed(msg.interaction).setPages(weaponEmbed).build();
         }
       },{
         name: 'inventory_info',
         callback: (inter, cos) => {
           cos.setDisabled(true);
-          this.send(this.getInventory());
+          this.getInventoryInfo(msg).build();
         }
       }])
-    builder.build();
+    builder.addFiles(attachment)
     msg.interaction.editReply({files: [attachment]});
+    return builder;
   }
+}
+/*
 
-  public switchWeapon(weapon: string|Weapon, mute = false) {
-    const msg = findMessage(this);
-    if(!msg) throw new Error("user message object is not exist!");
-    const item: Weapon = typeof weapon === 'string' ? Items.find<Weapon>((i) => i.localName(this) == weapon) : weapon;
-    const name = item.localName(this);
-    const entity = this.inventory.items.find((entity) => ItemStack.getItem(entity) == item);
-    if (!entity) this.send(Bundle.format(this.lang, 'switch_notHave', name), 3, 'followUp');
-    else {
-      entity.amount--;
-      if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
-
-      const exist: Item = ItemStack.getItem(this.inventory.weapon);
-      if (exist) {
-        if(!mute) this.send(Bundle.format(this.lang, 'switch_change', name, exist.localName(this)), 3, 'followUp');
-        this.giveItem(item);
-      } else if(!mute) { 
-        this.send(Bundle.format(this.lang, 'switch_equip', name), 3, 'followUp'); 
-      }
-
-      this.inventory.weapon.id = item.id;
-      this.inventory.weapon.durability = item.durability;
-      save();
-    }
+function login(users: User[], target: User, msg: Message, lang: Assets.bundle.language) {
+  const hash = msg.interaction.user.id;
+  const others = users.filter((u) => u !== target && u.hash == Number(hash));
+  if (others.length) {
+    users = users.map((u) => {
+      if (u == target || u.hash !== Number(hash)) return u;
+      u.hash = 0;
+      return u;
+    });
+    return Bundle.find(lang, "account.auto_logout");
   }
+  target.hash = Number(hash);
+  Database.writeObject("./Database/user_data", users);
+  return Bundle.find(lang, "account.login_success");
 }
 
 export function create(msg: Message, users: User[], lang: Assets.bundle.language = "en") {
@@ -283,12 +287,12 @@ export function create(msg: Message, users: User[], lang: Assets.bundle.language
   const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
   const user = users.find((u) => u.id == id);
 
-  if (user) msg.interaction.followUp(Bundle.format(lang, "account.account_exist", id));
+  if (user) return Bundle.format(lang, "account.account_exist", id);
   else {
     const target = new User({id: id, password: pw, hash: hash});
     users.push(target);
     login(users, target, msg, lang);
-    msg.interaction.followUp(Bundle.find(lang, "account.create_success"));
+    return Bundle.find(lang, "account.create_success");
   }
 }
 
@@ -298,15 +302,15 @@ export function remove(msg: Message, users: User[], lang: Assets.bundle.language
   const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
   const user = users.find((u) => u.id == id);
   
-  if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
+  if (!user) return Bundle.find(lang, "account.account_notFound");
   else if (user.password !== pw)
-    msg.interaction.followUp(Bundle.find(lang, "account.account_incorrect"));
+    return Bundle.find(lang, "account.account_incorrect");
   else if (user.hash !== Number(hash))
-    msg.interaction.followUp(Bundle.find(lang, "account.account_notLogin"));
+    return Bundle.find(lang, "account.account_notLogin");
   else {
     users.splice(users.indexOf(user), 1);
     Database.writeObject("./Database/user_data", users);
-    msg.interaction.followUp(Bundle.find(lang, "account.remove_success"));
+    return Bundle.find(lang, "account.remove_success");
   }
 }
 
@@ -316,11 +320,11 @@ export function signin(msg: Message, users: User[], lang: Assets.bundle.language
   const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
   const user = users.find((u) => u.id == id);
 
-  if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
+  if (!user) return Bundle.find(lang, "account.account_notFound");
   else if (user.password !== pw) 
-    msg.interaction.followUp(Bundle.find(lang, "account.account_incorrect"));
+    return Bundle.find(lang, "account.account_incorrect");
   else if (user.hash)
-    msg.interaction.followUp(
+    return 
       user.hash == Number(hash)
         ? Bundle.find(lang, "account.account_have")
         : Bundle.find(lang, "account.account_has")
@@ -332,10 +336,10 @@ export function signout(msg: Message, users: User[], lang: Assets.bundle.languag
   const hash = msg.interaction.user.id;
   const user = users.find((u) => u.hash == Number(hash));
 
-  if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notLogin"));
+  if (!user) return Bundle.find(lang, "account.account_notLogin"));
   else {
     user.hash = 0;
-    msg.interaction.followUp(Bundle.find(lang, "account.logout_success"));
+    return Bundle.find(lang, "account.logout_success");
     Database.writeObject("user_data", users);
   }
 }
@@ -347,21 +351,29 @@ export function change(msg: Message, users: User[], lang: Assets.bundle.language
   const changeto = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
   const user = users.find((u) => u.id == id);
   
-  if (!user) msg.interaction.followUp(Bundle.find(lang, "account.account_notFound"));
+  if (!user) return Bundle.find(lang, "account.account_notFound");
+  {
+    switch(type.toLowerCase()) {
+      case 'pw': {
+        if(users.find(u => u.id === changeto)) {
+          return Bundle.format(lang, "account.account_exist", id);
+        } else {
+          user.id = changeto;
+          return Bundle.format(lang, "account.change_id", user.id, changeto);
+        }
+      } 
+    }
+  }
   else if (type.toLowerCase() == "pw") {
     if (users.find((u) => u.id == changeto))
-      msg.interaction.followUp(Bundle.format(lang, "account.account_exist", id));
+      return Bundle.format(lang, "account.account_exist", id);
     else {
-      msg.interaction.followUp(
-        Bundle.format(lang, "account.change_id", user.id, changeto)
-      );
       user.id = changeto;
+      return Bundle.format(lang, "account.change_id", user.id, changeto);
     }
   } else if (type.toLowerCase() == "id") {
-    msg.interaction.followUp(
-      Bundle.format(lang, "account.change_pw", user.id, changeto)
-    );
     user.password = changeto;
+    return Bundle.format(lang, "account.change_pw", user.id, changeto);
   }
 
   Database.writeObject("./Database/user_data", users);
@@ -372,10 +384,10 @@ export function setLang(msg: Message, users: User[], lang: Assets.bundle.languag
   const langto: Assets.bundle.language = msg.content.split(/\s/)[1] as Assets.bundle.language;
   const user = users.find((u) => user.hash == Number(hash));
 
-  if (!user) return msg.interaction.followUp(Bundle.find(lang, "account.account_notLogin"));
+  if (!user) return return Bundle.find(lang, "account.account_notLogin"));
   else {
     user.lang = langto;
-    msg.interaction.followUp(Bundle.format(lang, "account.lang_success", lang, langto));
+    return Bundle.format(lang, "account.lang_success", lang, langto));
     Database.writeObject("./Database/user_data", users);
   }
 };

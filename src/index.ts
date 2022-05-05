@@ -61,14 +61,10 @@ client.once("ready", () => {
     CM.refreshCommand("global").then(()=>console.log('global commend refreshing has done'));
     
     // 서버마다 데이터베이스 체크
-    client.guilds.cache.forEach(guild => {
-        guildInit(guild).then(()=>console.log(`${guild.name} database checking has done`));
-    })
+    client.guilds.cache.forEach(guildInit);
 });
 
-client.on("guildCreate", guild => {
-    guildInit(guild);
-})
+client.on("guildCreate", guildInit);
 
 // 명령어 구현부
 client.on("interactionCreate", async interaction => {

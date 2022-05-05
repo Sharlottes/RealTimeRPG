@@ -4,7 +4,7 @@ import { Utils } from "../util";
 
 namespace Assets {
     let rootDir = "";
-    const dictionary: Map<bundle.language, properties.Reader> = new Map();
+    const dictionary: Map<string, properties.Reader> = new Map();
 
     export function init(debugMode = false) {
         rootDir = "./assets/";
@@ -23,15 +23,15 @@ namespace Assets {
     export namespace bundle {
         export type language = "ko" | "en"
 
-        export function find(lang: language = "en", key: string): string {
+        export function find(lang = "en", key: string): string {
             return String(dictionary.get(lang)?.get(key));
         }
         
-        export function format(lang: language = "en", key: string, ...args: any[]) {
-            return Utils.Strings.format(find(lang, key), args);
+        export function format(lang = "en", key: string, ...args: unknown[]) {
+            return Utils.Strings.format(find(lang, key), args as string[]);
         }
 
-        export function get(name = "", lang: language = "en") {
+        export function get(name = "", lang= "en") {
             if(dictionary.has(lang)) {
                 return dictionary.get(lang)?.get(name);
             } else {

@@ -92,10 +92,13 @@ export type UnitData = {
 
 export type CommandOption = 'string' | 'float' | 'int'
 
-export interface String {
-    trip(): number;
-}
-
-export interface Array {
-    splitIndex(index: number);
+export type UserSave = {
+    
+      id: string
+      money: number,
+      level: number,
+      exp: number,
+      stats: Stat,
+      inventory: Inventory,
+      fountContents: {items: number[], units: number[]}
 }
