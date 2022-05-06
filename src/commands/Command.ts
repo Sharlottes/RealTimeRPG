@@ -19,18 +19,16 @@ abstract class Command {
     
     public abstract run(interaction: CommandInteraction<CacheType>): void;
 
-    constructor(args: arg = {
-        category: "guild", 
-        debug: true,
-        dmOnly: false,
-        builder: new SlashCommandBuilder()
-    }) {
-        const {category, debug, builder, dmOnly} = args;
-        
-        this.builder = builder != undefined ? builder : new SlashCommandBuilder();
-        this.category = category != undefined ? category : "guild";
-        this.dmOnly = dmOnly != undefined ? dmOnly : false;
-        this.debug = debug != undefined ? debug : true;
+    constructor(
+        category: CommandCategory = "guild", 
+        debug = true,
+        dmOnly = false,
+        builder = new SlashCommandBuilder()
+    ) {
+        this.builder = builder;
+        this.category = category;
+        this.dmOnly = dmOnly;
+        this.debug = debug ;
         
         this.builder.setDefaultPermission(false);
     }

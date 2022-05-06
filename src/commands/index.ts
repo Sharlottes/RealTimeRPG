@@ -8,8 +8,9 @@ import { Routes } from "discord-api-types/v9";
 import fs from "fs";
 
 import { Command } from "@뇌절봇/commands";
-import app, { CommandInfo } from "@뇌절봇/index"
+import app from "@뇌절봇/index"
 import config from "@뇌절봇/config.json";
+import { CommandInfo } from "@뇌절봇/@type";
 
 const ignores: string[] = [
     "index.ts", "Command.ts"

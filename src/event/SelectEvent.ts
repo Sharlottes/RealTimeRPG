@@ -46,7 +46,7 @@ export class SelectEvent extends BaseEvent {
         selections.forEach(e=>{
             const action = new MessageActionRow();
             e.forEach((select, i) => {
-                const name = Assets.bundle.find(user.lang, `select.${select.name}`);
+                const name = Assets.bundle.find(user.getLocale(), `select.${select.name}`);
                 if(select.type === "button") {
                     const option = (select.options?(typeof(select.options)==='function'?select.options(user):select.options):{style: 'PRIMARY'}) as InteractionButtonOptions;
                     if(option&&!option.style) option.style = 'PRIMARY';
@@ -82,11 +82,10 @@ export class SelectEvent extends BaseEvent {
 
         user.status.name = "selecting";
         msg.builder = new PagesBuilder(msg.interaction)
-        .setPages(new MessageEmbed()).setTitle(this.data.title?Assets.bundle.find(user.lang, `event.${this.data.title}`):"").setDescription(data.descriptions) //make embed
+        .setPages(new MessageEmbed()).setTitle(this.data.title?Assets.bundle.find(user.getLocale(msg), `event.${this.data.title}`):"").setDescription(data.descriptions) //make embed
         .setDefaultButtons([]) //remove default components
         .setComponents(data.actions).setTriggers(data.triggers); //make new components
         msg.builder.build();
-        msg.interaction.editReply({embeds: [msg.builder], components: data.actions});
         
         user.selectBuilder = msg.builder;
         super.start(user);

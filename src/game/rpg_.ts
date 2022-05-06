@@ -1,7 +1,7 @@
 import { User } from '../modules';
 import { Utils } from '../util';
 import { Items, Units, Vars } from '.';
-import { LatestMsg, Rationess, Message, UserSave } from '@뇌절봇/@type';
+import { Rationess, Message, UserSave } from '@뇌절봇/@type';
 import CommandManager from './CommandManager';
 
 const { Database } = Utils;
@@ -39,12 +39,11 @@ export function getOne<T extends Rationess>(arr: T[], callback?: (arg: T, index:
 /**
  * latestMsgs 배열에서 특정 조건에 부합하는 메시지를 찾습니다. 
  * 검색 인자에 적합한 객체가 없을 경우 undefined를 반환합니다. 있을 경우 메시지를 반환합니다.
- * @param {User | (value: LatestMsg, index: number, obj: LatestMsg[])=>boolean} predicate 최근 메시지 배열에서 메시지를 찾을 기준
+ * @param {User} predicate 최근 메시지 배열에서 메시지를 찾을 기준
  * @returns {Message} 조건에 부합하는 가장 최근의 메시지 객체를 반환합니다.
  */
-export function findMessage(predicate: (User | ((value: LatestMsg, index: number, obj: LatestMsg[])=>boolean))): Message | undefined {
-	if(typeof(predicate) === "function") return Vars.latestMsgs.find(predicate)?.msg;
-	return Vars.latestMsgs.find(u=>u.user==predicate)?.msg;
+export function findMessage(predicate: User): Message | undefined {
+	return Vars.latestMsg.get(predicate);
 }
 
 export function save() {

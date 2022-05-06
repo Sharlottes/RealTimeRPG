@@ -1,4 +1,4 @@
-import { Embed, SlashCommandBuilder } from '@discordjs/builders';
+import { SlashCommandBuilder } from '@discordjs/builders';
 import Discord, { CacheType, MessageEmbed } from 'discord.js';
 
 import { PagesBuilder } from 'discord.js-pages';
@@ -15,7 +15,6 @@ import { battle } from './BattleManager';
 import { exchange } from './ExchangeManager';
 import { findMessage, getOne, save } from './rpg_';
 import { BaseEmbed } from '../modules/BaseEmbed';
-import app from '..';
 
 const Bundle = Assets.bundle;
 const { Mathf } = Utils;
@@ -185,48 +184,36 @@ function contentInfoCmd(user: User) {
 	return new BaseEmbed(msg.interaction).setPages(embeds).setDefaultButtons(['back', 'next']);
 }
 
-function registerCmd(builder: SlashCommandBuilder, callback: (user: User) => PagesBuilder|string|undefined, requireUser?: boolean, ignoreSelection?: boolean): void;
-function registerCmd(builder: SlashCommandBuilder, callback: (msg: Message) => PagesBuilder|string|undefined, requireUser?: boolean, ignoreSelection?: boolean): void;
-function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>PagesBuilder|string|undefined)|((msg: Message)=>PagesBuilder|string|undefined), requireUser = false, ignoreSelection = false) {
+function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>PagesBuilder|string|undefined), ignoreSelection = false) {
 	CM.register({
 		category: 'guild',
 		dmOnly: false,
 		debug: false,
+		builder,
+		setHiddenConfig: (arg) => arg,
 		run: (interaction) => {
-			const msg = {
-				interaction,
-				builder: null,
-			};
 			const user = Vars.users.find((u) => u.id == interaction.user.id) || Vars.users[Vars.users.push(new User(interaction.user))-1];
-			const exist = Vars.latestMsgs.find(l=>l.user == user);
+			const msg = Vars.latestMsg.get(user) || { interaction };
+			msg.interaction = interaction;
+			Vars.latestMsg.set(user, msg);
 
 			//update latestMsgs
-			if(exist) {
-				if(exist.msg.builder && user?.status.name==='selecting' && requireUser && !ignoreSelection) {
-					interaction.followUp(`you cannot do this command while selecting!: ${builder.name}`);
-					return;
-				}
-				exist.msg = msg;
+			if(user.status.name==='selecting' && !ignoreSelection) {
+				new BaseEmbed(interaction).setTitle('ERROR').setDescription(Bundle.format('error.select', builder.name)).build();
+				return;
 			}
-			else if(user) Vars.latestMsgs.push({
-				user: user,
-				msg: msg,
-			});
 
 			//call command listener
-			let embed;
-			if (requireUser) embed = (callback as (msg: User)=>PagesBuilder)(user);
-			else embed = (callback as (msg: Message)=>PagesBuilder)(msg);
+			const embed = (callback as (msg: User)=>PagesBuilder)(user);
 
 			if(embed) {
 				if(embed instanceof PagesBuilder) embed.build();
-				else if(typeof embed === 'string') new BaseEmbed(msg.interaction).setDescription(embed).build();
-				else new BaseEmbed(msg.interaction).setTitle('ERROR').setDescription('something got crashed!').build();
+				else if(typeof embed === 'string') new BaseEmbed(interaction).setDescription(embed).build();
+				else new BaseEmbed(interaction).setTitle('ERROR').setDescription('something got crashed!').build();
 			}
+
 			save();
-		},
-		setHiddenConfig: (arg) => arg,
-		builder,
+		}
 	});
 }
 
@@ -235,25 +222,25 @@ namespace CommandManager {
     registerCmd(new SlashCommandBuilder().setName('reset').setDescription('remove current selection so that you can do walk'), (user: User) => {
       user.status.clearSelection();
       return 'selection is removed successfully!';
-    }, true, true);
-    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your or someone\'s own status'), statusCmd, true, true);
-    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your or someone\'s own inventory'), inventoryCmd, true, true);
+    }, true);
+    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), statusCmd, true);
+    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), inventoryCmd, true);
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('consume').setDescription('consume item');
       s.addStringOption((option) => option.setName('target').setDescription('target item name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Consumable).consume).map((u) => [u.name, u.name])));
       return s;
-    })(), consumeCmd, true, true);
+    })(), consumeCmd, true);
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('swap').setDescription('swap the weapon');
       s.addStringOption((option) => option.setName('target').setDescription('target weapon name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Weapon).damage).map((u) => [u.name, u.name])));
       return s;
-    })(), weaponChangeCmd, true, true);
+    })(), weaponChangeCmd, true); 
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('info').setDescription('show content information');
       s.addStringOption((option) => option.setName('type').setDescription('the content type').addChoices([['item', 'item'], ['unit', 'unit']]));
       return s;
-    })(), contentInfoCmd, true, true);
-    registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), walkingCmd, true);
+    })(), contentInfoCmd, true);
+    registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), walkingCmd);
 		/*
     registerCmd(new SlashCommandBuilder().setName('accounts').setDescription('show all accounts'), (msg: Message) => users.map((u) => u.id).join(' | '));
     registerCmd(new SlashCommandBuilder().setName('signout').setDescription('sign current account out'), (msg: Message) => signout(msg, users), true);

@@ -13,7 +13,7 @@ export class BaseEvent implements Event {
     }
 
     start(user: User) {
-        if(this.data.title) findMessage(user)?.interaction.editReply(Assets.bundle.find(user.lang, `event.${this.data.title}`));
+        if(this.data.title) findMessage(user)?.interaction.editReply(Assets.bundle.find(user.getLocale(), `event.${this.data.title}`));
         this.onStart(user);
     }
     

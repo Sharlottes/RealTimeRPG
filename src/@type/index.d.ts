@@ -42,11 +42,6 @@ export type EventData = {
     title?: string
 } & Rationess
 
-export type LatestMsg = {
-  user: User,
-  msg: Message
-}
-
 export type Stat = {
   strength: number
   defense: number
@@ -59,7 +54,7 @@ export type Inventory = {
 
 export type Message = {
     interaction: Discord.CommandInteraction<CacheType>,
-    builder: PagesBuilder | null
+    builder?: PagesBuilder | null
 }
 
 export type CommandInfo = {
@@ -93,7 +88,6 @@ export type UnitData = {
 export type CommandOption = 'string' | 'float' | 'int'
 
 export type UserSave = {
-    
       id: string
       money: number,
       level: number,
