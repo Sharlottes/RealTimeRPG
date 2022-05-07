@@ -1,182 +1,146 @@
-import Discord, { MessageActionRow, MessageActionRowComponent, MessageActionRowComponentResolvable, MessageButton, MessageButtonOptions, MessageSelectMenu, MessageSelectMenuOptions } from 'discord.js';
+import Discord, { MessageActionRow, MessageActionRowComponent, MessageButton, MessageButtonOptions } from 'discord.js';
 
 import { ITrigger } from 'discord.js-pages';
 import { User } from '../modules';
 import { UnitEntity, Items } from '.';
-import { Item, ItemStack } from './contents';
+import { Item, ItemStack, Units } from './contents';
 import { Durable } from '@뇌절봇/@type';
 import Assets from '../assets';
 import { EventSelection, SelectEvent } from '../event';
 
 import { getOne, save, findMessage } from './rpg_';
 import { Utils } from '@뇌절봇/util';
-
-/**
- * 선택 인터렉션과 기타 인터렉션을 활성/비활성합니다.
- * @param buttons 비활성화시킬 버튼 그룹, 매우 수동적임
- * @param wait 대기/대기해제
- */
-function waitingSelect(buttons: MessageActionRow[], wait: boolean) {
-	buttons.slice(0, Math.min(buttons.length - 1, buttons.length - 2)).forEach((b) => b.components.forEach((bb) => bb.setDisabled(wait)));
-	buttons[buttons.length - 1].components.forEach((b) => b.setDisabled(!wait));
-}
+import { BaseEmbed } from '../modules/BaseEmbed';
 
 const Bundle = Assets.bundle;
 
-const exchangeSelection: EventSelection[][] = [[
-	new EventSelection('buy', (user) => {
-		if (!user.enemy) return;
+export default class ExchangeManager {
+	target: UnitEntity;
+  builder: BaseEmbed;
+	locale: string;
+	amountSelect?: (amount: number) => void;
 
-		const locale = user.getLocale();
-		const out = Utils.Arrays.division(Array.from(user.enemy.items.items), 4);
-		const triggers: ITrigger<MessageActionRowComponent>[] = [];
-		const buttons = out.map((items, ii) => {
-			const components: MessageButton[] = [];
-			items.forEach((entity, i) => {
-				const ent = user.enemy?.items.items.find((e) => e.id == entity.id);
-				if (!ent) return;
-				const item: Item = ItemStack.getItem(ent);
-				const money = (100-item.ratio) * 25;
+	constructor(user: User, target: UnitEntity) {
+		this.target = target;
+		this.locale = user.getLocale();
+		this.builder = findMessage(user).builder as BaseEmbed;
 
-				triggers.push({
-					name: `${item.localName(user)}${i}${ii}`,
-					callback(interactionCallback, button) {
-						waitingSelect(buttons, true);
+		//고블린 인벤토리 생성
+		for (let i = 0; i < 20; i++) {
+			const item = getOne(Items.items.filter((i) => i.dropOnShop && i.id !== 5 && (typeof i)));
+			const exist = this.target.inventory.items.find((e) => e.id == item.id);
+			if (exist) exist.amount++;
+			else this.target.inventory.items.push(new ItemStack(item.id, 1, (item as unknown as Durable).durability));
+		}
+		const data = SelectEvent.toActionData(this.selection, user);
+		this.builder.setComponents(data.actions).setTriggers(data.triggers).setDescription('').setFields([
+			{	name: user.user?.username||'you', value: user.money+Bundle.find(this.locale, 'unit.money'), inline: true },
+			{	name: Units.find(this.target.id).localName(user), value: this.target.money+Bundle.find(this.locale, 'unit.money'), inline: true }
+		]);
+	}
 
-						user.status.callback = (amount: number) => {
-							const builder = findMessage(user).builder;
-							if (!user.enemy || !builder) return;
-							user.status.callback = undefined;
-							waitingSelect(buttons, false);
-
-							if (amount > ent.amount) { 
-								builder.addDescription('- '+Bundle.format(locale, 'shop.notEnough_item', item.localName(user), amount, ent.amount), 'diff'); 
-							} 
-							else if (user.money < amount * money) { 
-								builder.addDescription('- '+Bundle.format(locale, 'shop.notEnough_money', amount * money, user.money), 'diff'); 
-							}
-							else {
-								user.giveItem(item, amount);
-
-								//아이템 수량 차감, 떨어졌으면 인벤토리와 버튼 그룹에서 삭제
-								ent.amount -= amount;
-								if (!ent.amount) {
-									user.enemy.items.items.splice(user.enemy.items.items.indexOf(entity), 1);
-									if(row.components.length == 1) buttons.splice(buttons.indexOf(row), 1);
-									else row.spliceComponents(row.components.indexOf(button), 1);
-								}
-
-								(button as Discord.MessageButton).setLabel(`${item.localName(user)}: ${money + Bundle.format(locale, 'unit.money')} (${ent.amount + Bundle.format(locale, 'unit.item')} ${Bundle.format(locale, 'unit.item_left')})`).setStyle('PRIMARY');
-								builder.addDescription('+ '+Bundle.format(locale, 'shop.buyed', item.localName(user), amount, user.money, (user.money -= money * amount)), 'diff');
-							}
-
-							builder.rerender();
-						};
+	waitingSelect(wait: boolean) {
+		this.builder.appendedComponents.forEach(row=>{
+			row.components.forEach(component=>{
+				switch(component.type) {
+					case 'BUTTON': {
+						component.setDisabled(wait);
+						break;
 					}
-				});
-				components.push(new MessageButton().setCustomId(`${item.localName(user)}${i}${ii}`).setLabel(`${item.localName(user)}: ${money + Bundle.format(locale, 'unit.money')} (${ent.amount + Bundle.format(locale, 'unit.item')} ${Bundle.format(locale, 'unit.item_left')})`).setStyle('PRIMARY'));
+					case 'SELECT_MENU': {
+						component.setDisabled(!wait);
+						break;
+					}
+				}
 			});
-
-			const row = new MessageActionRow().setComponents(components);
-			return row;
 		});
-		
-		const data = SelectEvent.toActionData([[backSelection(exchangeSelection)], [amountSelection(exchangeSelection)]], user);
-		findMessage(user).builder?.setComponents(buttons).setTriggers(triggers).addComponents(data.actions).addTriggers(data.triggers);
-	}),
-	new EventSelection('sell', (user) => {
-			const locale = user.getLocale();
-			const out = Utils.Arrays.division(Array.from(user.inventory.items), 4);
-			const triggers: ITrigger<MessageActionRowComponent>[] = [];
-			const buttons = out.map((items, ii) => {
-				const components: MessageButton[] = [];
-				items.forEach((entity, i) => {
-					const item = ItemStack.getItem(entity);
-					if(!item) return;
-					const money = (100-item.ratio) * 10;
+	}
 
-					triggers.push({
-						name: `${item.localName(user)}${i}${ii}`,
-						callback(interactionCallback, button) {
-							waitingSelect(buttons, true);
+	backSelection(selection: EventSelection[][]) {
+		return new EventSelection('back_select', (user, components, interactionCallback)=> {
+			const data = SelectEvent.toActionData(selection, user);
+			this.builder.setComponents(data.actions).setTriggers(data.triggers);
+		}, 'button', {
+			style: 'SECONDARY'
+		} as MessageButtonOptions);
+	}
 
-							user.status.callback = (amount: number) => {
-								const builder = findMessage(user).builder;
-								if(!builder) return;
-								user.status.callback = undefined;
-								waitingSelect(buttons, false);
+  amountSelection(selection: EventSelection[][]) {
+		return new EventSelection('amount_select', (user, components, interactionCallback)=> {
+			if (interactionCallback.isSelectMenu() && this.amountSelect) {
+				this.amountSelect(Number(interactionCallback.values[0]));
+				this.amountSelect = undefined;
+				this.waitingSelect(false);
+				this.builder.rerender();
+				save();
+			}
+		}, 'select', (user: User) => {
+			return {
+				placeholder: `1 ${Bundle.find(this.locale, 'unit.item')}`,
+				options: (()=>new Array(10).fill(0).map((e, i) => ({
+					label: `${i + 1} ${Bundle.find(this.locale, 'unit.item')}`,
+					value: `${i + 1}`
+				})))(),
+				disabled: true
+			}
+		});
+	}
 
-								if (amount > entity.amount) {
-									builder.addDescription('- '+Bundle.format(locale, 'shop.notEnough_item', item.localName(user), amount, entity.amount), 'diff'); 
-								} else {
-									//아이템 수량 차감, 떨어졌으면 인벤토리와 버튼 그룹에서 삭제
-									entity.amount -= amount;
-									if (!entity.amount) {
-										user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
-										if(row.components.length==1) buttons.splice(buttons.indexOf(row), 1);
-										else row.spliceComponents(row.components.indexOf(button), 1);
-										builder.setComponents(buttons);
+	selection: EventSelection[][] = [
+		(()=>{
+			return ['buy', 'sell'].map((name, ind)=>{
+				return new EventSelection(name, (user, c, ic, cr) => {
+					const owner = name==='buy'?this.target:user;
+					const visitor = name==='buy'?user:this.target;
+
+					const {actions: buttons, triggers: triggers} = SelectEvent.toActionData([[this.backSelection(this.selection)], [this.amountSelection(this.selection)]], user);
+					Utils.Arrays.division(Array.from(owner.inventory.items), 4).forEach((items, ii) => {
+						const components: MessageButton[] = [];
+						items.forEach((entity, i) => {
+							const item = ItemStack.getItem(entity);
+							const localName = item.localName(user);
+							const money = (100-item.ratio) * 25;
+
+							triggers.push({
+								name: `${localName}${i}${ii}`,
+								callback: (interactionCallback, button) => {
+									this.waitingSelect(true);
+									this.amountSelect = (amount: number) => {
+										if (amount > entity.amount) { 
+											this.builder.addDescription('- '+Bundle.format(this.locale, 'shop.notEnough_item', localName, amount, entity.amount), 'diff'); 
+										} 
+										else if (visitor.money < amount * money) { 
+											this.builder.addDescription('- '+Bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'); 
+										}
+										else {
+											owner.money += money * amount;
+											visitor.money -= money * amount;
+											visitor.giveItem(item, amount);
+											entity.amount -= amount;
+											if (entity.amount <= 0)	owner.inventory.items.splice(owner.inventory.items.indexOf(entity), 1);
+											
+											(button as Discord.MessageButton).setLabel(`${localName}: ${money + Bundle.format(this.locale, 'unit.money')} (${entity.amount + Bundle.format(this.locale, 'unit.item')} ${Bundle.format(this.locale, 'unit.item_left')})`).setStyle('PRIMARY');
+											this.builder.addDescription('+ '+Bundle.format(this.locale, 'shop.buyed', localName, amount, user.money, (user.money + money * amount * (name==='buy'?-1:1))), 'diff');
+											this.selection[0][ind].callback(user, c, ic, cr);
+										}
 									}
-
-									(button as Discord.MessageButton).setLabel(`${item.localName(user)}: ${money + Bundle.format(locale, 'unit.money')} (${entity.amount + Bundle.format(locale, 'unit.item')} ${Bundle.format(locale, 'unit.item_left')})`).setStyle('PRIMARY');
-									builder.addDescription('+ '+Bundle.format(locale, 'shop.sold', item.localName(user), amount, user.money, (user.money += money * amount)), 'diff');
-									
-									save();
 								}
-
-								builder.rerender();
-							};
-						},
-					});
-					components.push(new MessageButton().setCustomId(`${item.localName(user)}${i}${ii}`).setLabel(`${item.localName(user)}: ${money + Bundle.format(locale, 'unit.money')} (${entity.amount + Bundle.format(locale, 'unit.item')} ${Bundle.format(locale, 'unit.item_left')})`).setStyle('PRIMARY'));
-				});
-				const row = new MessageActionRow().setComponents(components);
-				return row;
-			});
-			
-		const data = SelectEvent.toActionData([[backSelection(exchangeSelection)], [amountSelection(exchangeSelection)]], user);
-		findMessage(user).builder?.setComponents(buttons).setTriggers(triggers).addComponents(data.actions).addTriggers(data.triggers);
-	}),
-	new EventSelection('back', async (user) => {
-		const builder = findMessage(user).builder;
-		if(!builder) return;
-		builder.addDescription(Bundle.find(user.getLocale(), 'shop.end'));
-		user.enemy = undefined;
-		user.status.clearSelection();
-		builder.setComponents([]);
-	})
-]];
-
-const backSelection = (selection: EventSelection[][]) => new EventSelection('back_select', (user, components, interactionCallback)=> {
-	const data = SelectEvent.toActionData(selection, user);
-	findMessage(user).builder?.setComponents(data.actions).setTriggers(data.triggers);
-}, 'button', {
-	style: 'SECONDARY'
-} as MessageButtonOptions);
-
-const amountSelection = (selection: EventSelection[][]) => new EventSelection('amount_select', (user, components, interactionCallback)=> {
-	if (interactionCallback.isSelectMenu() && user.status.callback) user.status.callback(Number(interactionCallback.values[0]));
-}, 'select', (user: User) => {
-	return {
-		placeholder: `1 ${Bundle.find(user.getLocale(), 'unit.item')}`,
-		options: (()=>new Array(10).fill(0).map((e, i) => ({
-			label: `${i + 1} ${Bundle.find(user.getLocale(), 'unit.item')}`,
-			value: `${i + 1}`
-		})))(),
-		disabled: true
-	}
-});
-
-export function exchange(user: User, entity: UnitEntity) {
-	//고블린 인벤토리 생성
-	for (let i = 0; i < 20; i++) {
-		const item = getOne(Items.items.filter((i) => i.dropOnShop && i.id !== 5 && (typeof i)));
-		const exist = entity.items.items.find((e) => e.id == item.id);
-		if (exist) exist.amount++;
-		else entity.items.items.push(new ItemStack(item.id, 1, (item as unknown as Durable).durability));
-	}
-	user.enemy = entity;
-
-	const data = SelectEvent.toActionData(exchangeSelection, user);
-	findMessage(user).builder?.setComponents(data.actions).setTriggers(data.triggers);
+							})
+							components.push(new MessageButton().setCustomId(`${localName}${i}${ii}`).setLabel(`${localName}: ${money + Bundle.format(this.locale, 'unit.money')} (${entity.amount + Bundle.format(this.locale, 'unit.item')} ${Bundle.format(this.locale, 'unit.item_left')})`).setStyle('PRIMARY'));
+						})
+						buttons.push(new MessageActionRow().setComponents(components));
+					})
+					this.builder.setComponents(buttons).setTriggers(triggers).setFields([
+						{	name: user.user?.username||'you', value: user.money+Bundle.find(this.locale, 'unit.money'), inline: true },
+						{	name: Units.find(this.target.id).localName(user), value: this.target.money+Bundle.find(this.locale, 'unit.money'), inline: true }
+				]);
+				})
+			})
+		})().concat(
+			new EventSelection('back', async (user) => {
+				this.builder.addDescription(Bundle.find(this.locale, 'shop.end'));
+				this.builder.setComponents([]);
+				user.status.clearSelection();
+			})
+	)];
 }

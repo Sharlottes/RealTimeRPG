@@ -77,7 +77,7 @@ client.on("interactionCreate", async interaction => {
     if(interaction.isCommand()) {
         const command = CM.commands.get(interaction.commandName);
         if(!command || !interaction.channel) return;
-        await interaction.deferReply().catch(e=>e);
+        await interaction.deferReply().catch(async e=> setTimeout(() => interaction.deferReply(), 1000));
     
         if(interaction.channel.type == "DM" || !command.dmOnly) command.run(interaction);
         else interaction.editReply("This command is available only in the dm channel.");

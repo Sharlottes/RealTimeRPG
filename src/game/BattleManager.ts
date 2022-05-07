@@ -169,7 +169,7 @@ export function battle(user: User, entity: UnitEntity) {
 	user.enemy = entity; 
 	user.battleLog = [];
 
-	const weapon: Weapon | undefined = Items.find<Weapon>(user.enemy.items.weapon.id);
+	const weapon: Weapon | undefined = Items.find<Weapon>(user.enemy.inventory.weapon.id);
 	const data = SelectEvent.toActionData(battleSelection, user);
 	builder
 		.setDescription(Bundle.format(user.getLocale(), 'battle.start', user.user.username, Units.find(user.enemy.id).localName(user)))

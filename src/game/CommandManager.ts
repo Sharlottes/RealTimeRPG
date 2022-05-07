@@ -12,7 +12,7 @@ import { BaseEvent, EventSelection, SelectEvent } from '../event';
 
 import CM from '../commands';
 import { battle } from './BattleManager';
-import { exchange } from './ExchangeManager';
+import ExchangeManager from './ExchangeManager';
 import { findMessage, getOne, save } from './rpg_';
 import { BaseEmbed } from '../modules/BaseEmbed';
 
@@ -66,7 +66,7 @@ const eventData: BaseEvent[] = [
 				msg.builder.setComponents([]);
 				user.status.clearSelection();
 			}),
-			new EventSelection('exchange', (user) => exchange(user, new UnitEntity(Units.find(1))))
+			new EventSelection('exchange', (user) => new ExchangeManager(user, new UnitEntity(Units.find(1))))
 		]]
 	),
 	new SelectEvent({
@@ -159,6 +159,7 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>Page
 		setHiddenConfig: (arg) => arg,
 		run: (interaction) => {
 			const user = Vars.users.find((u) => u.id == interaction.user.id) || Vars.users[Vars.users.push(new User(interaction.user))-1];
+			user.user = interaction.user;
 			const msg = Vars.latestMsg.get(user) || { interaction };
 			msg.interaction = interaction;
 			Vars.latestMsg.set(user, msg);
