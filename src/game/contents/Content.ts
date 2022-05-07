@@ -60,16 +60,17 @@ export class Weapon extends Item implements Durable {
 
 	attack(user: User, target?: UnitEntity) { //non-target means user is attacked
 		const critical = Utils.Mathf.randbool(this.critical_chance);
-		const hp: Heathy = target?target.stats:user.stats;
-		const locale = user.getLocale(); 
-
+		const stat = target?target.stats:user.stats;
+		const damage = this.damage + (critical ? this.critical_ratio * this.damage : 0);
+		const locale = user.getLocale();
+		
 		return Bundle.format(locale, 'battle.hit',
 			critical ? Bundle.find(locale, 'battle.critical') : '',
-			target ? Units.find(target.id).localName(user) : user.user.username,
-			(this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2),
-			this.localName(user),
-			hp.health.toFixed(2),
-			(hp.health -= this.damage + (critical ? this.critical_ratio * this.damage : 0)).toFixed(2)
+			target ? Units.find(target.id).localName(user) : user.user.username, //target's
+			damage.toFixed(2), //damaged
+			this.localName(user), //by weapon
+			stat.health.toFixed(2), //before hp
+			(stat.health -= this.damage + damage).toFixed(2) //after hp
 		);
 	}
 }

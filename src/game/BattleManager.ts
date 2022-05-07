@@ -1,199 +1,149 @@
-import { InteractionButtonOptions, MessageSelectMenuOptions, MessageSelectOptionData } from 'discord.js';
-
-import { User } from '../modules';
-import { Utils } from '../util';
+import { BaseEmbed, User } from '../modules';
+import { Mathf, Canvas} from '../util';
 import { UnitEntity, Items, Units } from '.';
 import { Item, ItemStack, Weapon } from './contents';
-import Assets from '../assets';
+import { bundle } from '../assets';
 import { EventSelection, SelectEvent } from '../event';
 
 import { getOne, save, findMessage } from './rpg_';
 
-const Bundle = Assets.bundle;
-const { Mathf } = Utils;
+export default class BattleManager {
+	target: UnitEntity;
+  builder: BaseEmbed;
+	interval: NodeJS.Timeout;
+	battleLog: string[] = [];
+	locale: string;
 
-const battleSelection : EventSelection[][] = [
-	[
-		new EventSelection('attack', (user) => {
-			const msg = findMessage(user);
-			const builder = msg.builder;
-			if(!builder || !user.enemy) return;
-			const locale = user.getLocale(msg);
+	constructor(user: User, target: UnitEntity) {
+		this.target = target;
+		this.locale = user.getLocale();
+		this.builder = findMessage(user).builder as BaseEmbed;
 
-			// 쿨다운 끝나면 공격
-			if (user.cooldown > 0) {
-				user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(locale, 'battle.cooldown', user.cooldown.toFixed(2))}\n\`\`\``);
-			} else {
-				const weapon: Weapon = ItemStack.getItem(user.inventory.weapon);
+		const weapon: Weapon = Items.find(this.target.inventory.weapon.id);
+		const data = SelectEvent.toActionData(this.selection, user);
+		this.builder
+			.setDescription(bundle.format(this.locale, 'battle.start', user.user.username, Units.find(this.target.id).localName(user)))
+			.setComponents(data.actions)
+			.setTriggers(data.triggers);
 
-				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-				if(user.inventory.weapon.id !== 5 && user.inventory.weapon.durability && user.inventory.weapon.durability > 0) user.inventory.weapon.durability--;
 
-				if(!user.inventory.weapon.durability) {
-					const punch = Items.find<Weapon>(5);
-					user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(locale, 'battle.broken', weapon.localName(user))}\n\`\`\``);
-					user.inventory.weapon.id = punch.id;
-					user.inventory.weapon.durability = punch.durability;
-				}
+		this.interval = setInterval(() => {
+			this.target.cooldown -= 100 / 1000;
+			if (this.target.cooldown <= 0 && this.target.stats.health > 0) {
+				this.target.cooldown = weapon.cooldown;
 
 				//임베드 전투로그 업데이트
-				user.battleLog.push(`\`\`\`diff\n+ ${weapon.attack(user, user.enemy)}\n\`\`\``);
-				updateEmbed(user);
+				this.updateEmbed(user, '- '+weapon.attack(user));
+				this.builder.rerender();
 
-				// 적이 죽으면 전투 끝
-				if (user.enemy.stats.health <= 0)	battleEnd(user);
-			}
-
-			builder.rerender();
-		}),
-		new EventSelection('show-logs', (user, actions) => {
-			const builder = findMessage(user).builder;
-			if(!builder || !user.enemy) return;
-			user.allLog = true;
-
-			actions[0].components[1].setDisabled(true);
-			actions[0].components[2].setDisabled(false);
-			updateEmbed(user);
-		}, 'button', {style: 'SECONDARY'} as InteractionButtonOptions),
-		new EventSelection('hide-logs', (user, actions) => {	
-			user.allLog = false;
-
-			actions[0].components[1].setDisabled(false);
-			actions[0].components[2].setDisabled(true);
-			updateEmbed(user);
-		}, 'button', {style: 'SECONDARY'} as InteractionButtonOptions)
-	],
-	[
-		new EventSelection('swap', (user, actions, interactionCallback) => {
-			if (interactionCallback.isSelectMenu()) {
-				const id = Number(interactionCallback.values[0]);
-				const weapon: Weapon = Items.find(id);
-				const entity = user.inventory.items.find((e) => e.id == id);
-				const weaponFrom = ItemStack.getItem(user.inventory.weapon).localName(user);
-				const weaponTo = weapon.localName(user);
-				if(!entity) return;
-				
-				entity.amount--;
-				if (!entity.amount) user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
-
-				user.switchWeapon(weapon);
-				user.battleLog.push(`\`\`\`\n${Bundle.format(user.getLocale(), 'switch_change', weaponTo, weaponFrom)}\n\`\`\``);
-				updateEmbed(user);
-				save();
-			}
-		}, 'select', u=>{
-			const options = u.inventory.items.filter((e) => Items.find(e.id) instanceof Weapon).map((stack) => ({
-				label: Items.find(stack.id)?.name,
-				value: `${stack.id}`
-			} as MessageSelectOptionData));
-
-			return {
-				placeholder: 'swap weapon to ...',
-				options: options.length > 0 ? options : [{label: Items.find(5).name, value: "5"}]
-			} as MessageSelectMenuOptions;
-		})
-	]
-];
-
-function updateEmbed(user: User) {
-	if(!user.enemy) return;
-
-	return findMessage(user).builder?.setFields([
-		{
-			name: `Battle Status`,
-			value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
-		},
-		{
-			name: `Logs (${user.battleLog.length})`, 
-			value: `${((user.battleLog.length >= 4 && !user.allLog) 
-				? user.battleLog.slice(Math.max(0, user.battleLog.length - 5), user.battleLog.length) 
-				: user.battleLog.slice(Math.max(0, user.battleLog.length - 10), user.battleLog.length)).join('')}`
-		}
-	]);
-}
-
-function battleEnd(user: User) {
-	const msg = findMessage(user);
-	const builder = msg.builder;
-	if(!user.enemy || !builder) return;
-
-	const unit = Units.find(user.enemy.id);
-	const items: { item: Item, amount: number }[] = [];
-	const locale = user.getLocale(msg);
-
-	if(user.enemy.stats.health <= 0) {
-		//전투 보상은 최소 1개, 최대 적 레벨의 4배만큼의 랜덤한 아이템
-		for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level * 4)) + 1; i++) {
-			const item = getOne(Items.items.filter((i) => i.dropOnBattle));
-			const obj = items.find((i) => i.item == item);
-			if (obj) obj.amount++;
-			else items.push({ item, amount: 1 });
-		}
-
-		user.battleLog.push(`\`\`\`diff\n+ ${user.enemy.stats.health < 0 ? Bundle.find(locale, 'battle.overkill') : ''} ${Bundle.format(locale, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\``);
-		
-		//임베드에 전투 결과 메시지 추가
-		updateEmbed(user)?.addFields(
-			{
-				name: 'Battle End', 
-				value: 
-					`\`\`\`ini\n[${Bundle.format(locale, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${Bundle.find(locale, 'unit.item')}`).join('\n'))}
-					\n${items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')}]\`\`\``
-			}
-		);
-	}
-	else if(user.stats.health <= 0) {
-		//임베드에 전투 결과 메시지 추가
-		user.stats.health = 0.1 * user.stats.health_max;
-		user.battleLog.push(`\`\`\`diff\n- ${Bundle.format(locale, 'battle.lose', user.stats.health.toFixed(2))}\n\`\`\``);
-		updateEmbed(user);
-	}
-	else throw new Error("battle is ended with no-one-dead");
-
-	//유저데이터 초기화 및 저장
-	const interval = user.enemy.battleInterval;
-	if(interval) clearInterval(interval);
-	
-	user.battleLog = [];
-	user.status.clearSelection();
-	user.enemy = undefined;
-	builder.setComponents([]);
-	builder.rerender();
-	save();
-}
-
-export function battle(user: User, entity: UnitEntity) {
-	const builder = findMessage(user).builder;
-	if(!builder) return;
-	//update user data
-	user.enemy = entity; 
-	user.battleLog = [];
-
-	const weapon: Weapon | undefined = Items.find<Weapon>(user.enemy.inventory.weapon.id);
-	const data = SelectEvent.toActionData(battleSelection, user);
-	builder
-		.setDescription(Bundle.format(user.getLocale(), 'battle.start', user.user.username, Units.find(user.enemy.id).localName(user)))
-		.addComponents(data.actions)
-		.addTriggers(data.triggers);
-
-
-	if (weapon&&!user.enemy.battleInterval) {
-		user.enemy.battleInterval = setInterval(() => {
-			const builder = findMessage(user).builder;
-			if(!user.enemy || !builder) return;
-
-			user.enemy.cooldown -= 100 / 1000;
-			if (user.enemy.cooldown <= 0 && user.enemy.stats.health > 0) {
-				user.enemy.cooldown = weapon.cooldown;
-
-				//임베드 전투로그 업데이트
-				user.battleLog.push(`\`\`\`diff\n- ${weapon.attack(user)}\n\`\`\``);
-				updateEmbed(user);
-				builder.rerender();
-
-				// 유저가 죽으면 전투 끝
-				if (user.stats.health <= 0) battleEnd(user);
+				if (user.stats.health <= 0 || this.target.stats.health <= 0) this.battleEnd(user);
 			}
 		}, 100);
+	}
+  selection: EventSelection[][] = [
+		[
+			new EventSelection('attack', (user) => {
+				if (user.cooldown > 0) {
+					this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.cooldown', user.cooldown.toFixed(2)));
+				} else {
+					const weapon: Weapon = ItemStack.getItem(user.inventory.weapon);
+
+					// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
+					if(user.inventory.weapon.id !== 5 && user.inventory.weapon.durability && user.inventory.weapon.durability > 0) user.inventory.weapon.durability--;
+
+					if(!user.inventory.weapon.durability) {
+						const punch = Items.find<Weapon>(5);
+						this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
+						user.inventory.weapon.id = punch.id;
+						user.inventory.weapon.durability = punch.durability;
+					}
+
+					//임베드 전투로그 업데이트
+					this.updateEmbed(user, '+ '+weapon.attack(user, this.target));
+				}
+				this.builder.rerender();
+			})
+		],
+		[
+			new EventSelection('swap', (user, actions, interactionCallback) => {
+				if (interactionCallback.isSelectMenu()) {
+					const id = Number(interactionCallback.values[0]);
+					const weapon: Weapon = Items.find(id);
+					const entity = user.inventory.items.find((e) => e.id == id);
+					if(!entity) return;
+					
+					entity.amount--;
+					if (!entity.amount) user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
+
+					user.switchWeapon(weapon);
+					this.updateEmbed(user, bundle.format(this.locale, 'switch_change', weapon.localName(user), ItemStack.getItem(user.inventory.weapon).localName(user)));
+				}
+			}, 'select', u=>{
+				const options = u.inventory.items.filter((e) => Items.find(e.id) instanceof Weapon).map((stack) => ({
+					label: Items.find(stack.id)?.name,
+					value: `${stack.id}`
+				}));
+
+				return {
+					placeholder: 'swap weapon to ...',
+					options: options.length > 0 ? options : [{label: Items.find(5).name, value: "5"}]
+				};
+			})
+		]
+	];
+
+	updateEmbed(user: User, log: string) {
+		if(this.battleLog.length > 5) this.battleLog.shift();
+		this.battleLog.push(log);
+
+		this.builder.setFields([
+			{
+				name: 'Battle Status',
+				value: `You: ${Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Canvas.unicodeProgressBar(this.target.stats.health, this.target.stats.health_max)}`
+			},
+			{
+				name: 'Logs', 
+				value: "```diff\n"+this.battleLog.join('```\n```diff\n')+"```"
+			}
+		]);
+	}
+
+	battleEnd(user: User) {
+		if(this.target.stats.health <= 0) {
+			const unit = Units.find(this.target.id);
+			const items: { item: Item, amount: number }[] = [];
+
+			//전투 보상은 최소 1개, 최대 적 레벨의 4배만큼의 랜덤한 아이템
+			for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level * 4)) + 1; i++) {
+				const item = getOne(Items.items.filter((i) => i.dropOnBattle));
+				const obj = items.find((i) => i.item == item);
+				if (obj) obj.amount++;
+				else items.push({ item, amount: 1 });
+			}
+
+			//임베드에 전투 결과 메시지 추가
+			this.updateEmbed(user, '+ '+(this.target.stats.health < 0 ? bundle.find(this.locale, 'battle.overkill')+' ' : '')+bundle.format(this.locale, 'battle.win', this.target.stats.health.toFixed(2)));
+			this.builder.addFields(
+				{
+					name: 'Battle End', 
+					value: 
+					"```ini\n["
+						+bundle.format(this.locale, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${bundle.find(this.locale, 'unit.item')}`).join('\n'))
+						+'\n'+items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')
+					+"]\n```"
+				}
+			);
+		}
+		else if(user.stats.health <= 0) {
+			user.stats.health = 0.1 * user.stats.health_max;
+			this.updateEmbed(user, '- '+bundle.format(this.locale, 'battle.lose', user.stats.health.toFixed(2)));
+		}
+
+		//유저데이터 초기화 및 저장
+		clearInterval(this.interval);
+		user.status.clearSelection();
+		this.builder.setComponents([]);
+		this.builder.rerender();
+		save();
 	}
 }

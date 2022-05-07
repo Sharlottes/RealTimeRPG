@@ -3,21 +3,18 @@ import Discord, { CacheType, MessageEmbed } from 'discord.js';
 
 import { PagesBuilder } from 'discord.js-pages';
 import { User } from '../modules';
-import { Utils } from '../util';
+import { Mathf } from '../util';
 import { UnitEntity, Items, Units, Vars } from '.';
-import { Unit, Item, ItemStack, Weapon } from './contents';
+import { ItemStack, Weapon } from './contents';
 import { Consumable } from '@뇌절봇/@type';
-import Assets from '../assets';
+import { bundle } from '../assets';
 import { BaseEvent, EventSelection, SelectEvent } from '../event';
 
 import CM from '../commands';
-import { battle } from './BattleManager';
 import ExchangeManager from './ExchangeManager';
 import { findMessage, getOne, save } from './rpg_';
 import { BaseEmbed } from '../modules/BaseEmbed';
-
-const Bundle = Assets.bundle;
-const { Mathf } = Utils;
+import BattleManager from './BattleManager';
 
 const eventData: BaseEvent[] = [
 	new BaseEvent({
@@ -27,7 +24,7 @@ const eventData: BaseEvent[] = [
 		
 		const money = 2 + Math.floor(Math.random() * 10);
 		user.money += money;
-		msg.interaction.followUp(Bundle.format(user.getLocale(msg), 'event.money', money));
+		msg.interaction.followUp(bundle.format(user.getLocale(msg), 'event.money', money));
 	}),
 
 	new BaseEvent({
@@ -36,10 +33,10 @@ const eventData: BaseEvent[] = [
 		const msg = findMessage(user);
 		const item = getOne(Items.items.filter((i) => i.dropOnWalk));
 		user.giveItem(item);
-		msg.interaction.followUp(`${Bundle.format(user.getLocale(msg), 'event.item', item.localName(user))}`);
+		msg.interaction.followUp(`${bundle.format(user.getLocale(msg), 'event.item', item.localName(user))}`);
 	}),
 	new SelectEvent({
-		ratio: 15222,
+		ratio: 15,
 		title: 'goblin'
 	},
 		[[
@@ -49,9 +46,9 @@ const eventData: BaseEvent[] = [
 				if (Mathf.randbool()) {
 					const money = Math.floor(Mathf.range(2, 10));
 					user.money -= money;
-					msg.builder.addFields([{name: "Result:", value: "```\n"+Bundle.format(user.getLocale(msg), 'event.goblin_run_failed', money)+"\n```"}]);
+					msg.builder.addFields([{name: "Result:", value: "```\n"+bundle.format(user.getLocale(msg), 'event.goblin_run_failed', money)+"\n```"}]);
 				} else {
-					msg.builder.addFields([{name: "Result:", value: "```\n"+Bundle.find(user.getLocale(msg), 'event.goblin_run_success')+"\n```"}]);
+					msg.builder.addFields([{name: "Result:", value: "```\n"+bundle.find(user.getLocale(msg), 'event.goblin_run_success')+"\n```"}]);
 				}
 				msg.builder.setComponents([]);
 				user.status.clearSelection();
@@ -62,7 +59,7 @@ const eventData: BaseEvent[] = [
 
 				const money = Math.floor(Mathf.range(2, 5));
 				user.money -= money;
-				msg.builder.addFields([{name: "Result:", value: (Bundle.format(user.getLocale(msg), 'event.goblin_talking', money))}]);
+				msg.builder.addFields([{name: "Result:", value: (bundle.format(user.getLocale(msg), 'event.goblin_talking', money))}]);
 				msg.builder.setComponents([]);
 				user.status.clearSelection();
 			}),
@@ -73,7 +70,7 @@ const eventData: BaseEvent[] = [
 		ratio: 20,
 		title: 'obstruction',
 	},[[
-			new EventSelection('battle', (user) => battle(user, new UnitEntity(Units.find(0)))),
+			new EventSelection('battle', (user) => new BattleManager(user, new UnitEntity(Units.find(0)))),
 			new EventSelection('run', async (user) => {
 				const msg = findMessage(user);
 				if(!msg || !msg.builder) return;
@@ -81,7 +78,7 @@ const eventData: BaseEvent[] = [
 				user.status.clearSelection();
 				msg.builder.setComponents([]);
 				msg.builder = null;
-				msg.interaction.followUp(Bundle.find(user.getLocale(msg), 'event.obstruction_run'));
+				msg.interaction.followUp(bundle.find(user.getLocale(msg), 'event.obstruction_run'));
 			})
 		]]
 	),
@@ -91,7 +88,7 @@ function consumeCmd(user: User) {
 	const msg = findMessage(user);
 	const name = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
 	const stack: ItemStack | undefined = user.inventory.items.find((i) => ItemStack.getItem(i).localName(user) == name);
-	if (!stack) return new BaseEmbed(msg.interaction).addField('ERROR', Bundle.format(user.getLocale(msg), 'notFound', name));
+	if (!stack) return new BaseEmbed(msg.interaction).addField('ERROR', bundle.format(user.getLocale(msg), 'notFound', name));
 
 	const result = ItemStack.consume(stack, user);
 	if (result) msg.interaction.followUp(result);
@@ -116,10 +113,10 @@ function walkingCmd(user: User) {
 		});
 	} else {
 		if (user.countover >= 3) {
-			return Bundle.find(user.getLocale(msg), 'calmdown');
+			return bundle.find(user.getLocale(msg), 'calmdown');
 		} else {
 			user.countover++;
-			return Bundle.format(user.getLocale(msg), 'notEnergy', user.stats.energy.toFixed(1));
+			return bundle.format(user.getLocale(msg), 'notEnergy', user.stats.energy.toFixed(1));
 		}
 	}
 }
@@ -166,7 +163,7 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>Page
 
 			//update latestMsgs
 			if(user.status.name==='selecting' && !ignoreSelection) {
-				new BaseEmbed(interaction).setTitle('ERROR').setDescription(Bundle.format('error.select', builder.name)).build();
+				new BaseEmbed(interaction).setTitle('ERROR').setDescription(bundle.format('error.select', builder.name)).build();
 				return;
 			}
 

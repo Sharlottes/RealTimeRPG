@@ -10,7 +10,6 @@ export class UnitEntity {
   money = 1000;
   inventory: Inventory;
   stats: Stat;
-  battleInterval?: NodeJS.Timeout;
 
   constructor(unit: Unit) {
     this.id = unit.id;

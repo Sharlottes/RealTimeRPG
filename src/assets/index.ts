@@ -70,3 +70,4 @@ namespace Assets {
 }
 
 export default Assets;
+export const bundle = Assets.bundle;

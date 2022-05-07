@@ -1,18 +1,15 @@
-import Discord, { MessageActionRow, MessageActionRowComponent, MessageButton, MessageButtonOptions } from 'discord.js';
+import Discord, { MessageActionRow, MessageButton, MessageButtonOptions } from 'discord.js';
 
-import { ITrigger } from 'discord.js-pages';
 import { User } from '../modules';
 import { UnitEntity, Items } from '.';
-import { Item, ItemStack, Units } from './contents';
+import { ItemStack, Units } from './contents';
 import { Durable } from '@뇌절봇/@type';
-import Assets from '../assets';
+import { bundle } from '../assets';
 import { EventSelection, SelectEvent } from '../event';
 
 import { getOne, save, findMessage } from './rpg_';
 import { Utils } from '@뇌절봇/util';
 import { BaseEmbed } from '../modules/BaseEmbed';
-
-const Bundle = Assets.bundle;
 
 export default class ExchangeManager {
 	target: UnitEntity;
@@ -34,8 +31,8 @@ export default class ExchangeManager {
 		}
 		const data = SelectEvent.toActionData(this.selection, user);
 		this.builder.setComponents(data.actions).setTriggers(data.triggers).setDescription('').setFields([
-			{	name: user.user?.username||'you', value: user.money+Bundle.find(this.locale, 'unit.money'), inline: true },
-			{	name: Units.find(this.target.id).localName(user), value: this.target.money+Bundle.find(this.locale, 'unit.money'), inline: true }
+			{	name: user.user?.username||'you', value: user.money+bundle.find(this.locale, 'unit.money'), inline: true },
+			{	name: Units.find(this.target.id).localName(user), value: this.target.money+bundle.find(this.locale, 'unit.money'), inline: true }
 		]);
 	}
 
@@ -76,9 +73,9 @@ export default class ExchangeManager {
 			}
 		}, 'select', (user: User) => {
 			return {
-				placeholder: `1 ${Bundle.find(this.locale, 'unit.item')}`,
+				placeholder: `1 ${bundle.find(this.locale, 'unit.item')}`,
 				options: (()=>new Array(10).fill(0).map((e, i) => ({
-					label: `${i + 1} ${Bundle.find(this.locale, 'unit.item')}`,
+					label: `${i + 1} ${bundle.find(this.locale, 'unit.item')}`,
 					value: `${i + 1}`
 				})))(),
 				disabled: true
@@ -107,10 +104,10 @@ export default class ExchangeManager {
 									this.waitingSelect(true);
 									this.amountSelect = (amount: number) => {
 										if (amount > entity.amount) { 
-											this.builder.addDescription('- '+Bundle.format(this.locale, 'shop.notEnough_item', localName, amount, entity.amount), 'diff'); 
+											this.builder.addDescription('- '+bundle.format(this.locale, 'shop.notEnough_item', localName, amount, entity.amount), 'diff'); 
 										} 
 										else if (visitor.money < amount * money) { 
-											this.builder.addDescription('- '+Bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'); 
+											this.builder.addDescription('- '+bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'); 
 										}
 										else {
 											owner.money += money * amount;
@@ -119,26 +116,26 @@ export default class ExchangeManager {
 											entity.amount -= amount;
 											if (entity.amount <= 0)	owner.inventory.items.splice(owner.inventory.items.indexOf(entity), 1);
 											
-											(button as Discord.MessageButton).setLabel(`${localName}: ${money + Bundle.format(this.locale, 'unit.money')} (${entity.amount + Bundle.format(this.locale, 'unit.item')} ${Bundle.format(this.locale, 'unit.item_left')})`).setStyle('PRIMARY');
-											this.builder.addDescription('+ '+Bundle.format(this.locale, 'shop.buyed', localName, amount, user.money, (user.money + money * amount * (name==='buy'?-1:1))), 'diff');
+											(button as Discord.MessageButton).setLabel(`${localName} (${entity.amount + bundle.format(this.locale, 'unit.item')}): ${money + bundle.format(this.locale, 'unit.money')}`).setStyle('PRIMARY');
+											this.builder.addDescription('+ '+bundle.format(this.locale, name==='buy'?'shop.buyed':'shop.sold', localName, amount, user.money, (user.money + money * amount * (name==='buy'?-1:1))), 'diff');
 											this.selection[0][ind].callback(user, c, ic, cr);
 										}
 									}
 								}
 							})
-							components.push(new MessageButton().setCustomId(`${localName}${i}${ii}`).setLabel(`${localName}: ${money + Bundle.format(this.locale, 'unit.money')} (${entity.amount + Bundle.format(this.locale, 'unit.item')} ${Bundle.format(this.locale, 'unit.item_left')})`).setStyle('PRIMARY'));
+							components.push(new MessageButton().setCustomId(`${localName}${i}${ii}`).setLabel(`${localName} (${entity.amount + bundle.format(this.locale, 'unit.item')}): ${money + bundle.format(this.locale, 'unit.money')}`).setStyle('PRIMARY'));
 						})
 						buttons.push(new MessageActionRow().setComponents(components));
 					})
 					this.builder.setComponents(buttons).setTriggers(triggers).setFields([
-						{	name: user.user?.username||'you', value: user.money+Bundle.find(this.locale, 'unit.money'), inline: true },
-						{	name: Units.find(this.target.id).localName(user), value: this.target.money+Bundle.find(this.locale, 'unit.money'), inline: true }
+						{	name: user.user?.username||'you', value: user.money+bundle.find(this.locale, 'unit.money'), inline: true },
+						{	name: Units.find(this.target.id).localName(user), value: this.target.money+bundle.find(this.locale, 'unit.money'), inline: true }
 				]);
 				})
 			})
 		})().concat(
 			new EventSelection('back', async (user) => {
-				this.builder.addDescription(Bundle.find(this.locale, 'shop.end'));
+				this.builder.addDescription(bundle.find(this.locale, 'shop.end'));
 				this.builder.setComponents([]);
 				user.status.clearSelection();
 			})

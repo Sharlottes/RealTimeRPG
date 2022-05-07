@@ -1,7 +1,7 @@
 import Assets from '../assets';
-import { Items, ItemStack, UnitEntity } from "../game";
+import { Items, ItemStack } from "../game";
 import { Utils } from "../util";
-import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageOptions, MessagePayload, TextChannel, Interaction } from 'discord.js';
+import Discord, { MessageAttachment, MessageEmbed, MessageButton } from 'discord.js';
 import { findMessage, save } from '@뇌절봇/game/rpg_';
 import { Durable, Inventory, Stat, Message, UserSave } from '@뇌절봇/@type';
 import { filledBar } from 'string-progressbar';
@@ -13,7 +13,7 @@ import app from '..';
 
 const Bundle = Assets.bundle;
 
-export const defaultStat: Stat = {
+const defaultStat: Stat = {
   health: 20,
   health_max: 20,
   health_regen: 0.005,
@@ -28,7 +28,6 @@ export const defaultInven: Inventory = {
   items: [],
   weapon: new ItemStack(5) //주먹 ID
 }
-
 
 export class Status {
   name: string | undefined;
@@ -46,23 +45,17 @@ export class Status {
 }
 
 export class User {
-  public money = 0;
-  public level = 1;
   public exp = 0;
-
-  public id: string;
-  public user: Discord.User;
-  
-  public stats: Stat = defaultStat;
-  public status: Status = new Status();
-  public inventory: Inventory = defaultInven; 
-  public enemy?: UnitEntity;
-  public foundContents = {items: [-1], units: [-1]};
-
-  public battleLog = [''];
-  public allLog = false;
+  public level = 1;
+  public money = 0;
   public cooldown = 0;
   public countover = 0;
+  public id: string;
+  public user: Discord.User;
+  public status: Status = new Status();
+  public stats: Stat = defaultStat;
+  public inventory: Inventory = defaultInven;
+  public foundContents = {items: [-1], units: [-1]};
 
   constructor(user: Discord.User|string) {
     if(typeof user === 'string') {

@@ -1,5 +1,5 @@
 import fs from "fs";
-import Canvas from 'canvas';
+import Canvass from 'canvas';
 
 namespace Utils {
   export class Mathf {
@@ -112,7 +112,7 @@ namespace Utils {
         return `[${O.join("").substr(0, 10)}] ${(showPercent?per.toFixed(2) + "%":"")}`;
     }
     
-    public static donutProgressBar(canvas: Canvas.Canvas, options: {
+    public static donutProgressBar(canvas: Canvass.Canvas, options: {
       progress: {max: number, now: number}, 
       bar: number | {
         width: number,
@@ -176,3 +176,6 @@ namespace Utils {
   }
 }
 export default Utils;
+const Mathf = Utils.Mathf;
+const Canvas = Utils.Canvas;
+export {Mathf, Canvas};

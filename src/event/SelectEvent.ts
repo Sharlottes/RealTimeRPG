@@ -3,7 +3,7 @@ import { BaseEvent } from "./BaseEvent";
 import { MessageActionRow, MessageButton, MessageEmbed, MessageActionRowComponent, MessageSelectMenuOptions, InteractionButtonOptions, MessageSelectMenu, MessageComponentInteraction } from "discord.js";
 import { PagesBuilder, ITrigger } from "discord.js-pages";
 import Assets from "@뇌절봇/assets";
-import { findMessage } from "@뇌절봇/game/rpg_";
+import { findMessage, save } from "@뇌절봇/game/rpg_";
 import { EventData } from "@뇌절봇/@type";
 import { BaseEmbed } from '../modules/BaseEmbed';
 
@@ -61,6 +61,7 @@ export class SelectEvent extends BaseEvent {
                     name: select.name+i,
                     callback: (interactionCallback, currentRow)=> {
                         select.callback(user, actions, interactionCallback, currentRow);
+                        save();
                     }
                 });
                 descriptions += `${i}. ${name}\n`;
