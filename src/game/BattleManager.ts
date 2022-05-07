@@ -16,38 +16,39 @@ const battleSelection : EventSelection[][] = [
 	[
 		new EventSelection('attack', (user) => {
 			const msg = findMessage(user);
-			if(!user.selectBuilder || !user.enemy || !msg) return;
+			const builder = msg.builder;
+			if(!builder || !user.enemy) return;
 			const locale = user.getLocale(msg);
 
 			// 쿨다운 끝나면 공격
 			if (user.cooldown > 0) {
 				user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(locale, 'battle.cooldown', user.cooldown.toFixed(2))}\n\`\`\``);
-				user.edit({ embeds: [user.selectBuilder] });
 			} else {
 				const weapon: Weapon = ItemStack.getItem(user.inventory.weapon);
 
 				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-				if(user.inventory.weapon.id !== 5) {
-					if (user.inventory.weapon.durability > 0) user.inventory.weapon.durability--;
-					else {
-						const punch = Items.find<Weapon>(5);
-						user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(locale, 'battle.broken', weapon.localName(user))}\n\`\`\``);
-						user.inventory.weapon.id = punch.id;
-						user.inventory.weapon.durability = punch.durability;
-					}
-				}	
+				if(user.inventory.weapon.id !== 5 && user.inventory.weapon.durability && user.inventory.weapon.durability > 0) user.inventory.weapon.durability--;
+
+				if(!user.inventory.weapon.durability) {
+					const punch = Items.find<Weapon>(5);
+					user.battleLog.push(`\`\`\`diff\n+ ${Bundle.format(locale, 'battle.broken', weapon.localName(user))}\n\`\`\``);
+					user.inventory.weapon.id = punch.id;
+					user.inventory.weapon.durability = punch.durability;
+				}
 
 				//임베드 전투로그 업데이트
 				user.battleLog.push(`\`\`\`diff\n+ ${weapon.attack(user, user.enemy)}\n\`\`\``);
 				updateEmbed(user);
-				user.edit({ embeds: [user.selectBuilder] });
 
 				// 적이 죽으면 전투 끝
 				if (user.enemy.stats.health <= 0)	battleEnd(user);
-			} 
+			}
+
+			builder.rerender();
 		}),
 		new EventSelection('show-logs', (user, actions) => {
-			if(!user.selectBuilder || !user.enemy) return;
+			const builder = findMessage(user).builder;
+			if(!builder || !user.enemy) return;
 			user.allLog = true;
 
 			actions[0].components[1].setDisabled(true);
@@ -55,7 +56,6 @@ const battleSelection : EventSelection[][] = [
 			updateEmbed(user);
 		}, 'button', {style: 'SECONDARY'} as InteractionButtonOptions),
 		new EventSelection('hide-logs', (user, actions) => {	
-			if(!user.selectBuilder) throw new Error('enemy is not exist');
 			user.allLog = false;
 
 			actions[0].components[1].setDisabled(false);
@@ -71,7 +71,7 @@ const battleSelection : EventSelection[][] = [
 				const entity = user.inventory.items.find((e) => e.id == id);
 				const weaponFrom = ItemStack.getItem(user.inventory.weapon).localName(user);
 				const weaponTo = weapon.localName(user);
-				if(!user.selectBuilder || !entity || !user.enemy) return;
+				if(!entity) return;
 				
 				entity.amount--;
 				if (!entity.amount) user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
@@ -96,10 +96,9 @@ const battleSelection : EventSelection[][] = [
 ];
 
 function updateEmbed(user: User) {
-	if(!user.selectBuilder) throw new Error("user selectBuilder is not exist!");
-	if(!user.enemy) throw new Error("user enemy is not exist!");
+	if(!user.enemy) return;
 
-	return user.selectBuilder.setFields([
+	return findMessage(user).builder?.setFields([
 		{
 			name: `Battle Status`,
 			value: `You: ${Utils.Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Utils.Canvas.unicodeProgressBar(user.enemy.stats.health, user.enemy.stats.health_max)}`
@@ -115,9 +114,9 @@ function updateEmbed(user: User) {
 
 function battleEnd(user: User) {
 	const msg = findMessage(user);
-	if(!msg) return;
-	if(!user.enemy) throw new Error("enemy unit is not exist!");
-	if(!user.selectBuilder) throw new Error("msg builder is not exist!");
+	const builder = msg.builder;
+	if(!user.enemy || !builder) return;
+
 	const unit = Units.find(user.enemy.id);
 	const items: { item: Item, amount: number }[] = [];
 	const locale = user.getLocale(msg);
@@ -134,7 +133,7 @@ function battleEnd(user: User) {
 		user.battleLog.push(`\`\`\`diff\n+ ${user.enemy.stats.health < 0 ? Bundle.find(locale, 'battle.overkill') : ''} ${Bundle.format(locale, 'battle.win', user.enemy.stats.health.toFixed(2))}\`\`\``);
 		
 		//임베드에 전투 결과 메시지 추가
-		updateEmbed(user).addFields(
+		updateEmbed(user)?.addFields(
 			{
 				name: 'Battle End', 
 				value: 
@@ -157,30 +156,31 @@ function battleEnd(user: User) {
 	
 	user.battleLog = [];
 	user.status.clearSelection();
-	user.edit({ embeds: [user.selectBuilder], components: [] }); 
-	user.selectBuilder = undefined;
 	user.enemy = undefined;
+	builder.setComponents([]);
+	builder.rerender();
 	save();
 }
 
 export function battle(user: User, entity: UnitEntity) {
-	if(!user.selectBuilder) throw new Error("msg builder is not exist!");
+	const builder = findMessage(user).builder;
+	if(!builder) return;
 	//update user data
 	user.enemy = entity; 
 	user.battleLog = [];
 
 	const weapon: Weapon | undefined = Items.find<Weapon>(user.enemy.items.weapon.id);
 	const data = SelectEvent.toActionData(battleSelection, user);
-	user.selectBuilder
+	builder
 		.setDescription(Bundle.format(user.getLocale(), 'battle.start', user.user.username, Units.find(user.enemy.id).localName(user)))
-		.setComponents(data.actions).setTriggers(data.triggers);
-		user.selectBuilder
-	//user.send({ embeds: [user.selectBuilder], components: data.actions });
+		.addComponents(data.actions)
+		.addTriggers(data.triggers);
 
 
 	if (weapon&&!user.enemy.battleInterval) {
 		user.enemy.battleInterval = setInterval(() => {
-			if (!user.enemy || !user.selectBuilder) return;
+			const builder = findMessage(user).builder;
+			if(!user.enemy || !builder) return;
 
 			user.enemy.cooldown -= 100 / 1000;
 			if (user.enemy.cooldown <= 0 && user.enemy.stats.health > 0) {
@@ -189,7 +189,7 @@ export function battle(user: User, entity: UnitEntity) {
 				//임베드 전투로그 업데이트
 				user.battleLog.push(`\`\`\`diff\n- ${weapon.attack(user)}\n\`\`\``);
 				updateEmbed(user);
-				user.edit({ embeds: [user.selectBuilder] });
+				builder.rerender();
 
 				// 유저가 죽으면 전투 끝
 				if (user.stats.health <= 0) battleEnd(user);

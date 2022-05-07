@@ -5,6 +5,7 @@ import { PagesBuilder, ITrigger } from "discord.js-pages";
 import Assets from "@뇌절봇/assets";
 import { findMessage } from "@뇌절봇/game/rpg_";
 import { EventData } from "@뇌절봇/@type";
+import { BaseEmbed } from '../modules/BaseEmbed';
 
 export class EventSelection {
     readonly name: string;
@@ -35,7 +36,7 @@ export class SelectEvent extends BaseEvent {
 
     /**
      * 선택지 정보들을 PageBuilder가 받아들일 수 있는 타입으로 변환합니다. 
-     * @param {EventSelection[][]} selections 컴포넌트 위치 | 1차 인자는 행, 2차 인자는 열을 담당 
+     * @param {EventSelection[][]} selections 컴포넌트 2D 위치
      * @param {User} user 이 선택지를 볼 유저 
      */
     static toActionData(selections: EventSelection[][], user: User) {
@@ -50,14 +51,14 @@ export class SelectEvent extends BaseEvent {
                 if(select.type === "button") {
                     const option = (select.options?(typeof(select.options)==='function'?select.options(user):select.options):{style: 'PRIMARY'}) as InteractionButtonOptions;
                     if(option&&!option.style) option.style = 'PRIMARY';
-                    action.addComponents(new MessageButton(option).setCustomId(name+i).setLabel(name));
+                    action.addComponents(new MessageButton(option).setCustomId(select.name+i).setLabel(name));
                 } else if(select.type === "select") {
                     const option = (typeof(select.options)==='function'?select.options(user):select.options) as MessageSelectMenuOptions;
-                    action.addComponents(new MessageSelectMenu(option).setCustomId(name+i));
+                    action.addComponents(new MessageSelectMenu(option).setCustomId(select.name+i));
                 }
                 
                 triggers.push({
-                    name: name+i,
+                    name: select.name+i,
                     callback: (interactionCallback, currentRow)=> {
                         select.callback(user, actions, interactionCallback, currentRow);
                     }
@@ -76,18 +77,15 @@ export class SelectEvent extends BaseEvent {
 
     start(user: User): void {
 		const msg = findMessage(user);
-		if(!msg) return;
-        
         const data = SelectEvent.toActionData(this.selections, user);
 
         user.status.name = "selecting";
-        msg.builder = new PagesBuilder(msg.interaction)
-        .setPages(new MessageEmbed()).setTitle(this.data.title?Assets.bundle.find(user.getLocale(msg), `event.${this.data.title}`):"").setDescription(data.descriptions) //make embed
-        .setDefaultButtons([]) //remove default components
-        .setComponents(data.actions).setTriggers(data.triggers); //make new components
+        msg.builder = new BaseEmbed(msg.interaction)
+        .setTitle(this.data.title?Assets.bundle.find(user.getLocale(msg), `event.${this.data.title}`):"")
+        .setDescription(data.descriptions) //make embed
+        .addComponents(data.actions)
+        .addTriggers(data.triggers) //make new components
         msg.builder.build();
-        
-        user.selectBuilder = msg.builder;
         super.start(user);
     }
 }

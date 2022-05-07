@@ -42,7 +42,7 @@ export class Weapon extends Item implements Durable {
 	readonly cooldown: number;
 	readonly critical_ratio: number;
 	readonly critical_chance: number;
-  readonly durability: number;
+  readonly durability?: number = -1;
 
 	constructor(data: ItemData & Durable & {
     damage: number,

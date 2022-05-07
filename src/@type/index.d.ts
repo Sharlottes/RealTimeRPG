@@ -2,7 +2,8 @@ import Discord, { CacheType } from 'discord.js'
 
 import { PagesBuilder } from 'discord.js-pages'
 import { User } from '../modules'
-import { ItemStack } from './contents'
+import { ItemStack } from '@뇌절봇/game';
+import { BaseEmbed } from '../modules/BaseEmbed';
 
 export interface Heathy { 
     health: number
@@ -21,7 +22,7 @@ export interface Consumable {
 }
 
 export interface Durable {
-    durability: number
+    durability?: number = 1
 }
 
 export interface Dropable {
@@ -54,7 +55,7 @@ export type Inventory = {
 
 export type Message = {
     interaction: Discord.CommandInteraction<CacheType>,
-    builder?: PagesBuilder | null
+    builder?: BaseEmbed | null
 }
 
 export type CommandInfo = {

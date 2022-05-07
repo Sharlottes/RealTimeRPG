@@ -4,7 +4,6 @@ import { Utils } from "../util";
 import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageOptions, MessagePayload, TextChannel, Interaction } from 'discord.js';
 import { findMessage, save } from '@뇌절봇/game/rpg_';
 import { Durable, Inventory, Stat, Message, UserSave } from '@뇌절봇/@type';
-import { PagesBuilder } from 'discord.js-pages';
 import { filledBar } from 'string-progressbar';
 import Canvas from 'canvas';
 import { MessageActionRow } from 'discord.js';
@@ -57,8 +56,7 @@ export class User {
   public stats: Stat = defaultStat;
   public status: Status = new Status();
   public inventory: Inventory = defaultInven; 
-  public enemy: UnitEntity | undefined;
-  public selectBuilder?: PagesBuilder;
+  public enemy?: UnitEntity;
   public foundContents = {items: [-1], units: [-1]};
 
   public battleLog = [''];
@@ -86,12 +84,6 @@ export class User {
 
   public getLocale(msg = findMessage(this)) {
     return msg?.interaction.locale;
-  }
-
-  public edit(options: string | MessagePayload | MessageOptions, channel?: TextChannel) {
-    const msg = findMessage(this);
-    if(channel) channel.messages.cache.find(msg=> msg.embeds.length > 0 && msg.author.bot)?.edit(options);
-    else msg?.interaction.editReply(options);
   }
 
   public init() {
@@ -136,8 +128,10 @@ export class User {
 
     if (!this.foundContents.items.includes(item.id)) {
       this.foundContents.items.push(item.id);
-      return Bundle.format(this.getLocale(), 'firstget', item.localName(this));
+      findMessage(this).builder?.addDescription(Bundle.format(this.getLocale(), 'firstget', item.localName(this)));
     }
+    
+    save();
   }
 
   /**
@@ -212,7 +206,6 @@ export class User {
     const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
 
     return new BaseEmbed(msg.interaction)
-      .setPages(new MessageEmbed())
       .setColor('#0099ff')
       .setTitle('User Status Information')
       .setDescription('\u200B')
@@ -237,8 +230,7 @@ export class User {
           callback: (interact, button) => {
             button.setDisabled(true);
 
-            new BaseEmbed(msg.interaction)
-              .setPages(new MessageEmbed())            
+            new BaseEmbed(msg.interaction)           
               .setColor('#b8b8b8')
               .setTitle(`Weapon: \`${weapon.localName(this)}\` Information`)
               .setAuthor({name: user.username, iconURL: user.displayAvatarURL(), url: user.displayAvatarURL()})

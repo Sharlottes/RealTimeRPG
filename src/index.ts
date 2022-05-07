@@ -77,16 +77,9 @@ client.on("interactionCreate", async interaction => {
     if(interaction.isCommand()) {
         const command = CM.commands.get(interaction.commandName);
         if(!command || !interaction.channel) return;
-        await interaction.deferReply();
+        await interaction.deferReply().catch(e=>e);
     
-        if(interaction.channel.type == "DM" || !command.dmOnly) {
-            try {
-                command.run(interaction);
-            } catch(e) {
-                interaction.editReply((e as object).toString());
-                console.log(e);
-            }
-        }
+        if(interaction.channel.type == "DM" || !command.dmOnly) command.run(interaction);
         else interaction.editReply("This command is available only in the dm channel.");
     }
 });

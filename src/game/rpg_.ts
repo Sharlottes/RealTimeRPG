@@ -20,7 +20,7 @@ export function init() {
 
 /**
  * @param {array} arr 값을 뽑을 배열
- * @returns arr 배열에서 특정 비율 기반의 랜덤으로 인수 하나를 뽑아 반환
+ * @returns {T} arr 배열에서 특정 비율 기반의 랜덤으로 인수 하나를 뽑아 반환
  */
 export function getOne<T extends Rationess>(arr: T[], callback?: (arg: T, index: number)=>void): T {
 	let random = Math.random();
@@ -37,13 +37,14 @@ export function getOne<T extends Rationess>(arr: T[], callback?: (arg: T, index:
 }
 
 /**
- * latestMsgs 배열에서 특정 조건에 부합하는 메시지를 찾습니다. 
- * 검색 인자에 적합한 객체가 없을 경우 undefined를 반환합니다. 있을 경우 메시지를 반환합니다.
- * @param {User} predicate 최근 메시지 배열에서 메시지를 찾을 기준
- * @returns {Message} 조건에 부합하는 가장 최근의 메시지 객체를 반환합니다.
+ * latestMsgs 배열에서 해당 유저의 최근 메시지를 찾습니다.
+ * @param {User} user 최근 메시지를 보낸 유저
+ * @returns {Message} 해당 유저의 최근 메시지
  */
-export function findMessage(predicate: User): Message | undefined {
-	return Vars.latestMsg.get(predicate);
+export function findMessage(user: User): Message {
+	const msg = Vars.latestMsg.get(user);
+	if(msg) return msg;
+	throw new Error('message is undefined');
 }
 
 export function save() {

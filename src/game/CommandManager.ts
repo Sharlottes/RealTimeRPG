@@ -6,7 +6,7 @@ import { User } from '../modules';
 import { Utils } from '../util';
 import { UnitEntity, Items, Units, Vars } from '.';
 import { Unit, Item, ItemStack, Weapon } from './contents';
-import { Consumable, Message } from '@뇌절봇/@type';
+import { Consumable } from '@뇌절봇/@type';
 import Assets from '../assets';
 import { BaseEvent, EventSelection, SelectEvent } from '../event';
 
@@ -24,7 +24,7 @@ const eventData: BaseEvent[] = [
 		ratio: 20
 	}, (user) => {
 		const msg = findMessage(user);
-		if(!msg) return;
+		
 		const money = 2 + Math.floor(Math.random() * 10);
 		user.money += money;
 		msg.interaction.followUp(Bundle.format(user.getLocale(msg), 'event.money', money));
@@ -34,36 +34,36 @@ const eventData: BaseEvent[] = [
 		ratio: 30
 	}, (user) => {
 		const msg = findMessage(user);
-		if(!msg) return;
 		const item = getOne(Items.items.filter((i) => i.dropOnWalk));
-		msg.interaction.followUp(`${Bundle.format(user.getLocale(msg), 'event.item', item.localName(user))}\n${user.giveItem(item) || ''}`);
+		user.giveItem(item);
+		msg.interaction.followUp(`${Bundle.format(user.getLocale(msg), 'event.item', item.localName(user))}`);
 	}),
 	new SelectEvent({
-		ratio: 15,
+		ratio: 15222,
 		title: 'goblin'
 	},
 		[[
 			new EventSelection('run', (user) => {
 				const msg = findMessage(user);
-				if(!msg) return;
+				if(!msg.builder) return;
 				if (Mathf.randbool()) {
 					const money = Math.floor(Mathf.range(2, 10));
 					user.money -= money;
-					msg.builder?.addFields([{name: "Result:", value: "```\n"+Bundle.format(user.getLocale(msg), 'event.goblin_run_failed', money)+"\n```"}]);
+					msg.builder.addFields([{name: "Result:", value: "```\n"+Bundle.format(user.getLocale(msg), 'event.goblin_run_failed', money)+"\n```"}]);
 				} else {
-					msg.builder?.addFields([{name: "Result:", value: "```\n"+Bundle.find(user.getLocale(msg), 'event.goblin_run_success')+"\n```"}]);
+					msg.builder.addFields([{name: "Result:", value: "```\n"+Bundle.find(user.getLocale(msg), 'event.goblin_run_success')+"\n```"}]);
 				}
-				user.selectBuilder?.setComponents([]);
+				msg.builder.setComponents([]);
 				user.status.clearSelection();
 			}),
 			new EventSelection('talking', (user) => {
 				const msg = findMessage(user);
-				if(!msg) return;
+				if(!msg.builder) return;
 
 				const money = Math.floor(Mathf.range(2, 5));
 				user.money -= money;
-				msg.builder?.addFields([{name: "Result:", value: (Bundle.format(user.getLocale(msg), 'event.goblin_talking', money))}]);
-				msg.builder?.setComponents([]);
+				msg.builder.addFields([{name: "Result:", value: (Bundle.format(user.getLocale(msg), 'event.goblin_talking', money))}]);
+				msg.builder.setComponents([]);
 				user.status.clearSelection();
 			}),
 			new EventSelection('exchange', (user) => exchange(user, new UnitEntity(Units.find(1))))
@@ -87,44 +87,26 @@ const eventData: BaseEvent[] = [
 	),
 ];
 
-function statusCmd(user: User) {
-	const msg = findMessage(user);
-	if(!msg) return;
-	
-	return user.getUserInfo(msg);
-}
-
-function inventoryCmd(user: User) {
-	const msg = findMessage(user);
-	if(!msg) return;
-
-	return user.getInventoryInfo(msg);
-}
-
 function consumeCmd(user: User) {
 	const msg = findMessage(user);
-	if(!msg) return;
-	
 	const name = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
 	const stack: ItemStack | undefined = user.inventory.items.find((i) => ItemStack.getItem(i).localName(user) == name);
 	if (!stack) return new BaseEmbed(msg.interaction).addField('ERROR', Bundle.format(user.getLocale(msg), 'notFound', name));
+
 	const result = ItemStack.consume(stack, user);
 	if (result) msg.interaction.followUp(result);
-	save();
 }
 
 function weaponChangeCmd(user: User) {
 	const msg = findMessage(user);
-	if(!msg) return;
-
 	const weapon = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
+
 	return user.switchWeapon(Items.find<Weapon>((i) => i.localName(user) == weapon));
 }
 
 function walkingCmd(user: User) {
 	const msg = findMessage(user);
-	if(!msg) return;
-
+	
 	if (user.stats.energy >= 7) {
 		user.countover = 0;
 		user.stats.energy -= 7;
@@ -142,24 +124,8 @@ function walkingCmd(user: User) {
 	}
 }
 
-function info(user: User, content: Item|Unit) {
-	const msg = findMessage(user);
-	if(!msg) return;
-
-	if(content instanceof Item) {
-		if(user.foundContents.items.includes(content.id)) return content.localName(user)+'\n'+content.description(user)+'\n'+(content.details(user)||'')
-		else return 'unknown';
-	}
-	if(content instanceof Unit) {
-		if(user.foundContents.units.includes(content.id)) return content.localName(user)+'\n'+content.description(user)+'\n'+(content.details(user)||'')
-		else return 'unknown';
-	}
-}
-
 function contentInfoCmd(user: User) {
 	const msg = findMessage(user);
-	if(!msg) return;
-
 	const type = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('type', false);
 	const embeds = [];
 
@@ -223,8 +189,8 @@ namespace CommandManager {
       user.status.clearSelection();
       return 'selection is removed successfully!';
     }, true);
-    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), statusCmd, true);
-    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), inventoryCmd, true);
+    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), (user: User) => user.getUserInfo(findMessage(user)), true);
+    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), (user: User) => user.getInventoryInfo(findMessage(user)), true);
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('consume').setDescription('consume item');
       s.addStringOption((option) => option.setName('target').setDescription('target item name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Consumable).consume).map((u) => [u.name, u.name])));
