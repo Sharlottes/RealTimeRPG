@@ -3,6 +3,8 @@ import Assets from '@뇌절봇/assets';
 import { Consumable, Dropable, Durable, Heathy, ItemData, Rationess, Stat, UnitData } from '@뇌절봇/@type';
 import { Utils } from '@뇌절봇/util';
 import { UnitEntity } from '../Entity';
+import admin from '../../net/FirebaseAdmin';
+import { Inventory } from '../../@type/index';
 
 const Bundle = Assets.bundle;
 
@@ -42,7 +44,7 @@ export class Weapon extends Item implements Durable {
 	readonly cooldown: number;
 	readonly critical_ratio: number;
 	readonly critical_chance: number;
-  readonly durability?: number = -1;
+  readonly durability: number;
 
 	constructor(data: ItemData & Durable & {
     damage: number,
@@ -70,7 +72,7 @@ export class Weapon extends Item implements Durable {
 			damage.toFixed(2), //damaged
 			this.localName(user), //by weapon
 			stat.health.toFixed(2), //before hp
-			(stat.health -= this.damage + damage).toFixed(2) //after hp
+			(stat.health -= this.damage).toFixed(2) //after hp
 		);
 	}
 }
@@ -79,14 +81,17 @@ export class Unit extends Content implements Rationess {
   readonly level: number;
 	readonly ratio: number;
 	readonly id: number;
-	readonly items: ItemStack[] = [];
+	readonly inventory: Inventory;
 	readonly stats: Stat;
 
 	constructor(data: UnitData) {
 		super(data.name, 'unit');
 		this.level = data.level;
 		this.ratio = data.ratio;
-		this.items = data.items;
+		this.inventory = {
+			items: data.items,
+			weapon: new ItemStack(5)
+		};
 		this.stats = data.stats;
 		this.id = Units.units.length;
 	}
@@ -126,33 +131,68 @@ export class Potion extends Item implements Consumable, Rationess {
 	}
 }
 
+export class ItemEntity { 
+	public durability?: number;
+	public cooldown?: number;
+
+  public constructor(durability?: number, cooldown?: number) {
+		this.durability = durability;
+		this.cooldown = cooldown;
+	}
+}
 
 export class ItemStack {
-	id: number;
-	amount: number;
-	durability: number | undefined;
+	public readonly id: number;
+	public readonly items: ItemEntity[] = [];
+	private stackable = true;
 
-	constructor(id: number, amount=1, durability?: number) {
+	public constructor(id: number, amount = 1, items?: ItemEntity[]) {
 		this.id = id;
-		this.amount = amount;
-		this.durability = durability;
+		if(items) this.items = items;
+		this.add(amount);
+		if(this.getItem() instanceof Weapon) this.stackable = false;
 	}
 
-	static equals(stack: ItemStack, item: Item, amount?: number) {
-		return stack.id == item.id && (!amount || stack.amount == amount);
-	}
-
-	static consume(stack: ItemStack, user: User, amount = 1) {
-		const item = Items.find(stack.id);
-		if (item) {
-			stack.amount--;
-			if(stack.amount <= 0) user.inventory.items.splice(user.inventory.items.indexOf(stack), 1);
-			return (item as unknown as Consumable).consume?.call(item, user, amount);
+	public consume(user: User, amount = 1) {
+		const item = Items.find(this.id);
+		if (item && item instanceof Potion) {
+			this.remove(amount);
+			return item.consume(user, amount);
 		}
 	}
 
-	static getItem<T extends Item>(stack: ItemStack): T {
-		return Items.find(stack.id);
+	public add(stack: number|ItemEntity[] = 1) {
+		if(this.stackable) {
+			for(let i = 0, m = typeof stack === 'number' ? stack : stack.length; i < m; i++) {
+				this.items.push(this.makeEntity(typeof stack === 'number' ? undefined : stack[i]));
+			}
+		}
+		else this.items[0] = this.makeEntity(typeof stack === 'number' ? undefined : stack[0]);
+	}
+
+	public remove(amount = 1) {
+		if(this.stackable) {
+			for(let i = 0; i < amount; i++) {
+				this.items.pop();
+			}
+		}
+		else this.items.pop();
+	}
+
+  private	makeEntity(entity?: ItemEntity): ItemEntity {
+		if(entity) return entity;
+		const item = this.getItem();
+		const durability = (item instanceof Weapon ? item.durability : undefined);
+		const cooldown = (item instanceof Weapon ? item.cooldown : undefined);
+		return new ItemEntity(durability || durability == -1 ? undefined : durability, cooldown);
+	}
+
+	getItem<T extends Item>(): T {
+		return Items.find<T>(this.id);
+	}
+
+	get amount() {
+		return Array.isArray(this.items) ? this.items.length : 1;
 	}
 }
 

@@ -26,8 +26,8 @@ const defaultStat: Stat = {
 
 export const defaultInven: Inventory = {
   items: [],
-  weapon: new ItemStack(5) //주먹 ID
-}
+  weapon: new ItemStack(5), //주먹
+};
 
 export class Status {
   name: string | undefined;
@@ -48,7 +48,6 @@ export class User {
   public exp = 0;
   public level = 1;
   public money = 0;
-  public cooldown = 0;
   public countover = 0;
   public id: string;
   public user: Discord.User;
@@ -86,7 +85,7 @@ export class User {
   }
 
   public update() {
-		if(this.cooldown > 0) this.cooldown -= 1 / 100;
+		if(this.inventory.weapon.items[0]?.cooldown && this.inventory.weapon.items[0].cooldown > 0) this.inventory.weapon.items[0].cooldown -= 1 / 100;
 
 		this.stats.energy = Math.min(this.stats.energy_max, this.stats.energy + this.stats.energy_regen / 100);
 		this.stats.health = Math.min(this.stats.health_max, this.stats.health + this.stats.health_regen / 100);
@@ -110,14 +109,17 @@ export class User {
     this.level = data.level;
     this.exp = data.exp;
     this.stats = data.stats;
-    this.inventory = data.inventory;
+    this.inventory = {
+      items: data.inventory.items.map(stack=>new ItemStack(stack.id, stack.amount, stack.items)),
+      weapon: new ItemStack(data.inventory.weapon.id, data.inventory.weapon.amount, data.inventory.weapon.items)
+    };
     this.foundContents = data.fountContents;
   }
   
   public giveItem(item: Item, amount = 1) {
-    const exist = this.inventory.items.find((i) => ItemStack.equals(i, item));
-    if (exist) exist.amount += amount;
-    else this.inventory.items.push(new ItemStack(item.id, amount, (item as unknown as Durable).durability));
+    const exist = this.inventory.items.find((i) => i.id == item.id);
+    if (exist) exist.add(amount);
+    else this.inventory.items.push(new ItemStack(item.id, amount));
 
     if (!this.foundContents.items.includes(item.id)) {
       this.foundContents.items.push(item.id);
@@ -133,16 +135,15 @@ export class User {
    * @returns {string} 변경 메시지
    */
   public switchWeapon(weapon: Weapon): string {
-    const entity = this.inventory.items.find((entity) => ItemStack.getItem(entity) == weapon);
+    const entity = this.inventory.items.find((entity) => entity.id == weapon.id);
     const locale = this.getLocale();
 
     if (!entity) return Bundle.format(locale, 'switch_notHave', weapon.localName(this));
-    entity.amount--;
+    entity.remove();
     if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
 
     this.giveItem(weapon);
-    this.inventory.weapon.id = weapon.id;
-    this.inventory.weapon.durability = weapon.durability;
+    this.inventory.weapon = new ItemStack(weapon.id);
     
     return Bundle.format(locale, 'switch_change', weapon.localName(this), Items.find(entity.id).localName(this));
   }
@@ -168,17 +169,15 @@ export class User {
   public getInventoryInfo(msg: Message) {
     let embed = new MessageEmbed().setTitle(Bundle.find(this.getLocale(msg), 'inventory'));
     this.inventory.items.forEach(stack => {
-      if(stack.amount <= 0) return; 
-      const type = ItemStack.getItem(stack);
-      if(!type) return; 
-      embed = embed.addField(type.localName(this), `${stack.amount} ${Bundle.find(this.getLocale(msg), 'unit.item')}`, true);
+      if(stack.amount <= 0) return;
+      embed = embed.addField(stack.getItem().localName(this), `${stack.amount} ${Bundle.find(this.getLocale(msg), 'unit.item')}`, true);
     });
     return new BaseEmbed(msg.interaction).setPages(embed);
   }
 
   public getUserInfo(msg: Message) {
     const user = msg.interaction.user;
-    const weapon: Weapon = ItemStack.getItem(this.inventory.weapon);
+    const weapon = this.inventory.weapon.getItem<Weapon>();
     const canvas = Canvas.createCanvas(1000, 1000);
     Utils.Canvas.donutProgressBar(canvas, {
       progress: {
@@ -206,7 +205,7 @@ export class User {
       .setThumbnail("attachment://profile-image.png")
       .addFiles(attachment)
       .addFields(
-        { name: "Health", value: `${filledBar(this.stats.health_max, this.stats.health, 10, "\u2593", "\u2588")[0]}\n${this.stats.health.toFixed(2)}/${this.stats.health_max}    (${this.stats.health_regen}/s)`, inline: true},
+        { name: "Health", value: `${filledBar(this.stats.health_max, Math.max(0,this.stats.health), 10, "\u2593", "\u2588")[0]}\n${this.stats.health.toFixed(2)}/${this.stats.health_max}    (${this.stats.health_regen}/s)`, inline: true},
         { name: "Energy", value: `${filledBar(this.stats.energy_max, this.stats.energy, 10, "\u2593", "\u2588")[0]}\n${this.stats.energy.toFixed(2)}/${this.stats.energy_max}    (${this.stats.energy_regen}/s)`, inline: true},
         { name: '\u200B', value: '\u200B'},
         { name: 'Equipped Weapon', value: weapon.localName(this), inline: true },
@@ -231,7 +230,6 @@ export class User {
                 { name: 'critical', value: `${(weapon.critical_ratio * 100).toFixed(2)}% damages in ${(weapon.critical_chance * 100).toFixed(2)} chance`},
                 { name: 'damage', value: weapon.damage.toString(), inline: true},
                 { name: 'cooldown', value: weapon.cooldown.toString(), inline: true},
-                { name: 'durability', value: `${filledBar(weapon.durability||0, this.inventory.weapon.durability||0, 10, "\u2593", "\u2588")[0]}\n${Bundle.find(this.getLocale(msg), 'durability')}: ${this.inventory.weapon.durability||0}/${weapon.durability||0}`, inline: true},
               )
               .build();
           }

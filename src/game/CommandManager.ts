@@ -67,7 +67,7 @@ const eventData: BaseEvent[] = [
 		]]
 	),
 	new SelectEvent({
-		ratio: 20,
+		ratio: 22220,
 		title: 'obstruction',
 	},[[
 			new EventSelection('battle', (user) => new BattleManager(user, new UnitEntity(Units.find(0)))),
@@ -87,10 +87,10 @@ const eventData: BaseEvent[] = [
 function consumeCmd(user: User) {
 	const msg = findMessage(user);
 	const name = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
-	const stack: ItemStack | undefined = user.inventory.items.find((i) => ItemStack.getItem(i).localName(user) == name);
-	if (!stack) return new BaseEmbed(msg.interaction).addField('ERROR', bundle.format(user.getLocale(msg), 'notFound', name));
+	const stack: ItemStack | undefined = user.inventory.items.find((i) => i.getItem().name == name);
+	if (!stack || stack.amount <= 0) return new BaseEmbed(msg.interaction).addField('ERROR', bundle.format(user.getLocale(msg), 'notFound', name));
 
-	const result = ItemStack.consume(stack, user);
+	const result = stack.consume(user);
 	if (result) msg.interaction.followUp(result);
 }
 

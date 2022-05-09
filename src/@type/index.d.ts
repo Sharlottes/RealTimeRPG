@@ -22,7 +22,7 @@ export interface Consumable {
 }
 
 export interface Durable {
-    durability?: number = 1
+    durability: number
 }
 
 export interface Dropable {
@@ -50,7 +50,7 @@ export type Stat = {
 
 export type Inventory = {
   items: ItemStack[]
-  weapon: ItemStack&Durable
+  weapon: ItemStack
 }
 
 export type Message = {

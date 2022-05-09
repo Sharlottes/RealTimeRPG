@@ -19,7 +19,6 @@ export default class BattleManager {
 		this.locale = user.getLocale();
 		this.builder = findMessage(user).builder as BaseEmbed;
 
-		const weapon: Weapon = Items.find(this.target.inventory.weapon.id);
 		const data = SelectEvent.toActionData(this.selection, user);
 		this.builder
 			.setDescription(bundle.format(this.locale, 'battle.start', user.user.username, Units.find(this.target.id).localName(user)))
@@ -28,14 +27,26 @@ export default class BattleManager {
 
 
 		this.interval = setInterval(() => {
-			this.target.cooldown -= 100 / 1000;
-			if (this.target.cooldown <= 0 && this.target.stats.health > 0) {
-				this.target.cooldown = weapon.cooldown;
+			const inventory = this.target.inventory;
+			const weapon: Weapon = Items.find(inventory.weapon.id);
+			console.log(inventory.weapon);
+			if(inventory.weapon.items[0]?.cooldown) inventory.weapon.items[0].cooldown -= 100 / 1000;
+			if (inventory.weapon.items[0]?.cooldown && inventory.weapon.items[0].cooldown <= 0 && this.target.stats.health > 0) {
+				inventory.weapon.items[0].cooldown = weapon.cooldown;
+
+				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
+				if(inventory.weapon.items[0]?.durability) {
+					if(inventory.weapon.items[0].durability > 0) inventory.weapon.items[0].durability--;
+					if(inventory.weapon.items[0].durability <= 0) {
+						const punch = Items.find<Weapon>(5);
+						this.updateEmbed(user, '- '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
+						inventory.weapon = new ItemStack(punch.id);
+					}
+				}
 
 				//임베드 전투로그 업데이트
 				this.updateEmbed(user, '- '+weapon.attack(user));
-				this.builder.rerender();
-
+				this.builder.rerender().catch(e=>e);
 				if (user.stats.health <= 0 || this.target.stats.health <= 0) this.battleEnd(user);
 			}
 		}, 100);
@@ -43,25 +54,28 @@ export default class BattleManager {
   selection: EventSelection[][] = [
 		[
 			new EventSelection('attack', (user) => {
-				if (user.cooldown > 0) {
-					this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.cooldown', user.cooldown.toFixed(2)));
+				if(user.stats.health <= 0 || this.target.stats.health <= 0) return;
+				if (user.inventory.weapon.items[0]?.cooldown && user.inventory.weapon.items[0].cooldown > 0) {
+					this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.cooldown', user.inventory.weapon.items[0].cooldown.toFixed(2)));
+					this.builder.rerender().catch(e=>e);
 				} else {
-					const weapon: Weapon = ItemStack.getItem(user.inventory.weapon);
+					const weapon = user.inventory.weapon.getItem<Weapon>();
 
 					// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-					if(user.inventory.weapon.id !== 5 && user.inventory.weapon.durability && user.inventory.weapon.durability > 0) user.inventory.weapon.durability--;
-
-					if(!user.inventory.weapon.durability) {
-						const punch = Items.find<Weapon>(5);
-						this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
-						user.inventory.weapon.id = punch.id;
-						user.inventory.weapon.durability = punch.durability;
+					if(user.inventory.weapon.items[0]?.durability) {
+						if(user.inventory.weapon.items[0].durability > 0) user.inventory.weapon.items[0].durability--;
+						if(user.inventory.weapon.items[0].durability <= 0) {
+							const punch = Items.find<Weapon>(5);
+							this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
+							user.inventory.weapon = new ItemStack(punch.id);
+						}
 					}
 
 					//임베드 전투로그 업데이트
 					this.updateEmbed(user, '+ '+weapon.attack(user, this.target));
+					this.builder.rerender().catch(e=>e);
+					if (user.stats.health <= 0 || this.target.stats.health <= 0) this.battleEnd(user);
 				}
-				this.builder.rerender();
 			})
 		],
 		[
@@ -72,11 +86,12 @@ export default class BattleManager {
 					const entity = user.inventory.items.find((e) => e.id == id);
 					if(!entity) return;
 					
-					entity.amount--;
+					entity.remove();
 					if (!entity.amount) user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
 
 					user.switchWeapon(weapon);
-					this.updateEmbed(user, bundle.format(this.locale, 'switch_change', weapon.localName(user), ItemStack.getItem(user.inventory.weapon).localName(user)));
+					this.updateEmbed(user, bundle.format(this.locale, 'switch_change', weapon.localName(user), user.inventory.weapon.getItem().localName(user)));
+					this.builder.rerender().catch(e=>e);
 				}
 			}, 'select', u=>{
 				const options = u.inventory.items.filter((e) => Items.find(e.id) instanceof Weapon).map((stack) => ({
@@ -109,6 +124,10 @@ export default class BattleManager {
 	}
 
 	battleEnd(user: User) {
+		clearInterval(this.interval);
+		user.status.clearSelection();
+		this.builder.setComponents([]);
+
 		if(this.target.stats.health <= 0) {
 			const unit = Units.find(this.target.id);
 			const items: { item: Item, amount: number }[] = [];
@@ -135,15 +154,9 @@ export default class BattleManager {
 			);
 		}
 		else if(user.stats.health <= 0) {
-			user.stats.health = 0.1 * user.stats.health_max;
 			this.updateEmbed(user, '- '+bundle.format(this.locale, 'battle.lose', user.stats.health.toFixed(2)));
 		}
-
-		//유저데이터 초기화 및 저장
-		clearInterval(this.interval);
-		user.status.clearSelection();
-		this.builder.setComponents([]);
-		this.builder.rerender();
+		this.builder.rerender().catch(e=>e);
 		save();
 	}
 }

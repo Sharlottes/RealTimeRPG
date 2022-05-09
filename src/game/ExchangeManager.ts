@@ -26,8 +26,8 @@ export default class ExchangeManager {
 		for (let i = 0; i < 20; i++) {
 			const item = getOne(Items.items.filter((i) => i.dropOnShop && i.id !== 5 && (typeof i)));
 			const exist = this.target.inventory.items.find((e) => e.id == item.id);
-			if (exist) exist.amount++;
-			else this.target.inventory.items.push(new ItemStack(item.id, 1, (item as unknown as Durable).durability));
+			if (exist) exist.add();
+			else this.target.inventory.items.push(new ItemStack(item.id));
 		}
 		const data = SelectEvent.toActionData(this.selection, user);
 		this.builder.setComponents(data.actions).setTriggers(data.triggers).setDescription('').setFields([
@@ -94,7 +94,7 @@ export default class ExchangeManager {
 					Utils.Arrays.division(Array.from(owner.inventory.items), 4).forEach((items, ii) => {
 						const components: MessageButton[] = [];
 						items.forEach((entity, i) => {
-							const item = ItemStack.getItem(entity);
+							const item = entity.getItem();
 							const localName = item.localName(user);
 							const money = (100-item.ratio) * 25;
 
@@ -113,7 +113,7 @@ export default class ExchangeManager {
 											owner.money += money * amount;
 											visitor.money -= money * amount;
 											visitor.giveItem(item, amount);
-											entity.amount -= amount;
+											entity.remove(amount);
 											if (entity.amount <= 0)	owner.inventory.items.splice(owner.inventory.items.indexOf(entity), 1);
 											
 											(button as Discord.MessageButton).setLabel(`${localName} (${entity.amount + bundle.format(this.locale, 'unit.item')}): ${money + bundle.format(this.locale, 'unit.money')}`).setStyle('PRIMARY');
