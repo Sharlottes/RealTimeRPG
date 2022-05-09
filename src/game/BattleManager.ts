@@ -29,7 +29,6 @@ export default class BattleManager {
 		this.interval = setInterval(() => {
 			const inventory = this.target.inventory;
 			const weapon: Weapon = Items.find(inventory.weapon.id);
-			console.log(inventory.weapon);
 			if(inventory.weapon.items[0]?.cooldown) inventory.weapon.items[0].cooldown -= 100 / 1000;
 			if (inventory.weapon.items[0]?.cooldown && inventory.weapon.items[0].cooldown <= 0 && this.target.stats.health > 0) {
 				inventory.weapon.items[0].cooldown = weapon.cooldown;
