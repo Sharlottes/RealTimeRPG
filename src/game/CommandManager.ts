@@ -82,12 +82,12 @@ const eventData: BaseEvent[] = [
 
 function consumeCmd(user: User) {
 	const msg = findMessage(user);
-	const name = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
+	const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getInteger('target', true);
 	const amount = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getInteger('amount', false)||1;
-	const stack: ItemStack | undefined = user.inventory.items.find((i) => i.getItem().name == name);
-	if (!stack) return new BaseEmbed(msg.interaction).addField('ERROR', "```\n"+bundle.format(user.getLocale(msg), 'error.notFound', name)+"\n```");
-	if (stack.amount <= 0) return new BaseEmbed(msg.interaction).addField('ERROR', "```\n"+bundle.format(user.getLocale(msg), 'error.missing_item', stack.getItem().localName(user))+"\n```");
-	if (stack.amount <= amount) return new BaseEmbed(msg.interaction).addField('ERROR', "```\n"+bundle.format(user.getLocale(msg), 'error.not_enough', stack.getItem().localName(user), amount)+"\n```");
+	const stack: ItemStack | undefined = user.inventory.items.find((i) => i.getItem().id == id);
+	if (!stack) return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.notFound', Items.find(id).localName(user)));
+	if (stack.amount <= 0) return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.missing_item', stack.getItem().localName(user)));
+	if (stack.amount <= amount) return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.not_enough', stack.getItem().localName(user), amount));
 	return new BaseEmbed(msg.interaction).setDescription(stack.consume(user, amount));
 }
 
@@ -97,16 +97,13 @@ function walkingCmd(user: User) {
 	if (user.stats.energy >= 7) {
 		user.countover = 0;
 		user.stats.energy -= 7;
-		getOne(eventData.map(e=>e.data), (data,i)=>{
-			eventData[i].start(user);
-			return 'walking...';
-		});
+		getOne(eventData.map(e=>e.data), (data,i)=> eventData[i].start(user));
 	} else {
 		if (user.countover >= 3) {
-			return new BaseEmbed(msg.interaction).addField('ERROR', "```\n"+bundle.format(user.getLocale(msg), 'error.calmdown')+"\n```");
+			return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.calmdown'));
 		} else {
 			user.countover++;
-			return new BaseEmbed(msg.interaction).addField('ERROR', "```\n"+bundle.format(user.getLocale(msg), 'error.low_energy', user.stats.energy.toFixed(1))+"\n```");
+			return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.low_energy', user.stats.energy.toFixed(1)));
 		}
 	}
 }
@@ -164,7 +161,7 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>Page
 				const embed = (callback as (msg: User)=>PagesBuilder)(user);
 				if(embed instanceof PagesBuilder) embed.build();
 				else if(typeof embed === 'string') new BaseEmbed(interaction).setDescription(embed).build();
-				else new BaseEmbed(interaction).setTitle('ERROR').setDescription('something got crashed!').build();
+				else if(embed) new BaseEmbed(interaction).setTitle('ERROR').setDescription('something got crashed!').build();
 			}
 
 			save();
@@ -174,15 +171,11 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>Page
 
 namespace CommandManager {
   export function init() {
-    registerCmd(new SlashCommandBuilder().setName('reset').setDescription('remove current selection so that you can do walk'), (user: User) => {
-      user.status.clearSelection();
-      return 'selection is removed successfully!';
-    }, true);
     registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), (user: User) => user.getUserInfo(findMessage(user)), true);
     registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), (user: User) => user.getInventoryInfo(findMessage(user)), true);
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('consume').setDescription('consume item');
-      s.addStringOption((option) => option.setName('target').setDescription('item name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Consumable).consume).map((u) => [u.name, u.name])));
+      s.addIntegerOption((option) => option.setName('target').setDescription('item name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Consumable).consume).map((u) => [u.name, u.id])));
 			s.addIntegerOption((option) => option.setName('amount').setDescription('item amount'));
 			return s;
     })(), consumeCmd, true);
