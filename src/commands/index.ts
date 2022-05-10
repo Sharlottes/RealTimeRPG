@@ -28,7 +28,7 @@ namespace CommandManager {
 
         if(!commands.has(commandName)) {
             commands.set(commandName, command);
-            console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} command.`);
+            if(app.config.debug) console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} command.`);
             return true;
         } else {
             return false;
@@ -37,6 +37,7 @@ namespace CommandManager {
 
     export async function reloadCommands() {
         commands.clear();
+        if(app.config.gameOnly) return commands;
         const globals: fs.Dirent[] = []; 
         fs.readdirSync((config.debug ? "./src" : ".") + "/commands/global/", { withFileTypes: true, encoding: "utf-8"})
         .forEach(file => {
@@ -59,7 +60,7 @@ namespace CommandManager {
                     if(!commands.has(command.builder.name)) {
                         commands.set(command.builder.name, command);
                     }
-                    console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} command.`);
+                    if(app.config.debug) console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} command.`);
                 }
             }
         }
@@ -103,7 +104,6 @@ namespace CommandManager {
             if(command.category == target) {
                 const data = command.setHiddenConfig(command.builder.toJSON());
                 createSeq.push(application.commands.create(data, target == "global" ? undefined : guild.id));
-                console.log(`${data.name} is recreated.`);
             }
         })
 

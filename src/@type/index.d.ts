@@ -82,7 +82,7 @@ export type ItemData = {
 export type UnitData = {
     name: string
     level: number
-    items: ItemStack[]
+    inventory?: Inventory
     stats: Stat
 } & Rationess
 

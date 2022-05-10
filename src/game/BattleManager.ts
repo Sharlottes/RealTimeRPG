@@ -1,11 +1,9 @@
+import { EventSelection, SelectEvent } from '../event';
 import { BaseEmbed, User } from '../modules';
 import { Mathf, Canvas} from '../util';
-import { UnitEntity, Items, Units } from '.';
-import { Item, ItemStack, Weapon } from './contents';
 import { bundle } from '../assets';
-import { EventSelection, SelectEvent } from '../event';
-
-import { getOne, save, findMessage } from './rpg_';
+import { Item, ItemStack, Weapon } from './contents';
+import { UnitEntity, ItemEntity, Items, Units, getOne, save, findMessage } from '.';
 
 export default class BattleManager {
 	target: UnitEntity;
@@ -28,15 +26,16 @@ export default class BattleManager {
 
 		this.interval = setInterval(() => {
 			const inventory = this.target.inventory;
+			const weaponEntity: ItemEntity = inventory.weapon.items[0];
 			const weapon: Weapon = Items.find(inventory.weapon.id);
-			if(inventory.weapon.items[0]?.cooldown) inventory.weapon.items[0].cooldown -= 100 / 1000;
-			if (inventory.weapon.items[0]?.cooldown && inventory.weapon.items[0].cooldown <= 0 && this.target.stats.health > 0) {
-				inventory.weapon.items[0].cooldown = weapon.cooldown;
+			if(weaponEntity?.cooldown) weaponEntity.cooldown -= 100 / 1000;
+			if (weaponEntity?.cooldown && weaponEntity.cooldown <= 0 && this.target.stats.health > 0) {
+				weaponEntity.cooldown = weapon.cooldown;
 
 				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-				if(inventory.weapon.items[0]?.durability) {
-					if(inventory.weapon.items[0].durability > 0) inventory.weapon.items[0].durability--;
-					if(inventory.weapon.items[0].durability <= 0) {
+				if(weaponEntity?.durability) {
+					if(weaponEntity.durability > 0) weaponEntity.durability--;
+					if(weaponEntity.durability <= 0) {
 						const punch = Items.find<Weapon>(5);
 						this.updateEmbed(user, '- '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
 						inventory.weapon = new ItemStack(punch.id);
@@ -54,19 +53,22 @@ export default class BattleManager {
 		[
 			new EventSelection('attack', (user) => {
 				if(user.stats.health <= 0 || this.target.stats.health <= 0) return;
-				if (user.inventory.weapon.items[0]?.cooldown && user.inventory.weapon.items[0].cooldown > 0) {
-					this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.cooldown', user.inventory.weapon.items[0].cooldown.toFixed(2)));
+				const inventory = this.target.inventory;
+				const weaponEntity: ItemEntity = inventory.weapon.items[0];
+				const weapon = inventory.weapon.getItem<Weapon>();
+
+				if (weaponEntity?.cooldown && weaponEntity.cooldown > 0) {
+					this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.cooldown', weaponEntity.cooldown.toFixed(2)));
 					this.builder.rerender().catch(e=>e);
 				} else {
-					const weapon = user.inventory.weapon.getItem<Weapon>();
 
 					// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-					if(user.inventory.weapon.items[0]?.durability) {
-						if(user.inventory.weapon.items[0].durability > 0) user.inventory.weapon.items[0].durability--;
-						if(user.inventory.weapon.items[0].durability <= 0) {
+					if(weaponEntity?.durability) {
+						if(weaponEntity.durability > 0) weaponEntity.durability--;
+						if(weaponEntity.durability <= 0) {
 							const punch = Items.find<Weapon>(5);
 							this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
-							user.inventory.weapon = new ItemStack(punch.id);
+							inventory.weapon = new ItemStack(punch.id);
 						}
 					}
 

@@ -1,11 +1,11 @@
-import { User } from "../modules";
-import { BaseEvent } from "./BaseEvent";
-import { MessageActionRow, MessageButton, MessageEmbed, MessageActionRowComponent, MessageSelectMenuOptions, InteractionButtonOptions, MessageSelectMenu, MessageComponentInteraction } from "discord.js";
-import { PagesBuilder, ITrigger } from "discord.js-pages";
-import Assets from "@뇌절봇/assets";
-import { findMessage, save } from "@뇌절봇/game/rpg_";
+
+import { MessageActionRow, MessageButton, MessageActionRowComponent, MessageSelectMenuOptions, InteractionButtonOptions, MessageSelectMenu, MessageComponentInteraction } from "discord.js";
+import { ITrigger } from "discord.js-pages";
+import { User, BaseEmbed } from "@뇌절봇/modules";
+import { findMessage, save } from "@뇌절봇/game";
 import { EventData } from "@뇌절봇/@type";
-import { BaseEmbed } from '../modules/BaseEmbed';
+import { BaseEvent } from "@뇌절봇/event";
+import Assets from "@뇌절봇/assets";
 
 export class EventSelection {
     readonly name: string;

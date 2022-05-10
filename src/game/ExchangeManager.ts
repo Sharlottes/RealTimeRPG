@@ -1,15 +1,11 @@
 import Discord, { MessageActionRow, MessageButton, MessageButtonOptions } from 'discord.js';
 
-import { User } from '../modules';
-import { UnitEntity, Items } from '.';
-import { ItemStack, Units } from './contents';
-import { Durable } from '@뇌절봇/@type';
-import { bundle } from '../assets';
+import { UnitEntity, Items,  getOne, save, findMessage } from '.';
 import { EventSelection, SelectEvent } from '../event';
-
-import { getOne, save, findMessage } from './rpg_';
-import { Utils } from '@뇌절봇/util';
-import { BaseEmbed } from '../modules/BaseEmbed';
+import { ItemStack, Units } from './contents';
+import { User, BaseEmbed } from '../modules';
+import { bundle } from '../assets';
+import { Utils } from '../util';
 
 export default class ExchangeManager {
 	target: UnitEntity;
@@ -68,7 +64,7 @@ export default class ExchangeManager {
 				this.amountSelect(Number(interactionCallback.values[0]));
 				this.amountSelect = undefined;
 				this.waitingSelect(false);
-				this.builder.rerender();
+				this.builder.rerender().catch(e=>e);
 				save();
 			}
 		}, 'select', (user: User) => {

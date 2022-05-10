@@ -1,10 +1,9 @@
+
+import { Consumable, Dropable, Durable, ItemData, Rationess, Stat, UnitData, Inventory } from '@뇌절봇/@type';
+import { ItemStack, UnitEntity } from '@뇌절봇/game';
 import { User } from '@뇌절봇/modules';
-import Assets from '@뇌절봇/assets';
-import { Consumable, Dropable, Durable, Heathy, ItemData, Rationess, Stat, UnitData } from '@뇌절봇/@type';
 import { Utils } from '@뇌절봇/util';
-import { UnitEntity } from '../Entity';
-import admin from '../../net/FirebaseAdmin';
-import { Inventory } from '../../@type/index';
+import Assets from '@뇌절봇/assets';
 
 const Bundle = Assets.bundle;
 
@@ -88,10 +87,10 @@ export class Unit extends Content implements Rationess {
 		super(data.name, 'unit');
 		this.level = data.level;
 		this.ratio = data.ratio;
-		this.inventory = {
-			items: data.items,
-			weapon: new ItemStack(5)
-		};
+		this.inventory = data.inventory || {
+        items: [],
+        weapon: new ItemStack(5)
+    } as Inventory;
 		this.stats = data.stats;
 		this.id = Units.units.length;
 	}
@@ -118,7 +117,7 @@ export class Buff {
 	}
 }
 
-export class Potion extends Item implements Consumable, Rationess {
+export class Potion extends Item implements Consumable {
 	readonly buffes: Buff[];
 
 	constructor(data: ItemData, buffes: Buff[]) {
@@ -128,71 +127,6 @@ export class Potion extends Item implements Consumable, Rationess {
 
 	consume(user: User, amount = 1) {
 		return Bundle.format(user.getLocale(), 'consume', this.localName(user), amount, this.buffes.map((b) => b.buff(user, amount)).join('\n  '));
-	}
-}
-
-export class ItemEntity { 
-	public durability?: number;
-	public cooldown?: number;
-
-  public constructor(durability?: number, cooldown?: number) {
-		this.durability = durability;
-		this.cooldown = cooldown;
-	}
-}
-
-export class ItemStack {
-	public readonly id: number;
-	public readonly items: ItemEntity[] = [];
-	private stackable = true;
-
-	public constructor(id: number, amount = 1, items?: ItemEntity[]) {
-		this.id = id;
-		if(items) this.items = items;
-		this.add(amount);
-		if(this.getItem() instanceof Weapon) this.stackable = false;
-	}
-
-	public consume(user: User, amount = 1) {
-		const item = Items.find(this.id);
-		if (item && item instanceof Potion) {
-			this.remove(amount);
-			return item.consume(user, amount);
-		}
-	}
-
-	public add(stack: number|ItemEntity[] = 1) {
-		if(this.stackable) {
-			for(let i = 0, m = typeof stack === 'number' ? stack : stack.length; i < m; i++) {
-				this.items.push(this.makeEntity(typeof stack === 'number' ? undefined : stack[i]));
-			}
-		}
-		else this.items[0] = this.makeEntity(typeof stack === 'number' ? undefined : stack[0]);
-	}
-
-	public remove(amount = 1) {
-		if(this.stackable) {
-			for(let i = 0; i < amount; i++) {
-				this.items.pop();
-			}
-		}
-		else this.items.pop();
-	}
-
-  private	makeEntity(entity?: ItemEntity): ItemEntity {
-		if(entity) return entity;
-		const item = this.getItem();
-		const durability = (item instanceof Weapon ? item.durability : undefined);
-		const cooldown = (item instanceof Weapon ? item.cooldown : undefined);
-		return new ItemEntity(durability || durability == -1 ? undefined : durability, cooldown);
-	}
-
-	getItem<T extends Item>(): T {
-		return Items.find<T>(this.id);
-	}
-
-	get amount() {
-		return Array.isArray(this.items) ? this.items.length : 1;
 	}
 }
 
@@ -312,8 +246,7 @@ export class Units {
 				energy_max: 0,
 				energy_regen: 0
 			},
-			ratio: 0.1,
-			items: []
+			ratio: 0.1
 		}));
 		this.units.push(new Unit({
 			name: 'goblin',
@@ -328,8 +261,7 @@ export class Units {
 				energy_max: 0,
 				energy_regen: 0
 			},
-			ratio: 0.3,
-			items: []
+			ratio: 0.3
 		}));
 	}
 

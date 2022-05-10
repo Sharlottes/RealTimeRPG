@@ -1,14 +1,15 @@
-import Assets from '../assets';
-import { Items, ItemStack } from "../game";
-import { Utils } from "../util";
-import Discord, { MessageAttachment, MessageEmbed, MessageButton } from 'discord.js';
-import { findMessage, save } from '@뇌절봇/game/rpg_';
-import { Durable, Inventory, Stat, Message, UserSave } from '@뇌절봇/@type';
-import { filledBar } from 'string-progressbar';
+
+import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionRow } from 'discord.js';
+
 import Canvas from 'canvas';
-import { MessageActionRow } from 'discord.js';
-import { Item, Weapon } from '@뇌절봇/game/contents';
-import { BaseEmbed } from './BaseEmbed';
+import { filledBar } from 'string-progressbar';
+
+import { BaseEmbed } from '.';
+import { Inventory, Stat, Message, UserSave } from '../@type';
+import { findMessage, save, Items, ItemStack } from "../game";
+import { Item, Weapon } from '../game/contents';
+import { Utils } from "../util";
+import Assets from '../assets';
 import app from '..';
 
 const Bundle = Assets.bundle;
@@ -22,11 +23,6 @@ const defaultStat: Stat = {
   energy_regen: 1,
   strength: 0,
   defense: 0,
-};
-
-export const defaultInven: Inventory = {
-  items: [],
-  weapon: new ItemStack(5), //주먹
 };
 
 export class Status {
@@ -53,7 +49,10 @@ export class User {
   public user: Discord.User;
   public status: Status = new Status();
   public stats: Stat = defaultStat;
-  public inventory: Inventory = defaultInven;
+  public inventory: Inventory = {
+    items: [],
+    weapon: new ItemStack(5), //주먹
+  };
   public foundContents = {items: [-1], units: [-1]};
 
   constructor(user: Discord.User|string) {
@@ -68,19 +67,17 @@ export class User {
     this.init();
   }
 
-  public static with(data: UserSave) {
+  public static with(data: UserSave): User {
     const user = new User(data.id);
     user.read(data);
     return user;
   }
 
   public getLocale(msg = findMessage(this)) {
-    return msg?.interaction.locale;
+    return msg?.interaction.locale||'en';
   }
 
   public init() {
-		if(!this.foundContents.items) this.foundContents.items = this.inventory.items.map((i) => i.id);
-		if(!this.foundContents.units) this.foundContents.units = [];
     this.status = new Status();
   }
 
@@ -245,133 +242,3 @@ export class User {
       ]);
   }
 }
-/*
-
-function login(users: User[], target: User, msg: Message, lang: Assets.bundle.language) {
-  const hash = msg.interaction.user.id;
-  const others = users.filter((u) => u !== target && u.hash == Number(hash));
-  if (others.length) {
-    users = users.map((u) => {
-      if (u == target || u.hash !== Number(hash)) return u;
-      u.hash = 0;
-      return u;
-    });
-    return Bundle.find(lang, "account.auto_logout");
-  }
-  target.hash = Number(hash);
-  Database.writeObject("./Database/user_data", users);
-  return Bundle.find(lang, "account.login_success");
-}
-
-export function create(msg: Message, users: User[], lang: Assets.bundle.language = "en") {
-  const hash = msg.interaction.user.id;
-  const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('id', true).replace(/[@]/g, "");
-  const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
-  const user = users.find((u) => u.id == id);
-
-  if (user) return Bundle.format(lang, "account.account_exist", id);
-  else {
-    const target = new User({id: id, password: pw, hash: hash});
-    users.push(target);
-    login(users, target, msg, lang);
-    return Bundle.find(lang, "account.create_success");
-  }
-}
-
-export function remove(msg: Message, users: User[], lang: Assets.bundle.language = "en") {
-  const hash = msg.interaction.user.id;
-  const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('id', true).replace(/[@]/g, "");
-  const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
-  const user = users.find((u) => u.id == id);
-  
-  if (!user) return Bundle.find(lang, "account.account_notFound");
-  else if (user.password !== pw)
-    return Bundle.find(lang, "account.account_incorrect");
-  else if (user.hash !== Number(hash))
-    return Bundle.find(lang, "account.account_notLogin");
-  else {
-    users.splice(users.indexOf(user), 1);
-    Database.writeObject("./Database/user_data", users);
-    return Bundle.find(lang, "account.remove_success");
-  }
-}
-
-export function signin(msg: Message, users: User[], lang: Assets.bundle.language = "en") {
-  const hash = msg.interaction.user.id;
-  const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('id', true).replace(/[@]/g, "");
-  const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
-  const user = users.find((u) => u.id == id);
-
-  if (!user) return Bundle.find(lang, "account.account_notFound");
-  else if (user.password !== pw) 
-    return Bundle.find(lang, "account.account_incorrect");
-  else if (user.hash)
-    return 
-      user.hash == Number(hash)
-        ? Bundle.find(lang, "account.account_have")
-        : Bundle.find(lang, "account.account_has")
-    );
-  else login(users, user, msg, lang);
-}
-
-export function signout(msg: Message, users: User[], lang: Assets.bundle.language = "en") {
-  const hash = msg.interaction.user.id;
-  const user = users.find((u) => u.hash == Number(hash));
-
-  if (!user) return Bundle.find(lang, "account.account_notLogin"));
-  else {
-    user.hash = 0;
-    return Bundle.find(lang, "account.logout_success");
-    Database.writeObject("user_data", users);
-  }
-}
-
-export function change(msg: Message, users: User[], lang: Assets.bundle.language = "en") {
-  const type = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('type', true);
-  const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('id', true).replace(/[@]/g, "");
-  const pw = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('pw', true);
-  const changeto = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
-  const user = users.find((u) => u.id == id);
-  
-  if (!user) return Bundle.find(lang, "account.account_notFound");
-  {
-    switch(type.toLowerCase()) {
-      case 'pw': {
-        if(users.find(u => u.id === changeto)) {
-          return Bundle.format(lang, "account.account_exist", id);
-        } else {
-          user.id = changeto;
-          return Bundle.format(lang, "account.change_id", user.id, changeto);
-        }
-      } 
-    }
-  }
-  else if (type.toLowerCase() == "pw") {
-    if (users.find((u) => u.id == changeto))
-      return Bundle.format(lang, "account.account_exist", id);
-    else {
-      user.id = changeto;
-      return Bundle.format(lang, "account.change_id", user.id, changeto);
-    }
-  } else if (type.toLowerCase() == "id") {
-    user.password = changeto;
-    return Bundle.format(lang, "account.change_pw", user.id, changeto);
-  }
-
-  Database.writeObject("./Database/user_data", users);
-}
-/*
-export function setLang(msg: Message, users: User[], lang: Assets.bundle.language = "en") {
-  const hash = msg.interaction.user.id;
-  const langto: Assets.bundle.language = msg.content.split(/\s/)[1] as Assets.bundle.language;
-  const user = users.find((u) => user.hash == Number(hash));
-
-  if (!user) return return Bundle.find(lang, "account.account_notLogin"));
-  else {
-    user.lang = langto;
-    return Bundle.format(lang, "account.lang_success", lang, langto));
-    Database.writeObject("./Database/user_data", users);
-  }
-};
-*/
-

@@ -1,20 +1,16 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import Discord, { CacheType, MessageEmbed } from 'discord.js';
-
 import { PagesBuilder } from 'discord.js-pages';
-import { User } from '../modules';
-import { Mathf } from '../util';
-import { UnitEntity, Items, Units, Vars } from '.';
-import { ItemStack, Weapon } from './contents';
-import { Consumable } from '@뇌절봇/@type';
-import { bundle } from '../assets';
-import { BaseEvent, EventSelection, SelectEvent } from '../event';
 
+import { BaseEvent, EventSelection, SelectEvent } from '../event';
+import { User, BaseEmbed } from '../modules';
+import { Mathf, Arrays } from '../util';
+import { Consumable } from '../@type';
+import { bundle } from '../assets';
 import CM from '../commands';
-import ExchangeManager from './ExchangeManager';
-import { findMessage, getOne, save } from './rpg_';
-import { BaseEmbed } from '../modules/BaseEmbed';
-import BattleManager from './BattleManager';
+
+import { Content, Weapon } from './contents';
+import { UnitEntity, Items, Units, Vars, findMessage, getOne, save, ExchangeManager, BattleManager, ItemStack } from '.';
 
 const eventData: BaseEvent[] = [
 	new BaseEvent({
@@ -46,9 +42,9 @@ const eventData: BaseEvent[] = [
 				if (Mathf.randbool()) {
 					const money = Math.floor(Mathf.range(2, 10));
 					user.money -= money;
-					msg.builder.addFields([{name: "Result:", value: "```\n"+bundle.format(user.getLocale(msg), 'event.goblin_run_failed', money)+"\n```"}]);
+					msg.builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.getLocale(msg), 'event.goblin_run_failed', money)+"\n```"});
 				} else {
-					msg.builder.addFields([{name: "Result:", value: "```\n"+bundle.find(user.getLocale(msg), 'event.goblin_run_success')+"\n```"}]);
+					msg.builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.getLocale(msg), 'event.goblin_run_success')+"\n```"});
 				}
 				msg.builder.setComponents([]);
 				user.status.clearSelection();
@@ -59,7 +55,7 @@ const eventData: BaseEvent[] = [
 
 				const money = Math.floor(Mathf.range(2, 5));
 				user.money -= money;
-				msg.builder.addFields([{name: "Result:", value: (bundle.format(user.getLocale(msg), 'event.goblin_talking', money))}]);
+				msg.builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.getLocale(msg), 'event.goblin_talking', money)+"\n```"});
 				msg.builder.setComponents([]);
 				user.status.clearSelection();
 			}),
@@ -88,17 +84,9 @@ function consumeCmd(user: User) {
 	const msg = findMessage(user);
 	const name = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
 	const stack: ItemStack | undefined = user.inventory.items.find((i) => i.getItem().name == name);
-	if (!stack || stack.amount <= 0) return new BaseEmbed(msg.interaction).addField('ERROR', bundle.format(user.getLocale(msg), 'notFound', name));
-
-	const result = stack.consume(user);
-	if (result) msg.interaction.followUp(result);
-}
-
-function weaponChangeCmd(user: User) {
-	const msg = findMessage(user);
-	const weapon = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('target', true);
-
-	return user.switchWeapon(Items.find<Weapon>((i) => i.localName(user) == weapon));
+	if (!stack) return new BaseEmbed(msg.interaction).addField('ERROR', bundle.format(user.getLocale(msg), 'error.notFound', name));
+	if (stack.amount <= 0) return new BaseEmbed(msg.interaction).addField('ERROR', bundle.format(user.getLocale(msg), 'error.missing_item', stack.getItem().localName(user)));
+	return new BaseEmbed(msg.interaction).setDescription(stack.consume(user));
 }
 
 function walkingCmd(user: User) {
@@ -124,25 +112,28 @@ function walkingCmd(user: User) {
 function contentInfoCmd(user: User) {
 	const msg = findMessage(user);
 	const type = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('type', false);
-	const embeds = [];
+	const contents: Content[] = [];
+	const embeds: MessageEmbed[] = [];
 
 	if(!type || type == 'unit') {
-		const unitEmbed = new MessageEmbed();
 		for(const unit of Units.units) {
 			if(!user.foundContents.units.includes(unit.id)) continue;
-			unitEmbed.addField(unit.localName(user), unit.description(user)+'\n\n'+(unit.details(user)||''));
+			contents.push(unit);
 		}
-		embeds.push(unitEmbed);
 	}
 
 	if(!type || type == 'item') {
-		const itemEmbed = new MessageEmbed();
 		for(const item of Items.items) {
 			if(!user.foundContents.items.includes(item.id)) continue;
-			itemEmbed.addField(item.localName(user), item.description(user)+'\n\n'+(item.details(user)||''));
+			contents.push(item);
 		}
-		embeds.push(itemEmbed);
 	}
+
+	Arrays.division(contents, 5).forEach(conts=>{
+		const embed = new MessageEmbed();
+		conts.forEach(cont=>embed.addField(cont.localName(user), cont.description(user)+'\n\n'+(cont.details(user)||'')));
+		embeds.push(embed);
+	});
 
 	return new BaseEmbed(msg.interaction).setPages(embeds).setDefaultButtons(['back', 'next']);
 }
@@ -195,46 +186,11 @@ namespace CommandManager {
       return s;
     })(), consumeCmd, true);
     registerCmd((() => {
-      const s = new SlashCommandBuilder().setName('swap').setDescription('swap the weapon');
-      s.addStringOption((option) => option.setName('target').setDescription('target weapon name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Weapon).damage).map((u) => [u.name, u.name])));
-      return s;
-    })(), weaponChangeCmd, true); 
-    registerCmd((() => {
       const s = new SlashCommandBuilder().setName('info').setDescription('show content information');
       s.addStringOption((option) => option.setName('type').setDescription('the content type').addChoices([['item', 'item'], ['unit', 'unit']]));
       return s;
     })(), contentInfoCmd, true);
     registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), walkingCmd);
-		/*
-    registerCmd(new SlashCommandBuilder().setName('accounts').setDescription('show all accounts'), (msg: Message) => users.map((u) => u.id).join(' | '));
-    registerCmd(new SlashCommandBuilder().setName('signout').setDescription('sign current account out'), (msg: Message) => signout(msg, users), true);
-    registerCmd((() => {
-      const s = new SlashCommandBuilder().setName('register').setDescription('register new account');
-      s.addStringOption((option) => option.setRequired(true).setName('id').setDescription('account id'));
-      s.addStringOption((option) => option.setRequired(true).setName('pw').setDescription('account passward'));
-      return s;
-    })(), (msg: Message) => create(msg, users));
-    registerCmd((() => {
-      const s = new SlashCommandBuilder().setName('remove').setDescription('remove current account and sign out');
-      s.addStringOption((option) => option.setRequired(true).setName('id').setDescription('account id'));
-      s.addStringOption((option) => option.setRequired(true).setName('pw').setDescription('account passward'));
-      return s;
-    })(), (msg: Message) => remove(msg, users), true);
-    registerCmd((() => {
-      const s = new SlashCommandBuilder().setName('signin').setDescription('sign existed account in');
-      s.addStringOption((option) => option.setRequired(true).setName('id').setDescription('account id'));
-      s.addStringOption((option) => option.setRequired(true).setName('pw').setDescription('account passward'));
-      return s;
-    })(), (msg: Message) => signin(msg, users));
-    registerCmd((() => {
-      const s = new SlashCommandBuilder().setName('change').setDescription('change passward or id');
-      s.addStringOption((option) => option.setRequired(true).setName('type').setDescription('id or passward').addChoices([['id', 'id'], ['pw', 'pw']]));
-      s.addStringOption((option) => option.setRequired(true).setName('id').setDescription('account id'));
-      s.addStringOption((option) => option.setRequired(true).setName('pw').setDescription('account passward'));
-      s.addStringOption((option) => option.setRequired(true).setName('target').setDescription('new id/pw'));
-      return s;
-    })(), (msg: Message) => change(msg, users), true);
-		*/
   }
 }
 

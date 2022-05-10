@@ -178,4 +178,5 @@ namespace Utils {
 export default Utils;
 const Mathf = Utils.Mathf;
 const Canvas = Utils.Canvas;
-export {Mathf, Canvas};
+const Arrays = Utils.Arrays;
+export {Mathf, Canvas, Arrays};

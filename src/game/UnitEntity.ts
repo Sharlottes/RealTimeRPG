@@ -1,8 +1,6 @@
-import { defaultInven } from "../modules";
-import { ItemStack } from "../game";
-import { Inventory } from '../@type';
+import { ItemStack } from ".";
 import { Item, Unit } from "./contents";
-import { Stat } from '../@type/index';
+import { Inventory, Stat } from '../@type';
 
 export class UnitEntity {
   id: number;

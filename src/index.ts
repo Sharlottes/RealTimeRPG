@@ -6,10 +6,11 @@ import CM from "@뇌절봇/commands";
 import assets from "@뇌절봇/assets"
 import config from "@뇌절봇/config.json"
 
-import { init } from './game/rpg_';
+import { CommandManager, init } from './game';
 import { onDiscordMessage } from "./kakao";
 import Vars from './Vars';
 
+const time = Date.now();
 const masterIDs = [
     "462167403237867520",
     "473072758629203980"
@@ -54,17 +55,18 @@ for(let i = 0; i < process.argv.length; i += 2) {
 
 // 애셋 파일 로딩
 assets.init(config.debug);
-console.log('asset initialization has been done');
+console.log(`asset initialization has been done: ${Date.now()-time}ms`);
 
 //전역 변수 로딩
 Vars.init();
-console.log('vars initialization has been done');
+console.log(`vars initialization has been done: ${Date.now()-time}ms`);
 
-client.once("ready", () => {
-    console.log(`Logged in as ${client.user?.tag}(${client.application?.id})!`)
+client.once("ready", async () => {
+    console.log(`Logged in as ${client.user?.tag}(${client.application?.id}): ${Date.now()-time}ms`)
     
     // 봇 명령어 초기화
-    CM.refreshCommand("global").then(()=>console.log('global commend refreshing has done'));
+    await CM.refreshCommand("global");
+    console.log(`global command initialization has been done: ${Date.now()-time}ms`);
     
     // 서버마다 데이터베이스 체크
     client.guilds.cache.forEach(guildInit);
@@ -92,13 +94,20 @@ client.on("messageCreate", async message => {
         const time = new Date().getTime();
         const guild = message.guild;
 
-        message.reply(`refresh start! server: ${guild.name}`);
-        CM.refreshCommand("guild", guild).then(init)
-        .then(() => message.reply(`refresh finished in ${(Date.now() - time) / 1000}s`))
-        .catch(e => message.reply((e as object).toString())); 
+        message.reply(`refresh start! server: ${guild.name}`).catch(e => message.reply((e as object).toString()));
+        await CM.reloadCommands().then(CommandManager.init);
+        await CM.refreshCommand("guild", guild);
+        message.reply(`guild command initialization has been done in ${(Date.now() - time)}ms`);
     }
 });
 
-CM.reloadCommands().then(init).then(()=>client.login(config.botToken));
+
+CM.reloadCommands().then(async ()=>{
+    console.log(`global command initialization has been done in ${(Date.now() - time)}ms`);
+    init();
+    console.log(`game initialization has been done in ${(Date.now() - time)}ms`);
+    await client.login(config.botToken);
+    console.log(`discord bot login has been done in ${(Date.now() - time)}ms`);
+});
 
 //Kakao.init();
