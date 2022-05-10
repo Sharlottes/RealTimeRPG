@@ -11,6 +11,7 @@ import CM from '../commands';
 
 import { Content, Weapon } from './contents';
 import { UnitEntity, Items, Units, Vars, findMessage, getOne, save, ExchangeManager, BattleManager, ItemStack } from '.';
+import { Potion } from './contents/Content';
 
 const eventData: BaseEvent[] = [
 	new BaseEvent({
@@ -133,7 +134,7 @@ function contentInfoCmd(user: User) {
 		conts.forEach(cont=>embed.addField(cont.localName(user), cont.description(user)+'\n\n'+(cont.details(user)||'')));
 		embeds.push(embed);
 	});
-
+	if(embeds.length <= 0) embeds.push(new MessageEmbed().setDescription('< empty >'));
 	return new BaseEmbed(msg.interaction).setPages(embeds).setDefaultButtons(['back', 'next']);
 }
 
@@ -175,7 +176,7 @@ namespace CommandManager {
     registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), (user: User) => user.getInventoryInfo(findMessage(user)), true);
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('consume').setDescription('consume item');
-      s.addIntegerOption((option) => option.setName('target').setDescription('item name').setRequired(true).addChoices(Items.items.filter((i) => (i as unknown as Consumable).consume).map((u) => [u.name, u.id])));
+      s.addIntegerOption((option) => option.setName('target').setDescription('item name').setRequired(true).addChoices(Items.items.reduce<[name: string, value: number][]>((a, i) => i instanceof Potion ? [...a, [i.name, i.id]] : a, [])));
 			s.addIntegerOption((option) => option.setName('amount').setDescription('item amount'));
 			return s;
     })(), consumeCmd, true);
