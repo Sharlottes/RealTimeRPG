@@ -2,8 +2,8 @@ import { EventSelection, SelectEvent } from '../event';
 import { BaseEmbed, User } from '../modules';
 import { Mathf, Canvas} from '../util';
 import { bundle } from '../assets';
-import { Item, ItemStack, Weapon } from './contents';
-import { UnitEntity, ItemEntity, Items, Units, getOne, save, findMessage } from '.';
+import { Item, Weapon } from './contents';
+import { ItemStack, UnitEntity, ItemEntity, Items, Units, getOne, save, findMessage } from '.';
 
 export default class BattleManager {
 	target: UnitEntity;

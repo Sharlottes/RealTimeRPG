@@ -135,7 +135,7 @@ export class User {
     const entity = this.inventory.items.find((entity) => entity.id == weapon.id);
     const locale = this.getLocale();
 
-    if (!entity) return Bundle.format(locale, 'switch_notHave', weapon.localName(this));
+    if (!entity) return Bundle.format(locale, 'missing_item', weapon.localName(this));
     entity.remove();
     if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
 
@@ -197,7 +197,6 @@ export class User {
     return new BaseEmbed(msg.interaction)
       .setColor('#0099ff')
       .setTitle('User Status Information')
-      .setDescription('\u200B')
       .setAuthor({name: user.username, iconURL: user.displayAvatarURL(), url: user.displayAvatarURL()})
       .setThumbnail("attachment://profile-image.png")
       .addFiles(attachment)
