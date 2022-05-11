@@ -217,6 +217,19 @@ export class Items {
 				return `* ${buff.localName(user)} +${amount * buff.value}`;
 			})
 		]));
+
+		this.items.push(new Weapon({ //ID: 9
+			name: 'none', 
+			ratio: 0, 
+			damage: 0, 
+			cooldown: 0, 
+			critical_ratio: 0, 
+			critical_chance: 0, 
+			durability: 0, 
+			dropOnWalk: false,
+			dropOnBattle: false,
+			dropOnShop: false
+		}));
 	}
 
 	static find<T extends Item>(id: number | ((item: Item)=> boolean)): T {

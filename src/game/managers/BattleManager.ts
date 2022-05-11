@@ -54,8 +54,8 @@ export default class BattleManager extends SelectManager{
 				entity.remove();
 				if (!entity.amount) user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
 
-				user.switchWeapon(weapon);
 				this.updateEmbed(user, bundle.format(this.locale, 'switch_change', weapon.localName(user), user.inventory.weapon.getItem().localName(user)));
+				user.switchWeapon(weapon);
 				this.builder.rerender().catch(e=>e);
 			}
 		},

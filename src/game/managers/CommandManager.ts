@@ -39,6 +39,7 @@ const eventData: BaseEvent[] = [
 		const msg = findMessage(user);
 
 		new SelectManager(user, new BaseEmbed(msg.interaction).setPages(new MessageEmbed()))
+			.addButtonSelection('battle', 0, (user) => new BattleManager(user, new UnitEntity(Units.find(1)).setWeapon(new ItemStack(3)), msg.builder))
 			.addButtonSelection('run', 0, (user) => {
 				const msg = findMessage(user);
 				if(!msg.builder) return;
@@ -65,13 +66,13 @@ const eventData: BaseEvent[] = [
 			.addButtonSelection('exchange', 0, (user) => new ExchangeManager(user, new UnitEntity(Units.find(1)), msg.builder)).start();
 	}),
 	new BaseEvent({
-		ratio: 2330,
+		ratio: 20,
 		title: 'obstruction',
 	}, user => {
 		const msg = findMessage(user);
 
 		new SelectManager(user, new BaseEmbed(msg.interaction).setPages(new MessageEmbed()))
-			.addButtonSelection('battle', 0, (user) => new BattleManager(user, new UnitEntity(Units.find(0)), msg.builder))
+			.addButtonSelection('battle', 0, (user) => new BattleManager(user, new UnitEntity(Units.find(0)).setWeapon(new ItemStack(9)), msg.builder))
 			.addButtonSelection('run', 0, (user) => {
 				if(!msg.builder) return;
 				

@@ -22,13 +22,11 @@ export default class EventManager {
     this.builder.build();
   }
 
-  public static newErrorEmbed(user: User, description: string) {
-    const msg = findMessage(user);
-    new EventManager(user, new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(description)).start();
+  public static newErrorEmbed(user: User, description: string, interaction = findMessage(user).interaction) {
+    new EventManager(user, new BaseEmbed(interaction).setTitle("ERROR").setDescription(description)).start();
   }
 
-  public static newTextEmbed(user: User, description: string, title = "") {
-    const msg = findMessage(user);
-    new EventManager(user, new BaseEmbed(msg.interaction).setTitle(title).setDescription(description)).start();
+  public static newTextEmbed(user: User, description: string, title = "", interaction = findMessage(user).interaction) {
+    new EventManager(user, new BaseEmbed(interaction).setTitle(title).setDescription(description)).start();
   }
 }
