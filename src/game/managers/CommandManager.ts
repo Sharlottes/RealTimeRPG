@@ -2,16 +2,16 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import Discord, { CacheType, MessageEmbed } from 'discord.js';
 import { PagesBuilder } from 'discord.js-pages';
 
-import { BaseEvent, EventSelection, SelectEvent } from '../event';
-import { User, BaseEmbed } from '../modules';
-import { Mathf, Arrays } from '../util';
-import { Consumable } from '../@type';
-import { bundle } from '../assets';
-import CM from '../commands';
+import { BaseEvent } from '../../event';
+import { User, BaseEmbed } from '../../modules';
+import { Mathf, Arrays } from '../../util';
+import { bundle } from '../../assets';
+import CM from '../../commands';
 
-import { Content, Weapon } from './contents';
-import { UnitEntity, Items, Units, Vars, findMessage, getOne, save, ExchangeManager, BattleManager, ItemStack } from '.';
-import { Potion } from './contents/Content';
+import { Content, Potion } from '../contents';
+import { UnitEntity, ItemStack, Items, Units, Vars, findMessage, getOne, save } from '..';
+import { ExchangeManager, BattleManager, EventManager } from '.';
+import SelectManager from './SelectManager';
 
 const eventData: BaseEvent[] = [
 	new BaseEvent({
@@ -32,12 +32,14 @@ const eventData: BaseEvent[] = [
 		user.giveItem(item);
 		msg.interaction.followUp(`${bundle.format(user.getLocale(msg), 'event.item', item.localName(user))}`);
 	}),
-	new SelectEvent({
-		ratio: 15,
+	new BaseEvent({
+		ratio:12000,
 		title: 'goblin'
-	},
-		[[
-			new EventSelection('run', (user) => {
+	}, user => {
+		const msg = findMessage(user);
+
+		new SelectManager(user, new BaseEmbed(msg.interaction).setPages(new MessageEmbed()))
+			.addButtonSelection('run', 0, (user) => {
 				const msg = findMessage(user);
 				if(!msg.builder) return;
 				if (Mathf.randbool()) {
@@ -49,8 +51,8 @@ const eventData: BaseEvent[] = [
 				}
 				msg.builder.setComponents([]);
 				user.status.clearSelection();
-			}),
-			new EventSelection('talking', (user) => {
+			})
+			.addButtonSelection('talking', 0, (user) => {
 				const msg = findMessage(user);
 				if(!msg.builder) return;
 
@@ -59,26 +61,25 @@ const eventData: BaseEvent[] = [
 				msg.builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.getLocale(msg), 'event.goblin_talking', money)+"\n```"});
 				msg.builder.setComponents([]);
 				user.status.clearSelection();
-			}),
-			new EventSelection('exchange', (user) => new ExchangeManager(user, new UnitEntity(Units.find(1))))
-		]]
-	),
-	new SelectEvent({
+			})
+			.addButtonSelection('exchange', 0, (user) => new ExchangeManager(user, new UnitEntity(Units.find(1)))).start();
+	}),
+	new BaseEvent({
 		ratio: 20,
 		title: 'obstruction',
-	},[[
-			new EventSelection('battle', (user) => new BattleManager(user, new UnitEntity(Units.find(0)))),
-			new EventSelection('run', async (user) => {
-				const msg = findMessage(user);
-				if(!msg || !msg.builder) return;
+	}, user => {
+		const msg = findMessage(user);
+
+		new SelectManager(user, new BaseEmbed(msg.interaction).setPages(new MessageEmbed()))
+			.addButtonSelection('battle', 0, (user) => new BattleManager(user, new UnitEntity(Units.find(0))))
+			.addButtonSelection('run', 0, (user) => {
+				if(!msg.builder) return;
 				
-				user.status.clearSelection();
+				msg.builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.getLocale(msg), 'event.obstruction_run')+"\n```"});
 				msg.builder.setComponents([]);
-				msg.builder = null;
-				msg.interaction.followUp(bundle.find(user.getLocale(msg), 'event.obstruction_run'));
-			})
-		]]
-	),
+				user.status.clearSelection();
+			}).start();
+	})
 ];
 
 function consumeCmd(user: User) {
@@ -86,10 +87,10 @@ function consumeCmd(user: User) {
 	const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getInteger('target', true);
 	const amount = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getInteger('amount', false)||1;
 	const stack: ItemStack | undefined = user.inventory.items.find((i) => i.getItem().id == id);
-	if (!stack) return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.notFound', Items.find(id).localName(user)));
-	if (stack.amount <= 0) return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.missing_item', stack.getItem().localName(user)));
-	if (stack.amount <= amount) return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.not_enough', stack.getItem().localName(user), amount));
-	return new BaseEmbed(msg.interaction).setDescription(stack.consume(user, amount));
+	if (!stack) EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.notFound', Items.find(id).localName(user)));
+	else if (stack.amount <= 0) EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.missing_item', stack.getItem().localName(user)));
+	else if (stack.amount < amount) EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.not_enough', stack.getItem().localName(user), amount));
+	else EventManager.newTextEmbed(user, stack.consume(user, amount));
 }
 
 function walkingCmd(user: User) {
@@ -101,10 +102,10 @@ function walkingCmd(user: User) {
 		getOne(eventData.map(e=>e.data), (data,i)=> eventData[i].start(user));
 	} else {
 		if (user.countover >= 3) {
-			return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.calmdown'));
+			EventManager.newErrorEmbed(user, bundle.find(user.getLocale(msg), 'error.calmdown'));
 		} else {
 			user.countover++;
-			return new BaseEmbed(msg.interaction).setTitle("ERROR").setDescription(bundle.format(user.getLocale(msg), 'error.low_energy', user.stats.energy.toFixed(1)));
+			EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.low_energy', user.stats.energy.toFixed(1)));
 		}
 	}
 }
@@ -135,10 +136,10 @@ function contentInfoCmd(user: User) {
 		embeds.push(embed);
 	});
 	if(embeds.length <= 0) embeds.push(new MessageEmbed().setDescription('< empty >'));
-	return new BaseEmbed(msg.interaction).setPages(embeds).setDefaultButtons(['back', 'next']);
+  new EventManager(user, new BaseEmbed(msg.interaction).setPages(embeds).setDefaultButtons(['back', 'next'])).start();
 }
 
-function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>PagesBuilder|string|undefined), ignoreSelection = false) {
+function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>void), ignoreSelection = false) {
 	CM.register({
 		category: 'guild',
 		dmOnly: false,
@@ -155,15 +156,9 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>Page
 			Vars.latestMsg.set(user, msg);
 
 			//call command listener
-			if(user.status.name==='selecting' && !ignoreSelection) {
-				new BaseEmbed(interaction).setTitle('ERROR').setDescription(bundle.format('error.select', builder.name)).build();
-			}
-			else {
-				const embed = (callback as (msg: User)=>PagesBuilder)(user);
-				if(embed instanceof PagesBuilder) embed.build();
-				else if(typeof embed === 'string') new BaseEmbed(interaction).setDescription(embed).build();
-				else if(embed) new BaseEmbed(interaction).setTitle('ERROR').setDescription('something got crashed!').build();
-			}
+			if(user.status.name==='selecting' && !ignoreSelection) 
+				EventManager.newErrorEmbed(user, bundle.format(user.getLocale(), 'error.select', builder.name));
+			else (callback as (msg: User)=>PagesBuilder)(user);
 
 			save();
 		}

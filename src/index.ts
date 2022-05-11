@@ -6,7 +6,8 @@ import CM from "@뇌절봇/commands";
 import assets from "@뇌절봇/assets"
 import config from "@뇌절봇/config.json"
 
-import { CommandManager, init } from './game';
+import { init } from './game';
+import { CommandManager } from './game/managers';
 import { onDiscordMessage } from "./kakao";
 import Vars from './Vars';
 

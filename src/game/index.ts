@@ -3,14 +3,12 @@ export * from "./UnitEntity";
 export * from "./ItemEntity";
 export * from "./ItemStack";
 export { default as Vars } from "../Vars";
-export { default as ExchangeManager } from "./ExchangeManager";
-export { default as BattleManager } from "./BattleManager";
-export { default as CommandManager } from "./CommandManager";
 
-import { Items, Units, Vars, CommandManager } from '.';
+import { Items, Units, Vars } from '.';
 import { User } from '../modules';
 import { Utils } from '../util';
 import { Rationess, Message, UserSave } from '../@type';
+import { CommandManager } from "./managers";
 
 
 const { Database } = Utils;

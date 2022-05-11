@@ -23,12 +23,14 @@ export class BaseEmbed extends PagesBuilder {
 
  
   public override setDescription(description: string, type = '', codeblock = true) {
+    if(!description) return super.setDescription(description);
     if(codeblock) description = "```"+type+"\n"+description+"\n```";
     return super.setDescription(description);
   }
   
   public addDescription(description: string, type = '', codeblock = true) {
+    if(!description) return super.setDescription(`${this.description}\n${description}`);
     if(codeblock) description = "```"+type+"\n"+description+"\n```";
-    this.setDescription(`${this.description}\n${description}`);
+    super.setDescription(`${this.description}\n${description}`);
   }
 }

@@ -55,7 +55,7 @@ export type Inventory = {
 
 export type Message = {
     interaction: Discord.CommandInteraction<CacheType>,
-    builder?: BaseEmbed | null
+    builder?: BaseEmbed
 }
 
 export type CommandInfo = {
@@ -96,4 +96,13 @@ export type UserSave = {
       stats: Stat,
       inventory: Inventory,
       fountContents: {items: number[], units: number[]}
+}
+
+export type EventTrigger = (user: User, components: MessageActionRow[], interactionCallback: MessageComponentInteraction, currentRow: MessageActionRowComponent)=>void;
+
+export type EventSelection = {
+    readonly name: string;
+    readonly type: "button" | "select";
+    readonly callback: EventTrigger;
+    readonly options?: (InteractionButtonOptions | MessageSelectMenuOptions);
 }
