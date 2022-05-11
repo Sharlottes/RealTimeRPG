@@ -7,49 +7,20 @@ import { MessageSelectOptionData } from 'discord.js';
 import SelectManager from './SelectManager';
 
 export default class BattleManager extends SelectManager{
-	target: UnitEntity;
-	interval: NodeJS.Timeout;
-	battleLog: string[] = [];
+	private target: UnitEntity;
+	private interval?: NodeJS.Timeout;
+	private battleLog: string[] = [];
 
-	constructor(user: User, target: UnitEntity, builder = findMessage(user).builder as BaseEmbed) {
-		super(user, builder);
+	constructor(user: User, target: UnitEntity, builder = findMessage(user).builder as BaseEmbed, last?: SelectManager) {
+		super(user, builder, last);
 		this.target = target;
-
-		const data = this.toActionData();
-		this.builder
-			.setDescription(bundle.format(this.locale, 'battle.start', user.user.username, Units.find(this.target.id).localName(user)))
-			.setComponents(data.actions)
-			.setTriggers(data.triggers);
-
-
-		this.interval = setInterval(() => {
-			const inventory = this.target.inventory;
-			const weaponEntity: ItemEntity = inventory.weapon.items[0];
-			const weapon: Weapon = Items.find(inventory.weapon.id);
-			if(weaponEntity?.cooldown) weaponEntity.cooldown -= 100 / 1000;
-			if (weaponEntity?.cooldown && weaponEntity.cooldown <= 0 && this.target.stats.health > 0) {
-				weaponEntity.cooldown = weapon.cooldown;
-
-				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-				if(weaponEntity?.durability) {
-					if(weaponEntity.durability > 0) weaponEntity.durability--;
-					if(weaponEntity.durability <= 0) {
-						const punch = Items.find<Weapon>(5);
-						this.updateEmbed(user, '- '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
-						inventory.weapon = new ItemStack(punch.id);
-					}
-				}
-
-				//임베드 전투로그 업데이트
-				this.updateEmbed(user, '- '+weapon.attack(user));
-				this.builder.rerender().catch(e=>e);
-				if (user.stats.health <= 0 || this.target.stats.health <= 0) this.battleEnd(user);
-			}
-		}, 100);
-		
+    if(new.target === BattleManager) this.init();
+	}
+	
+	protected override init() {
 		this.addButtonSelection('attack', 0, (user) => {
 			if(user.stats.health <= 0 || this.target.stats.health <= 0) return;
-			const inventory = this.target.inventory;
+			const inventory = this.user.inventory;
 			const weaponEntity: ItemEntity = inventory.weapon.items[0];
 			const weapon = inventory.weapon.getItem<Weapon>();
 
@@ -57,7 +28,6 @@ export default class BattleManager extends SelectManager{
 				this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.cooldown', weaponEntity.cooldown.toFixed(2)));
 				this.builder.rerender().catch(e=>e);
 			} else {
-
 				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
 				if(weaponEntity?.durability) {
 					if(weaponEntity.durability > 0) weaponEntity.durability--;
@@ -91,12 +61,45 @@ export default class BattleManager extends SelectManager{
 		},
 		{
 			placeholder: 'swap weapon to ...',
-			options: user.inventory.items.reduce<MessageSelectOptionData[]>((a, i)=>i.getItem() instanceof Weapon ? [...a, {
-				label: i.getItem().localName(user),
+			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, i)=>i.getItem() instanceof Weapon ? [...a, {
+				label: i.getItem().localName(this.user),
 				value: i.id.toString()
 			}] : a, [])
 		});
-}
+
+		if(this.builder) {
+			const data = this.toActionData();
+			this.builder
+				.setDescription(bundle.format(this.locale, 'battle.start', this.user.user.username, Units.find(this.target.id).localName(this.user)))
+				.setComponents(data.actions)
+				.setTriggers(data.triggers);
+		}		
+		
+		this.interval = setInterval(() => {
+			const inventory = this.target.inventory;
+			const weaponEntity: ItemEntity = inventory.weapon.items[0];
+			const weapon: Weapon = Items.find(inventory.weapon.id);
+			if(weaponEntity?.cooldown) weaponEntity.cooldown -= 100 / 1000;
+			if (weaponEntity?.cooldown && weaponEntity.cooldown <= 0 && this.target.stats.health > 0) {
+				weaponEntity.cooldown = weapon.cooldown;
+
+				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
+				if(weaponEntity?.durability) {
+					if(weaponEntity.durability > 0) weaponEntity.durability--;
+					if(weaponEntity.durability <= 0) {
+						const punch = Items.find<Weapon>(5);
+						this.updateEmbed(this.user, '- '+bundle.format(this.locale, 'battle.broken', weapon.localName(this.user)));
+						inventory.weapon = new ItemStack(punch.id);
+					}
+				}
+
+				//임베드 전투로그 업데이트
+				this.updateEmbed(this.user, '- '+weapon.attack(this.user));
+				this.builder.rerender().catch(e=>e);
+				if (this.user.stats.health <= 0 || this.target.stats.health <= 0) this.battleEnd(this.user);
+			}
+		}, 100);
+	}
 
 	updateEmbed(user: User, log: string) {
 		if(this.battleLog.length > 5) this.battleLog.shift();
@@ -115,7 +118,7 @@ export default class BattleManager extends SelectManager{
 	}
 
 	battleEnd(user: User) {
-		clearInterval(this.interval);
+		if(this.interval) clearInterval(this.interval);
 		user.status.clearSelection();
 		this.builder.setComponents([]);
 

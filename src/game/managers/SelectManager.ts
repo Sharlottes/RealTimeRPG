@@ -11,7 +11,7 @@ export default class SelectManager extends EventManager {
   protected readonly user: User;
   protected readonly last?: SelectManager;
 
-  public constructor (user: User, builder = findMessage(user).builder as BaseEmbed, last?: SelectManager) {
+  public constructor (user: User, builder = findMessage(user).builder, last?: SelectManager) {
     super(user, builder);
     this.selections = [];
     this.user = user;

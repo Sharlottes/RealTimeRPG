@@ -33,7 +33,7 @@ const eventData: BaseEvent[] = [
 		msg.interaction.followUp(`${bundle.format(user.getLocale(msg), 'event.item', item.localName(user))}`);
 	}),
 	new BaseEvent({
-		ratio:12000,
+		ratio:15,
 		title: 'goblin'
 	}, user => {
 		const msg = findMessage(user);
@@ -62,16 +62,16 @@ const eventData: BaseEvent[] = [
 				msg.builder.setComponents([]);
 				user.status.clearSelection();
 			})
-			.addButtonSelection('exchange', 0, (user) => new ExchangeManager(user, new UnitEntity(Units.find(1)))).start();
+			.addButtonSelection('exchange', 0, (user) => new ExchangeManager(user, new UnitEntity(Units.find(1)), msg.builder)).start();
 	}),
 	new BaseEvent({
-		ratio: 20,
+		ratio: 2330,
 		title: 'obstruction',
 	}, user => {
 		const msg = findMessage(user);
 
 		new SelectManager(user, new BaseEmbed(msg.interaction).setPages(new MessageEmbed()))
-			.addButtonSelection('battle', 0, (user) => new BattleManager(user, new UnitEntity(Units.find(0))))
+			.addButtonSelection('battle', 0, (user) => new BattleManager(user, new UnitEntity(Units.find(0)), msg.builder))
 			.addButtonSelection('run', 0, (user) => {
 				if(!msg.builder) return;
 				

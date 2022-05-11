@@ -1,16 +1,16 @@
 import { ItemStack, UnitEntity, Items,  getOne, findMessage } from '..';
 import { Units } from '../contents';
-import { User, BaseEmbed } from '../../modules';
+import { User } from '../../modules';
 import { bundle } from '../../assets';
 import { SellManager, BuyManager, SelectManager } from '.';
 
 export default class ExchangeManager extends SelectManager {
 	private target: UnitEntity;
 
-	constructor(user: User, target: UnitEntity, builder = findMessage(user).builder as BaseEmbed) {
-		super(user, builder);
+	constructor(user: User, target: UnitEntity, builder = findMessage(user).builder, last?: SelectManager) {
+		super(user, builder, last);
 		this.target = target;
-    this.init();
+    if(new.target === ExchangeManager) this.init();
 	}
 	
 	protected override init() {
@@ -29,11 +29,15 @@ export default class ExchangeManager extends SelectManager {
 			if (exist) exist.add();
 			else this.target.inventory.items.push(new ItemStack(item.id));
 		}
-		const data = this.toActionData();
-		this.builder.setComponents(data.actions).setTriggers(data.triggers).setFields([
-			{	name: this.user.user?.username||'you', value: this.user.money+bundle.find(this.locale, 'unit.money'), inline: true },
-			{	name: Units.find(this.target.id).localName(this.user), value: this.target.money+bundle.find(this.locale, 'unit.money'), inline: true }
-		]);
+
+		if(this.builder) {
+			const data = this.toActionData();
+			this.builder.setComponents(data.actions).setTriggers(data.triggers)
+			.setFields([
+				{	name: this.user.user?.username||'you', value: this.user.money+bundle.find(this.locale, 'unit.money'), inline: true },
+				{	name: Units.find(this.target.id).localName(this.user), value: this.target.money+bundle.find(this.locale, 'unit.money'), inline: true }
+			]);
+		}
 	}
 
 	waitingSelect(wait: boolean) {
