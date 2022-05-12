@@ -1,9 +1,9 @@
 
-import { Consumable, Dropable, Durable, ItemData, Rationess, Stat, UnitData, Inventory } from '@뇌절봇/@type';
-import { ItemStack, UnitEntity } from '@뇌절봇/game';
-import { User } from '@뇌절봇/modules';
-import { Utils } from '@뇌절봇/util';
-import Assets from '@뇌절봇/assets';
+import { Consumable, Dropable, Durable, ItemData, Rationess, Stat, UnitData, Inventory } from '@RTTRPG/@type';
+import { ItemStack, UnitEntity } from '@RTTRPG/game';
+import { User } from '@RTTRPG/modules';
+import { Utils } from '@RTTRPG/util';
+import Assets from '@RTTRPG/assets';
 
 const Bundle = Assets.bundle;
 

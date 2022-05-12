@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommandInteraction, CacheType } from "discord.js";
-import { Command } from "@뇌절봇/commands";
+import { Command } from "@RTTRPG/commands";
 
 class Evaluate extends Command {
     public constructor() {

@@ -1,4 +1,4 @@
-import { Command } from "@뇌절봇/commands";
+import { Command } from "@RTTRPG/commands";
 import { CommandInteraction, CacheType } from "discord.js";
 
 class Login extends Command {

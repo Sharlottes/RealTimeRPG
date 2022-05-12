@@ -1,8 +1,7 @@
-import { ItemStack, UnitEntity, Items,  getOne, findMessage } from '..';
-import { Units } from '../contents';
-import { User } from '../../modules';
-import { bundle } from '../../assets';
-import { SellManager, BuyManager, SelectManager } from '.';
+import { ItemStack, UnitEntity, Items, User, getOne, findMessage } from '@RTTRPG/game';
+import { SellManager, BuyManager, SelectManager } from '@RTTRPG/game/managers';
+import { Units } from '@RTTRPG/game/contents';
+import { bundle } from '@RTTRPG/assets';
 
 export default class ExchangeManager extends SelectManager {
 	private target: UnitEntity;

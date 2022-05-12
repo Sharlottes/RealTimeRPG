@@ -1,9 +1,8 @@
-import Discord, { CacheType } from 'discord.js'
+import Discord, { CacheType } from 'discord.js';
 
-import { PagesBuilder } from 'discord.js-pages'
-import { User } from '../modules'
-import { ItemStack } from '@뇌절봇/game';
-import { BaseEmbed } from '../modules/BaseEmbed';
+import { PagesBuilder } from 'discord.js-pages';
+import { ItemStack, User } from '@RTTRPG/game';
+import { BaseEmbed } from '@RTTRPG/modules';
 
 export interface Heathy { 
     health: number
@@ -106,3 +105,5 @@ export type EventSelection = {
     readonly callback: EventTrigger;
     readonly options?: (InteractionButtonOptions | MessageSelectMenuOptions);
 }
+
+export type CommandCategory = "guild" | "global"

@@ -1,15 +1,15 @@
 
 import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionRow } from 'discord.js';
 
-import Canvas from 'canvas';
 import { filledBar } from 'string-progressbar';
+import Canvas from 'canvas';
 
-import { BaseEmbed } from '.';
-import { Inventory, Stat, Message, UserSave } from '../@type';
-import { findMessage, save, Items, ItemStack } from "../game";
-import { Item, Weapon } from '../game/contents';
-import { Utils } from "../util";
-import Assets from '../assets';
+import { Inventory, Stat, Message, UserSave } from '@RTTRPG/@type';
+import { findMessage, save, Items, ItemStack } from "@RTTRPG/game";
+import { BaseEmbed } from '@RTTRPG/modules';
+import { Item, Weapon } from './contents';
+import { Utils } from "@RTTRPG/util";
+import Assets from '@RTTRPG/assets';
 import app from '..';
 
 const Bundle = Assets.bundle;

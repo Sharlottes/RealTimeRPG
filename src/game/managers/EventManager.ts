@@ -1,5 +1,5 @@
-import { BaseEmbed, User } from "@뇌절봇/modules";
-import { findMessage } from "..";
+import { BaseEmbed } from "@RTTRPG/modules";
+import { findMessage, User } from '@RTTRPG/game';
 
 /**
  * 모든 이벤트들의 기반 관리 클래스

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import Discord, { CommandInteraction, CacheType } from "discord.js";
 
-import CM, { Command } from "@뇌절봇/commands"
+import CM, { Command } from "@RTTRPG/commands"
 
 const masterIDs: string[] = [
     "462167403237867520"

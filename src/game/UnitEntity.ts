@@ -1,6 +1,6 @@
-import { ItemStack } from ".";
-import { Item, Unit } from "./contents";
-import { Inventory, Stat } from '../@type';
+import { ItemStack } from "@RTTRPG/game";
+import { Item, Unit } from "@RTTRPG/game/contents";
+import { Inventory, Stat } from '@RTTRPG/@type';
 
 export class UnitEntity {
   id: number;

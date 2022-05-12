@@ -1,10 +1,9 @@
-import { bundle } from '@뇌절봇/assets';
-import { BaseEmbed, User } from '@뇌절봇/modules';
-import { Utils } from '../../util';
 import Discord, { MessageButton, MessageActionRow } from 'discord.js';
-import { findMessage, save, Units } from '..';
-import SelectManager from './SelectManager';
-import { UnitEntity } from '../UnitEntity';
+import { findMessage, save, Units, User, UnitEntity } from '@RTTRPG/game';
+import { BaseEmbed } from '@RTTRPG/modules';
+import { bundle } from '@RTTRPG/assets';
+import { Utils } from '@RTTRPG/util';
+import { SelectManager } from '.';
 
 export default class BuyManager extends SelectManager {
 	private target: UnitEntity;

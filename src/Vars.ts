@@ -1,7 +1,6 @@
-import { User } from './modules';
-import { Message } from '@뇌절봇/@type';
-import { Utils } from './util';
-import { UserSave } from './@type/index';
+import { Message, UserSave } from '@RTTRPG/@type';
+import { User } from '@RTTRPG/game';
+import { Utils } from '@RTTRPG/util';
 
 namespace Vars {
   export const prefix = '/';

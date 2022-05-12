@@ -2,17 +2,14 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import Discord, { CacheType, MessageEmbed } from 'discord.js';
 import { PagesBuilder } from 'discord.js-pages';
 
-import { BaseEvent } from '../../event';
-import { User, BaseEmbed } from '../../modules';
-import { Mathf, Arrays } from '../../util';
-import { bundle } from '../../assets';
-import CM from '../../commands';
-
-import { Content, Potion } from '../contents';
-import { UnitEntity, ItemStack, Items, Units, Vars, findMessage, getOne, save } from '..';
-import { ExchangeManager, BattleManager, EventManager } from '.';
-import SelectManager from './SelectManager';
-import { CommandCategory } from '../../commands/Command';
+import { UnitEntity, ItemStack, Items, Units, Vars, BaseEvent, User, findMessage, getOne, save } from '@RTTRPG/game';
+import { ExchangeManager, BattleManager, EventManager, SelectManager } from '@RTTRPG/game/managers';
+import { Content, Potion } from '@RTTRPG/game/contents';
+import { CommandCategory } from '@RTTRPG/@type';
+import { Mathf, Arrays } from '@RTTRPG/util';
+import { BaseEmbed } from '@RTTRPG/modules';
+import { bundle } from '@RTTRPG/assets';
+import CM from '@RTTRPG/commands';
 
 const eventData: BaseEvent[] = [
 	new BaseEvent({

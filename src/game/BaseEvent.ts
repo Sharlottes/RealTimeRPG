@@ -1,7 +1,7 @@
 import { Event, EventData } from "../@type";
 import { User } from "../modules";
-import Assets from "@뇌절봇/assets";
-import { findMessage } from "@뇌절봇/game";
+import Assets from "@RTTRPG/assets";
+import { findMessage } from "@RTTRPG/game";
 
 export class BaseEvent implements Event {
     data: EventData;

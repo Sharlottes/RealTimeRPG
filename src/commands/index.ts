@@ -7,10 +7,10 @@ import { ApplicationCommand, Collection, Guild, GuildResolvable } from "discord.
 import { Routes } from "discord-api-types/v9";
 import fs from "fs";
 
-import { Command } from "@뇌절봇/commands";
-import app from "@뇌절봇/index"
-import config from "@뇌절봇/config.json";
-import { CommandInfo } from "@뇌절봇/@type";
+import { Command } from "@RTTRPG/commands";
+import app from "@RTTRPG/index"
+import config from "@RTTRPG/config.json";
+import { CommandInfo } from "@RTTRPG/@type";
 
 const ignores: string[] = [
     "index.ts", "Command.ts"
@@ -53,7 +53,7 @@ namespace CommandManager {
 
         for(let i = 0, n = rootDir.length; i < n; i++) {
             const file = rootDir[i];
-            const code = await import(`@뇌절봇/commands/${i >= globals.length ? "guild" : "global"}/` + file.name);
+            const code = await import(`@RTTRPG/commands/${i >= globals.length ? "guild" : "global"}/` + file.name);
             if(typeof code.default == "function") {
                 const command = new code.default();
                 if(command instanceof Command && (app.config.debug || !command.debug)) {

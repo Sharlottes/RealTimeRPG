@@ -41,10 +41,10 @@
             "*": [
                 "src/types/*"
             ],
-            "@뇌절봇/*" : [
+            "@RTTRPG/*" : [
                 "./src/*"
             ],
-            "@뇌절봇/assets/*" : [
+            "@RTTRPG/assets/*" : [
                 "./assets/*"
             ],
             "external/*": [

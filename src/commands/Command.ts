@@ -1,14 +1,6 @@
 import { CommandInteraction, CacheType } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-
-export type CommandCategory = "guild" | "global"
-
-type arg = {
-    category?: CommandCategory,
-    debug?: boolean,
-    builder?: SlashCommandBuilder,
-    dmOnly?: boolean
-}
+import { CommandCategory } from "@RTTRPG/@type";
 
 // 타입스크립트에선 인터페이스보단 타입 형식이 좀 더 지원폭이 넒기에 그냥 type으로 선언함.
 abstract class Command {

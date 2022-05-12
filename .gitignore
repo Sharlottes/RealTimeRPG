@@ -7,13 +7,14 @@ build/
 # 테스트 코드
 test/
 
-# sdk
-**/sdk.json
-src/config.json
-src/publicKey.json
-secret.json
 error.json
 
 window_connect.bat
 
 Database/
+
+# sdk
+src/sdk.json
+src/config.json
+src/publicKey.json
+src/secret.json

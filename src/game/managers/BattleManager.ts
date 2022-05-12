@@ -1,8 +1,8 @@
-import { BaseEmbed, User } from '../../modules';
-import { Mathf, Canvas} from '../../util';
-import { bundle } from '../../assets';
-import { Item, Weapon } from '../contents';
-import { ItemStack, UnitEntity, ItemEntity, Items, Units, getOne, save, findMessage } from '..';
+import { BaseEmbed } from '@RTTRPG/modules';
+import { Mathf, Canvas } from '@RTTRPG/util';
+import { bundle } from '@RTTRPG/assets';
+import { Item, Weapon } from '@RTTRPG/game/contents';
+import { ItemStack, UnitEntity, ItemEntity, Items, Units, getOne, save, findMessage, User } from '@RTTRPG/game';
 import { MessageSelectOptionData } from 'discord.js';
 import SelectManager from './SelectManager';
 

@@ -1,8 +1,8 @@
 import { CommandInteraction, CacheType } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
-import { Command } from "@뇌절봇/commands";
-import assets from "@뇌절봇/assets";
+import { Command } from "@RTTRPG/commands";
+import assets from "@RTTRPG/assets";
 
 class Content extends Command {
     public readonly builder: SlashCommandBuilder;

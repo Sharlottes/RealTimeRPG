@@ -1,6 +1,6 @@
 import { Server, Message } from '@remote-kakao/core';
-import { BaseCommand, linkChannel, onKaKaoMessage } from '@뇌절봇/kakao';
-import { manager } from '@뇌절봇/kakao/CommandManager';
+import { BaseCommand, linkChannel, onKaKaoMessage } from '@RTTRPG/kakao';
+import { manager } from '@RTTRPG/kakao/CommandManager';
 import fs from 'fs';
 import secret from "../secret.json";
 

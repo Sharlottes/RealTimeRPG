@@ -1,10 +1,10 @@
-import EventManager from './EventManager';
-import { BaseEmbed, User } from "@뇌절봇/modules";
-import { findMessage, save } from '..';
 import { InteractionButtonOptions, MessageActionRow, MessageActionRowComponent, MessageButton, MessageSelectMenu, MessageSelectMenuOptions } from 'discord.js';
-import Assets from '@뇌절봇/assets';
 import { ITrigger } from 'discord.js-pages';
-import { EventSelection, EventTrigger } from '@뇌절봇/@type';
+
+import Assets from '@RTTRPG/assets';
+import { EventManager } from '@RTTRPG/game/managers';
+import { findMessage, save, User } from '@RTTRPG/game';
+import { EventSelection, EventTrigger } from '@RTTRPG/@type';
 
 export default class SelectManager extends EventManager {
   protected readonly selections: EventSelection[][]

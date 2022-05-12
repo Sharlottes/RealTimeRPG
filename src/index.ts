@@ -1,14 +1,12 @@
-import Discord, { Client, Intents } from "discord.js";
+import { Client, Intents } from "discord.js";
 import { REST } from "@discordjs/rest"
 
-import { firebaseAdmin } from "@뇌절봇/net";
-import CM from "@뇌절봇/commands";
-import assets from "@뇌절봇/assets"
-import config from "@뇌절봇/config.json"
+import CM from "@RTTRPG/commands";
+import assets from "@RTTRPG/assets"
+import config from "@RTTRPG/config.json"
 
 import { init } from './game';
 import { CommandManager } from './game/managers';
-import { onDiscordMessage } from "./kakao";
 import Vars from './Vars';
 
 const time = Date.now();
@@ -43,34 +41,39 @@ for(let i = 2; i < process.argv.length; i += 2) {
     if(arg.startsWith('--') && value) option.set(arg.slice(2), value);
 }
 
-// 애셋 파일 로딩
-assets.init(config.debug);
-console.log(`asset initialization has been done: ${Date.now()-time}ms`);
+(async ()=>{
+    // 애셋 파일 로딩
+    assets.init(config.debug);
+    console.log(`asset initialization has been done: ${Date.now()-time}ms`);
 
-//전역 변수 로딩
-Vars.init();
-console.log(`vars initialization has been done: ${Date.now()-time}ms`);
+    //전역 변수 로딩
+    Vars.init();
+    console.log(`vars initialization has been done: ${Date.now()-time}ms`);
 
-CM.reloadCommands().then(async ()=>{
+    //기본 명령어 로딩
+    await CM.reloadCommands();
     console.log(`command initialization has been done in ${(Date.now() - time)}ms`);
+
+    //게임 콘텐츠 로딩
     init();
     console.log(`game initialization has been done in ${(Date.now() - time)}ms`);
+    
+    //디스코드 봇 로그인
     await client.login(config.botToken);
     console.log(`discord bot login has been done in ${(Date.now() - time)}ms`);
-});
 
-/*
-//카카오 연결 로딩
-Kakao.init();
-console.log(`kakao bot initialization has been done: ${Date.now()-time}ms`);
-*/
+    /*
+    //카카오톡 봇 로그인
+    Kakao.init();
+    console.log(`kakao bot initialization has been done: ${Date.now()-time}ms`);
+    */
+})();
 
 client.once("ready", async () => {
     console.log(`Logged in as ${client.user?.tag}(${client.application?.id}): ${Date.now()-time}ms`)
     
-    // 봇 명령어 초기화
     await CM.refreshCommand("global");
-    console.log(`global command initialization has been done: ${Date.now()-time}ms`);
+    console.log(`global command push has been done: ${Date.now()-time}ms`);
 
     /*
     // 서버마다 데이터베이스 체크
@@ -88,7 +91,6 @@ client.once("ready", async () => {
     */
 });
 
-// 명령어 구현부
 client.on("interactionCreate", async interaction => {
     if(interaction.isCommand()) {
         const command = CM.commands.get(interaction.commandName);
@@ -111,6 +113,6 @@ client.on("messageCreate", async message => {
         message.reply(`refresh start! server: ${guild.name}`).catch(e => message.reply((e as object).toString()));
         await CM.reloadCommands().then(CommandManager.init);
         await CM.refreshCommand("guild", guild);
-        message.reply(`guild command initialization has been done in ${(Date.now() - time)}ms`);
+        message.reply(`guild command push has been done in ${(Date.now() - time)}ms`);
     }
 });

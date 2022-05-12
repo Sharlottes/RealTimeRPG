@@ -2,13 +2,14 @@ export * from "./contents/Content";
 export * from "./UnitEntity";
 export * from "./ItemEntity";
 export * from "./ItemStack";
+export * from "./BaseEvent";
+export * from "./User";
 export { default as Vars } from "../Vars";
 
-import { Items, Units, Vars } from '.';
-import { User } from '../modules';
-import { Utils } from '../util';
-import { Rationess, Message, UserSave } from '../@type';
-import { CommandManager } from "./managers";
+import { Rationess, Message, UserSave } from '@RTTRPG/@type';
+import { Items, Units, Vars, User } from '@RTTRPG/game';
+import { CommandManager } from '@RTTRPG/game/managers';
+import { Utils } from '@RTTRPG/util';
 
 
 const { Database } = Utils;

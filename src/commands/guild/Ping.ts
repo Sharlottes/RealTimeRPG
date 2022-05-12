@@ -3,8 +3,8 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import tcpp from "tcp-ping";
 import request from "request";
 
-import app from "@뇌절봇/index"
-import { Command } from '@뇌절봇/commands'
+import app from "@RTTRPG/index"
+import { Command } from '@RTTRPG/commands'
 
 class Ping extends Command {
     public readonly builder: SlashCommandBuilder;

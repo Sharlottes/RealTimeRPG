@@ -1,6 +1,5 @@
-import { User } from "@뇌절봇/modules";
-import { Weapon, Items, Potion, Item } from "./contents";
-import { ItemEntity } from "./ItemEntity";
+import { Weapon, Items, Potion, Item } from "@RTTRPG/game/contents";
+import { User, ItemEntity } from "@RTTRPG/game";
 
 export class ItemStack {
 	public readonly id: number;

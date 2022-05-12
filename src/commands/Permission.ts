@@ -1,7 +1,7 @@
 import Discord, { Guild, Snowflake } from "discord.js";
 
-import app from "@뇌절봇/index"
-import { Command } from "@뇌절봇/commands"
+import app from "@RTTRPG/index"
+import { Command } from "@RTTRPG/commands"
 
 type defaultPermArgs = {
     commandID: Snowflake | Snowflake[] | Command | Command[],
