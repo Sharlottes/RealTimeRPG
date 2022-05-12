@@ -12,6 +12,7 @@ import { Content, Potion } from '../contents';
 import { UnitEntity, ItemStack, Items, Units, Vars, findMessage, getOne, save } from '..';
 import { ExchangeManager, BattleManager, EventManager } from '.';
 import SelectManager from './SelectManager';
+import { CommandCategory } from '../../commands/Command';
 
 const eventData: BaseEvent[] = [
 	new BaseEvent({
@@ -33,7 +34,7 @@ const eventData: BaseEvent[] = [
 		msg.interaction.followUp(`${bundle.format(user.getLocale(msg), 'event.item', item.localName(user))}`);
 	}),
 	new BaseEvent({
-		ratio:15,
+		ratio: 15,
 		title: 'goblin'
 	}, user => {
 		const msg = findMessage(user);
@@ -140,9 +141,16 @@ function contentInfoCmd(user: User) {
   new EventManager(user, new BaseEmbed(msg.interaction).setPages(embeds).setDefaultButtons(['back', 'next'])).start();
 }
 
-function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>void), ignoreSelection = false) {
+function introduceCmd(user: User) {
+	const msg = findMessage(user);
+	new EventManager(user, new BaseEmbed(msg.interaction).setPages(new MessageEmbed()).setTitle('Real Time Text RPG').setDescription(bundle.find(user.getLocale(msg), 'bot.description'), '', false).setFields({
+		name: 'GOAL', value: bundle.find(user.getLocale(msg), 'bot.goal') 
+	})).start();
+}
+
+function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>void), ignoreSelection = false, category: CommandCategory = 'guild') {
 	CM.register({
-		category: 'guild',
+		category: category,
 		dmOnly: false,
 		debug: false,
 		builder,
@@ -151,15 +159,16 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>void
 			const user = Vars.users.find((u) => u.id == interaction.user.id) || Vars.users[Vars.users.push(new User(interaction.user))-1];
 			user.user = interaction.user;
 			const msg = Vars.latestMsg.get(user) || { interaction };
-			msg.interaction = interaction;
-
-			//update latestMsgs
-			Vars.latestMsg.set(user, msg);
 
 			//call command listener
 			if(user.status.name==='selecting' && !ignoreSelection) 
-				EventManager.newErrorEmbed(user, bundle.format(user.getLocale(), 'error.select', builder.name));
-			else (callback as (msg: User)=>PagesBuilder)(user);
+				EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.select', builder.name), interaction);
+			else {
+				//update latestMsgs
+				msg.interaction = interaction;
+				Vars.latestMsg.set(user, msg);
+				(callback as (msg: User)=>PagesBuilder)(user);
+			}
 
 			save();
 		}
@@ -182,6 +191,7 @@ namespace CommandManager {
       return s;
     })(), contentInfoCmd, true);
     registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), walkingCmd);
+    registerCmd(new SlashCommandBuilder().setName('intro').setDescription('introduce bot info(WIP)'), introduceCmd, true);
   }
 }
 
