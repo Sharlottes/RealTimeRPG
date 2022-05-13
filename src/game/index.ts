@@ -44,7 +44,7 @@ export function getOne<T extends Rationess>(arr: T[], callback?: (arg: T, index:
 
 /**
  * latestMsgs 배열에서 해당 유저의 최근 메시지를 찾습니다.
- * @param {Snowflake} id 케시 id
+ * @param {Snowflake} id 인터렉션 케시 id
  * @returns {Message} 해당 유저의 최근 메시지
  */
 export function findMessage(id: Snowflake): Message {
