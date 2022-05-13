@@ -1,10 +1,9 @@
-import { BaseEmbed } from '@RTTRPG/modules';
-import { Mathf, Canvas } from '@RTTRPG/util';
-import { bundle } from '@RTTRPG/assets';
-import { Item, Weapon } from '@RTTRPG/game/contents';
 import { ItemStack, UnitEntity, ItemEntity, Items, Units, getOne, save, findMessage, User } from '@RTTRPG/game';
 import { CommandInteraction, MessageSelectOptionData } from 'discord.js';
-import SelectManager from './SelectManager';
+import { SelectManager } from '@RTTRPG/game/managers';
+import { Item, Weapon } from '@RTTRPG/game/contents';
+import { Mathf, Canvas } from '@RTTRPG/util';
+import { bundle } from '@RTTRPG/assets';
 
 export default class BattleManager extends SelectManager{
 	private target: UnitEntity;

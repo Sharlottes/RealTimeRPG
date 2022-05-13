@@ -11,7 +11,7 @@ import { Item, Weapon } from './contents';
 import { Utils } from "@RTTRPG/util";
 import { bundle } from '@RTTRPG/assets';
 import app from '..';
-import { EventManager } from './managers';
+import { BaseManager } from './managers';
 import { CommandInteraction } from 'discord.js';
 
 const defaultStat: Stat = {

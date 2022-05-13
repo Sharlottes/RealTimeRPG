@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
 
 import { UnitEntity, ItemStack, Items, Units, Vars, BaseEvent, User, findMessage, getOne, save } from '@RTTRPG/game';
-import { ExchangeManager, BattleManager, EventManager, SelectManager } from '@RTTRPG/game/managers';
+import { ExchangeManager, BattleManager, BaseManager, SelectManager } from '@RTTRPG/game/managers';
 import { Content, Potion } from '@RTTRPG/game/contents';
 import { CommandCategory } from '@RTTRPG/@type';
 import { Mathf, Arrays } from '@RTTRPG/util';
@@ -33,12 +33,12 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, inter
 			user.locale = interaction.locale;
 
 			if(user.status.name==='selecting' && !ignoreSelection) 
-				EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.select', builder.name));
+				BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.select', builder.name));
 			else {
 				//메시지 캐싱
 				Vars.messageCache.set(interaction.id, { 
 					interaction: interaction, 
-					builder: new BaseEmbed(interaction).setPages(new MessageEmbed()),
+					builder: new BaseEmbed(interaction, false).setPages(new MessageEmbed()),
 					sender: user
 				});
 
@@ -66,7 +66,7 @@ namespace CommandManager {
 			interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
 		});
 
-		registerEvent(15, 'goblin', (user, interaction) => {
+		registerEvent(1225, 'goblin', (user, interaction) => {
 			const { builder } = findMessage(interaction.id);
 
 			new SelectManager(user, interaction, builder)
@@ -116,10 +116,10 @@ namespace CommandManager {
 			const id = interaction.options.getInteger('target', true);
 			const amount = interaction.options.getInteger('amount', false)||1;
 			const stack: ItemStack | undefined = user.inventory.items.find((i) => i.id == id);
-			if (!stack) EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.notFound', Items.find(id).localName(user)));
-			else if (stack.amount <= 0) EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', stack.getItem().localName(user)));
-			else if (stack.amount < amount) EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.getItem().localName(user), amount));
-			else EventManager.newTextEmbed(user, interaction, stack.consume(user, amount));
+			if (!stack) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.notFound', Items.find(id).localName(user)));
+			else if (stack.amount <= 0) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', stack.getItem().localName(user)));
+			else if (stack.amount < amount) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.getItem().localName(user), amount));
+			else BaseManager.newTextEmbed(user, interaction, stack.consume(user, amount));
 		}, true);
 
     registerCmd((() => {
@@ -151,7 +151,7 @@ namespace CommandManager {
 				embeds.push(embed);
 			});
 			if(embeds.length <= 0) embeds.push(new MessageEmbed().setDescription('< empty >'));
-			new EventManager(user, interaction, new BaseEmbed(interaction).setPages(embeds).setDefaultButtons(['back', 'next'])).start();
+			new BaseManager(user, interaction, new BaseEmbed(interaction).setPages(embeds).setDefaultButtons(['back', 'next'])).start();
 		}, true);
 
     registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), (user, interaction) => {
@@ -159,12 +159,12 @@ namespace CommandManager {
 				user.stats.energy -= 7;
 				getOne(eventData.map(e=>e.data), (data,i)=> eventData[i].start(user, interaction));
 			} else {
-				EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.low_energy', user.stats.energy.toFixed(1)));
+				BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.low_energy', user.stats.energy.toFixed(1)));
 			}
 		});
 
     registerCmd(new SlashCommandBuilder().setName('intro').setDescription('introduce bot info(WIP)'), (user, interaction) => {
-			new EventManager(user, interaction, new BaseEmbed(interaction).setPages(new MessageEmbed()).setTitle('Real Time Text RPG').setDescription(bundle.find(user.locale, 'bot.description'), '', false).setFields({
+			new BaseManager(user, interaction, new BaseEmbed(interaction).setPages(new MessageEmbed()).setTitle('Real Time Text RPG').setDescription(bundle.find(user.locale, 'bot.description'), '', false).setFields({
 				name: 'GOAL', value: bundle.find(user.locale, 'bot.goal') 
 			})).start();
 		}, true);

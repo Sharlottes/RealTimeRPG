@@ -12,7 +12,6 @@ import { CommandManager } from '@RTTRPG/game/managers';
 import { Utils } from '@RTTRPG/util';
 import { Snowflake } from 'discord.js';
 
-
 const { Database } = Utils;
 
 /**

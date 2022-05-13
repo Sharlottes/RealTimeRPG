@@ -2,12 +2,11 @@ import { CommandInteraction, InteractionButtonOptions, MessageActionRow, Message
 import { ITrigger } from 'discord.js-pages';
 
 import Assets from '@RTTRPG/assets';
-import { EventManager } from '@RTTRPG/game/managers';
+import { BaseManager } from '@RTTRPG/game/managers';
 import { findMessage, save, User } from '@RTTRPG/game';
 import { EventSelection, EventTrigger } from '@RTTRPG/@type';
-import { BaseEmbed } from '@RTTRPG/modules';
 
-export default class SelectManager extends EventManager {
+export default class SelectManager extends BaseManager {
   protected readonly selections: EventSelection[][]
   protected readonly last?: SelectManager;
 

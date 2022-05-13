@@ -5,7 +5,7 @@ import { CommandInteraction } from "discord.js";
 /**
  * 모든 이벤트들의 기반 관리 클래스
  */
-export default class EventManager {
+export default class BaseManager {
   protected readonly user: User;
   protected readonly interaction: CommandInteraction;
   protected readonly builder: BaseEmbed;
@@ -16,7 +16,7 @@ export default class EventManager {
     this.interaction = interaction;
 		this.builder = builder;
 		this.locale = interaction.locale;
-    if(new.target === EventManager) this.init();
+    if(new.target === BaseManager  ) this.init();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -27,10 +27,10 @@ export default class EventManager {
   }
 
   public static newErrorEmbed(user: User, interaction: CommandInteraction, description: string) {
-    new EventManager(user, interaction, new BaseEmbed(interaction).setTitle("ERROR").setDescription(description)).start();
+    new BaseManager(user, interaction, new BaseEmbed(interaction).setTitle("ERROR").setDescription(description)).start();
   }
 
   public static newTextEmbed(user: User, interaction: CommandInteraction, description: string, title = "") {
-    new EventManager(user, interaction, new BaseEmbed(interaction).setTitle(title).setDescription(description)).start();
+    new BaseManager(user, interaction, new BaseEmbed(interaction, false).setTitle(title).setDescription(description)).start();
   }
 }
