@@ -23,7 +23,7 @@ export default class BaseManager {
   protected init() {}
 
   public start() {
-    this.builder.build();
+    this.builder.build(); 
   }
 
   public static newErrorEmbed(user: User, interaction: CommandInteraction, description: string) {
