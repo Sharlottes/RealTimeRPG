@@ -1,17 +1,21 @@
 import { BaseEmbed } from "@RTTRPG/modules";
 import { findMessage, User } from '@RTTRPG/game';
+import { CommandInteraction } from "discord.js";
 
 /**
  * 모든 이벤트들의 기반 관리 클래스
  */
 export default class EventManager {
+  protected readonly user: User;
+  protected readonly interaction: CommandInteraction;
   protected readonly builder: BaseEmbed;
 	protected readonly locale: string;
 
-  public constructor(user: User, builder = findMessage(user).builder as BaseEmbed) {
-		this.locale = user.getLocale();
+  public constructor(user: User, interaction: CommandInteraction, builder = findMessage(interaction.id).builder as BaseEmbed) {
+    this.user = user;
+    this.interaction = interaction;
 		this.builder = builder;
-    findMessage(user).builder = builder;
+		this.locale = interaction.locale;
     if(new.target === EventManager) this.init();
   }
 
@@ -22,11 +26,11 @@ export default class EventManager {
     this.builder.build();
   }
 
-  public static newErrorEmbed(user: User, description: string, interaction = findMessage(user).interaction) {
-    new EventManager(user, new BaseEmbed(interaction).setTitle("ERROR").setDescription(description)).start();
+  public static newErrorEmbed(user: User, interaction: CommandInteraction, description: string) {
+    new EventManager(user, interaction, new BaseEmbed(interaction).setTitle("ERROR").setDescription(description)).start();
   }
 
-  public static newTextEmbed(user: User, description: string, title = "", interaction = findMessage(user).interaction) {
-    new EventManager(user, new BaseEmbed(interaction).setTitle(title).setDescription(description)).start();
+  public static newTextEmbed(user: User, interaction: CommandInteraction, description: string, title = "") {
+    new EventManager(user, interaction, new BaseEmbed(interaction).setTitle(title).setDescription(description)).start();
   }
 }

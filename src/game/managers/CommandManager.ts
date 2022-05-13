@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import Discord, { CacheType, MessageEmbed } from 'discord.js';
-import { PagesBuilder } from 'discord.js-pages';
+import { CommandInteraction, MessageEmbed } from 'discord.js';
 
 import { UnitEntity, ItemStack, Items, Units, Vars, BaseEvent, User, findMessage, getOne, save } from '@RTTRPG/game';
 import { ExchangeManager, BattleManager, EventManager, SelectManager } from '@RTTRPG/game/managers';
@@ -11,141 +10,16 @@ import { BaseEmbed } from '@RTTRPG/modules';
 import { bundle } from '@RTTRPG/assets';
 import CM from '@RTTRPG/commands';
 
-const eventData: BaseEvent[] = [
-	new BaseEvent({
-		ratio: 20
-	}, (user) => {
-		const msg = findMessage(user);
-		
-		const money = 2 + Math.floor(Math.random() * 10);
-		user.money += money;
-		msg.interaction.followUp(bundle.format(user.getLocale(msg), 'event.money', money));
-	}),
+const eventData: BaseEvent[] = [];
 
-	new BaseEvent({
-		ratio: 30
-	}, (user) => {
-		const msg = findMessage(user);
-		const item = getOne(Items.items.filter((i) => i.dropOnWalk));
-		user.giveItem(item);
-		msg.interaction.followUp(`${bundle.format(user.getLocale(msg), 'event.item', item.localName(user))}`);
-	}),
-	new BaseEvent({
-		ratio: 15,
-		title: 'goblin'
-	}, user => {
-		const msg = findMessage(user);
-
-		new SelectManager(user, new BaseEmbed(msg.interaction).setPages(new MessageEmbed()))
-			.addButtonSelection('battle', 0, (user) => new BattleManager(user, new UnitEntity(Units.find(1)).setWeapon(new ItemStack(3)), msg.builder))
-			.addButtonSelection('run', 0, (user) => {
-				const msg = findMessage(user);
-				if(!msg.builder) return;
-				if (Mathf.randbool()) {
-					const money = Math.floor(Mathf.range(2, 10));
-					user.money -= money;
-					msg.builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.getLocale(msg), 'event.goblin_run_failed', money)+"\n```"});
-				} else {
-					msg.builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.getLocale(msg), 'event.goblin_run_success')+"\n```"});
-				}
-				msg.builder.setComponents([]);
-				user.status.clearSelection();
-			})
-			.addButtonSelection('talking', 0, (user) => {
-				const msg = findMessage(user);
-				if(!msg.builder) return;
-
-				const money = Math.floor(Mathf.range(2, 5));
-				user.money -= money;
-				msg.builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.getLocale(msg), 'event.goblin_talking', money)+"\n```"});
-				msg.builder.setComponents([]);
-				user.status.clearSelection();
-			})
-			.addButtonSelection('exchange', 0, (user) => new ExchangeManager(user, new UnitEntity(Units.find(1)), msg.builder)).start();
-	}),
-	new BaseEvent({
-		ratio: 20,
-		title: 'obstruction',
-	}, user => {
-		const msg = findMessage(user);
-
-		new SelectManager(user, new BaseEmbed(msg.interaction).setPages(new MessageEmbed()))
-			.addButtonSelection('battle', 0, (user) => new BattleManager(user, new UnitEntity(Units.find(0)).setWeapon(new ItemStack(9)), msg.builder))
-			.addButtonSelection('run', 0, (user) => {
-				if(!msg.builder) return;
-				
-				msg.builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.getLocale(msg), 'event.obstruction_run')+"\n```"});
-				msg.builder.setComponents([]);
-				user.status.clearSelection();
-			}).start();
-	})
-];
-
-function consumeCmd(user: User) {
-	const msg = findMessage(user);
-	const id = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getInteger('target', true);
-	const amount = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getInteger('amount', false)||1;
-	const stack: ItemStack | undefined = user.inventory.items.find((i) => i.getItem().id == id);
-	if (!stack) EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.notFound', Items.find(id).localName(user)));
-	else if (stack.amount <= 0) EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.missing_item', stack.getItem().localName(user)));
-	else if (stack.amount < amount) EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.not_enough', stack.getItem().localName(user), amount));
-	else EventManager.newTextEmbed(user, stack.consume(user, amount));
+function registerEvent(ratio: number, title: string|undefined = undefined, callback: (user: User, interaction: CommandInteraction)=>void) {
+	eventData.push(new BaseEvent({
+		ratio: ratio,
+		title: title
+	}, callback));
 }
 
-function walkingCmd(user: User) {
-	const msg = findMessage(user);
-	
-	if (user.stats.energy >= 7) {
-		user.countover = 0;
-		user.stats.energy -= 7;
-		getOne(eventData.map(e=>e.data), (data,i)=> eventData[i].start(user));
-	} else {
-		if (user.countover >= 3) {
-			EventManager.newErrorEmbed(user, bundle.find(user.getLocale(msg), 'error.calmdown'));
-		} else {
-			user.countover++;
-			EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.low_energy', user.stats.energy.toFixed(1)));
-		}
-	}
-}
-
-function contentInfoCmd(user: User) {
-	const msg = findMessage(user);
-	const type = (msg.interaction as Discord.CommandInteraction<CacheType>).options.getString('type', false);
-	const contents: Content[] = [];
-	const embeds: MessageEmbed[] = [];
-
-	if(!type || type == 'unit') {
-		for(const unit of Units.units) {
-			if(!user.foundContents.units.includes(unit.id)) continue;
-			contents.push(unit);
-		}
-	}
-
-	if(!type || type == 'item') {
-		for(const item of Items.items) {
-			if(!user.foundContents.items.includes(item.id)) continue;
-			contents.push(item);
-		}
-	}
-
-	Arrays.division(contents, 5).forEach(conts=>{
-		const embed = new MessageEmbed();
-		conts.forEach(cont=>embed.addField(cont.localName(user), cont.description(user)+'\n\n'+(cont.details(user)||'')));
-		embeds.push(embed);
-	});
-	if(embeds.length <= 0) embeds.push(new MessageEmbed().setDescription('< empty >'));
-  new EventManager(user, new BaseEmbed(msg.interaction).setPages(embeds).setDefaultButtons(['back', 'next'])).start();
-}
-
-function introduceCmd(user: User) {
-	const msg = findMessage(user);
-	new EventManager(user, new BaseEmbed(msg.interaction).setPages(new MessageEmbed()).setTitle('Real Time Text RPG').setDescription(bundle.find(user.getLocale(msg), 'bot.description'), '', false).setFields({
-		name: 'GOAL', value: bundle.find(user.getLocale(msg), 'bot.goal') 
-	})).start();
-}
-
-function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>void), ignoreSelection = false, category: CommandCategory = 'guild') {
+function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: CommandInteraction)=>void), ignoreSelection = false, category: CommandCategory = 'guild') {
 	CM.register({
 		category: category,
 		dmOnly: false,
@@ -153,18 +27,23 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>void
 		builder,
 		setHiddenConfig: (arg) => arg,
 		run: (interaction) => {
+			//유저 호출/생성
 			const user = Vars.users.find((u) => u.id == interaction.user.id) || Vars.users[Vars.users.push(new User(interaction.user))-1];
 			user.user = interaction.user;
-			const msg = Vars.latestMsg.get(user) || { interaction };
+			user.locale = interaction.locale;
 
-			//call command listener
 			if(user.status.name==='selecting' && !ignoreSelection) 
-				EventManager.newErrorEmbed(user, bundle.format(user.getLocale(msg), 'error.select', builder.name), interaction);
+				EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.select', builder.name));
 			else {
-				//update latestMsgs
-				msg.interaction = interaction;
-				Vars.latestMsg.set(user, msg);
-				(callback as (msg: User)=>PagesBuilder)(user);
+				//메시지 캐싱
+				Vars.messageCache.set(interaction.id, { 
+					interaction: interaction, 
+					builder: new BaseEmbed(interaction).setPages(new MessageEmbed()),
+					sender: user
+				});
+
+				//명령어 호출
+				callback(user, interaction);
 			}
 
 			save();
@@ -174,21 +53,121 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User)=>void
 
 namespace CommandManager {
   export function init() {
-    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), (user: User) => user.getUserInfo(findMessage(user)), true);
-    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), (user: User) => user.getInventoryInfo(findMessage(user)), true);
+		eventData.length = 0;
+		registerEvent(20, undefined, (user, interaction) => {
+			const money = 2 + Math.floor(Math.random() * 10);
+			user.money += money;
+			interaction.followUp(bundle.format(user.locale, 'event.money', money));
+		});
+
+		registerEvent(30, undefined, (user, interaction) => {
+			const item = getOne(Items.items.filter((i) => i.dropOnWalk));
+			user.giveItem(item);
+			interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
+		});
+
+		registerEvent(15, 'goblin', (user, interaction) => {
+			const { builder } = findMessage(interaction.id);
+
+			new SelectManager(user, interaction, builder)
+				.addButtonSelection('battle', 0, (user) => new BattleManager(user, interaction, new UnitEntity(Units.find(1)).setWeapon(new ItemStack(3)), builder))
+				.addButtonSelection('run', 0, (user) => {
+					if (Mathf.randbool()) {
+						const money = Math.floor(Mathf.range(2, 10));
+						user.money -= money;
+						builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.locale, 'event.goblin_run_failed', money)+"\n```"});
+					} else {
+						builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.locale, 'event.goblin_run_success')+"\n```"});
+					}
+					builder.setComponents([]);
+					user.status.clearSelection();
+				})
+				.addButtonSelection('talking', 0, (user) => {
+					const money = Math.floor(Mathf.range(2, 5));
+					user.money -= money;
+					builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.locale, 'event.goblin_talking', money)+"\n```"});
+					builder.setComponents([]);
+					user.status.clearSelection();
+				})
+				.addButtonSelection('exchange', 0, (user) => new ExchangeManager(user, interaction, new UnitEntity(Units.find(1)), builder)).start();
+		});
+
+		registerEvent(20, 'obstruction', (user, interaction) => {
+			const { builder } = findMessage(interaction.id);
+
+			new SelectManager(user, interaction, builder)
+				.addButtonSelection('battle', 0, (user) => new BattleManager(user, interaction, new UnitEntity(Units.find(0)).setWeapon(new ItemStack(9)), builder))
+				.addButtonSelection('run', 0, (user) => {
+					builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.locale, 'event.obstruction_run')+"\n```"});
+					builder.setComponents([]);
+					user.status.clearSelection();
+				}).start();
+		});
+
+    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), (user, interaction) => user.getUserInfo(interaction), true);
+    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), (user, interaction) => user.getInventoryInfo(interaction), true);
+
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('consume').setDescription('consume item');
       s.addIntegerOption((option) => option.setName('target').setDescription('item name').setRequired(true).addChoices(Items.items.reduce<[name: string, value: number][]>((a, i) => i instanceof Potion ? [...a, [i.name, i.id]] : a, [])));
 			s.addIntegerOption((option) => option.setName('amount').setDescription('item amount'));
 			return s;
-    })(), consumeCmd, true);
+    })(), (user, interaction) => {
+			const id = interaction.options.getInteger('target', true);
+			const amount = interaction.options.getInteger('amount', false)||1;
+			const stack: ItemStack | undefined = user.inventory.items.find((i) => i.id == id);
+			if (!stack) EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.notFound', Items.find(id).localName(user)));
+			else if (stack.amount <= 0) EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', stack.getItem().localName(user)));
+			else if (stack.amount < amount) EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.getItem().localName(user), amount));
+			else EventManager.newTextEmbed(user, interaction, stack.consume(user, amount));
+		}, true);
+
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('info').setDescription('show content information');
       s.addStringOption((option) => option.setName('type').setDescription('the content type').addChoices([['item', 'item'], ['unit', 'unit']]));
       return s;
-    })(), contentInfoCmd, true);
-    registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), walkingCmd);
-    registerCmd(new SlashCommandBuilder().setName('intro').setDescription('introduce bot info(WIP)'), introduceCmd, true);
+    })(), (user, interaction) => {
+			const type = interaction.options.getString('type', false);
+			const contents: Content[] = [];
+			const embeds: MessageEmbed[] = [];
+
+			if(!type || type == 'unit') {
+				for(const unit of Units.units) {
+					if(!user.foundContents.units.includes(unit.id)) continue;
+					contents.push(unit);
+				}
+			}
+
+			if(!type || type == 'item') {
+				for(const item of Items.items) {
+					if(!user.foundContents.items.includes(item.id)) continue;
+					contents.push(item);
+				}
+			}
+
+			Arrays.division(contents, 5).forEach(conts=>{
+				const embed = new MessageEmbed();
+				conts.forEach(cont=>embed.addField(cont.localName(user), cont.description(user)+'\n\n'+(cont.details(user)||'')));
+				embeds.push(embed);
+			});
+			if(embeds.length <= 0) embeds.push(new MessageEmbed().setDescription('< empty >'));
+			new EventManager(user, interaction, new BaseEmbed(interaction).setPages(embeds).setDefaultButtons(['back', 'next'])).start();
+		}, true);
+
+    registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), (user, interaction) => {
+			if (user.stats.energy >= 7) {
+				user.stats.energy -= 7;
+				getOne(eventData.map(e=>e.data), (data,i)=> eventData[i].start(user, interaction));
+			} else {
+				EventManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.low_energy', user.stats.energy.toFixed(1)));
+			}
+		});
+
+    registerCmd(new SlashCommandBuilder().setName('intro').setDescription('introduce bot info(WIP)'), (user, interaction) => {
+			new EventManager(user, interaction, new BaseEmbed(interaction).setPages(new MessageEmbed()).setTitle('Real Time Text RPG').setDescription(bundle.find(user.locale, 'bot.description'), '', false).setFields({
+				name: 'GOAL', value: bundle.find(user.locale, 'bot.goal') 
+			})).start();
+		}, true);
   }
 }
 

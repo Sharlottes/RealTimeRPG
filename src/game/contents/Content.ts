@@ -1,11 +1,8 @@
 
 import { Consumable, Dropable, Durable, ItemData, Rationess, Stat, UnitData, Inventory } from '@RTTRPG/@type';
-import { ItemStack, UnitEntity } from '@RTTRPG/game';
-import { User } from '@RTTRPG/modules';
+import { ItemStack, UnitEntity, User } from '@RTTRPG/game';
 import { Utils } from '@RTTRPG/util';
-import Assets from '@RTTRPG/assets';
-
-const Bundle = Assets.bundle;
+import { bundle } from '@RTTRPG/assets';
 
 export class Content {
 	readonly name: string;
@@ -15,9 +12,9 @@ export class Content {
 
 	constructor(name: string, type = 'other') {
 		this.name = name;
-		this.localName = (user: User)=>Bundle.find(user.getLocale(), `content.${type}.${name}.name`);
-		this.description = (user: User)=>Bundle.find(user.getLocale(), `content.${type}.${name}.description`);
-		this.details = (user: User)=>Bundle.find(user.getLocale(), `content.${type}.${name}.details`);
+		this.localName = (user: User)=>bundle.find(user.locale, `content.${type}.${name}.name`);
+		this.description = (user: User)=>bundle.find(user.locale, `content.${type}.${name}.description`);
+		this.details = (user: User)=>bundle.find(user.locale, `content.${type}.${name}.details`);
 	}
 }
 
@@ -63,10 +60,10 @@ export class Weapon extends Item implements Durable {
 		const critical = Utils.Mathf.randbool(this.critical_chance);
 		const stat = target?target.stats:user.stats;
 		const damage = this.damage + (critical ? this.critical_ratio * this.damage : 0);
-		const locale = user.getLocale();
+		const locale = user.locale;
 		
-		return Bundle.format(locale, 'battle.hit',
-			critical ? Bundle.find(locale, 'battle.critical') : '',
+		return bundle.format(locale, 'battle.hit',
+			critical ? bundle.find(locale, 'battle.critical') : '',
 			target ? Units.find(target.id).localName(user) : user.user.username, //target's
 			damage.toFixed(2), //damaged
 			this.localName(user), //by weapon
@@ -108,7 +105,7 @@ export class Buff {
 	) {
 		this.value = value;
 		
-		this.localName = (user: User)=>Bundle.find(user.getLocale(), `buff.${name}.name`);
+		this.localName = (user: User)=>bundle.find(user.locale, `buff.${name}.name`);
 		this.callback = callback;
 	}
 
@@ -126,7 +123,7 @@ export class Potion extends Item implements Consumable {
 	}
 
 	consume(user: User, amount = 1) {
-		return Bundle.format(user.getLocale(), 'consume', this.localName(user), amount, this.buffes.map((b) => b.buff(user, amount)).join('\n  '));
+		return bundle.format(user.locale, 'consume', this.localName(user), amount, this.buffes.map((b) => b.buff(user, amount)).join('\n  '));
 	}
 }
 

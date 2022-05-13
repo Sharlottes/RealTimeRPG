@@ -10,6 +10,7 @@ import { Rationess, Message, UserSave } from '@RTTRPG/@type';
 import { Items, Units, Vars, User } from '@RTTRPG/game';
 import { CommandManager } from '@RTTRPG/game/managers';
 import { Utils } from '@RTTRPG/util';
+import { Snowflake } from 'discord.js';
 
 
 const { Database } = Utils;
@@ -44,11 +45,11 @@ export function getOne<T extends Rationess>(arr: T[], callback?: (arg: T, index:
 
 /**
  * latestMsgs 배열에서 해당 유저의 최근 메시지를 찾습니다.
- * @param {User} user 최근 메시지를 보낸 유저
+ * @param {Snowflake} id 케시 id
  * @returns {Message} 해당 유저의 최근 메시지
  */
-export function findMessage(user: User): Message {
-	const msg = Vars.latestMsg.get(user);
+export function findMessage(id: Snowflake): Message {
+	const msg = Vars.messageCache.get(id);
 	if(msg) return msg;
 	throw new Error('message is undefined');
 }

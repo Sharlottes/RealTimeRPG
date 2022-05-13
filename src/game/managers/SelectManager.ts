@@ -1,20 +1,19 @@
-import { InteractionButtonOptions, MessageActionRow, MessageActionRowComponent, MessageButton, MessageSelectMenu, MessageSelectMenuOptions } from 'discord.js';
+import { CommandInteraction, InteractionButtonOptions, MessageActionRow, MessageActionRowComponent, MessageButton, MessageSelectMenu, MessageSelectMenuOptions } from 'discord.js';
 import { ITrigger } from 'discord.js-pages';
 
 import Assets from '@RTTRPG/assets';
 import { EventManager } from '@RTTRPG/game/managers';
 import { findMessage, save, User } from '@RTTRPG/game';
 import { EventSelection, EventTrigger } from '@RTTRPG/@type';
+import { BaseEmbed } from '@RTTRPG/modules';
 
 export default class SelectManager extends EventManager {
   protected readonly selections: EventSelection[][]
-  protected readonly user: User;
   protected readonly last?: SelectManager;
 
-  public constructor (user: User, builder = findMessage(user).builder, last?: SelectManager) {
-    super(user, builder);
+  public constructor(user: User, interaction: CommandInteraction, builder = findMessage(interaction.id).builder, last?: SelectManager) {
+    super(user, interaction, builder);
     this.selections = [];
-    this.user = user;
     this.last = last;
     if(new.target === SelectManager) this.init();
   }
@@ -86,7 +85,7 @@ export default class SelectManager extends EventManager {
       const action = new MessageActionRow();
       e.forEach((select, ii) => {
         const id = `${select.name}${i}${ii}`;
-        const name = Assets.bundle.find(this.user.getLocale(), `select.${select.name}`);
+        const name = Assets.bundle.find(this.locale, `select.${select.name}`);
         
         if(select.type === "button") {
           const option = (select.options || {style: 'PRIMARY'}) as InteractionButtonOptions;

@@ -1,6 +1,5 @@
-import Discord, { MessageButton, MessageActionRow } from 'discord.js';
+import Discord, { MessageButton, MessageActionRow, CommandInteraction } from 'discord.js';
 import { findMessage, save, Units, User, UnitEntity } from '@RTTRPG/game';
-import { BaseEmbed } from '@RTTRPG/modules';
 import { bundle } from '@RTTRPG/assets';
 import { Utils } from '@RTTRPG/util';
 import { SelectManager } from '.';
@@ -9,8 +8,8 @@ export default class BuyManager extends SelectManager {
 	private target: UnitEntity;
 	private amountSelect?: (amount: number) => void;
 
-	constructor(user: User, target: UnitEntity, builder = findMessage(user).builder as BaseEmbed, last?: SelectManager) {
-		super(user, builder, last);
+  public constructor(user: User, interaction: CommandInteraction, target: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
+    super(user, interaction, builder);
 		this.target = target;
     if(new.target === BuyManager) this.init();
 	}

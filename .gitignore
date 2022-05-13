@@ -6,11 +6,8 @@ build/
 
 # 테스트 코드
 test/
-
 error.json
-
 window_connect.bat
-
 Database/
 
 # sdk

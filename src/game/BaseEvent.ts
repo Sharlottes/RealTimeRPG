@@ -1,23 +1,13 @@
-import { Event, EventData } from "../@type";
-import { User } from "../modules";
-import Assets from "@RTTRPG/assets";
-import { findMessage } from "@RTTRPG/game";
+import { EventData } from "../@type";
+import { User } from "@RTTRPG/game";
+import { CommandInteraction } from 'discord.js';
 
-export class BaseEvent implements Event {
+export class BaseEvent {
     data: EventData;
-    onStart: (user: User)=>void;
+    start: (user: User, interaction: CommandInteraction)=>void;
 
-    constructor(data: EventData, callback?: (user: User)=>void) {
-        this.onStart = callback || (()=>{return});
+    constructor(data: EventData, callback: (user: User, interaction: CommandInteraction)=>void) {
+        this.start = callback;
         this.data = data;
-    }
-
-    start(user: User) {
-        if(this.data.title) findMessage(user)?.interaction.editReply(Assets.bundle.find(user.getLocale(), `event.${this.data.title}`));
-        this.onStart(user);
-    }
-    
-    getRatio(): number {
-        return this.data.ratio;
     }
 }

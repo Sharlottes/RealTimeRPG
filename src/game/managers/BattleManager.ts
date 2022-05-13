@@ -3,7 +3,7 @@ import { Mathf, Canvas } from '@RTTRPG/util';
 import { bundle } from '@RTTRPG/assets';
 import { Item, Weapon } from '@RTTRPG/game/contents';
 import { ItemStack, UnitEntity, ItemEntity, Items, Units, getOne, save, findMessage, User } from '@RTTRPG/game';
-import { MessageSelectOptionData } from 'discord.js';
+import { CommandInteraction, MessageSelectOptionData } from 'discord.js';
 import SelectManager from './SelectManager';
 
 export default class BattleManager extends SelectManager{
@@ -11,8 +11,8 @@ export default class BattleManager extends SelectManager{
 	private interval?: NodeJS.Timeout;
 	private battleLog: string[] = [];
 
-	constructor(user: User, target: UnitEntity, builder = findMessage(user).builder as BaseEmbed, last?: SelectManager) {
-		super(user, builder, last);
+  public constructor(user: User, interaction: CommandInteraction, target: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
+    super(user, interaction, builder);
 		this.target = target;
     if(new.target === BattleManager) this.init();
 	}

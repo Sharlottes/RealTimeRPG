@@ -1,5 +1,5 @@
 
-import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionRow } from 'discord.js';
+import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionRow, MessagePayload, MessageOptions } from 'discord.js';
 
 import { filledBar } from 'string-progressbar';
 import Canvas from 'canvas';
@@ -9,10 +9,10 @@ import { findMessage, save, Items, ItemStack } from "@RTTRPG/game";
 import { BaseEmbed } from '@RTTRPG/modules';
 import { Item, Weapon } from './contents';
 import { Utils } from "@RTTRPG/util";
-import Assets from '@RTTRPG/assets';
+import { bundle } from '@RTTRPG/assets';
 import app from '..';
-
-const Bundle = Assets.bundle;
+import { EventManager } from './managers';
+import { CommandInteraction } from 'discord.js';
 
 const defaultStat: Stat = {
   health: 20,
@@ -44,7 +44,6 @@ export class User {
   public exp = 0;
   public level = 1;
   public money = 0;
-  public countover = 0;
   public id: string;
   public user: Discord.User;
   public status: Status = new Status();
@@ -54,6 +53,7 @@ export class User {
     weapon: new ItemStack(5), //주먹
   };
   public foundContents = {items: [-1], units: [-1]};
+  public locale = 'en';
 
   constructor(user: Discord.User|string) {
     if(typeof user === 'string') {
@@ -71,10 +71,6 @@ export class User {
     const user = new User(data.id);
     user.read(data);
     return user;
-  }
-
-  public getLocale(msg = findMessage(this)) {
-    return msg?.interaction.locale||'en';
   }
 
   public init() {
@@ -120,12 +116,17 @@ export class User {
 
     if (!this.foundContents.items.includes(item.id)) {
       this.foundContents.items.push(item.id);
-      findMessage(this).builder?.addDescription(Bundle.format(this.getLocale(), 'firstget', item.localName(this)));
+      this.sendDM(bundle.format(this.locale, 'firstget', item.localName(this)));
     }
     
     save();
   }
 
+  public sendDM(options: string | MessagePayload | MessageOptions): Promise<Discord.Message> | undefined {
+    if(!this.user.dmChannel) this.user.createDM();
+    return this.user.dmChannel?.send(options);
+  }
+  
   /**
    * 기존 무기를 새 무기로 전환
    * @param weapon 장착할 새 무기
@@ -133,21 +134,21 @@ export class User {
    */
   public switchWeapon(weapon: Weapon): string {
     const entity = this.inventory.items.find((entity) => entity.id == weapon.id);
-    const locale = this.getLocale();
+    const locale = this.locale;
 
-    if (!entity) return Bundle.format(locale, 'missing_item', weapon.localName(this));
+    if (!entity) return bundle.format(locale, 'missing_item', weapon.localName(this));
     entity.remove();
     if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
 
     this.giveItem(weapon);
     this.inventory.weapon = new ItemStack(weapon.id);
     
-    return Bundle.format(locale, 'switch_change', weapon.localName(this), Items.find(entity.id).localName(this));
+    return bundle.format(locale, 'switch_change', weapon.localName(this), Items.find(entity.id).localName(this));
   }
 
   public levelup() {
-    findMessage(this)?.interaction.followUp(Bundle.format(
-      this.getLocale(),
+    this.sendDM(bundle.format(
+      this.locale,
       'levelup',
       this.user.username,
       this.level,
@@ -163,17 +164,17 @@ export class User {
     save();
   }
 
-  public getInventoryInfo(msg: Message) {
-    let embed = new MessageEmbed().setTitle(Bundle.find(this.getLocale(msg), 'inventory'));
+  public getInventoryInfo(interaction: CommandInteraction) {
+    let embed = new MessageEmbed().setTitle(bundle.find(this.locale, 'inventory'));
     this.inventory.items.forEach(stack => {
       if(stack.amount <= 0) return;
-      embed = embed.addField(stack.getItem().localName(this), `${stack.amount} ${Bundle.find(this.getLocale(msg), 'unit.item')}`, true);
+      embed = embed.addField(stack.getItem().localName(this), `${stack.amount} ${bundle.find(this.locale, 'unit.item')}`, true);
     });
-    return new BaseEmbed(msg.interaction).setPages(embed);
+    return new BaseEmbed(interaction).setPages(embed);
   }
 
-  public getUserInfo(msg: Message) {
-    const user = msg.interaction.user;
+  public getUserInfo(interaction: CommandInteraction) {
+    const user = interaction.user;
     const weapon = this.inventory.weapon.getItem<Weapon>();
     const canvas = Canvas.createCanvas(1000, 1000);
     Utils.Canvas.donutProgressBar(canvas, {
@@ -194,7 +195,7 @@ export class User {
     });
     const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
 
-    return new BaseEmbed(msg.interaction)
+    return new BaseEmbed(interaction)
       .setColor('#0099ff')
       .setTitle('User Status Information')
       .setAuthor({name: user.username, iconURL: user.displayAvatarURL(), url: user.displayAvatarURL()})
@@ -215,10 +216,10 @@ export class User {
       .addTriggers([
         {
           name: 'weapon_info',
-          callback: (interact, button) => {
+          callback: (inter, button) => {
             button.setDisabled(true);
 
-            new BaseEmbed(msg.interaction)           
+            new BaseEmbed(interaction)           
               .setColor('#b8b8b8')
               .setTitle(`Weapon: \`${weapon.localName(this)}\` Information`)
               .setAuthor({name: user.username, iconURL: user.displayAvatarURL(), url: user.displayAvatarURL()})
@@ -232,10 +233,10 @@ export class User {
         },
         {
           name: 'inventory_info',
-          callback: (interact, button) => {
+          callback: (inter, button) => {
             button.setDisabled(true);
 
-            this.getInventoryInfo(msg).build();
+            this.getInventoryInfo(interaction).build();
           }
         }
       ]);

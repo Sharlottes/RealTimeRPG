@@ -34,10 +34,6 @@ export interface Rationess {
 	ratio: number
 }
 
-export interface Event {
-    onStart(r): unknown
-}
-
 export type EventData = {
     title?: string
 } & Rationess
@@ -54,7 +50,8 @@ export type Inventory = {
 
 export type Message = {
     interaction: Discord.CommandInteraction<CacheType>,
-    builder?: BaseEmbed
+    builder: BaseEmbed,
+    sender: User
 }
 
 export type CommandInfo = {

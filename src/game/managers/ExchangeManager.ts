@@ -2,19 +2,20 @@ import { ItemStack, UnitEntity, Items, User, getOne, findMessage } from '@RTTRPG
 import { SellManager, BuyManager, SelectManager } from '@RTTRPG/game/managers';
 import { Units } from '@RTTRPG/game/contents';
 import { bundle } from '@RTTRPG/assets';
+import { CommandInteraction } from 'discord.js';
 
 export default class ExchangeManager extends SelectManager {
 	private target: UnitEntity;
 
-	constructor(user: User, target: UnitEntity, builder = findMessage(user).builder, last?: SelectManager) {
-		super(user, builder, last);
+  public constructor(user: User, interaction: CommandInteraction, target: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
+    super(user, interaction, builder);
 		this.target = target;
     if(new.target === ExchangeManager) this.init();
 	}
 	
 	protected override init() {
-		this.addButtonSelection('buy', 0, (user)=>new BuyManager(user, this.target, this.builder, this));
-		this.addButtonSelection('sell', 0, (user)=>new SellManager(user, this.target, this.builder, this));
+		this.addButtonSelection('buy', 0, (user)=>new BuyManager(user, this.interaction, this.target, this.builder, this));
+		this.addButtonSelection('sell', 0, (user)=>new SellManager(user, this.interaction, this.target, this.builder, this));
 		this.addButtonSelection('back', 0, (user) => {
 			this.builder.addDescription(bundle.find(this.locale, 'shop.end'));
 			this.builder.setComponents([]);
