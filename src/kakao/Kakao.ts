@@ -1,8 +1,7 @@
 import { Server, Message } from '@remote-kakao/core';
 import { BaseCommand, linkChannel, onKaKaoMessage } from '@RTTRPG/kakao';
 import { manager } from '@RTTRPG/kakao/CommandManager';
-import fs from 'fs';
-import secret from "../secret.json";
+import secret from "../kakao.json";
 
 
 function errorHandle(reply: Promise<Record<string, unknown>>) {

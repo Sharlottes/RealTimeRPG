@@ -19,7 +19,6 @@ export default class ExchangeManager extends SelectManager {
 		this.addButtonSelection('back', 0, (user) => {
 			this.builder.addDescription(bundle.find(this.locale, 'shop.end'));
 			this.builder.setComponents([]);
-			user.status.clearSelection();
 		});
 
 		//고블린 인벤토리 생성

@@ -16,7 +16,7 @@ export default class BaseManager {
     this.interaction = interaction;
 		this.builder = builder;
 		this.locale = interaction.locale;
-    if(new.target === BaseManager  ) this.init();
+    if(new.target === BaseManager) this.init();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

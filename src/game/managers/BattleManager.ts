@@ -118,7 +118,6 @@ export default class BattleManager extends SelectManager{
 
 	battleEnd(user: User) {
 		if(this.interval) clearInterval(this.interval);
-		user.status.clearSelection();
 		this.builder.setComponents([]);
 
 		if(this.target.stats.health <= 0) {

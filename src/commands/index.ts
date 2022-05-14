@@ -1,4 +1,4 @@
-export { default as Command, CommandCategory } from "./Command"; // 명령어 인터페이스
+export { default as Command } from "./Command"; // 명령어 인터페이스
 
 // 위까지는 다른 모듈들 정의
 // 아래서부턴 명령어 목록 선언
@@ -9,7 +9,7 @@ import fs from "fs";
 
 import { Command } from "@RTTRPG/commands";
 import app from "@RTTRPG/index"
-import config from "@RTTRPG/config.json";
+import config from "@RTTRPG/discord.json";
 import { CommandInfo } from "@RTTRPG/@type";
 
 const ignores: string[] = [

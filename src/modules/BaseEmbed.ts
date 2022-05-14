@@ -1,8 +1,5 @@
-import { CommandInteraction, MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
+import { CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
 import { PagesBuilder } from 'discord.js-pages';
-import Assets from '../assets';
-
-const Bundle = Assets.bundle;
 
 export class BaseEmbed extends PagesBuilder {
   constructor(interaction: CommandInteraction, removeable = true) {
@@ -17,7 +14,7 @@ export class BaseEmbed extends PagesBuilder {
       ])).addTriggers({ 
         name: 'remove_embed',
         callback: (inter, componenets) => {
-          setTimeout(()=>interaction.deleteReply().catch(e=>interaction.followUp(Bundle.format(interaction.locale, 'error.delete_message', e))), 1000);
+          setTimeout(()=>(this['message'] as Message).delete().catch(console.log), 100);
         }
       })
     }

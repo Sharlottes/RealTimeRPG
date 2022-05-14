@@ -19,7 +19,7 @@ function registerEvent(ratio: number, title: string|undefined = undefined, callb
 	}, callback));
 }
 
-function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: CommandInteraction)=>void), ignoreSelection = false, category: CommandCategory = 'guild') {
+function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: CommandInteraction)=>void), category: CommandCategory = 'guild') {
 	CM.register({
 		category: category,
 		dmOnly: false,
@@ -32,20 +32,15 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, inter
 			user.user = interaction.user;
 			user.locale = interaction.locale;
 
-			if(user.status.name==='selecting' && !ignoreSelection) 
-				BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.select', builder.name));
-			else {
-				//메시지 캐싱
-				Vars.messageCache.set(interaction.id, { 
-					interaction: interaction, 
-					builder: new BaseEmbed(interaction, false).setPages(new MessageEmbed()),
-					sender: user
-				});
+			//메시지 캐싱
+			Vars.messageCache.set(interaction.id, { 
+				interaction: interaction, 
+				builder: new BaseEmbed(interaction, false).setPages(new MessageEmbed()),
+				sender: user
+			});
 
-				//명령어 호출
-				callback(user, interaction);
-			}
-
+			//명령어 호출
+			callback(user, interaction);
 			save();
 		}
 	});
@@ -66,7 +61,7 @@ namespace CommandManager {
 			interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
 		});
 
-		registerEvent(1225, 'goblin', (user, interaction) => {
+		registerEvent(15, 'goblin', (user, interaction) => {
 			const { builder } = findMessage(interaction.id);
 
 			new SelectManager(user, interaction, builder)
@@ -80,14 +75,12 @@ namespace CommandManager {
 						builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.locale, 'event.goblin_run_success')+"\n```"});
 					}
 					builder.setComponents([]);
-					user.status.clearSelection();
 				})
 				.addButtonSelection('talking', 0, (user) => {
 					const money = Math.floor(Mathf.range(2, 5));
 					user.money -= money;
 					builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.locale, 'event.goblin_talking', money)+"\n```"});
 					builder.setComponents([]);
-					user.status.clearSelection();
 				})
 				.addButtonSelection('exchange', 0, (user) => new ExchangeManager(user, interaction, new UnitEntity(Units.find(1)), builder)).start();
 		});
@@ -100,12 +93,11 @@ namespace CommandManager {
 				.addButtonSelection('run', 0, (user) => {
 					builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.locale, 'event.obstruction_run')+"\n```"});
 					builder.setComponents([]);
-					user.status.clearSelection();
 				}).start();
 		});
 
-    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), (user, interaction) => user.getUserInfo(interaction), true);
-    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), (user, interaction) => user.getInventoryInfo(interaction), true);
+    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), (user, interaction) => user.getUserInfo(interaction).build());
+    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), (user, interaction) => user.getInventoryInfo(interaction).build());
 
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('consume').setDescription('consume item');
@@ -120,7 +112,7 @@ namespace CommandManager {
 			else if (stack.amount <= 0) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', stack.getItem().localName(user)));
 			else if (stack.amount < amount) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.getItem().localName(user), amount));
 			else BaseManager.newTextEmbed(user, interaction, stack.consume(user, amount));
-		}, true);
+		});
 
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('info').setDescription('show content information');
@@ -152,7 +144,7 @@ namespace CommandManager {
 			});
 			if(embeds.length <= 0) embeds.push(new MessageEmbed().setDescription('< empty >'));
 			new BaseManager(user, interaction, new BaseEmbed(interaction).setPages(embeds).setDefaultButtons(['back', 'next'])).start();
-		}, true);
+		});
 
     registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), (user, interaction) => {
 			if (user.stats.energy >= 7) {
@@ -167,7 +159,7 @@ namespace CommandManager {
 			new BaseManager(user, interaction, new BaseEmbed(interaction).setPages(new MessageEmbed()).setTitle('Real Time Text RPG').setDescription(bundle.find(user.locale, 'bot.description'), '', false).setFields({
 				name: 'GOAL', value: bundle.find(user.locale, 'bot.goal') 
 			})).start();
-		}, true);
+		});
   }
 }
 

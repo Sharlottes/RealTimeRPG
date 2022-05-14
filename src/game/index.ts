@@ -15,7 +15,6 @@ import { Snowflake } from 'discord.js';
 const { Database } = Utils;
 
 export function init() {
-	Vars.users.forEach(u=>u.init());
 	Items.init();
 	Units.init();
 	CommandManager.init();

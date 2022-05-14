@@ -1,9 +1,9 @@
 import { Client, Intents } from "discord.js";
-import { REST } from "@discordjs/rest"
+import { REST } from "@discordjs/rest";
 
 import CM from "@RTTRPG/commands";
-import assets from "@RTTRPG/assets"
-import config from "@RTTRPG/config.json"
+import assets from "@RTTRPG/assets";
+import config from "@RTTRPG/discord.json";
 
 import { init } from './game';
 import { CommandManager } from './game/managers';

@@ -4,14 +4,13 @@ import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionR
 import { filledBar } from 'string-progressbar';
 import Canvas from 'canvas';
 
-import { Inventory, Stat, Message, UserSave } from '@RTTRPG/@type';
-import { findMessage, save, Items, ItemStack } from "@RTTRPG/game";
+import { Inventory, Stat, UserSave } from '@RTTRPG/@type';
+import { save, Items, ItemStack } from "@RTTRPG/game";
 import { BaseEmbed } from '@RTTRPG/modules';
 import { Item, Weapon } from './contents';
 import { Utils } from "@RTTRPG/util";
 import { bundle } from '@RTTRPG/assets';
 import app from '..';
-import { BaseManager } from './managers';
 import { CommandInteraction } from 'discord.js';
 
 const defaultStat: Stat = {
@@ -25,28 +24,12 @@ const defaultStat: Stat = {
   defense: 0,
 };
 
-export class Status {
-  name: string | undefined;
-  callback: ((value: number) => void) | undefined;
-
-  constructor(name?: string, callback?: (value: number) => void) {
-    this.name = name;
-    this.callback = callback;
-  }
-
-  public clearSelection() {
-    this.name = undefined;
-    this.callback = undefined;
-  }
-}
-
 export class User {
   public exp = 0;
   public level = 1;
   public money = 0;
   public id: string;
   public user: Discord.User;
-  public status: Status = new Status();
   public stats: Stat = defaultStat;
   public inventory: Inventory = {
     items: [],
@@ -64,17 +47,12 @@ export class User {
       this.user = user;
       this.id = user.id;
     }
-    this.init();
   }
 
   public static with(data: UserSave): User {
     const user = new User(data.id);
     user.read(data);
     return user;
-  }
-
-  public init() {
-    this.status = new Status();
   }
 
   public update() {

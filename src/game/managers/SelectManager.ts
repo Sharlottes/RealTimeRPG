@@ -57,7 +57,6 @@ export default class SelectManager extends BaseManager {
   public override start() {
     const data = this.toActionData();
 
-    this.user.status.name = "selecting";
     this.builder.addComponents(data.actions).addTriggers(data.triggers)
     super.start();
   }
