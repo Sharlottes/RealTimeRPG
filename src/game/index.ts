@@ -14,9 +14,6 @@ import { Snowflake } from 'discord.js';
 
 const { Database } = Utils;
 
-/**
- * init the game. called once when discord bot is rebooted
- */
 export function init() {
 	Vars.users.forEach(u=>u.init());
 	Items.init();
