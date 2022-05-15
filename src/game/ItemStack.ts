@@ -1,7 +1,7 @@
 import { Weapon, Items, Potion, Item } from "@RTTRPG/game/contents";
 import { User, ItemEntity } from "@RTTRPG/game";
 
-export class ItemStack {
+export default class ItemStack {
 	public readonly id: number;
 	public readonly items: ItemEntity[] = [];
 	private stackable = true;

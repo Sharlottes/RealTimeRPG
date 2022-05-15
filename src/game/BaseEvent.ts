@@ -1,8 +1,9 @@
-import { Rationess } from "../@type";
-import { User } from "@RTTRPG/game";
 import { CommandInteraction } from 'discord.js';
 
-export class BaseEvent implements Rationess {
+import { Rationess } from "@RTTRPG/@type";
+import { User } from "@RTTRPG/game";
+
+export default class BaseEvent implements Rationess {
     ratio: number;
     start: (user: User, interaction: CommandInteraction)=>void;
 

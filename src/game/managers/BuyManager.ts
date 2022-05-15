@@ -1,8 +1,10 @@
 import Discord, { MessageButton, MessageActionRow, CommandInteraction } from 'discord.js';
-import { findMessage, save, Units, User, UnitEntity } from '@RTTRPG/game';
+
+import { findMessage, save, UnitEntity, User } from '@RTTRPG/game';
+import { SelectManager } from '@RTTRPG/game/managers';
+import { Units } from '@RTTRPG/game/contents';
 import { bundle } from '@RTTRPG/assets';
-import { Utils } from '@RTTRPG/util';
-import { SelectManager } from '.';
+import { Arrays } from '@RTTRPG/util';
 
 export default class BuyManager extends SelectManager {
 	private target: UnitEntity;
@@ -39,7 +41,7 @@ export default class BuyManager extends SelectManager {
     const visitor = this.user;
     
     const {actions: buttons, triggers: triggers} = this.toActionData();
-    Utils.Arrays.division(Array.from(owner.inventory.items), 4).forEach((items, ii) => {
+    Arrays.division(Array.from(owner.inventory.items), 4).forEach((items, ii) => {
       const components: MessageButton[] = [];
       items.forEach((entity, i) => {
         const item = entity.getItem();

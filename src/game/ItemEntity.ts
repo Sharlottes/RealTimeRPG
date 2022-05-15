@@ -1,4 +1,4 @@
-export class ItemEntity { 
+export default class ItemEntity { 
 	public durability?: number;
 	public cooldown?: number;
 

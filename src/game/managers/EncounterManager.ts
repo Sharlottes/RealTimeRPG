@@ -1,9 +1,11 @@
-import Random from 'random';
 import { CommandInteraction } from 'discord.js';
-import { Mathf } from '@RTTRPG/util';
-import { bundle } from '@RTTRPG/assets';
-import { User, UnitEntity, findMessage } from '@RTTRPG/game';
+
+import Random from 'random';
+
 import { BattleManager, ExchangeManager, SelectManager } from '@RTTRPG/game/managers';
+import { User, UnitEntity, findMessage } from '@RTTRPG/game';
+import { bundle } from '@RTTRPG/assets';
+import { Mathf } from '@RTTRPG/util';
 
 export default class EncounterManager extends SelectManager {
   private target: UnitEntity;

@@ -1,17 +1,16 @@
 
-import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionRow, MessagePayload, MessageOptions } from 'discord.js';
+import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionRow, MessagePayload, MessageOptions, CommandInteraction } from 'discord.js';
 
 import { filledBar } from 'string-progressbar';
-import Canvas from 'canvas';
+import Canvass from 'canvas';
 
+import { Items, Item, Weapon } from '@RTTRPG/game/contents';
 import { Inventory, Stat, UserSave } from '@RTTRPG/@type';
-import { save, Items, ItemStack } from "@RTTRPG/game";
+import { save, ItemStack } from "@RTTRPG/game";
 import { BaseEmbed } from '@RTTRPG/modules';
-import { Item, Weapon } from './contents';
-import { Utils } from "@RTTRPG/util";
 import { bundle } from '@RTTRPG/assets';
-import app from '..';
-import { CommandInteraction } from 'discord.js';
+import { Canvas } from "@RTTRPG/util";
+import app from '@RTTRPG/index';
 
 const defaultStat: Stat = {
   health: 20,
@@ -24,7 +23,7 @@ const defaultStat: Stat = {
   defense: 0,
 };
 
-export class User {
+export default class User {
   public exp = 0;
   public level = 1;
   public money = 0;
@@ -154,8 +153,8 @@ export class User {
   public getUserInfo(interaction: CommandInteraction) {
     const user = interaction.user;
     const weapon = this.inventory.weapon.getItem<Weapon>();
-    const canvas = Canvas.createCanvas(1000, 1000);
-    Utils.Canvas.donutProgressBar(canvas, {
+    const canvas = Canvass.createCanvas(1000, 1000);
+    Canvas.donutProgressBar(canvas, {
       progress: {
         now: this.exp,
         max: this.level ** 2 * 50

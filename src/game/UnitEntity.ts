@@ -1,8 +1,8 @@
-import { ItemStack } from "@RTTRPG/game";
 import { Item, Unit, Units } from "@RTTRPG/game/contents";
 import { Inventory, Stat } from '@RTTRPG/@type';
+import { ItemStack } from "@RTTRPG/game";
 
-export class UnitEntity {
+export default class UnitEntity {
   id: number;
   money = 1000;
   inventory: Inventory;
