@@ -2,7 +2,7 @@ import { Durable, ItemData } from "@RTTRPG/@type";
 import { bundle } from "@RTTRPG/assets";
 import Random from "random";
 import { UnitEntity, User } from "@RTTRPG/game";
-import { Item, Units } from "@RTTRPG/game/contents";
+import { Item, Units, StatusEffect } from "@RTTRPG/game/contents";
 
 export default class Weapon extends Item implements Durable {
 	readonly damage: number;
@@ -10,12 +10,14 @@ export default class Weapon extends Item implements Durable {
 	readonly critical_ratio: number;
 	readonly critical_chance: number;
   readonly durability: number;
+	readonly status?: StatusEffect;
 
 	constructor(data: ItemData & Durable & {
     damage: number,
 		cooldown: number,
 		critical_ratio: number,
-		critical_chance: number
+		critical_chance: number,
+		status?: StatusEffect
   }) {
 		super(data);
 		this.damage = data.damage;
@@ -23,6 +25,7 @@ export default class Weapon extends Item implements Durable {
 		this.critical_chance = data.critical_chance;
 		this.critical_ratio = data.critical_ratio;
 		this.durability = data.durability;
+		this.status = data.status;
 	}
 
 	attack(user: User, target?: UnitEntity) { //non-target means user is attacked
@@ -30,6 +33,8 @@ export default class Weapon extends Item implements Durable {
 		const stat = target?target.stats:user.stats;
 		const damage = this.damage + (critical ? this.critical_ratio * this.damage : 0);
 		const locale = user.locale;
+
+		if(this.status)	target?.applyStatus(this.status);
 		
 		return bundle.format(locale, 'battle.hit',
 			critical ? bundle.find(locale, 'battle.critical') : '',

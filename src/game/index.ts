@@ -1,5 +1,6 @@
 export { default as UnitEntity } from "./UnitEntity";
 export { default as ItemEntity } from "./ItemEntity";
+export { default as StatusEntity } from "./StatusEntity";
 export { default as ItemStack } from "./ItemStack";
 export { default as BaseEvent } from "./BaseEvent";
 export { default as User } from "./User";
@@ -8,11 +9,12 @@ import { Snowflake } from 'discord.js';
 
 import { Rationess, Message, UserSave } from '@RTTRPG/@type';
 import { CommandManager } from '@RTTRPG/game/managers';
-import { Items, Units } from "@RTTRPG/game/contents";
+import { Items, Units, StatusEffects } from "@RTTRPG/game/contents";
 import { Database } from '@RTTRPG/util';
 import Vars from "@RTTRPG/Vars";
 
 export function init() {
+	StatusEffects.init();
 	Items.init();
 	Units.init();
 	CommandManager.init();

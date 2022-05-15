@@ -12,7 +12,7 @@ export default class BuyManager extends SelectManager {
 	private amountSelect?: (amount: number) => void;
 
   public constructor(user: User, interaction: CommandInteraction, target: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
-    super(user, interaction, builder);
+    super(user, interaction, builder, last);
 		this.target = target;
     if(new.target === BuyManager) this.init();
 	}

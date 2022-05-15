@@ -1,5 +1,5 @@
 import { User } from "@RTTRPG/game";
-import { Item, Potion, Weapon, Buff } from "@RTTRPG/game/contents";
+import { Item, Potion, Weapon, Buff, StatusEffects } from "@RTTRPG/game/contents";
 
 
 export default class Items {
@@ -104,6 +104,20 @@ export default class Items {
 			dropOnBattle: false,
 			dropOnShop: false
 		}));
+		
+		this.items.push(new Weapon({ 
+			name: 'poison_sword', 
+			ratio: 0.75, 
+			damage: 0.75, 
+			cooldown: 2, 
+			critical_ratio: 1.2, 
+			critical_chance: 0.2, 
+			durability: 10, 
+			dropOnWalk: false,
+			dropOnBattle: false,
+			status: StatusEffects.find(1)
+		}));
+
 	}
 
 	static find<T extends Item>(id: number | ((item: Item)=> boolean)): T {
