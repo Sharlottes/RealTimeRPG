@@ -35,38 +35,6 @@ namespace CommandManager {
         }
     }
 
-    export async function reloadCommands() {
-        commands.clear();
-        if(app.config.gameOnly) return commands;
-        const globals: fs.Dirent[] = []; 
-        fs.readdirSync((config.debug ? "./src" : ".") + "/commands/global/", { withFileTypes: true, encoding: "utf-8"})
-        .forEach(file => {
-            if(file.isFile() && !ignores.includes(file.name)) globals.push(file);
-        });
-        const guilds: fs.Dirent[] = []; 
-        fs.readdirSync((config.debug ? "./src" : ".") + "/commands/guild", { withFileTypes: true, encoding: "utf-8" })
-        .forEach(file => {
-            if(file.isFile() && !ignores.includes(file.name)) guilds.push(file);
-        });
-
-        const rootDir = globals.concat(guilds);
-
-        for(let i = 0, n = rootDir.length; i < n; i++) {
-            const file = rootDir[i];
-            const code = await import(`@RTTRPG/commands/${i >= globals.length ? "guild" : "global"}/` + file.name);
-            if(typeof code.default == "function") {
-                const command = new code.default();
-                if(command instanceof Command && (app.config.debug || !command.debug)) {
-                    if(!commands.has(command.builder.name)) {
-                        commands.set(command.builder.name, command);
-                    }
-                    if(app.config.debug) console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} command.`);
-                }
-            }
-        }
-        return commands;
-    }
-
     /**
      * 
      * @param target 

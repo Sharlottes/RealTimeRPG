@@ -32,9 +32,8 @@ export default class BattleManager extends SelectManager{
 				if(weaponEntity?.durability) {
 					if(weaponEntity.durability > 0) weaponEntity.durability--;
 					if(weaponEntity.durability <= 0) {
-						const punch = Items.punch;
 						this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
-						inventory.weapon = new ItemStack(punch.id);
+						inventory.weapon = new ItemStack(Items.punch.id);
 					}
 				}
 

@@ -51,7 +51,7 @@ for(let i = 2; i < process.argv.length; i += 2) {
     console.log(`vars initialization has been done: ${Date.now()-time}ms`);
 
     //기본 명령어 로딩
-    await CM.reloadCommands();
+    CM.commands.clear();
     console.log(`command initialization has been done in ${(Date.now() - time)}ms`);
 
     //게임 콘텐츠 로딩
@@ -111,7 +111,8 @@ client.on("messageCreate", async message => {
         const guild = message.guild;
 
         message.reply(`refresh start! server: ${guild.name}`).catch(e => message.reply((e as object).toString()));
-        await CM.reloadCommands().then(CommandManager.init);
+        CM.commands.clear();
+        CommandManager.init();
         await CM.refreshCommand("guild", guild);
         message.reply(`guild command push has been done in ${(Date.now() - time)}ms`);
     }
