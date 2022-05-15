@@ -1,20 +1,20 @@
 
 import { Consumable, Dropable, Durable, ItemData, Rationess, Stat, UnitData, Inventory } from '@RTTRPG/@type';
 import { ItemStack, UnitEntity, User } from '@RTTRPG/game';
-import { Utils } from '@RTTRPG/util';
 import { bundle } from '@RTTRPG/assets';
+import Random from 'random';
 
 export class Content {
 	readonly name: string;
-	readonly localName: (user: User)=>string;
-	readonly description: (user: User)=>string;
-	readonly details: (user: User)=>string;
+	readonly localName: (user: User|string)=>string;
+	readonly description: (user: User|string)=>string;
+	readonly details: (user: User|string)=>string;
 
 	constructor(name: string, type = 'other') {
 		this.name = name;
-		this.localName = (user: User)=>bundle.find(user.locale, `content.${type}.${name}.name`);
-		this.description = (user: User)=>bundle.find(user.locale, `content.${type}.${name}.description`);
-		this.details = (user: User)=>bundle.find(user.locale, `content.${type}.${name}.details`);
+		this.localName = (user: User|string)=>bundle.find(typeof user === 'string' ? user : user.locale, `content.${type}.${name}.name`);
+		this.description = (user: User|string)=>bundle.find(typeof user === 'string' ? user : user.locale, `content.${type}.${name}.description`);
+		this.details = (user: User|string)=>bundle.find(typeof user === 'string' ? user : user.locale, `content.${type}.${name}.details`);
 	}
 }
 
@@ -57,7 +57,7 @@ export class Weapon extends Item implements Durable {
 	}
 
 	attack(user: User, target?: UnitEntity) { //non-target means user is attacked
-		const critical = Utils.Mathf.randbool(this.critical_chance);
+		const critical = Random.float(0, 1) < this.critical_chance;
 		const stat = target?target.stats:user.stats;
 		const damage = this.damage + (critical ? this.critical_ratio * this.damage : 0);
 		const locale = user.locale;
@@ -87,7 +87,7 @@ export class Unit extends Content implements Rationess {
 		this.inventory = data.inventory || {
         items: [],
         weapon: new ItemStack(5)
-    } as Inventory;
+    };
 		this.stats = data.stats;
 		this.id = Units.units.length;
 	}
@@ -129,6 +129,8 @@ export class Potion extends Item implements Consumable {
 
 export class Items {
 	static readonly items: Item[] = [];
+	public static punch: Weapon;
+	public static none: Weapon;
 
 	static init() {
 		this.items.push(new Weapon({ name: 'stone', ratio: 0.3, damage: 1.5, cooldown: 0.3, critical_ratio: 1.2, critical_chance: 0.2, durability: 1 }));
@@ -170,7 +172,7 @@ export class Items {
 			dropOnBattle: false
 		}));
 
-		this.items.push(new Weapon({ 
+		this.items.push(this.punch = new Weapon({ 
 			name: 'punch', 
 			ratio: -1, 
 			damage: 1, 
@@ -215,7 +217,7 @@ export class Items {
 			})
 		]));
 
-		this.items.push(new Weapon({ //ID: 9
+		this.items.push(this.none = new Weapon({ //ID: 9
 			name: 'none', 
 			ratio: 0, 
 			damage: 0, 
@@ -241,6 +243,7 @@ export class Items {
 
 export class Units {
 	static readonly units: Unit[] = [];
+	public static goblin: Unit;
 
 	static init() {
 		this.units.push(new Unit({
@@ -256,9 +259,13 @@ export class Units {
 				energy_max: 0,
 				energy_regen: 0
 			},
-			ratio: 0.1
+			ratio: 0.1,
+			inventory:  {
+        items: [],
+        weapon: new ItemStack(9)
+			}
 		}));
-		this.units.push(new Unit({
+		this.units.push(this.goblin = new Unit({
 			name: 'goblin',
 			level: 1,
 			stats: {

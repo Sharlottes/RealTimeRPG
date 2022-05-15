@@ -34,10 +34,6 @@ export interface Rationess {
 	ratio: number
 }
 
-export type EventData = {
-    title?: string
-} & Rationess
-
 export type Stat = {
   strength: number
   defense: number

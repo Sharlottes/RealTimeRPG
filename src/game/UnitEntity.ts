@@ -1,5 +1,5 @@
 import { ItemStack } from "@RTTRPG/game";
-import { Item, Unit } from "@RTTRPG/game/contents";
+import { Item, Unit, Units } from "@RTTRPG/game/contents";
 import { Inventory, Stat } from '@RTTRPG/@type';
 
 export class UnitEntity {
@@ -25,4 +25,8 @@ export class UnitEntity {
       stack.add(amount);
     } else this.inventory.items.push(new ItemStack(item.id, amount));
   }
+
+	getUnit<T extends Unit>(): T {
+		return Units.find<T>(this.id);
+	}
 }

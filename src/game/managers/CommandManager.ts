@@ -2,21 +2,19 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
 
 import { UnitEntity, ItemStack, Items, Units, Vars, BaseEvent, User, findMessage, getOne, save } from '@RTTRPG/game';
-import { ExchangeManager, BattleManager, BaseManager, SelectManager } from '@RTTRPG/game/managers';
+import { BaseManager, EncounterManager } from '@RTTRPG/game/managers';
 import { Content, Potion } from '@RTTRPG/game/contents';
 import { CommandCategory } from '@RTTRPG/@type';
-import { Mathf, Arrays } from '@RTTRPG/util';
 import { BaseEmbed } from '@RTTRPG/modules';
 import { bundle } from '@RTTRPG/assets';
+import { Arrays } from '@RTTRPG/util';
 import CM from '@RTTRPG/commands';
+import Random from 'random';
 
 const eventData: BaseEvent[] = [];
 
-function registerEvent(ratio: number, title: string|undefined = undefined, callback: (user: User, interaction: CommandInteraction)=>void) {
-	eventData.push(new BaseEvent({
-		ratio: ratio,
-		title: title
-	}, callback));
+function registerEvent(ratio: number, callback: (user: User, interaction: CommandInteraction)=>void) {
+	eventData.push(new BaseEvent(ratio, callback));
 }
 
 function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: CommandInteraction)=>void), category: CommandCategory = 'guild') {
@@ -49,51 +47,21 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, inter
 namespace CommandManager {
   export function init() {
 		eventData.length = 0;
-		registerEvent(20, undefined, (user, interaction) => {
+		registerEvent(20, (user, interaction) => {
 			const money = 2 + Math.floor(Math.random() * 10);
 			user.money += money;
 			interaction.followUp(bundle.format(user.locale, 'event.money', money));
 		});
 
-		registerEvent(30, undefined, (user, interaction) => {
+		registerEvent(30, (user, interaction) => {
 			const item = getOne(Items.items.filter((i) => i.dropOnWalk));
 			user.giveItem(item);
 			interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
 		});
 
-		registerEvent(15, 'goblin', (user, interaction) => {
+		registerEvent(15, (user, interaction) => {
 			const { builder } = findMessage(interaction.id);
-
-			new SelectManager(user, interaction, builder)
-				.addButtonSelection('battle', 0, (user) => new BattleManager(user, interaction, new UnitEntity(Units.find(1)).setWeapon(new ItemStack(3)), builder))
-				.addButtonSelection('run', 0, (user) => {
-					if (Mathf.randbool()) {
-						const money = Math.floor(Mathf.range(2, 10));
-						user.money -= money;
-						builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.locale, 'event.goblin_run_failed', money)+"\n```"});
-					} else {
-						builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.locale, 'event.goblin_run_success')+"\n```"});
-					}
-					builder.setComponents([]);
-				})
-				.addButtonSelection('talking', 0, (user) => {
-					const money = Math.floor(Mathf.range(2, 5));
-					user.money -= money;
-					builder.addFields({name: "Result:", value: "```\n"+bundle.format(user.locale, 'event.goblin_talking', money)+"\n```"});
-					builder.setComponents([]);
-				})
-				.addButtonSelection('exchange', 0, (user) => new ExchangeManager(user, interaction, new UnitEntity(Units.find(1)), builder)).start();
-		});
-
-		registerEvent(20, 'obstruction', (user, interaction) => {
-			const { builder } = findMessage(interaction.id);
-
-			new SelectManager(user, interaction, builder)
-				.addButtonSelection('battle', 0, (user) => new BattleManager(user, interaction, new UnitEntity(Units.find(0)).setWeapon(new ItemStack(9)), builder))
-				.addButtonSelection('run', 0, (user) => {
-					builder.addFields({name: "Result:", value: "```\n"+bundle.find(user.locale, 'event.obstruction_run')+"\n```"});
-					builder.setComponents([]);
-				}).start();
+			new EncounterManager(user, interaction, new UnitEntity(Units.find(Random.int(0,1))), builder).start();
 		});
 
     registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), (user, interaction) => user.getUserInfo(interaction).build());
@@ -149,7 +117,7 @@ namespace CommandManager {
     registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), (user, interaction) => {
 			if (user.stats.energy >= 7) {
 				user.stats.energy -= 7;
-				getOne(eventData.map(e=>e.data), (data,i)=> eventData[i].start(user, interaction));
+				getOne(eventData).start(user, interaction);
 			} else {
 				BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.low_energy', user.stats.energy.toFixed(1)));
 			}

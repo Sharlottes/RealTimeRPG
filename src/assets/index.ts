@@ -1,6 +1,6 @@
 import fs from "fs";
 import properties from "properties-reader";
-import { Utils } from "../util";
+import { Strings } from "../util";
 
 namespace Assets {
     let rootDir = "";
@@ -28,7 +28,7 @@ namespace Assets {
         }
         
         export function format(lang = "en", key: string, ...args: unknown[]) {
-            return Utils.Strings.format(find(lang, key), args as string[]);
+            return Strings.format(find(lang, key), args as string[]);
         }
 
         export function get(name = "", lang= "en") {

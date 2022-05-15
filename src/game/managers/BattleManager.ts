@@ -31,7 +31,7 @@ export default class BattleManager extends SelectManager{
 				if(weaponEntity?.durability) {
 					if(weaponEntity.durability > 0) weaponEntity.durability--;
 					if(weaponEntity.durability <= 0) {
-						const punch = Items.find<Weapon>(5);
+						const punch = Items.punch;
 						this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
 						inventory.weapon = new ItemStack(punch.id);
 					}
@@ -86,7 +86,7 @@ export default class BattleManager extends SelectManager{
 				if(weaponEntity?.durability) {
 					if(weaponEntity.durability > 0) weaponEntity.durability--;
 					if(weaponEntity.durability <= 0) {
-						const punch = Items.find<Weapon>(5);
+						const punch = Items.punch;
 						this.updateEmbed(this.user, '- '+bundle.format(this.locale, 'battle.broken', weapon.localName(this.user)));
 						inventory.weapon = new ItemStack(punch.id);
 					}
@@ -105,10 +105,8 @@ export default class BattleManager extends SelectManager{
 		this.battleLog.push(log);
 
 		this.builder.setFields([
-			{
-				name: 'Battle Status',
-				value: `You: ${Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}\nEnemy: ${Canvas.unicodeProgressBar(this.target.stats.health, this.target.stats.health_max)}`
-			},
+			{ name: user.user.username, value: `hp: ${user.stats.health.toFixed(2)}/${user.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}`, inline: true },
+			{ name: this.target.getUnit().localName(this.locale), value: `hp: ${this.target.stats.health.toFixed(2)}/${this.target.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.target.stats.health, this.target.stats.health_max)}`, inline: true },
 			{
 				name: 'Logs', 
 				value: "```diff\n"+this.battleLog.join('```\n```diff\n')+"```"
