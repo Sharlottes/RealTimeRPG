@@ -18,7 +18,7 @@ export default class BattleManager extends SelectManager{
 	}
 	
 	protected override init() {
-		this.addButtonSelection('attack', 0, (user) => {
+		this.addButtonSelection('attack', 0, async (user) => {
 			if(user.stats.health <= 0 || this.target.stats.health <= 0) return;
 			const inventory = this.user.inventory;
 			const weaponEntity: ItemEntity = inventory.weapon.items[0];
@@ -40,10 +40,9 @@ export default class BattleManager extends SelectManager{
 				//임베드 전투로그 업데이트
 				this.updateEmbed(user, '+ '+weapon.attack(user, this.target));
 				this.builder.rerender().catch(e=>e);
-				if (user.stats.health <= 0 || this.target.stats.health <= 0) this.battleEnd(user);
 			}
 		});
-		this.addMenuSelection('swap', 1, (user, actions, interactionCallback) => {
+		this.addMenuSelection('swap', 1, async (user, actions, interactionCallback) => {
 			if (interactionCallback.isSelectMenu()) {
 				const id = Number(interactionCallback.values[0]);
 				const weapon: Weapon = Items.find(id);
@@ -74,39 +73,47 @@ export default class BattleManager extends SelectManager{
 				.setTriggers(data.triggers);
 		}		
 		
-		this.interval = setInterval(() => {
-			const inventory = this.target.inventory;
-			const weaponEntity: ItemEntity = inventory.weapon.items[0];
-			const weapon: Weapon = Items.find(inventory.weapon.id);
-			if(weaponEntity?.cooldown) weaponEntity.cooldown -= 100 / 1000;
-			if (weaponEntity?.cooldown && weaponEntity.cooldown <= 0 && this.target.stats.health > 0) {
-				weaponEntity.cooldown = weapon.cooldown;
+		this.interval = setInterval(async () => {
+			if (this.user.stats.health <= 0 || this.target.stats.health <= 0) this.battleEnd(this.user);
+				else {
+				const inventory = this.target.inventory;
+				const weaponEntity: ItemEntity = inventory.weapon.items[0];
+				const weapon: Weapon = Items.find(inventory.weapon.id);
 
-				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-				if(weaponEntity?.durability) {
-					if(weaponEntity.durability > 0) weaponEntity.durability--;
-					if(weaponEntity.durability <= 0) {
-						const punch = Items.punch;
-						this.updateEmbed(this.user, '- '+bundle.format(this.locale, 'battle.broken', weapon.localName(this.user)));
-						inventory.weapon = new ItemStack(punch.id);
+				this.target.update();
+				this.updateEmbed(this.user);
+
+				if(weaponEntity?.cooldown) weaponEntity.cooldown -= 100 / 1000;
+				if (weaponEntity?.cooldown && weaponEntity.cooldown <= 0 && this.target.stats.health > 0) {
+					weaponEntity.cooldown = weapon.cooldown;
+
+					// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
+					if(weaponEntity?.durability) {
+						if(weaponEntity.durability > 0) weaponEntity.durability--;
+						if(weaponEntity.durability <= 0) {
+							const punch = Items.punch;
+							this.updateEmbed(this.user, '- '+bundle.format(this.locale, 'battle.broken', weapon.localName(this.user)));
+							inventory.weapon = new ItemStack(punch.id);
+						}
 					}
-				}
 
-				//임베드 전투로그 업데이트
-				this.updateEmbed(this.user, '- '+weapon.attack(this.user));
+					//임베드 전투로그 업데이트
+					this.updateEmbed(this.user, '- '+weapon.attack(this.user));
+				}
 				this.builder.rerender().catch(e=>e);
-				if (this.user.stats.health <= 0 || this.target.stats.health <= 0) this.battleEnd(this.user);
 			}
 		}, 100);
 	}
 
-	updateEmbed(user: User, log: string) {
-		if(this.battleLog.length > 5) this.battleLog.shift();
-		this.battleLog.push(log);
-
+	updateEmbed(user: User, log?: string) {
+		if(log) {
+			if(this.battleLog.length > 5) this.battleLog.shift();
+			this.battleLog.push(log);
+		}
 		this.builder.setFields([
 			{ name: user.user.username, value: `hp: ${user.stats.health.toFixed(2)}/${user.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(user.stats.health, user.stats.health_max)}`, inline: true },
-			{ name: this.target.getUnit().localName(this.locale), value: `hp: ${this.target.stats.health.toFixed(2)}/${this.target.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.target.stats.health, this.target.stats.health_max)}`, inline: true },
+			{ name: this.target.getUnit().localName(this.locale), 
+				value: `hp: ${this.target.stats.health.toFixed(2)}/${this.target.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.target.stats.health, this.target.stats.health_max)}`, inline: true },
 			{
 				name: 'Logs', 
 				value: "```diff\n"+this.battleLog.join('```\n```diff\n')+"```"
@@ -114,7 +121,7 @@ export default class BattleManager extends SelectManager{
 		]);
 	}
 
-	battleEnd(user: User) {
+	async battleEnd(user: User) {
 		if(this.interval) clearInterval(this.interval);
 		this.builder.setComponents([]);
 
