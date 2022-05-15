@@ -131,7 +131,6 @@ export default class BattleManager extends SelectManager{
 				else items.push({ item, amount: 1 });
 			}
 
-			//임베드에 전투 결과 메시지 추가
 			this.updateEmbed(user, '+ '+(this.target.stats.health < 0 ? bundle.find(this.locale, 'battle.overkill')+' ' : '')+bundle.format(this.locale, 'battle.win', this.target.stats.health.toFixed(2)));
 			this.builder.addFields(
 				{
