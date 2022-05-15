@@ -43,7 +43,7 @@ for(let i = 2; i < process.argv.length; i += 2) {
 
 (async ()=>{
     // 애셋 파일 로딩
-    assets.init(config.debug);
+    assets.init();
     console.log(`asset initialization has been done: ${Date.now()-time}ms`);
 
     //전역 변수 로딩
