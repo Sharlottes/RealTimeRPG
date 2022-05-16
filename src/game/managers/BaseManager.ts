@@ -7,10 +7,10 @@ import { findMessage, User } from '@RTTRPG/game';
  * 모든 이벤트들의 기반 관리 클래스
  */
 export default class BaseManager {
-  protected readonly user: User;
+  public readonly user: User;
   protected readonly interaction: CommandInteraction;
   protected readonly builder: BaseEmbed;
-	protected readonly locale: string;
+	public readonly locale: string;
 
   public constructor(user: User, interaction: CommandInteraction, builder = findMessage(interaction.id).builder as BaseEmbed) {
     this.user = user;

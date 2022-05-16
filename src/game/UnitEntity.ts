@@ -1,12 +1,15 @@
 import { Item, Unit, Units, StatusEffect } from "@RTTRPG/game/contents";
-import { Inventory, Stat } from '@RTTRPG/@type';
+import { EntityI, Inventory, Stat } from '@RTTRPG/@type';
 import { ItemStack, StatusEntity } from "@RTTRPG/game";
 
-export default class UnitEntity {
+export default class UnitEntity implements EntityI {
   public readonly id: number;
-  public readonly inventory: Inventory;
   public readonly stats: Stat;
+  public readonly inventory: Inventory;
   public statuses: StatusEntity[] = [];
+  public exp = 0;
+  public level: number;
+  public name: (locale: string)=>string;
   public money = 1000;
 
   constructor(unit: Unit) {
@@ -14,10 +17,15 @@ export default class UnitEntity {
     this.stats = Object.assign({}, unit.stats);
     this.inventory = Object.assign({}, unit.inventory);
     this.statuses = [];
+    this.level = unit.level;
+    this.name = (locale: string)=>unit.localName(locale);
   }
 
+
   public applyStatus(status: StatusEffect) {
-    this.statuses.push(new StatusEntity(status));
+    const exist = this.statuses.find(s => s.status.id == status.id);
+    if(exist) exist.duration += status.duration;
+    else this.statuses.push(new StatusEntity(status)); 
   }
 
   public removeStatus(status: StatusEffect) {
@@ -32,11 +40,6 @@ export default class UnitEntity {
       entity.duration -= 100 / 1000;
       entity.status.callback(this, entity);
     })  
-  }
-
-  public setWeapon(weapon: ItemStack) {
-    this.inventory.weapon = weapon;
-    return this;
   }
 
   public giveItem(item: Item, amount: number) { 

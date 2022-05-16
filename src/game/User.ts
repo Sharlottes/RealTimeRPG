@@ -4,9 +4,9 @@ import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionR
 import { filledBar } from 'string-progressbar';
 import Canvass from 'canvas';
 
-import { Items, Item, Weapon } from '@RTTRPG/game/contents';
-import { Inventory, Stat, UserSave } from '@RTTRPG/@type';
-import { save, ItemStack } from "@RTTRPG/game";
+import { Items, Item, Weapon, StatusEffect } from '@RTTRPG/game/contents';
+import { EntityI, Inventory, Stat, UserSave } from '@RTTRPG/@type';
+import { save, ItemStack, StatusEntity } from "@RTTRPG/game";
 import { BaseEmbed } from '@RTTRPG/modules';
 import { bundle } from '@RTTRPG/assets';
 import { Canvas } from "@RTTRPG/util";
@@ -23,35 +23,48 @@ const defaultStat: Stat = {
   defense: 0,
 };
 
-export default class User {
+export default class User implements EntityI {
   public exp = 0;
   public level = 1;
   public money = 0;
+  public name: string;
   public id: string;
+  public locale: string = bundle.defaultLocale;
   public user: Discord.User;
   public stats: Stat = defaultStat;
-  public inventory: Inventory = {
-    items: [],
-    weapon: new ItemStack(5), //주먹
-  };
-  public foundContents = {items: [-1], units: [-1]};
-  public locale = 'en';
+  public inventory: Inventory = { items: [], weapon: new ItemStack(5) };
+  public foundContents = { items: [-1], units: [-1] };
+  public statuses: StatusEntity[];
 
   constructor(user: Discord.User|string) {
     if(typeof user === 'string') {
       this.user = app.client.users.cache.find(u=>u.id === user) as Discord.User;
       this.id = user;
+      this.name = this.user.username;
     }
     else {
       this.user = user;
       this.id = user.id;
+      this.name = this.user.username;
     }
+    
+    this.statuses = [];
   }
 
   public static with(data: UserSave): User {
     const user = new User(data.id);
     user.read(data);
     return user;
+  }
+
+  public applyStatus(status: StatusEffect) {
+    const exist = this.statuses.find(s => s.status.id == status.id);
+    if(exist) exist.duration += status.duration;
+    else this.statuses.push(new StatusEntity(status)); 
+  }
+
+  public removeStatus(status: StatusEffect) {
+    this.statuses.splice(this.statuses.findIndex(entity=>entity.status.id==status.id), 1);
   }
 
   public update() {

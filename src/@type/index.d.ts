@@ -3,6 +3,7 @@ import Discord, { CacheType } from 'discord.js';
 import { PagesBuilder } from 'discord.js-pages';
 import { ItemStack, User } from '@RTTRPG/game';
 import { BaseEmbed } from '@RTTRPG/modules';
+import StatusEffect from '../game/contents/StatusEffect';
 
 export interface Heathy { 
     health: number
@@ -100,3 +101,19 @@ export type EventSelection = {
 }
 
 export type CommandCategory = "guild" | "global"
+
+export interface EntityI extends StatusI {
+    public readonly id: number|string;
+    public readonly stats: Stat;
+    public readonly inventory: Inventory;
+    public exp: number;
+    public level: number;
+    public money: number;
+    public name: string|((locale: string)=>string);
+}
+
+export interface StatusI {
+    public statuses: StatusEntity[] = [];
+    public applyStatus: (status: StatusEffect) => void;
+    public removeStatus: (status: StatusEffect) => void;
+}

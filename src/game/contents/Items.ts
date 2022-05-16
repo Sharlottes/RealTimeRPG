@@ -60,12 +60,13 @@ export default class Items {
 			dropOnShop: false
 		}));
 
+		//TODO: 문자열 반환은 매우 비직관적
 		this.items.push(new Potion({ name: 'experience_bottle', ratio: 0.1, dropOnWalk: false }, [
 			new Buff(10, 'exp', (user: User, amount: number, buff: Buff) => {
 				user.exp += amount * buff.value;
 				return `* ${buff.localName(user)} +${amount * buff.value}`;
 			})
-		]));
+		])); 
 		this.items.push(new Potion({ name: 'mochi-cookie', ratio: 0.15 }, [
 			new Buff(10, 'health', (user: User, amount: number, buff: Buff) => {
 				user.stats.health += amount * buff.value;

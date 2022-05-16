@@ -1,4 +1,4 @@
-import { Durable, ItemData } from "@RTTRPG/@type";
+import { Durable, ItemData, EntityI } from "@RTTRPG/@type";
 import { bundle } from "@RTTRPG/assets";
 import Random from "random";
 import { UnitEntity, User } from "@RTTRPG/game";
@@ -28,19 +28,18 @@ export default class Weapon extends Item implements Durable {
 		this.status = data.status;
 	}
 
-	attack(user: User, target?: UnitEntity) { //non-target means user is attacked
+	attack(attacker: EntityI, target: EntityI, locale: string) { //non-target means user is attacked
 		const critical = Random.float(0, 1) < this.critical_chance;
-		const stat = target?target.stats:user.stats;
+		const stat = target.stats;
 		const damage = this.damage + (critical ? this.critical_ratio * this.damage : 0);
-		const locale = user.locale;
 
-		if(this.status)	target?.applyStatus(this.status);
+		if(this.status)	target.applyStatus(this.status);
 		
 		return bundle.format(locale, 'battle.hit',
 			critical ? bundle.find(locale, 'battle.critical') : '',
-			target ? Units.find(target.id).localName(user) : user.user.username, //target's
+			target.name, //target's
 			damage.toFixed(2), //damaged
-			this.localName(user), //by weapon
+			this.localName(locale), //by weapon
 			stat.health.toFixed(2), //before hp
 			(stat.health -= this.damage).toFixed(2) //after hp
 		);
