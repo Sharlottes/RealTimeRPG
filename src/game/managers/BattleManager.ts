@@ -10,6 +10,8 @@ export default class BattleManager extends SelectManager{
 	private target: UnitEntity;
 	private interval?: NodeJS.Timeout;
 	private battleLog: string[] = [];
+	private renderQueue: Function[] = [];
+	private rendering = false;
 
   public constructor(user: User, interaction: CommandInteraction, target: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
     super(user, interaction, builder);
@@ -26,7 +28,6 @@ export default class BattleManager extends SelectManager{
 
 			if (weaponEntity?.cooldown && weaponEntity.cooldown > 0) {
 				this.updateEmbed(user, '+ '+bundle.format(this.locale, 'battle.cooldown', weaponEntity.cooldown.toFixed(2)));
-				this.builder.rerender().catch(e=>e);
 			} else {
 				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
 				if(weaponEntity?.durability) {
@@ -39,8 +40,8 @@ export default class BattleManager extends SelectManager{
 
 				//임베드 전투로그 업데이트
 				this.updateEmbed(user, '+ '+weapon.attack(user, this.target));
-				this.builder.rerender().catch(e=>e);
 			}
+      this.renderQueue.push(this.builder.rerender);
 		});
 		this.addMenuSelection('swap', 1, async (user, actions, interactionCallback) => {
 			if (interactionCallback.isSelectMenu()) {
@@ -54,7 +55,7 @@ export default class BattleManager extends SelectManager{
 
 				this.updateEmbed(user, bundle.format(this.locale, 'switch_change', weapon.localName(user), user.inventory.weapon.getItem().localName(user)));
 				user.switchWeapon(weapon);
-				this.builder.rerender().catch(e=>e);
+				this.renderQueue.push(this.builder.rerender);
 			}
 		},
 		{
@@ -72,9 +73,9 @@ export default class BattleManager extends SelectManager{
 				.setComponents(data.actions)
 				.setTriggers(data.triggers);
 		}		
-		
+		let i = 0;
 		this.interval = setInterval(async () => {
-			if (this.user.stats.health <= 0 || this.target.stats.health <= 0) this.battleEnd(this.user);
+			if (this.user.stats.health <= 0 || this.target.stats.health <= 0) await this.battleEnd(this.user);
 				else {
 				const inventory = this.target.inventory;
 				const weaponEntity: ItemEntity = inventory.weapon.items[0];
@@ -100,7 +101,18 @@ export default class BattleManager extends SelectManager{
 					//임베드 전투로그 업데이트
 					this.updateEmbed(this.user, '- '+weapon.attack(this.user));
 				}
-				this.builder.rerender().catch(e=>e);
+				   
+				this.renderQueue.push(this.builder.rerender);
+				if(this.rendering) return;
+				this.rendering = true;
+				i++;
+				const j = i;
+				for(let i = 0; i < this.renderQueue.length; i++) {
+				  await this.renderQueue.shift().call(this.builder).catch(e=>e);
+				}
+	   	 	
+			  console.log(j+"th rendering ended");
+	   		this.rendering = false;
 			}
 		}, 100);
 	}
@@ -152,7 +164,10 @@ export default class BattleManager extends SelectManager{
 		else if(user.stats.health <= 0) {
 			this.updateEmbed(user, '- '+bundle.format(this.locale, 'battle.lose', user.stats.health.toFixed(2)));
 		}
-		this.builder.rerender().catch(e=>e);
+    
 		save();
+		
+		for(let i = 0; i < this.renderQueue.length; i++)
+		  await this.renderQueue[i].call(this.builder).catch(e=>e);
 	}
 }

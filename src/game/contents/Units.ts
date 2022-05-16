@@ -12,14 +12,14 @@ export default class Units {
 			stats: {
 				strength: 0,
 				defense: 0,
-				health: 5,
-				health_max: 5,
-				health_regen: 0,
+				health: 20,
+				health_max: 20,
+				health_regen: 1,
 				energy: 0,
 				energy_max: 0,
 				energy_regen: 0
 			},
-			ratio: 0.1,
+			ratio: 0.2,
 			inventory:  {
         items: [],
         weapon: new ItemStack(9)
@@ -31,14 +31,14 @@ export default class Units {
 			stats: {
 				strength: 0,
 				defense: 0,
-				health: 2,
+				health: 5,
 				health_max: 5,
 				health_regen: 0,
 				energy: 0,
 				energy_max: 0,
 				energy_regen: 0
 			},
-			ratio: 0.3
+			ratio: 0.1
 		}));
 	}
 
