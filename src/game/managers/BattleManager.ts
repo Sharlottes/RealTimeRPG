@@ -27,24 +27,24 @@ class AttackAction implements ActionI {
 	
 	public run() {
 		if(this.attacker.stats.health <= 0 || this.target.stats.health <= 0) return;
-		const inventory = this.attacker.inventory;
-		const weaponEntity: ItemEntity = inventory.weapon.items[0];
-		const weapon = inventory.weapon.getItem<Weapon>();
+		const entity = this.attacker.inventory.weapon.items[0];
+		const weapon = this.attacker.inventory.weapon.getItem<Weapon>();
 
-		if (weaponEntity?.cooldown && weaponEntity.cooldown > 0) {
-			this.manager.updateEmbed('+ '+bundle.format(this.manager.locale, 'battle.cooldown', weaponEntity.cooldown.toFixed(2)));
+		if(!entity.cooldown) return;
+		
+		if(entity.cooldown > 0) {
+			this.manager.updateEmbed(bundle.format(this.manager.locale, 'battle.cooldown', entity.cooldown.toFixed(2)));
 		} else {
-			// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-			if(weaponEntity?.durability) {
-				if(weaponEntity.durability > 0) weaponEntity.durability--;
-				if(weaponEntity.durability <= 0) {
-					this.manager.updateEmbed('+ '+bundle.format(this.manager.locale, 'battle.broken', weapon.localName(this.manager.user)));
-					inventory.weapon = new ItemStack(Items.punch.id);
+			entity.cooldown = weapon.cooldown;
+			if(entity.durability) {
+				if(entity.durability > 0) entity.durability--;
+				if(entity.durability <= 0) {
+					this.manager.updateEmbed(bundle.format(this.manager.locale, 'battle.broken', weapon.localName(this.manager.user)));
+					this.attacker.inventory.weapon = new ItemStack(Items.punch.id);
 				}
 			}
 
-			//임베드 전투로그 업데이트
-			this.manager.updateEmbed('+ '+weapon.attack(this.attacker, this.target, this.manager.locale));
+			this.manager.updateEmbed((this.attacker.id == this.manager.user.id?'+ ':'- ')+weapon.attack(this.attacker, this.target, this.manager.locale));
 		}
 	}
 }
@@ -75,6 +75,7 @@ export default class BattleManager extends SelectManager{
 	private interval?: NodeJS.Timeout;
 	private battleLog: string[] = [];
 	private renderQueue: (()=>Promise<unknown>)[] = [];
+	private actionQueue: ActionI[] = [];
 	private rendering = false;
 
   public constructor(user: User, interaction: CommandInteraction, target: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
@@ -84,40 +85,15 @@ export default class BattleManager extends SelectManager{
 	}
 	
 	protected override init() {
-		this.addButtonSelection('attack', 0, async (user) => {
-			if(user.stats.health <= 0 || this.target.stats.health <= 0) return;
-			const inventory = this.user.inventory;
-			const weaponEntity: ItemEntity = inventory.weapon.items[0];
-			const weapon = inventory.weapon.getItem<Weapon>();
+		const data = this.toActionData();
 
-			if (weaponEntity?.cooldown && weaponEntity.cooldown > 0) {
-				this.updateEmbed('+ '+bundle.format(this.locale, 'battle.cooldown', weaponEntity.cooldown.toFixed(2)));
-			} else {
-				// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-				if(weaponEntity?.durability) {
-					if(weaponEntity.durability > 0) weaponEntity.durability--;
-					if(weaponEntity.durability <= 0) {
-						this.updateEmbed('+ '+bundle.format(this.locale, 'battle.broken', weapon.localName(user)));
-						inventory.weapon = new ItemStack(Items.punch.id);
-					}
-				}
-
-				//임베드 전투로그 업데이트
-				this.updateEmbed('+ '+weapon.attack(user, this.target, this.locale));
-			}
-      this.renderQueue.push(this.builder.rerender);
+		this.addButtonSelection('attack', 0, (user) => {
+			this.actionQueue.push(new AttackAction(this, user, this.target));
 		});
-		this.addMenuSelection('swap', 1, async (user, actions, interactionCallback) => {
+		this.addMenuSelection('swap', 1, (user, row, interactionCallback) => {
 			if (interactionCallback.isSelectMenu()) {
-				const id = Number(interactionCallback.values[0]);
-				const weapon: Weapon = Items.find(id);
-				const entity = user.inventory.items.find((e) => e.id == id);
-				if(!entity) return this.updateEmbed(bundle.format(this.locale, 'missing_item', weapon.localName(this.locale)));
-				
-				user.switchWeapon(weapon, entity);
-				this.updateEmbed(bundle.format(this.locale, 'switch_change', weapon.localName(user), user.inventory.weapon.getItem().localName(user)));
-
-				this.renderQueue.push(this.builder.rerender);
+				const weapon = Items.find<Weapon>(Number(interactionCallback.values[0]));
+				this.actionQueue.push(new SwapAction(this, user, weapon));
 			}
 		},
 		{
@@ -127,59 +103,43 @@ export default class BattleManager extends SelectManager{
 				value: i.id.toString()
 			}] : a, [])
 		});
+		this.builder
+			.setDescription(bundle.format(this.locale, 'battle.start', this.user.user.username, Units.find(this.target.id).localName(this.user)))
+			.setComponents(data.actions)
+			.setTriggers(data.triggers);
+		this.interval = setInterval(this.update, 100);
+	}
 
-		if(this.builder) {
-			const data = this.toActionData();
-			this.builder
-				.setDescription(bundle.format(this.locale, 'battle.start', this.user.user.username, Units.find(this.target.id).localName(this.user)))
-				.setComponents(data.actions)
-				.setTriggers(data.triggers);
-		}		
-		let i = 0;
-		this.interval = setInterval(async () => {
-			if (this.user.stats.health <= 0 || this.target.stats.health <= 0) await this.battleEnd(this.user);
-				else {
-				const inventory = this.target.inventory;
-				const weaponEntity: ItemEntity = inventory.weapon.items[0];
-				const weapon: Weapon = Items.find(inventory.weapon.id);
+	private async update() {
+		this.actionQueue.forEach(a=>a.run());
+		this.actionQueue.length = 0;
 
-				this.target.update();
-				this.updateEmbed();
-
-				if(weaponEntity?.cooldown) weaponEntity.cooldown -= 100 / 1000;
-				if (weaponEntity?.cooldown && weaponEntity.cooldown <= 0 && this.target.stats.health > 0) {
-					weaponEntity.cooldown = weapon.cooldown;
-
-					// 내구도 감소, 만약 내구도가 없으면 주먹으로 교체.
-					if(weaponEntity?.durability) {
-						if(weaponEntity.durability > 0) weaponEntity.durability--;
-						if(weaponEntity.durability <= 0) {
-							const punch = Items.punch;
-							this.updateEmbed('- '+bundle.format(this.locale, 'battle.broken', weapon.localName(this.user)));
-							inventory.weapon = new ItemStack(punch.id);
-						}
+		if (this.user.stats.health <= 0 || this.target.stats.health <= 0) await this.battleEnd(this.user);
+		else {
+			this.target.update();
+			if(this.target.stats.health > 0) {
+				const weaponEntity: ItemEntity = this.target.inventory.weapon.items[0];
+				if(weaponEntity.cooldown) {
+					weaponEntity.cooldown -= 100 / 1000;
+					if (weaponEntity.cooldown <= 0) {
+						this.actionQueue.push(new AttackAction(this, this.target, this.user));
 					}
-
-					//임베드 전투로그 업데이트
-					this.updateEmbed('- '+weapon.attack(this.target, this.user, this.locale));
 				}
+			}
 
-				this.renderQueue.push(this.builder.rerender);
-				if(this.rendering) return;
+			this.updateEmbed();
+			this.renderQueue.push(this.builder.rerender);
+			if(!this.rendering) {
 				this.rendering = true;
-				i++;
-				const j = i;
 				for(let i = 0; i < this.renderQueue.length; i++) {
 					await this.renderQueue.shift()?.call(this.builder).catch(e=>e);
 				}
-				
-				console.log(j+"th rendering ended");
 				this.rendering = false;
 			}
-		}, 100);
+		}
 	}
 
-	updateEmbed(log?: string) {
+	public updateEmbed(log?: string) {
 		if(log) {
 			if(this.battleLog.length > 5) this.battleLog.shift();
 			this.battleLog.push(log);
@@ -204,7 +164,7 @@ export default class BattleManager extends SelectManager{
 		]);
 	}
 
-	async battleEnd(user: User) {
+	private async battleEnd(user: User) {
 		if(this.interval) clearInterval(this.interval);
 		this.builder.setComponents([]);
 

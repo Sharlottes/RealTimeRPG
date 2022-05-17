@@ -3,8 +3,7 @@ import Discord, { CacheType } from 'discord.js';
 import { PagesBuilder } from 'discord.js-pages';
 import { ItemStack, User } from '@RTTRPG/game';
 import { BaseEmbed } from '@RTTRPG/modules';
-import StatusEffect from '../game/contents/StatusEffect';
-import Weapon from '../game/contents/Weapon';
+import { StatusEffect, Weapon } from '@RTTRPG/game/contents';
 
 export interface Heathy { 
     health: number
