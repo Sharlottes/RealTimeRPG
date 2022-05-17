@@ -40,7 +40,7 @@ export default class User implements EntityI {
     if(typeof user === 'string') {
       this.user = app.client.users.cache.find(u=>u.id === user) as Discord.User;
       this.id = user;
-      this.name = this.user.username;
+      this.name = this.user?.username;
     }
     else {
       this.user = user;
@@ -117,23 +117,17 @@ export default class User implements EntityI {
     return this.user.dmChannel?.send(options);
   }
   
-  /**
-   * 기존 무기를 새 무기로 전환
-   * @param weapon 장착할 새 무기
-   * @returns {string} 변경 메시지
-   */
-  public switchWeapon(weapon: Weapon): string {
+  public switchWeapon(weapon: Weapon, targetEntity: ItemStack) {
     const entity = this.inventory.items.find((entity) => entity.id == weapon.id);
     const locale = this.locale;
 
     if (!entity) return bundle.format(locale, 'missing_item', weapon.localName(this));
-    entity.remove();
-    if (!entity.amount) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
 
-    this.giveItem(weapon);
+    targetEntity.remove();
+    if (targetEntity.amount <= 0) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
+
+    this.giveItem(this.inventory.weapon.getItem());
     this.inventory.weapon = new ItemStack(weapon.id);
-    
-    return bundle.format(locale, 'switch_change', weapon.localName(this), Items.find(entity.id).localName(this));
   }
 
   public levelup() {

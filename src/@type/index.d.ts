@@ -4,6 +4,7 @@ import { PagesBuilder } from 'discord.js-pages';
 import { ItemStack, User } from '@RTTRPG/game';
 import { BaseEmbed } from '@RTTRPG/modules';
 import StatusEffect from '../game/contents/StatusEffect';
+import Weapon from '../game/contents/Weapon';
 
 export interface Heathy { 
     health: number
@@ -110,6 +111,7 @@ export interface EntityI extends StatusI {
     public level: number;
     public money: number;
     public name: string|((locale: string)=>string);
+    public switchWeapon: (weapon: Weapon, targetEntity: ItemStack) => void;
 }
 
 export interface StatusI {

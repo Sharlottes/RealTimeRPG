@@ -1,4 +1,4 @@
-import { Item, Unit, Units, StatusEffect } from "@RTTRPG/game/contents";
+import { Item, Unit, Units, StatusEffect, Weapon } from "@RTTRPG/game/contents";
 import { EntityI, Inventory, Stat } from '@RTTRPG/@type';
 import { ItemStack, StatusEntity } from "@RTTRPG/game";
 
@@ -42,7 +42,7 @@ export default class UnitEntity implements EntityI {
     })  
   }
 
-  public giveItem(item: Item, amount: number) { 
+  public giveItem(item: Item, amount = 1) { 
     const stack = this.inventory.items.find((i) => i.id == item.id);
     if (stack) {
       stack.add(amount);
@@ -52,4 +52,13 @@ export default class UnitEntity implements EntityI {
 	public getUnit<T extends Unit>(): T {
 		return Units.find<T>(this.id);
 	}
+
+  public switchWeapon(weapon: Weapon, targetEntity: ItemStack) {
+    targetEntity.remove();
+    if (targetEntity.amount <= 0) this.inventory.items.splice(this.inventory.items.indexOf(targetEntity), 1);
+
+    this.giveItem(this.inventory.weapon.getItem());
+    this.inventory.weapon = new ItemStack(weapon.id);
+  }
+
 }

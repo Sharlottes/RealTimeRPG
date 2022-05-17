@@ -3,27 +3,24 @@ import { CommandInteraction, MessageSelectOptionData } from 'discord.js';
 import { ItemStack, UnitEntity, ItemEntity, getOne, save, findMessage, User } from '@RTTRPG/game';
 import { Units, Item, Items, Weapon } from '@RTTRPG/game/contents';
 import { SelectManager } from '@RTTRPG/game/managers';
-import { Mathf, Canvas } from '@RTTRPG/util';
+import { Mathf, Canvas, Strings, ANSIStyle } from '@RTTRPG/util';
 import { bundle } from '@RTTRPG/assets';
 import { EntityI } from '@RTTRPG/@type';
 
-abstract class Action {
-	public manager: BattleManager;
-	public abstract name: string;
-	public abstract run(): void;
-
-	constructor(manager: BattleManager) {
-		this.manager = manager;
-	}
+interface ActionI {
+	manager: BattleManager;
+	name: string;
+	run(): void;
 }
 
-class AttackAction extends Action { 
+class AttackAction implements ActionI { 
 	public name = 'attack';
+  manager: BattleManager;
 	private attacker: EntityI;
 	private target: EntityI;
 	
 	constructor(manager: BattleManager, attacker: EntityI, target: EntityI) {
-		super(manager);
+		this.manager = manager;
 		this.attacker = attacker;
 		this.target = target;
 	}
@@ -49,6 +46,27 @@ class AttackAction extends Action {
 			//임베드 전투로그 업데이트
 			this.manager.updateEmbed('+ '+weapon.attack(this.attacker, this.target, this.manager.locale));
 		}
+	}
+}
+
+class SwapAction implements ActionI {
+	public name = 'swap';
+  manager: BattleManager;
+	private owner: EntityI;
+	private weapon: Weapon;
+
+	constructor(manager: BattleManager, owner: EntityI, weapon: Weapon) {
+		this.manager = manager;
+		this.owner = owner;
+		this.weapon = weapon;
+	}
+
+	public run() {
+		const entity = this.owner.inventory.items.find((e) => e.id == this.weapon.id);
+		if(!entity) return this.manager.updateEmbed(bundle.format(this.manager.locale, 'missing_item', this.weapon.localName(this.manager.locale)));
+		
+		this.owner.switchWeapon(this.weapon, entity);
+		this.manager.updateEmbed(bundle.format(this.manager.locale, 'switch_change', this.weapon.localName(this.manager.locale), this.owner.inventory.weapon.getItem().localName(this.manager.locale)));
 	}
 }
 
@@ -94,13 +112,11 @@ export default class BattleManager extends SelectManager{
 				const id = Number(interactionCallback.values[0]);
 				const weapon: Weapon = Items.find(id);
 				const entity = user.inventory.items.find((e) => e.id == id);
-				if(!entity) return;
+				if(!entity) return this.updateEmbed(bundle.format(this.locale, 'missing_item', weapon.localName(this.locale)));
 				
-				entity.remove();
-				if (!entity.amount) user.inventory.items.splice(user.inventory.items.indexOf(entity), 1);
-
+				user.switchWeapon(weapon, entity);
 				this.updateEmbed(bundle.format(this.locale, 'switch_change', weapon.localName(user), user.inventory.weapon.getItem().localName(user)));
-				user.switchWeapon(weapon);
+
 				this.renderQueue.push(this.builder.rerender);
 			}
 		},
@@ -208,11 +224,8 @@ export default class BattleManager extends SelectManager{
 			this.builder.addFields(
 				{
 					name: 'Battle End', 
-					value: 
-					"```ini\n["
-						+bundle.format(this.locale, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${bundle.find(this.locale, 'unit.item')}`).join('\n'))
-						+'\n'+items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n')
-					+"]\n```"
+					value: Strings.color(bundle.format(this.locale, 'battle.result', user.exp, user.exp += unit.level * (1 + unit.ratio) * 10, items.map((i) => `${i.item.localName(user)} +${i.amount} ${bundle.find(this.locale, 'unit.item')}`).join('\n'))
+						+'\n'+items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n'), [ANSIStyle.BLUE])
 				}
 			);
 		}
