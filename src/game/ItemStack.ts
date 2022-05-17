@@ -45,7 +45,7 @@ export default class ItemStack {
 		const item = this.getItem();
 		const durability = (item instanceof Weapon ? item.durability : undefined);
 		const cooldown = (item instanceof Weapon ? item.cooldown : undefined);
-		return new ItemEntity(durability || durability == -1 ? undefined : durability, cooldown);
+		return new ItemEntity(!durability || durability == -1 ? undefined : durability, cooldown);
 	}
 
 	getItem<T extends Item>(): T {

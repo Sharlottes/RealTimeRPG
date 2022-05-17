@@ -61,7 +61,7 @@ namespace CommandManager {
 			interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
 		});
 
-		registerEvent(15, (user, interaction) => {
+		registerEvent(6615, (user, interaction) => {
 			const { builder } = findMessage(interaction.id);
 			new EncounterManager(user, interaction, new UnitEntity(Units.find(Random.int(0,1))), builder).start();
 		});
