@@ -81,12 +81,12 @@ export default class BattleManager extends SelectManager{
   public constructor(user: User, interaction: CommandInteraction, target: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
     super(user, interaction, builder);
 		this.target = target;
+		console.log('on constructor, '+this.target);
     if(new.target === BattleManager) this.init();
 	}
 	
 	protected override init() {
-		const data = this.toActionData();
-
+		console.log('on init, '+this.target);
 		this.addButtonSelection('attack', 0, (user) => {
 			this.actionQueue.push(new AttackAction(this, user, this.target));
 		});
@@ -103,40 +103,45 @@ export default class BattleManager extends SelectManager{
 				value: i.id.toString()
 			}] : a, [])
 		});
+
+		const data = this.toActionData();
+
 		this.builder
 			.setDescription(bundle.format(this.locale, 'battle.start', this.user.user.username, Units.find(this.target.id).localName(this.user)))
-			.setComponents(data.actions)
-			.setTriggers(data.triggers);
-		this.interval = setInterval(this.update, 100);
+			.setComponents(data.actions).setTriggers(data.triggers);
+		console.log('before setting interval, '+this.target);
+		this.interval = setInterval(()=>this.update(), 100);
 	}
 
 	private async update() {
-		this.actionQueue.forEach(a=>a.run());
-		this.actionQueue.length = 0;
+		console.log('on updating, '+this.target);
 
-		if (this.user.stats.health <= 0 || this.target.stats.health <= 0) await this.battleEnd(this.user);
-		else {
+		for(let i = 0; i < this.actionQueue.length; i++) {
+			this.actionQueue.shift()?.run();
+		}
+
+		if(this.target.stats.health > 0) {
 			this.target.update();
-			if(this.target.stats.health > 0) {
-				const weaponEntity: ItemEntity = this.target.inventory.weapon.items[0];
-				if(weaponEntity.cooldown) {
-					weaponEntity.cooldown -= 100 / 1000;
-					if (weaponEntity.cooldown <= 0) {
-						this.actionQueue.push(new AttackAction(this, this.target, this.user));
-					}
+			const weaponEntity: ItemEntity = this.target.inventory.weapon.items[0];
+			if(weaponEntity.cooldown) {
+				weaponEntity.cooldown -= 100 / 1000;
+				if (weaponEntity.cooldown <= 0) {
+					this.actionQueue.push(new AttackAction(this, this.target, this.user));
 				}
-			}
-
-			this.updateEmbed();
-			this.renderQueue.push(this.builder.rerender);
-			if(!this.rendering) {
-				this.rendering = true;
-				for(let i = 0; i < this.renderQueue.length; i++) {
-					await this.renderQueue.shift()?.call(this.builder).catch(e=>e);
-				}
-				this.rendering = false;
 			}
 		}
+
+		this.updateEmbed();
+		this.renderQueue.push(this.builder.rerender);
+		if(!this.rendering) {
+			this.rendering = true;
+			for(let i = 0; i < this.renderQueue.length; i++) {
+				await this.renderQueue.shift()?.call(this.builder).catch(e=>e);
+			}
+			this.rendering = false;
+		}
+
+		if (this.user.stats.health <= 0 || this.target.stats.health <= 0) await this.battleEnd(this.user);
 	}
 
 	public updateEmbed(log?: string) {
