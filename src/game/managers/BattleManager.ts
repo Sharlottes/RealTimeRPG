@@ -81,12 +81,10 @@ export default class BattleManager extends SelectManager{
   public constructor(user: User, interaction: CommandInteraction, target: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
     super(user, interaction, builder);
 		this.target = target;
-		console.log('on constructor, '+this.target);
-    if(new.target === BattleManager) this.init();
+		if(new.target === BattleManager) this.init();
 	}
 	
 	protected override init() {
-		console.log('on init, '+this.target);
 		this.addButtonSelection('attack', 0, (user) => {
 			this.actionQueue.push(new AttackAction(this, user, this.target));
 		});
@@ -109,13 +107,10 @@ export default class BattleManager extends SelectManager{
 		this.builder
 			.setDescription(bundle.format(this.locale, 'battle.start', this.user.user.username, Units.find(this.target.id).localName(this.user)))
 			.setComponents(data.actions).setTriggers(data.triggers);
-		console.log('before setting interval, '+this.target);
 		this.interval = setInterval(()=>this.update(), 100);
 	}
 
 	private async update() {
-		console.log('on updating, '+this.target);
-
 		for(let i = 0; i < this.actionQueue.length; i++) {
 			this.actionQueue.shift()?.run();
 		}

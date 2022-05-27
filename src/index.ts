@@ -7,6 +7,7 @@ import config from "@RTTRPG/discord.json";
 
 import { init } from './game';
 import { CommandManager } from './game/managers';
+
 import Vars from './Vars';
 
 const time = Date.now();
@@ -61,12 +62,6 @@ for(let i = 2; i < process.argv.length; i += 2) {
     //디스코드 봇 로그인
     await client.login(config.botToken);
     console.log(`discord bot login has been done in ${(Date.now() - time)}ms`);
-
-    /*
-    //카카오톡 봇 로그인
-    Kakao.init();
-    console.log(`kakao bot initialization has been done: ${Date.now()-time}ms`);
-    */
 })();
 
 client.once("ready", async () => {
@@ -103,8 +98,6 @@ client.on("interactionCreate", async interaction => {
 });
 
 client.on("messageCreate", async message => {
-    //if(message.author.id != client.user?.id) onDiscordMessage(message);
-
     //only avaliable for server owner or whitelist user
     if(message.channel.type === 'GUILD_TEXT' && message.content == "!refresh" && message.guild != null && (message.author.id == message.guild.ownerId || masterIDs.includes(message.author.id))) {
         const time = new Date().getTime();

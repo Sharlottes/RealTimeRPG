@@ -12,5 +12,4 @@ Database/
 
 # sdk
 src/firebase.json
-src/kakao.json
 src/discord.json
