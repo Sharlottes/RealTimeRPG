@@ -79,8 +79,6 @@ export type UnitData = {
     stats: Stat
 } & Rationess
 
-export type CommandOption = 'string' | 'float' | 'int'
-
 export type UserSave = {
       id: string
       money: number,
