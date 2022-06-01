@@ -1,5 +1,5 @@
 {
-  "name": "bot",
+  "name": "realtimerpg",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -12,28 +12,21 @@
     "@discordjs/builders": "^0.10.0",
     "@discordjs/rest": "^0.2.0-canary.0",
     "@types/properties-reader": "^2.1.1",
-    "canvas": "^2.9.0",
     "discord-api-types": "^0.26.0",
     "discord.js": "^13.6.0",
     "discord.js-pages": "^1.3.7",
-    "eslint-config-airbnb": "^19.0.4",
-    "firebase-admin": "^10.0.1",
-    "glob": "^7.2.0",
     "properties-reader": "^2.2.0",
-    "random": "^3.0.6",
-    "request": "^2.88.2",
-    "socket.io": "^4.4.1",
     "string-progressbar": "^1.0.4",
-    "tcp-ping": "^0.1.1"
+    "canvas": "^2.9.0",
+    "random": "^3.0.6"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.2",
     "@types/node": "^17.0.1",
-    "@types/request": "^2.48.7",
-    "@types/tcp-ping": "^0.1.3",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard": "^16.0.3",
@@ -41,8 +34,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^5.2.0",
-    "nodemon": "^2.0.15",
-    "pkg": "^4.4.9",
     "prettier": "2.5.1",
     "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",
@@ -51,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sharlottes/nodejsbot.git"
+    "url": "git+https://github.com/Sharlottes/realtimerpg.git"
   },
   "keywords": [
     "discord"
@@ -60,14 +51,10 @@
   "contributors": [
     "AmateurPotion"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Sharlottes/nodejsbot/issues"
+    "url": "https://github.com/Sharlottes/realtimerpg/issues"
   },
-  "homepage": "https://github.com/Sharlottes/nodejsbot#readme",
-  "description": "",
-  "nodemonConfig": {
-    "ignore": [],
-    "delay": 2500
-  }
+  "homepage": "https://github.com/Sharlottes/realtimerpg#readme",
+  "description": "real time rpg based on typescript discord bot"
 }

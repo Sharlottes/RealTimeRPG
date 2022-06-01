@@ -69,21 +69,6 @@ client.once("ready", async () => {
     
     await CM.refreshCommand("global");
     console.log(`global command push has been done: ${Date.now()-time}ms`);
-
-    /*
-    // 서버마다 데이터베이스 체크
-    client.guilds.cache.forEach(guild => {
-        const doc = firebaseAdmin.firestore.collection(guild.id).doc("config");
-        const snapshot = await doc.get();
-        if (!snapshot.exists) {
-            doc.set({
-                name: guild.name,
-                version: config.version,
-                language: guild.preferredLocale
-            });
-        }
-    });
-    */
 });
 
 client.on("interactionCreate", async interaction => {
