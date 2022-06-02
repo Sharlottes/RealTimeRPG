@@ -4,13 +4,13 @@ import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionR
 import { filledBar } from 'string-progressbar';
 import Canvass from 'canvas';
 
-import { Items, Item, Weapon, StatusEffect } from '@RTTRPG/game/contents';
+import { Item, Weapon, StatusEffect } from '@RTTRPG/game/contents';
 import { EntityI, Inventory, Stat, UserSave } from '@RTTRPG/@type';
 import { save, ItemStack, StatusEntity } from "@RTTRPG/game";
 import { BaseEmbed } from '@RTTRPG/modules';
 import { bundle } from '@RTTRPG/assets';
 import { Canvas } from "@RTTRPG/util";
-import app from '@RTTRPG/index';
+import { app } from '@RTTRPG/index';
 
 const defaultStat: Stat = {
   health: 20,
@@ -24,37 +24,43 @@ const defaultStat: Stat = {
 };
 
 export default class User implements EntityI {
+  public readonly id: string = 'unknown';
+  public readonly stats: Stat = defaultStat;
+  public readonly inventory: Inventory = { items: [], weapon: new ItemStack(5) };
+  public readonly name: string = 'Unknown User';
+  public readonly user: Discord.User; /*should be non-null*/
+  public readonly foundContents = { items: [-1], units: [-1] };
+  public readonly statuses: StatusEntity[] = [];
   public exp = 0;
   public level = 1;
   public money = 0;
-  public name: string;
-  public id: string;
   public locale: string = bundle.defaultLocale;
-  public user: Discord.User;
-  public stats: Stat = defaultStat;
-  public inventory: Inventory = { items: [], weapon: new ItemStack(5) };
-  public foundContents = { items: [-1], units: [-1] };
-  public statuses: StatusEntity[];
 
-  constructor(user: Discord.User|string) {
-    if(typeof user === 'string') {
-      this.user = app.client.users.cache.find(u=>u.id === user) as Discord.User;
-      this.id = user;
+  constructor(data: Discord.User|UserSave|string) {
+    if(typeof data === 'string') {
+      this.user = app.client.users.cache.find(u=>u.id === data) as Discord.User;
+      this.id = data;
       this.name = this.user?.username;
     }
-    else {
-      this.user = user;
-      this.id = user.id;
+    else if(data instanceof Discord.User) {
+      this.user = data;
+      this.id = data.id;
       this.name = this.user.username;
     }
-    
-    this.statuses = [];
-  }
-
-  public static with(data: UserSave): User {
-    const user = new User(data.id);
-    user.read(data);
-    return user;
+    else {
+      this.user = app.client.users.cache.find(u=>u.id === data.id) as Discord.User;
+      this.name = this.user?.username;
+      this.id = data.id;
+      this.money = data.money;
+      this.level = data.level;
+      this.exp = data.exp;
+      this.stats = data.stats;
+      this.inventory = {
+        items: data.inventory.items.map(stack=>new ItemStack(stack.id, stack.amount, stack.items)),
+        weapon: new ItemStack(data.inventory.weapon.id, data.inventory.weapon.amount, data.inventory.weapon.items)
+      };
+      this.foundContents = data.fountContents;
+    }
   }
 
   public applyStatus(status: StatusEffect) {
@@ -84,19 +90,6 @@ export default class User implements EntityI {
       inventory: this.inventory,
       fountContents: this.foundContents 
     }
-  }
-
-  public read(data: UserSave) {
-    this.id = data.id;
-    this.money = data.money;
-    this.level = data.level;
-    this.exp = data.exp;
-    this.stats = data.stats;
-    this.inventory = {
-      items: data.inventory.items.map(stack=>new ItemStack(stack.id, stack.amount, stack.items)),
-      weapon: new ItemStack(data.inventory.weapon.id, data.inventory.weapon.amount, data.inventory.weapon.items)
-    };
-    this.foundContents = data.fountContents;
   }
   
   public giveItem(item: Item, amount = 1) {

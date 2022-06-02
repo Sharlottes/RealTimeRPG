@@ -13,20 +13,18 @@ import Vars from './Vars';
 const time = Date.now();
 const masterIDs = [
     "462167403237867520",
-    "473072758629203980",
-    "939349343431954462"
+    "473072758629203980"
 ];
 
 // App 선언 - 봇의 모든 코드를 관리함
-const app = {
+export const app = {
     client: new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }),
     option: new Map<string, boolean|number|string>(),
     config: config,
     rest: new REST({ version: '9' }).setToken(config.botToken)
 };
-export default app;
 
-const { client, option } = app;
+const client = app.client;
 
 // 프로그램 실행 인자 추출
 for(let i = 2; i < process.argv.length; i += 2) {
@@ -39,7 +37,7 @@ for(let i = 2; i < process.argv.length; i += 2) {
         return value;
     })();
     
-    if(arg.startsWith('--') && value) option.set(arg.slice(2), value);
+    if(arg.startsWith('--') && value) app.option.set(arg.slice(2), value);
 }
 
 (async ()=>{
@@ -66,9 +64,6 @@ for(let i = 2; i < process.argv.length; i += 2) {
 
 client.once("ready", async () => {
     console.log(`Logged in as ${client.user?.tag}(${client.application?.id}): ${Date.now()-time}ms`)
-    
-    await CM.refreshCommand("global");
-    console.log(`global command push has been done: ${Date.now()-time}ms`);
 });
 
 client.on("interactionCreate", async interaction => {
@@ -83,15 +78,26 @@ client.on("interactionCreate", async interaction => {
 });
 
 client.on("messageCreate", async message => {
-    //only avaliable for server owner or whitelist user
-    if(message.channel.type === 'GUILD_TEXT' && message.content == "!refresh" && message.guild != null && (message.author.id == message.guild.ownerId || masterIDs.includes(message.author.id))) {
+    if(message.channel.type === 'GUILD_TEXT' && message.guild != null && (message.author.id == message.guild.ownerId || masterIDs.includes(message.author.id))) {
         const time = new Date().getTime();
-        const guild = message.guild;
 
-        message.reply(`refresh start! server: ${guild.name}`).catch(e => message.reply((e as object).toString()));
-        CM.commands.clear();
-        CommandManager.init();
-        await CM.refreshCommand("guild", guild);
-        message.reply(`guild command push has been done in ${(Date.now() - time)}ms`);
+        if(message.content == "!refresh") {
+            message.reply(`guild command refresh start! server: ${message.guild.name}`);
+
+            CM.commands.clear();
+            CommandManager.init();
+            await CM.refreshCommand("guild", message.guild);
+
+            message.reply(`guild command refresh has been done in ${(Date.now() - time)}ms`);
+        }
+        else if(message.content == "!refresh global") {
+            message.reply(`global command refresh start!`);
+
+            CM.commands.clear();
+            CommandManager.init();
+            await CM.refreshCommand("global");
+
+            message.reply(`global command refresh has been done in ${(Date.now() - time)}ms`);
+        }
     }
 });

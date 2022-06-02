@@ -9,6 +9,11 @@ test/
 error.json
 window_connect.bat
 Database/
+.prettierrc.json
+.eslintrc.json
+.gitignore
+package.json
+
 
 # sdk
 src/firebase.json

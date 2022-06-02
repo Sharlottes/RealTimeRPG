@@ -1,11 +1,11 @@
 export { default as Command } from "./Command";
 
-import { ApplicationCommand, Collection, Guild, GuildResolvable } from "discord.js";
+import { ApplicationCommandDataResolvable, Collection, Guild } from "discord.js";
 import { Routes } from "discord-api-types/v9";
 
 import { CommandInfo } from "@RTTRPG/@type";
 import { Command } from "@RTTRPG/commands";
-import app from "@RTTRPG/index";
+import { app } from "@RTTRPG/index";
 
 namespace CommandManager {
     export const commands: Collection<string, Command> = new Collection();
@@ -20,56 +20,36 @@ namespace CommandManager {
 
         if(!commands.has(commandName)) {
             commands.set(commandName, command);
-            console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} command.`);
+            console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} ] command.`);
             return true;
         } else {
             return false;
         }
     }
 
-    /**
-     * 
-     * @param target 
-     */
-    export async function refreshCommand(target: "global"): Promise<ApplicationCommand<{guild: GuildResolvable;}>[]>;
-    /**
-     * 
-     * @param target
-     * @param guild 
-     */
-    export async function refreshCommand(target: "guild", guild: Guild): Promise<ApplicationCommand<{guild: GuildResolvable;}>[]>;
+    export async function refreshCommand(target: "global"): Promise<void>;
+    export async function refreshCommand(target: "guild", guild: Guild): Promise<void>;
     
-    export async function refreshCommand(target: "global" | "guild", guild?: Guild)
-    : Promise<ApplicationCommand<{guild: GuildResolvable;}>[]> {
+    export async function refreshCommand(target: "global" | "guild", guild?: Guild): Promise<void> {
         const application = app.client.application;
-        if(application == null || guild == undefined) return [];
+        if(!application) return;
 
-        const commandPath = target == "global" ? 
-            Routes.applicationCommands(application.id) : 
-            Routes.applicationGuildCommands(application.id, guild.id);
+        const commandPath = guild ? 
+            Routes.applicationGuildCommands(application.id, guild.id) :
+            Routes.applicationCommands(application.id);
     
-        const data = await app.rest.get(commandPath) as CommandInfo[];
-        const promiese = [];
-        for(let i = 0; i < data.length; i++) {
-            const command: CommandInfo = data[i];
-            promiese.push(app.rest.delete(`${commandPath}/${command.id}`));
+        const data: CommandInfo[] = await app.rest.get(commandPath) as CommandInfo[];
+        for(const command of data) {
+            await app.rest.delete(`${commandPath}/${command.id}`);
+            console.log(`[Command] delecting [ /$${commandPath}/${command.id} ] command has been done.`);
         }
-        
-        await Promise.all(promiese);
 
-        // 명령어 재선언
-        const createSeq: Promise<ApplicationCommand>[] = [];
-        
-        commands.forEach(command => {
-            if(command.category == target) {
-                const data = command.setHiddenConfig(command.builder.toJSON());
-                createSeq.push(application.commands.create(data, target == "global" ? undefined : guild.id));
-            }
-        })
-
-        const result = await Promise.all(createSeq)
-
-        return result;
+        for(const [key, command] of commands) {
+            if(command.category !== target) continue;
+            const data = command.setHiddenConfig(command.builder).toJSON();
+            await application.commands.create(data as ApplicationCommandDataResolvable, guild?.id);
+            console.log(`[Command] registing [ /${command.builder.name} ] to ${command.category} ] command has been done.`);
+        }
     }
 }
 

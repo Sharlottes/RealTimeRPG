@@ -3,13 +3,11 @@ import { User } from '@RTTRPG/game';
 import { Database } from '@RTTRPG/util';
 import { Snowflake } from 'discord-api-types';
 
-namespace Vars {
-  export let users: User[] = [];
-  export const messageCache: Map<Snowflake, Message> = new Map();
+export default class Vars {
+  public static users: User[] = [];
+  public static messageCache: Map<Snowflake, Message> = new Map();
 
-  export function init() {
-    users = Database.readObject<UserSave[]>('./Database/user_data').map(User.with);
+  public static init(): void {
+    Vars.users = Database.readObject<UserSave[]>('./Database/user_data').map(data=>new User(data));
   }
 }
-
-export default Vars; 

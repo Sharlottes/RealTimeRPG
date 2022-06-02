@@ -1,4 +1,4 @@
-import { CommandInteraction, CacheType } from "discord.js";
+import { CommandInteraction, CacheType, ApplicationCommandDataResolvable } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
 import { CommandCategory } from "@RTTRPG/@type";
@@ -20,13 +20,12 @@ abstract class Command {
         this.builder = builder;
         this.category = category;
         this.dmOnly = dmOnly;
-        this.debug = debug ;
+        this.debug = debug;
         
         this.builder.setDefaultPermission(false);
     }
     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public /*virtual*/ setHiddenConfig(option: any): any {
+    public setHiddenConfig(option: SlashCommandBuilder): SlashCommandBuilder {
         return option;
     }
 }

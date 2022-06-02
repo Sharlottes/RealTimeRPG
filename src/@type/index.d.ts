@@ -104,15 +104,15 @@ export interface EntityI extends StatusI {
     public readonly id: number|string;
     public readonly stats: Stat;
     public readonly inventory: Inventory;
+    public readonly name: string|((locale: string)=>string);
     public exp: number;
     public level: number;
     public money: number;
-    public name: string|((locale: string)=>string);
     public switchWeapon: (weapon: Weapon, targetEntity: ItemStack) => void;
 }
 
 export interface StatusI {
-    public statuses: StatusEntity[] = [];
+    public readonly statuses: StatusEntity[] = [];
     public applyStatus: (status: StatusEffect) => void;
     public removeStatus: (status: StatusEffect) => void;
 }
