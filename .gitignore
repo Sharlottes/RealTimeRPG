@@ -1,5 +1,6 @@
 # 외부 모듈
 node_modules/
+package.json
 
 # 빌드 파일
 build/
@@ -7,14 +8,15 @@ build/
 # 테스트 코드
 test/
 error.json
-window_connect.bat
-Database/
-.prettierrc.json
-.eslintrc.json
-.gitignore
-package.json
-
 
 # sdk
 src/firebase.json
 src/discord.json
+
+.prettierrc.json
+.eslintrc.json
+.gitignore
+
+window_connect.bat
+
+Database/
