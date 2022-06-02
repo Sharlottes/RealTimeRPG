@@ -26,20 +26,6 @@ export const app = {
 
 const client = app.client;
 
-// 프로그램 실행 인자 추출
-for(let i = 2; i < process.argv.length; i += 2) {
-    const arg = process.argv[i];
-    const value = (()=>{
-        const value = process.argv[i + 1];
-        if(value == 'true') return true;
-        if(value == 'false') return false;
-        if(isNaN(Number(value))) return Number(value);
-        return value;
-    })();
-    
-    if(arg.startsWith('--') && value) app.option.set(arg.slice(2), value);
-}
-
 (async ()=>{
     // 애셋 파일 로딩
     assets.init();

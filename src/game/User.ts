@@ -27,8 +27,8 @@ export default class User implements EntityI {
   public readonly id: string = 'unknown';
   public readonly stats: Stat = defaultStat;
   public readonly inventory: Inventory = { items: [], weapon: new ItemStack(5) };
-  public readonly name: string = 'Unknown User';
-  public readonly user: Discord.User; /*should be non-null*/
+  public name: string = 'Unknown User';
+  public user: Discord.User; /*should be non-null*/
   public readonly foundContents = { items: [-1], units: [-1] };
   public readonly statuses: StatusEntity[] = [];
   public exp = 0;

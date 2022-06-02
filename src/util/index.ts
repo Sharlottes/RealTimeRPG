@@ -150,17 +150,6 @@ export class Canvas {
       style?: string | CanvasGradient | CanvasPattern
     },
   }) {
-    const { bar, font, sideFont } = options
-
-    const barWidth = isOfType('number', bar, bar => bar.width, bar => bar);
-    const barStyle = isOfType('number', bar, bar => bar.style);
-    const mainText = isOfType('string', font, font => font.text, font => font);
-    const mainStyle = isOfType('string', font, font => font.style);
-    const mainFont = isOfType('string', font, font => font.font);
-    const subText = isOfType('string', sideFont, font => font.text, font => font);
-    const subStyle = isOfType('string', sideFont, font => font.style);
-    const subFont = isOfType('string', sideFont, font => font.font);
-
     const { bar, font, sideFont } = options;
     const barWidth = typeof bar === 'number' ? bar : bar.width;
     const barStyle = typeof bar === 'number' ? "#49f" : bar.style||"#49f";
@@ -220,9 +209,9 @@ interface TypeofOperationResultMap {
   undefined: undefined
 }
 
-function isOfType<T extends keyof TypeofOperationResultMap, V, U>(type: T, value: V, unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U): U | undefined;
-function isOfType<T extends keyof TypeofOperationResultMap, V, U, I>(type: T, value: V, unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U, _if: (value: Extract<V, TypeofOperationResultMap[T]>) => I): U | I;
-function isOfType<T extends keyof TypeofOperationResultMap, V, U, I>(type: T, value: V, unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U, _if?: (value: Extract<V, TypeofOperationResultMap[T]>) => I): U | I | undefined {
+export function isOfType<T extends keyof TypeofOperationResultMap, V, U>(type: T, value: V, unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U): U | undefined;
+export function isOfType<T extends keyof TypeofOperationResultMap, V, U, I>(type: T, value: V, unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U, _if: (value: Extract<V, TypeofOperationResultMap[T]>) => I): U | I;
+export function isOfType<T extends keyof TypeofOperationResultMap, V, U, I>(type: T, value: V, unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U, _if?: (value: Extract<V, TypeofOperationResultMap[T]>) => I): U | I | undefined {
   return typeof value === type
      ? _if?.(value as Extract<V, TypeofOperationResultMap[T]>)
      : unless(value as Exclude<V, TypeofOperationResultMap[T]>)

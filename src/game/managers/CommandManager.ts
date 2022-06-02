@@ -29,7 +29,8 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, inter
 		run: (interaction) => {
 			//유저 호출/생성
 			const user = Vars.users.find((u) => u.id == interaction.user.id) || Vars.users[Vars.users.push(new User(interaction.user))-1];
-			user.user = interaction.user;
+			user.user ??= interaction.user;
+      user.name ??= user.user?.username;
 			user.locale = interaction.locale;
 
 			//메시지 캐싱

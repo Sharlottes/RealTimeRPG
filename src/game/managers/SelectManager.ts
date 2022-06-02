@@ -75,7 +75,7 @@ export default class SelectManager extends BaseManager {
     this.builder.setComponents(data.actions).setTriggers(data.triggers);
   }
 
-  protected toActionData() {
+  protected toActionData(): {actions: MessageActionRow[], triggers: ITrigger<MessageActionRowComponent>[]} {
     const actions: MessageActionRow[] = [];
     const triggers: ITrigger<MessageActionRowComponent>[] = [];
 
