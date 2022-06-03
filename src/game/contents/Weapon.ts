@@ -37,7 +37,7 @@ export default class Weapon extends Item implements Durable {
 		
 		return bundle.format(locale, 'battle.hit',
 			critical ? bundle.find(locale, 'battle.critical') : '',
-			target.name, //target's
+			typeof target.name !== 'string'?target.name(locale):target.name, //target's
 			damage.toFixed(2), //damaged
 			this.localName(locale), //by weapon
 			stat.health.toFixed(2), //before hp

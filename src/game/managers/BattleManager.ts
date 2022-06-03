@@ -1,9 +1,9 @@
-import { CommandInteraction, MessageEmbed, MessageSelectOptionData } from 'discord.js';
+import { CommandInteraction, MessageEmbed, MessageSelectOptionData, MessageActionRowComponent } from 'discord.js';
 
-import { ItemStack, UnitEntity, ItemEntity, getOne, save, findMessage, User } from '@RTTRPG/game';
+import { ItemStack, UnitEntity, getOne, save, findMessage, User } from '@RTTRPG/game';
 import { Units, Item, Items, Weapon } from '@RTTRPG/game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from '@RTTRPG/util';
-import { SelectManager } from '@RTTRPG/game/managers';
+import { SelectManager, BaseManager } from '@RTTRPG/game/managers';
 import { bundle } from '@RTTRPG/assets';
 import { EntityI } from '@RTTRPG/@type';
 import { BaseEmbed } from '../../modules/BaseEmbed';
@@ -11,68 +11,79 @@ import { BaseEmbed } from '../../modules/BaseEmbed';
 interface ActionI {
 	name: string;
 	manager: BattleManager;
-	run(): void;
+	run(): Promise<void>;
 	description(): string;
 }
 
-class AttackAction implements ActionI { 
-	public name = 'attack';
+abstract class BaseAction implements ActionI {
+  public name = 'base Action';
   public manager: BattleManager;
-	private attacker: EntityI;
+  public owner: EntityI;
+  public cost: number;
+  
+  constructor(manager: BattleManager, owner: EntityI, cost: number) {
+    this.manager = manager;
+    this.owner = owner;
+    this.cost = cost;
+    
+    this.owner.stats.energy -= cost;
+  }
+
+	abstract run(): Promise<void>;
+	abstract description(): string;
+}
+
+class AttackAction extends BaseAction { 
 	private enemy: EntityI;
 	
-	constructor(manager: BattleManager, attacker: EntityI, enemy: EntityI) {
-		this.manager = manager;
-		this.attacker = attacker;
+	constructor(manager: BattleManager, owner: EntityI, enemy: EntityI) {
+		super(manager, owner, 20);
+		this.name = 'attack';
 		this.enemy = enemy;
 	}
 	
-	public run() {
-		if(this.attacker.stats.health <= 0 || this.enemy.stats.health <= 0) return;
-		const entity = this.attacker.inventory.weapon.items[0];
-		const weapon = this.attacker.inventory.weapon.getItem<Weapon>();
+	public async run() {
+		if(this.owner.stats.health <= 0 || this.enemy.stats.health <= 0) return;
+		const entity = this.owner.inventory.weapon.items[0];
+		const weapon = this.owner.inventory.weapon.getItem<Weapon>();
 
-		if(!entity.cooldown) return;
+		if(entity.cooldown === undefined) return;
 		
 		if(entity.cooldown > 0) {
-			this.manager.updateEmbed(bundle.format(this.manager.locale, 'battle.cooldown', entity.cooldown.toFixed(2)));
+			await this.manager.updateEmbed(bundle.format(this.manager.locale, 'battle.cooldown', entity.cooldown.toFixed(2)));
 		} else {
 			entity.cooldown = weapon.cooldown;
 			if(entity.durability) {
 				if(entity.durability > 0) entity.durability--;
 				if(entity.durability <= 0) {
-					this.manager.updateEmbed(bundle.format(this.manager.locale, 'battle.broken', weapon.localName(this.manager.locale)));
-					this.attacker.inventory.weapon = new ItemStack(Items.punch.id);
+					await this.manager.updateEmbed(bundle.format(this.manager.locale, 'battle.broken', weapon.localName(this.manager.locale)));
+					this.owner.inventory.weapon = new ItemStack(Items.punch.id);
 				}
 			}
 
-			this.manager.updateEmbed((this.attacker.id == this.manager.user.id?'+ ':'- ')+weapon.attack(this.attacker, this.enemy, this.manager.locale));
+			await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+weapon.attack(this.owner, this.enemy, this.manager.locale));
 		}
 	}
 
 	public description(): string {
-		return `${this.attacker.name} attacks ${typeof this.enemy.name !== 'string'&&this.enemy.name(this.manager.locale)} by ${this.attacker.inventory.weapon.getItem<Weapon>().localName(this.manager.locale)}`;
+		return bundle.format(this.manager.locale, 'action.attack.description', typeof this.owner.name !== 'string'?this.owner.name(this.manager.locale):this.owner.name , typeof this.enemy.name !== 'string'?this.enemy.name(this.manager.locale):this.enemy.name , this.owner.inventory.weapon.getItem<Weapon>().localName(this.manager.locale));
 	}
 }
 
-class SwapAction implements ActionI {
-	public name = 'swap';
-  public manager: BattleManager;
-	private owner: EntityI;
+class SwapAction extends BaseAction {
 	private weapon: Weapon;
 
 	constructor(manager: BattleManager, owner: EntityI, weapon: Weapon) {
-		this.manager = manager;
-		this.owner = owner;
+		super(manager, owner, 10);
 		this.weapon = weapon;
 	}
 
-	public run() {
+	public async run() {
 		const entity = this.owner.inventory.items.find((e) => e.id == this.weapon.id);
 		if(!entity) return this.manager.updateEmbed(bundle.format(this.manager.locale, 'missing_item', this.weapon.localName(this.manager.locale)));
 		
 		this.owner.switchWeapon(this.weapon, entity);
-		this.manager.updateEmbed(bundle.format(this.manager.locale, 'switch_change', this.weapon.localName(this.manager.locale), this.owner.inventory.weapon.getItem().localName(this.manager.locale)));
+	  await this.manager.updateEmbed(bundle.format(this.manager.locale, 'switch_change', this.weapon.localName(this.manager.locale), this.owner.inventory.weapon.getItem().localName(this.manager.locale)));
 	}
 
 	public description(): string {
@@ -83,10 +94,7 @@ class SwapAction implements ActionI {
 export default class BattleManager extends SelectManager {
 	private enemy: UnitEntity;
 	private battleLog: string[] = [];
-	private renderQueue: (()=>Promise<unknown>)[] = [];
-	private userActionQueue: ActionI[] = [];
-	private enemyActionQueue: ActionI[] = [];
-	private rendering = false;
+	private actionQueue: ActionI[] = [];
 	private turn: EntityI = this.user; //normally, user first
 	private actionBuilder: BaseEmbed;
 
@@ -96,23 +104,26 @@ export default class BattleManager extends SelectManager {
 		this.actionBuilder = new BaseEmbed(interaction, false).setPages(new MessageEmbed().setTitle('Action Queue'));
 		if(new.target === BattleManager) this.init();
 	}
-	
-	protected override init() {
+
+	protected override async init() {
 		this.addButtonSelection('attack', 0, (user) => {
-			this.userActionQueue.push(new AttackAction(this, user, this.enemy));
-			this.actionBuilder.setDescription(this.userActionQueue.map<string>(a=>a.description()).join('```\n```\n'));
-			this.actionBuilder.rerender();
+			const entity = user.inventory.weapon.items[0];
+			if(entity.cooldown !== undefined && entity.cooldown > 0) {
+				BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, 'battle.cooldown', entity.cooldown.toFixed(2)));
+			}
+			else {
+				this.doAction(new AttackAction(this, user, this.enemy));
+			}
 		});
-		this.addButtonSelection('turn', 0, (user) => {
-			this.turnEnd(this.userActionQueue);
+		this.addButtonSelection('turn', 0, async (user) => {
+			await this.turnEnd();
 			this.turn = this.enemy;
+			await this.enemyTurn();
 		});
 		this.addMenuSelection('swap', 1, (user, row, interactionCallback) => {
 			if (interactionCallback.isSelectMenu()) {
 				const weapon = Items.find<Weapon>(Number(interactionCallback.values[0]));
-				this.userActionQueue.push(new SwapAction(this, user, weapon));
-				this.actionBuilder.setDescription(this.userActionQueue.map<string>(a=>a.description()).join('```\n```\n'));
-				this.actionBuilder.rerender();
+				this.doAction(new SwapAction(this, user, weapon));
 			}
 		},
 		{
@@ -128,56 +139,36 @@ export default class BattleManager extends SelectManager {
 			.setDescription(bundle.format(this.locale, 'battle.start', this.user.user.username, Units.find(this.enemy.id).localName(this.user)))
 			.setComponents(data.actions).setTriggers(data.triggers);
 
-		this.actionBuilder.build();
+		await this.actionBuilder.build();
+	  this.updateEmbed(); 
+	}
+	
+	private doAction(action: ActionI) {
+		this.updateEmbed();
+		if(action instanceof BaseAction && this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost)
+		  return BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost));
+		this.actionQueue.push(action);
+		this.actionBuilder.setDescription(this.actionQueue.map<string>(a=>a.description()).join('```\n```\n')).rerender();
 	}
 
-	private turnEnd(actions: ActionI[]) {
-		while(actions.length != 0) {
-			actions.shift()?.run();
-			this.updateEmbed();
-			this.builder.rerender();
-			this.actionBuilder.setDescription(actions.map<string>(a=>a.description()).join('```\n```\n'));
-			this.actionBuilder.rerender();
-			console.log(actions);
+	private async turnEnd() {
+		if(this.turn.inventory.weapon.items[0].cooldown && this.turn.inventory.weapon.items[0].cooldown > 0)
+			this.turn.inventory.weapon.items[0].cooldown -= 1;
+
+		while(this.actionQueue.length != 0) {
+			await this.actionQueue.shift()?.run();
+			await this.actionBuilder.setDescription(this.actionQueue.map<string>(a=>a.description()).join('```\n```\n')).rerender();
 		}
+		if (this.user.stats.health <= 0 || this.enemy.stats.health <= 0) this.battleEnd(this.user);
 	}
 
-	private enemyTurn() {
-		this.enemyActionQueue.push(new AttackAction(this, this.enemy, this.user));
-		this.turnEnd(this.enemyActionQueue);
+	private async enemyTurn() {
+		this.doAction(new AttackAction(this, this.enemy, this.user));
+		await this.turnEnd();
 		this.turn = this.user;
 	}
 
-	private async update() {
-		for(let i = 0; i < this.userActionQueue.length; i++) {
-			this.userActionQueue.shift()?.run();
-		}
-
-		if(this.enemy.stats.health > 0) {
-			this.enemy.update();
-			const weaponEntity: ItemEntity = this.enemy.inventory.weapon.items[0];
-			if(weaponEntity.cooldown) {
-				weaponEntity.cooldown -= 100 / 1000;
-				if (weaponEntity.cooldown <= 0) {
-					this.enemyActionQueue.push(new AttackAction(this, this.enemy, this.user));
-				}
-			}
-		}
-
-		this.updateEmbed();
-		this.renderQueue.push(this.builder.rerender);
-		if(!this.rendering) {
-			this.rendering = true;
-			for(let i = 0; i < this.renderQueue.length; i++) {
-				await this.renderQueue.shift()?.call(this.builder).catch(e=>e);
-			}
-			this.rendering = false;
-		}
-
-		if (this.user.stats.health <= 0 || this.enemy.stats.health <= 0) await this.battleEnd(this.user);
-	}
-
-	public updateEmbed(log?: string) {
+	public async updateEmbed(log?: string) {
 		if(log) {
 			if(this.battleLog.length > 5) this.battleLog.shift();
 			this.battleLog.push(log);
@@ -185,13 +176,19 @@ export default class BattleManager extends SelectManager {
 		this.builder.setFields([
 			{ 
 				name: this.user.user.username, 
-				value: `**${bundle.find(this.locale, 'health')}**: ${this.user.stats.health.toFixed(2)}/${this.user.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.health, this.user.stats.health_max)}`+
+				value: 
+				  `**${bundle.find(this.locale, 'health')}**: ${this.user.stats.health.toFixed(2)}/${this.user.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.health, this.user.stats.health_max)}`+
+			  	`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.user.stats.energy.toFixed(2)}/${this.user.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.energy, this.user.stats.energy_max)}`+
+			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.user.inventory.weapon.getItem<Weapon>().localName(this.locale)} (${this.user.inventory.weapon.items[0].cooldown} ${bundle.find(this.locale, "turn")})`+
 					(this.user.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.user.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed(2)}s`).join('\n')}` : ''),  
 				inline: true 
 			},
 			{ 
 				name: this.enemy.getUnit().localName(this.locale), 
-				value: `**${bundle.find(this.locale, 'health')}**: ${this.enemy.stats.health.toFixed(2)}/${this.enemy.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}`+
+				value: 
+				  `**${bundle.find(this.locale, 'health')}**: ${this.enemy.stats.health.toFixed(2)}/${this.enemy.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}`+
+					`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.enemy.stats.energy.toFixed(2)}/${this.enemy.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.energy, this.enemy.stats.energy_max)}`+
+			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.enemy.inventory.weapon.getItem<Weapon>().localName(this.locale)} (${this.enemy.inventory.weapon.items[0].cooldown||0} ${bundle.find(this.locale, "turn")})`+
 					(this.enemy.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.enemy.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed(2)}s`).join('\n')}` : ''), 
 				inline: true 
 			},
@@ -199,8 +196,7 @@ export default class BattleManager extends SelectManager {
 				name: 'Logs', 
 				value: "```diff\n"+this.battleLog.join('```\n```diff\n')+"```"
 			}
-		]);
-		this.builder.rerender();
+		]).rerender();
 	}
 
 	private async battleEnd(user: User) {
@@ -232,8 +228,5 @@ export default class BattleManager extends SelectManager {
 		}
     
 		save();
-		
-		for(let i = 0; i < this.renderQueue.length; i++)
-			await this.renderQueue[i].call(this.builder).catch(e=>e);
 	}
 }

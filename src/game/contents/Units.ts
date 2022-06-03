@@ -15,7 +15,7 @@ export default class Units {
 				health: 20,
 				health_max: 20,
 				health_regen: 1,
-				energy: 0,
+				energy: 200,
 				energy_max: 0,
 				energy_regen: 0
 			},
@@ -34,7 +34,7 @@ export default class Units {
 				health: 5,
 				health_max: 5,
 				health_regen: 0,
-				energy: 0,
+				energy: 100,
 				energy_max: 0,
 				energy_regen: 0
 			},

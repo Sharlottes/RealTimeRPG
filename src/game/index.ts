@@ -60,10 +60,5 @@ export function save() {
 	Database.writeObject('./Database/user_data', saves);
 }
 
-//update
-setInterval(() => {
-	Vars.users.forEach(u => u.update());
-}, 10);
-
 //autosave
 setInterval(save, 1000);

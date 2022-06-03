@@ -73,13 +73,6 @@ export default class User implements EntityI {
     this.statuses.splice(this.statuses.findIndex(entity=>entity.status.id==status.id), 1);
   }
 
-  public update() {
-		if(this.inventory.weapon.items[0]?.cooldown && this.inventory.weapon.items[0].cooldown > 0) this.inventory.weapon.items[0].cooldown -= 1 / 100;
-
-		this.stats.energy = Math.min(this.stats.energy_max, this.stats.energy + this.stats.energy_regen / 100);
-		this.stats.health = Math.min(this.stats.health_max, this.stats.health + this.stats.health_regen / 100);
-  }
-
   public save(): UserSave {
     return {
       id: this.id,

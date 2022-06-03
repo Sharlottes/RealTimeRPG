@@ -122,7 +122,7 @@ namespace CommandManager {
 				user.stats.energy -= 7;
 				getOne(eventData).start(user, interaction);
 			} else {
-				BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.low_energy', user.stats.energy.toFixed(1)));
+				BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.low_energy', user.stats.energy.toFixed(1), 7));
 			}
 		});
 
