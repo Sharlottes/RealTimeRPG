@@ -7,6 +7,7 @@ import { SelectManager, BaseManager } from '@RTTRPG/game/managers';
 import { bundle } from '@RTTRPG/assets';
 import { EntityI } from '@RTTRPG/@type';
 import { BaseEmbed } from '../../modules/BaseEmbed';
+import { app } from '@RTTRPG/index';
 
 interface ActionI {
 	name: string;
@@ -140,7 +141,7 @@ export default class BattleManager extends SelectManager {
 			.setComponents(data.actions).setTriggers(data.triggers);
 
 		await this.actionBuilder.build();
-	  this.updateEmbed(); 
+	  this.updateEmbed();
 	}
 	
 	private doAction(action: ActionI) {
@@ -184,10 +185,10 @@ export default class BattleManager extends SelectManager {
 				inline: true 
 			},
 			{ 
-				name: this.enemy.getUnit().localName(this.locale), 
-				value: 
-				  `**${bundle.find(this.locale, 'health')}**: ${this.enemy.stats.health.toFixed(2)}/${this.enemy.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}`+
-					`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.enemy.stats.energy.toFixed(2)}/${this.enemy.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.energy, this.enemy.stats.energy_max)}`+
+				name: this.enemy.getUnit().localName(this.locale),
+			  value: 
+					`**${bundle.find(this.locale, 'health')}**: ${this.enemy.stats.health.toFixed(2)}/${this.enemy.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}` +
+					`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.enemy.stats.energy.toFixed(2)}/${this.enemy.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.energy, this.enemy.stats.energy_max)}` +
 			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.enemy.inventory.weapon.getItem<Weapon>().localName(this.locale)} (${this.enemy.inventory.weapon.items[0].cooldown||0} ${bundle.find(this.locale, "turn")})`+
 					(this.enemy.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.enemy.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed(2)}s`).join('\n')}` : ''), 
 				inline: true 

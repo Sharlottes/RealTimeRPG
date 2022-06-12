@@ -16,7 +16,7 @@ export default class Units {
 				health_max: 20,
 				health_regen: 1,
 				energy: 200,
-				energy_max: 0,
+				energy_max: 100,
 				energy_regen: 0
 			},
 			ratio: 0.2,
@@ -35,7 +35,7 @@ export default class Units {
 				health_max: 5,
 				health_regen: 0,
 				energy: 100,
-				energy_max: 0,
+				energy_max: 100,
 				energy_regen: 0
 			},
 			ratio: 0.1

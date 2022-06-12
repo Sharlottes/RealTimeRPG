@@ -1,7 +1,5 @@
 # 외부 모듈
 node_modules/
-package.json
-
 # 빌드 파일
 build/
 
