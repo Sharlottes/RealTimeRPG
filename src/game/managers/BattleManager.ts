@@ -153,6 +153,11 @@ export default class BattleManager extends SelectManager {
 	}
 
 	private async turnEnd() {
+		this.turn.statuses.forEach(status=>{
+			status.status.callback(this.turn, status);
+			status.duration--;
+			if(status.duration <= 0) this.turn.statuses.splice(this.turn.statuses.findIndex(s=>s == status), 1);
+		});
 		if(this.turn.inventory.weapon.items[0].cooldown && this.turn.inventory.weapon.items[0].cooldown > 0)
 			this.turn.inventory.weapon.items[0].cooldown -= 1;
 
@@ -164,7 +169,7 @@ export default class BattleManager extends SelectManager {
 	}
 
 	private async enemyTurn() {
-		this.doAction(new AttackAction(this, this.enemy, this.user));
+		if(this.enemy.inventory.weapon.id != 10) this.doAction(new AttackAction(this, this.enemy, this.user));
 		await this.turnEnd();
 		this.turn = this.user;
 	}
@@ -180,8 +185,8 @@ export default class BattleManager extends SelectManager {
 				value: 
 				  `**${bundle.find(this.locale, 'health')}**: ${this.user.stats.health.toFixed(2)}/${this.user.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.health, this.user.stats.health_max)}`+
 			  	`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.user.stats.energy.toFixed(2)}/${this.user.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.energy, this.user.stats.energy_max)}`+
-			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.user.inventory.weapon.getItem<Weapon>().localName(this.locale)} (${this.user.inventory.weapon.items[0].cooldown} ${bundle.find(this.locale, "turn")})`+
-					(this.user.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.user.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed(2)}s`).join('\n')}` : ''),  
+			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.user.inventory.weapon.getItem<Weapon>().localName(this.locale)}(${this.user.inventory.weapon.items[0].cooldown}), ${bundle.find(this.locale, "durability")} ${this.user.inventory.weapon.items[0].durability??"0"}`+
+					(this.user.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.user.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed()} ${bundle.find(this.locale, "turn")}`).join('\n')}` : ''),  
 				inline: true 
 			},
 			{ 
@@ -189,8 +194,8 @@ export default class BattleManager extends SelectManager {
 			  value: 
 					`**${bundle.find(this.locale, 'health')}**: ${this.enemy.stats.health.toFixed(2)}/${this.enemy.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}` +
 					`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.enemy.stats.energy.toFixed(2)}/${this.enemy.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.energy, this.enemy.stats.energy_max)}` +
-			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.enemy.inventory.weapon.getItem<Weapon>().localName(this.locale)} (${this.enemy.inventory.weapon.items[0].cooldown||0} ${bundle.find(this.locale, "turn")})`+
-					(this.enemy.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.enemy.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed(2)}s`).join('\n')}` : ''), 
+			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.enemy.inventory.weapon.getItem<Weapon>().localName(this.locale)}(${this.enemy.inventory.weapon.items[0].cooldown||0}), ${bundle.find(this.locale, "durability")} ${this.enemy.inventory.weapon.items[0].durability??"0"}`+
+					(this.enemy.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.enemy.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed()} ${bundle.find(this.locale, "turn")}`).join('\n')}` : ''), 
 				inline: true 
 			},
 			{

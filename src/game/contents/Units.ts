@@ -22,7 +22,7 @@ export default class Units {
 			ratio: 0.2,
 			inventory:  {
         items: [],
-        weapon: new ItemStack(9)
+        weapon: new ItemStack(10)
 			}
 		}));
 		this.units.push(this.goblin = new Unit({
@@ -38,7 +38,11 @@ export default class Units {
 				energy_max: 100,
 				energy_regen: 0
 			},
-			ratio: 0.1
+			ratio: 0.1,
+			inventory:  {
+        items: [],
+        weapon: new ItemStack(5)
+			}
 		}));
 	}
 

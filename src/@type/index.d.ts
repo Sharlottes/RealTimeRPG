@@ -1,7 +1,7 @@
 import Discord, { CacheType } from 'discord.js';
 
 import { PagesBuilder } from 'discord.js-pages';
-import { ItemStack, User } from '@RTTRPG/game';
+import { StatusEntity, ItemStack, User } from '@RTTRPG/game';
 import { BaseEmbed } from '@RTTRPG/modules';
 import { StatusEffect, Weapon } from '@RTTRPG/game/contents';
 

@@ -7,7 +7,7 @@ export default class StatusEffects {
     this.statuses.push(new StatusEffect('heal', 3, 1, (unit, status)=>{
       unit.stats.health += Math.min(unit.stats.health_max-unit.stats.health, status.power/status.status.duration) * 100 / 1000;
     }));
-    this.statuses.push(new StatusEffect('poison', 5, 2.5, (unit, status)=>{
+    this.statuses.push(new StatusEffect('poison', 2, 2, (unit, status)=>{
       unit.stats.health -= Math.min(unit.stats.health_max-unit.stats.health, status.power/status.status.duration) * 100 / 1000;
     }));
     this.statuses.push(new StatusEffect('mana', 3, 1, (unit, status)=>{

@@ -15,7 +15,10 @@ export default class UnitEntity implements EntityI {
   constructor(unit: Unit) {
     this.id = unit.id;
     this.stats = Object.assign({}, unit.stats);
-    this.inventory = Object.assign({}, unit.inventory);
+    this.inventory = {
+      items: unit.inventory.items.slice(),
+      weapon: new ItemStack(unit.inventory.weapon.id)
+    }
     this.statuses = [];
     this.level = unit.level;
     this.name = (locale: string)=>unit.localName(locale);
