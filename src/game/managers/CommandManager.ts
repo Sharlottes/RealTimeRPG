@@ -62,7 +62,7 @@ namespace CommandManager {
 			interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
 		});
 
-		registerEvent(1335, (user, interaction) => {
+		registerEvent(15, (user, interaction) => {
 			const { builder } = findMessage(interaction.id);
 			new EncounterManager(user, interaction, new UnitEntity(Units.find(Random.int(0,1))), builder).start();
 		});
@@ -82,7 +82,12 @@ namespace CommandManager {
 			if (!stack) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.notFound', Items.find(id).localName(user)));
 			else if (stack.amount <= 0) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', stack.getItem().localName(user)));
 			else if (stack.amount < amount) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.getItem().localName(user), amount));
-			else BaseManager.newTextEmbed(user, interaction, stack.consume(user, amount));
+			else {
+				const potion = Items.find(stack.id) as Potion;
+				stack.remove(amount);
+				potion.consume(user, amount);
+				BaseManager.newTextEmbed(user, interaction, bundle.format(user.locale, 'consume', potion.localName(user), amount, potion.buffes.map((b) => b.description(user, amount, b, user.locale)).join('\n  ')));
+			}
 		});
 
     registerCmd((() => {

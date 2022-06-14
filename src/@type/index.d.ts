@@ -18,7 +18,7 @@ export interface Energy {
 }
 
 export interface Consumable {
-    consume(user: User, amount: number): string
+    consume(user: User, amount: number): void
 }
 
 export interface Durable {

@@ -13,15 +13,6 @@ export default class ItemStack {
 		if(this.getItem() instanceof Weapon) this.stackable = false;
 	}
 
-	public consume(user: User, amount = 1) {
-		const item = Items.find(this.id);
-		if (item && item instanceof Potion) {
-			this.remove(amount);
-			return item.consume(user, amount);
-		}
-		return 'this is not a potion';
-	}
-
 	public add(stack: number|ItemEntity[] = 1) {
 		if(this.stackable) {
 			for(let i = 0, m = typeof stack === 'number' ? stack : stack.length; i < m; i++) {

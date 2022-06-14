@@ -1,5 +1,6 @@
 import { User } from "@RTTRPG/game";
 import { Item, Potion, Weapon, Buff, StatusEffects } from "@RTTRPG/game/contents";
+import { EntityI } from '../../@type/index';
 
 
 export default class Items {
@@ -11,16 +12,10 @@ export default class Items {
 		this.items.push(new Weapon({ name: 'stone', ratio: 0.3, damage: 1.5, cooldown: 0.3, critical_ratio: 1.2, critical_chance: 0.2, durability: 1 }));
 		this.items.push(new Item({ name: 'fragment', ratio: 0.4 }));
 		this.items.push(new Potion({ name: 'energy_bar', ratio: 0.2 }, [
-			new Buff(10, 'energy', (user: User, amount: number, buff: Buff) => {
-				user.stats.energy += amount * buff.value;
-				if(user.stats.energy > user.stats.energy_max) {
-					user.stats.energy = user.stats.energy_max;
-					user.giveItem(this.items[2], amount - Math.floor((user.stats.energy-user.stats.energy_max)/buff.value));
-					
-					return `* ${buff.localName(user)} +${amount * buff.value-(user.stats.energy-user.stats.energy_max)}`;
-				}
-				return `* ${buff.localName(user)} +${amount * buff.value}`;
-			})
+			new Buff(10, 'energy', (owner: EntityI, amount: number, buff: Buff) => {
+				owner.stats.energy += amount * buff.value;
+				;
+			}, (owner: EntityI, amount: number, buff: Buff, locale: string) => `* ${buff.localName(locale)} +${amount * buff.value}`)
 		]));
 
 		this.items.push(new Weapon({ 
@@ -62,35 +57,20 @@ export default class Items {
 
 		//TODO: 문자열 반환은 매우 비직관적
 		this.items.push(new Potion({ name: 'experience_bottle', ratio: 0.1, dropOnWalk: false }, [
-			new Buff(10, 'exp', (user: User, amount: number, buff: Buff) => {
-				user.exp += amount * buff.value;
-				return `* ${buff.localName(user)} +${amount * buff.value}`;
-			})
+			new Buff(10, 'exp', (owner: EntityI, amount: number, buff: Buff) => {
+				owner.exp += amount * buff.value;
+			}, (owner: EntityI, amount: number, buff: Buff, locale: string) => `* ${buff.localName(locale)} +${amount * buff.value}`)
 		])); 
 		this.items.push(new Potion({ name: 'mochi-cookie', ratio: 0.15 }, [
-			new Buff(10, 'health', (user: User, amount: number, buff: Buff) => {
-				user.stats.health += amount * buff.value;
-				if(user.stats.health > user.stats.health_max) {
-					user.stats.health = user.stats.health_max;
-					user.giveItem(this.items[7], amount - Math.floor((user.stats.health-user.stats.health_max)/buff.value));
-					
-					return `* ${buff.localName(user)} +${amount * buff.value-(user.stats.health-user.stats.health_max)}`;
-				}
-				return `* ${buff.localName(user)} +${amount * buff.value}`;
-			})
+			new Buff(10, 'health', (owner: EntityI, amount: number, buff: Buff) => {
+				owner.stats.health += amount * buff.value;
+			}, (owner: EntityI, amount: number, buff: Buff, locale: string) => `* ${buff.localName(locale)} +${amount * buff.value}`)
 		]));
 		this.items.push(new Item({ name: 'cix_bottle', ratio: 0.05 }));
 		this.items.push(new Potion({ name: 'cat_meet', ratio: 0.005 }, [
-			new Buff(4, 'health', (user: User, amount: number, buff: Buff) => {
-				user.stats.health += amount * buff.value;
-				if(user.stats.health > user.stats.health_max) {
-					user.stats.health = user.stats.health_max;
-					user.giveItem(this.items[2], amount - Math.floor((user.stats.health-user.stats.health_max)/buff.value));
-					
-					return `* ${buff.localName(user)} +${amount * buff.value-(user.stats.health-user.stats.health_max)}`;
-				}
-				return `* ${buff.localName(user)} +${amount * buff.value}`;
-			})
+			new Buff(4, 'health', (owner: EntityI, amount: number, buff: Buff) => {
+				owner.stats.health += amount * buff.value;
+			}, (owner: EntityI, amount: number, buff: Buff, locale: string) => `* ${buff.localName(locale)} +${amount * buff.value}`)
 		]));
 
 		this.items.push(this.none = new Weapon({ //ID: 9

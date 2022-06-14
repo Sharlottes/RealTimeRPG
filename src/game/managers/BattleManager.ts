@@ -1,13 +1,13 @@
-import { CommandInteraction, MessageEmbed, MessageSelectOptionData, MessageActionRowComponent } from 'discord.js';
+import { CommandInteraction, MessageEmbed, MessageSelectOptionData } from 'discord.js';
 
 import { ItemStack, UnitEntity, getOne, save, findMessage, User } from '@RTTRPG/game';
-import { Units, Item, Items, Weapon } from '@RTTRPG/game/contents';
+import { Units, Item, Items, Weapon, Potion } from '@RTTRPG/game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from '@RTTRPG/util';
 import { SelectManager, BaseManager } from '@RTTRPG/game/managers';
 import { bundle } from '@RTTRPG/assets';
 import { EntityI } from '@RTTRPG/@type';
 import { BaseEmbed } from '../../modules/BaseEmbed';
-import { app } from '@RTTRPG/index';
+import ItemSelectManager from './ItemSelectManager';
 
 interface ActionI {
 	name: string;
@@ -26,8 +26,6 @@ abstract class BaseAction implements ActionI {
     this.manager = manager;
     this.owner = owner;
     this.cost = cost;
-    
-    this.owner.stats.energy -= cost;
   }
 
 	abstract run(): Promise<void>;
@@ -38,7 +36,7 @@ class AttackAction extends BaseAction {
 	private enemy: EntityI;
 	
 	constructor(manager: BattleManager, owner: EntityI, enemy: EntityI) {
-		super(manager, owner, 20);
+		super(manager, owner, 10);
 		this.name = 'attack';
 		this.enemy = enemy;
 	}
@@ -75,7 +73,7 @@ class SwapAction extends BaseAction {
 	private weapon: Weapon;
 
 	constructor(manager: BattleManager, owner: EntityI, weapon: Weapon) {
-		super(manager, owner, 10);
+		super(manager, owner, 3);
 		this.weapon = weapon;
 	}
 
@@ -88,7 +86,31 @@ class SwapAction extends BaseAction {
 	}
 
 	public description(): string {
-		return `swap weapon: ${this.owner.inventory.weapon.getItem().localName(this.manager.locale)} to ${this.weapon.localName(this.manager.locale)}`;
+		return `swap ${this.owner.inventory.weapon.getItem().localName(this.manager.locale)} to ${this.weapon.localName(this.manager.locale)}`;
+	}
+}
+
+class ConsumeAction extends BaseAction {
+	private potion: Potion;
+	private amount: number;
+
+	constructor(manager: BattleManager, owner: EntityI, potion: Potion, amount: number) {
+		super(manager, owner, 5);
+		this.potion = potion;
+		this.amount = amount;
+	}
+
+	public async run() {
+		const entity = this.owner.inventory.items.find((e) => e.id == this.potion.id);
+		if(!entity) return this.manager.updateEmbed(bundle.format(this.manager.locale, 'missing_item', this.potion.localName(this.manager.locale)));
+		const potion = Items.find(entity.id) as Potion;
+		entity.remove(this.amount);
+		potion.consume(this.owner, this.amount);
+		await this.manager.updateEmbed(bundle.format(this.manager.locale, 'consume', this.potion.localName(this.manager.locale), this.amount, this.potion.buffes.map((b) => b.description(this.owner, this.amount, b, this.manager.locale)).join('\n  ')));
+	}
+
+	public description(): string {
+		return `consume ${this.amount} ${this.potion.localName(this.manager.locale)}`;
 	}
 }
 
@@ -124,13 +146,30 @@ export default class BattleManager extends SelectManager {
 		this.addMenuSelection('swap', 1, (user, row, interactionCallback) => {
 			if (interactionCallback.isSelectMenu()) {
 				const weapon = Items.find<Weapon>(Number(interactionCallback.values[0]));
-				this.doAction(new SwapAction(this, user, weapon));
+				if(this.user.inventory.items.some(stack=>stack.id==weapon.id)) this.doAction(new SwapAction(this, user, weapon));
+				else BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(user.locale, 'error.notFound', Items.find(weapon.id).localName(user)));
 			}
 		},
 		{
 			placeholder: 'swap weapon to ...',
-			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, i)=>i.getItem() instanceof Weapon ? [...a, {
-				label: i.getItem().localName(this.user),
+			options: Items.items.reduce<MessageSelectOptionData[]>((a, i)=>i instanceof Weapon ? [...a, {
+				label: i.localName(this.user),
+				value: i.id.toString()
+			}] : a, [])
+		});
+		this.addMenuSelection('consume', 2, (user, row, interactionCallback) => {
+			if (interactionCallback.isSelectMenu()) {
+			const potion = Items.find<Potion>(Number(interactionCallback.values[0]));
+			if(this.user.inventory.items.some(stack=>stack.id==potion.id)) new ItemSelectManager(this.user, this.interaction, this.user.inventory.items.find(stack=>stack.id==potion.id) as ItemStack, amount => {
+				this.doAction(new ConsumeAction(this, user, potion, amount));
+			});
+			else BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(user.locale, 'error.notFound', Items.find(potion.id).localName(user)));
+			}
+		},
+		{
+			placeholder: 'consume ...',
+			options: Items.items.reduce<MessageSelectOptionData[]>((a, i) => i instanceof Potion ? [...a, {
+				label: i.localName(this.user),
 				value: i.id.toString()
 			}] : a, [])
 		});
@@ -146,13 +185,16 @@ export default class BattleManager extends SelectManager {
 	
 	private doAction(action: ActionI) {
 		this.updateEmbed();
-		if(action instanceof BaseAction && this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost)
-		  return BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost));
+		if(action instanceof BaseAction) {
+			if(this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost) return BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost));
+			else action.owner.stats.energy -= action.cost;
+		}
 		this.actionQueue.push(action);
 		this.actionBuilder.setDescription(this.actionQueue.map<string>(a=>a.description()).join('```\n```\n')).rerender();
 	}
 
 	private async turnEnd() {
+		this.turn.stats.energy = Math.min(this.turn.stats.energy, this.turn.stats.energy+10);
 		this.turn.statuses.forEach(status=>{
 			status.status.callback(this.turn, status);
 			status.duration--;
