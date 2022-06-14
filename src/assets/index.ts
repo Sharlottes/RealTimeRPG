@@ -22,9 +22,8 @@ namespace Assets {
     export namespace bundle {
         export const defaultLocale = 'en-US';
 
-
         export function find(lang = defaultLocale, key: string): string {
-            return String(dictionary.get(dictionary.has(lang) ? lang : 'en')?.get(key));
+            return String((dictionary.get(lang) ?? dictionary.get(defaultLocale))?.get(key) ?? dictionary.get(defaultLocale)?.get(key) ?? key);
         }
         
         export function format(lang = defaultLocale, key: string, ...args: unknown[]) {

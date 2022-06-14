@@ -13,11 +13,13 @@ export class BaseEmbed extends PagesBuilder {
         new MessageButton().setCustomId('remove_embed').setLabel('Cancel').setStyle('SECONDARY')
       ])).addTriggers({ 
         name: 'remove_embed',
-        callback: (inter, componenets) => {
-          setTimeout(()=>(this['message'] as Message).delete().catch(console.log), 100);
-        }
+        callback: ()=>this.remove()
       })
     }
+  }
+  
+  public remove() {
+    setTimeout(()=>(this['message'] as Message).delete().catch(console.log), 100);
   }
 
  

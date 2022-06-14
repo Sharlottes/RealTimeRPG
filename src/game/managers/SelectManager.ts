@@ -22,11 +22,11 @@ export default class SelectManager extends BaseManager {
       this.addButtonSelection('back_select', 0, (user)=> {
         if(!this.last) return;
         this.changeManager(this.last);
-      }, { style: 'SECONDARY', customId: '' });
+      }, { style: 'SECONDARY'});
     }
   }
 
-  public addButtonSelection(name: string, row: number, callback: EventTrigger, option?: InteractionButtonOptions) {
+  public addButtonSelection(name: string, row: number, callback: EventTrigger, option?: Omit<InteractionButtonOptions, 'customId'>) {
     this.resizeSelection(row);
 
     const rowselection = this.selections[row];
@@ -40,7 +40,7 @@ export default class SelectManager extends BaseManager {
     return this;
   }  
   
-  public addMenuSelection(name: string, row: number, callback: EventTrigger, option?: MessageSelectMenuOptions) {
+  public addMenuSelection(name: string, row: number, callback: EventTrigger, option?: Omit<MessageSelectMenuOptions, 'customId'>) {
     this.resizeSelection(row);
 
     const rowselection = this.selections[row];
@@ -80,6 +80,7 @@ export default class SelectManager extends BaseManager {
     const triggers: ITrigger<MessageActionRowComponent>[] = [];
 
     this.selections.forEach((e, i)=>{
+      if(e.length == 0) return;
       const action = new MessageActionRow();
       e.forEach((select, ii) => {
         const id = `${select.name}${i}${ii}`;
@@ -93,7 +94,6 @@ export default class SelectManager extends BaseManager {
           const option = select.options as MessageSelectMenuOptions;
           action.addComponents(new MessageSelectMenu(option).setCustomId(id));
         }
-        
         triggers.push({
           name: id,
           callback: (interactionCallback, currentRow)=> {
