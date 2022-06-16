@@ -42,6 +42,6 @@ export default class EncounterManager extends SelectManager {
 
   public override start() {
     this.builder.setTitle(bundle.find(this.locale, `event.${this.target.getUnit().name}`));
-    super.start();
+    return super.start();
   }
 }

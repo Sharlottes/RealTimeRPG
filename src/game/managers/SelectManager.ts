@@ -58,7 +58,7 @@ export default class SelectManager extends BaseManager {
     const data = this.toActionData();
 
     this.builder.addComponents(data.actions).addTriggers(data.triggers)
-    super.start();
+    return super.start();
   }
 
   private resizeSelection(size: number) {

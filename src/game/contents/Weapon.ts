@@ -1,8 +1,7 @@
 import { Durable, ItemData, EntityI } from "@RTTRPG/@type";
 import { bundle } from "@RTTRPG/assets";
 import Random from "random";
-import { UnitEntity, User } from "@RTTRPG/game";
-import { Item, Units, StatusEffect } from "@RTTRPG/game/contents";
+import { Item, StatusEffect } from "@RTTRPG/game/contents";
 
 export default class Weapon extends Item implements Durable {
 	readonly damage: number;

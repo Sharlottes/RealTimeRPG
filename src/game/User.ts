@@ -1,16 +1,16 @@
 
-import Discord, { MessageAttachment, MessageEmbed, MessageButton, MessageActionRow, MessagePayload, MessageOptions, CommandInteraction } from 'discord.js';
+import Discord, { MessageAttachment, MessageEmbed, MessagePayload, CommandInteraction, MessageActionRow, MessageButton, MessageOptions } from 'discord.js';
 
-import { filledBar } from 'string-progressbar';
 import Canvass from 'canvas';
 
 import { Item, Weapon, StatusEffect } from '@RTTRPG/game/contents';
-import { EntityI, Inventory, Stat, UserSave } from '@RTTRPG/@type';
-import { save, ItemStack, StatusEntity } from "@RTTRPG/game";
-import { BaseEmbed } from '@RTTRPG/modules';
+import { EntityI, Stat, UserSave } from '@RTTRPG/@type';
+import { save, ItemStack, StatusEntity, Inventory, WeaponEntity } from "@RTTRPG/game";
 import { bundle } from '@RTTRPG/assets';
 import { Canvas } from "@RTTRPG/util";
 import { app } from '@RTTRPG/index';
+import { BaseEmbed } from '@RTTRPG/modules';
+import { filledBar } from 'string-progressbar';
 
 const defaultStat: Stat = {
   health: 20,
@@ -26,7 +26,7 @@ const defaultStat: Stat = {
 export default class User implements EntityI {
   public readonly id: string = 'unknown';
   public readonly stats: Stat = defaultStat;
-  public readonly inventory: Inventory = { items: [], weapon: new ItemStack(5) };
+  public readonly inventory: Inventory = new Inventory();
   public name: string = 'Unknown User';
   public user: Discord.User; /*should be non-null*/
   public readonly foundContents = { items: [-1], units: [-1] };
@@ -55,10 +55,7 @@ export default class User implements EntityI {
       this.level = data.level;
       this.exp = data.exp;
       this.stats = data.stats;
-      this.inventory = {
-        items: data.inventory.items.map(stack=>new ItemStack(stack.id, stack.amount, stack.items)),
-        weapon: new ItemStack(data.inventory.weapon.id, data.inventory.weapon.amount, data.inventory.weapon.items)
-      };
+      this.inventory.fromJSON(data.inventory);
       this.foundContents = data.fountContents;
     }
   }
@@ -70,8 +67,7 @@ export default class User implements EntityI {
   }
 
   public removeStatus(status: StatusEffect) {
-    this.statuses.splice(this.statuses.findIndex(entity=>entity.status.id==status.id), 1);
-  }
+   }
 
   public save(): UserSave {
     return {
@@ -80,16 +76,14 @@ export default class User implements EntityI {
       level: this.level,
       exp: this.exp,
       stats: this.stats,
-      inventory: this.inventory,
+      inventory: this.inventory.toJSON(),
       fountContents: this.foundContents 
     }
   }
   
   public giveItem(item: Item, amount = 1) {
-    const exist = this.inventory.items.find((i) => i.id == item.id);
-    if (exist) exist.add(amount);
-    else this.inventory.items.push(new ItemStack(item.id, amount));
-
+    this.inventory.add(item, amount);
+    
     if (!this.foundContents.items.includes(item.id)) {
       this.foundContents.items.push(item.id);
       this.sendDM(bundle.format(this.locale, 'firstget', item.localName(this)));
@@ -103,17 +97,12 @@ export default class User implements EntityI {
     return this.user.dmChannel?.send(options);
   }
   
-  public switchWeapon(weapon: Weapon, targetEntity: ItemStack) {
-    const entity = this.inventory.items.find((entity) => entity.id == weapon.id);
-    const locale = this.locale;
-
-    if (!entity) return bundle.format(locale, 'missing_item', weapon.localName(this));
-
-    targetEntity.remove();
-    if (targetEntity.amount <= 0) this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
-
-    this.giveItem(this.inventory.weapon.getItem());
-    this.inventory.weapon = new ItemStack(weapon.id);
+  public switchWeapon(weapon: Weapon) {
+    const entity = this.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == weapon);
+    if (!entity) return bundle.format(this.locale, 'missing_item', weapon.localName(this));
+    this.inventory.items.push(this.inventory.equipments.weapon);
+    this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
+    this.inventory.equipments.weapon = entity ;
   }
 
   public levelup() {
@@ -123,7 +112,6 @@ export default class User implements EntityI {
       this.user.username,
       this.level,
       this.level + 1,
-      this.stats.health_max,
       Math.round((this.stats.health_max += this.level ** 0.6 * 5) * 100) / 100,
       this.stats.energy_max,
       Math.round((this.stats.energy_max += this.level ** 0.4 * 2.5) * 100) / 100,
@@ -136,16 +124,15 @@ export default class User implements EntityI {
 
   public getInventoryInfo(interaction: CommandInteraction) {
     let embed = new MessageEmbed().setTitle(bundle.find(this.locale, 'inventory'));
-    this.inventory.items.forEach(stack => {
-      if(stack.amount <= 0) return;
-      embed = embed.addField(stack.getItem().localName(this), `${stack.amount} ${bundle.find(this.locale, 'unit.item')}`, true);
+    this.inventory.items.forEach(store => {
+      embed = embed.addField(store.item.localName(this.locale), `${store instanceof ItemStack ? store.amount : 1} ${bundle.find(this.locale, 'unit.item')}`, true);
     });
     return new BaseEmbed(interaction).setPages(embed);
   }
 
   public getUserInfo(interaction: CommandInteraction) {
     const user = interaction.user;
-    const weapon = this.inventory.weapon.getItem<Weapon>();
+    const weapon = this.inventory.equipments.weapon.item;
     const canvas = Canvass.createCanvas(1000, 1000);
     Canvas.donutProgressBar(canvas, {
       progress: {

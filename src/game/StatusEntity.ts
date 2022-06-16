@@ -1,4 +1,5 @@
 import { StatusEffect } from './contents';
+
 export default class StatusEntity { 
 	public status: StatusEffect;
 	public duration: number;

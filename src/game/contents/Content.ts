@@ -1,7 +1,5 @@
 import { bundle } from "@RTTRPG/assets";
-import { User, ItemStack } from "..";
-import Unit from "./Unit";
-
+import { User } from "..";
 
 export default class Content {
 	readonly name: string;

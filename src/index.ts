@@ -31,10 +31,6 @@ const client = app.client;
     assets.init();
     console.log(`asset initialization has been done: ${Date.now()-time}ms`);
 
-    //전역 변수 로딩
-    Vars.init();
-    console.log(`vars initialization has been done: ${Date.now()-time}ms`);
-
     //기본 명령어 로딩
     CM.commands.clear();
     console.log(`command initialization has been done in ${(Date.now() - time)}ms`);
@@ -43,6 +39,10 @@ const client = app.client;
     init();
     console.log(`game initialization has been done in ${(Date.now() - time)}ms`);
     
+    //전역 변수 로딩
+    Vars.init();
+    console.log(`vars initialization has been done: ${Date.now()-time}ms`);
+
     //디스코드 봇 로그인
     await client.login(config.botToken);
     console.log(`discord bot login has been done in ${(Date.now() - time)}ms`);

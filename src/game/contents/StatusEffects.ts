@@ -14,10 +14,8 @@ export default class StatusEffects {
       unit.stats.energy += Math.min(unit.stats.energy_max-unit.stats.energy, status.power/status.status.duration) * 100 / 1000;
     }));
     this.statuses.push(new StatusEffect('weakness', 3, 1, (unit, status)=>{
-      const max = (unit.inventory.weapon.getItem() as Weapon).durability;
-      if(!unit.inventory.weapon.items[0].durability) return unit.removeStatus(status.status);
-
-      unit.inventory.weapon.items[0].durability -= Math.min(max-unit.inventory.weapon.items[0].durability, status.power/status.status.duration) * 100 / 1000;
+      unit.inventory.equipments.weapon.durability -= status.power/status.status.duration * 100 / 1000;
+      if(unit.inventory.equipments.weapon.durability <= 0) return unit.removeStatus(status.status);
     }));
   }
 

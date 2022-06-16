@@ -1,7 +1,7 @@
-import Discord, { CacheType } from 'discord.js';
+import Discord, { CacheType, MessageActionRow, MessageComponentInteraction, MessageActionRowComponent } from 'discord.js';
 
 import { PagesBuilder } from 'discord.js-pages';
-import { StatusEntity, ItemStack, User } from '@RTTRPG/game';
+import { StatusEntity, ItemStack, User, Inventory } from '@RTTRPG/game';
 import { BaseEmbed } from '@RTTRPG/modules';
 import { StatusEffect, Weapon } from '@RTTRPG/game/contents';
 
@@ -40,11 +40,6 @@ export type Stat = {
   defense: number
 } & Heathy & Energy; 
 
-export type Inventory = {
-  items: ItemStack[]
-  weapon: ItemStack
-}
-
 export type Message = {
     interaction: Discord.CommandInteraction<CacheType>,
     builder: BaseEmbed,
@@ -80,13 +75,31 @@ export type UnitData = {
 } & Rationess
 
 export type UserSave = {
-      id: string
-      money: number,
-      level: number,
-      exp: number,
-      stats: Stat,
-      inventory: Inventory,
-      fountContents: {items: number[], units: number[]}
+    id: string
+    money: number,
+    level: number,
+    exp: number,
+    stats: Stat,
+    inventory: InventoryJSONdata,
+    fountContents: {items: number[], units: number[]}
+}
+
+export type InventoryJSONdata = {
+    items: [{
+        type: string,
+        item: number,
+        durability?: number,
+        cooldown?: number,
+        amount?: number
+    }],
+    equipments: {
+        weapon: {
+            type: string,
+            item: number,
+            durability: number,
+            cooldown: number
+        }
+    }
 }
 
 export type EventTrigger = (user: User, components: MessageActionRow[], interactionCallback: MessageComponentInteraction, currentRow: MessageActionRowComponent)=>void;
@@ -108,7 +121,7 @@ export interface EntityI extends StatusI {
     public exp: number;
     public level: number;
     public money: number;
-    public switchWeapon: (weapon: Weapon, targetEntity: ItemStack) => void;
+    public switchWeapon: (weapon: Weapon) => void;
 }
 
 export interface StatusI {

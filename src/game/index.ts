@@ -1,9 +1,9 @@
 export { default as UnitEntity } from "./UnitEntity";
-export { default as ItemEntity } from "./ItemEntity";
 export { default as StatusEntity } from "./StatusEntity";
-export { default as ItemStack } from "./ItemStack";
 export { default as BaseEvent } from "./BaseEvent";
 export { default as User } from "./User";
+export { default as Inventory } from "./Inventory";
+export * from "./Inventory";
 
 import { Snowflake } from 'discord.js';
 

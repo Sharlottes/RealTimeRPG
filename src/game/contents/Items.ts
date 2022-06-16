@@ -1,4 +1,3 @@
-import { User } from "@RTTRPG/game";
 import { Item, Potion, Weapon, Buff, StatusEffects } from "@RTTRPG/game/contents";
 import { EntityI } from '../../@type/index';
 

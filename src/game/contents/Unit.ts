@@ -1,5 +1,5 @@
-import { Rationess, Inventory, Stat, UnitData } from "@RTTRPG/@type";
-import { ItemStack } from "..";
+import { Rationess, Stat, UnitData } from "@RTTRPG/@type";
+import { Inventory } from "..";
 import { Content, Units } from ".";
 
 
@@ -14,10 +14,7 @@ export default class Unit extends Content implements Rationess {
 		super(data.name, 'unit');
 		this.level = data.level;
 		this.ratio = data.ratio;
-		this.inventory = data.inventory || {
-        items: [],
-        weapon: new ItemStack(5)
-    };
+		this.inventory = data.inventory || new Inventory();
 		this.stats = data.stats;
 		this.id = Units.units.length;
 	}

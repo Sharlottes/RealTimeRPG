@@ -1,7 +1,7 @@
 
 import Discord, { MessageButton, MessageActionRow, CommandInteraction } from 'discord.js';
 
-import { findMessage, save, UnitEntity, User } from '@RTTRPG/game';
+import { findMessage, ItemStack, save, UnitEntity, User } from '@RTTRPG/game';
 import { SelectManager } from '@RTTRPG/game/managers';
 import { Units } from '@RTTRPG/game/contents';
 import { bundle } from '@RTTRPG/assets';
@@ -37,7 +37,6 @@ export default class BuyManager extends SelectManager {
 			disabled: true
 		});
 
-
     const owner = this.user;
     const visitor = this.target;
     
@@ -45,17 +44,17 @@ export default class BuyManager extends SelectManager {
     Arrays.division(Array.from(owner.inventory.items), 4).forEach((items, ii) => {
       const components: MessageButton[] = [];
       items.forEach((entity, i) => {
-        const item = entity.getItem();
-        const localName = item.localName(this.user);
-        const money = (100-item.ratio) * 25;
-
+        const localName = entity.item.localName(this.user);
+        const money = (100 - entity.item.ratio) * 25;
+        const max = entity instanceof ItemStack ? entity.amount : 1;
+        
         triggers.push({
           name: `${localName}${i}${ii}`,
           callback: (interactionCallback, button) => {
             this.waitingSelect(true);
             this.amountSelect = (amount: number) => {
-              if (amount > entity.amount) { 
-                this.builder.addDescription('- '+bundle.format(this.locale, 'shop.notEnough_item', localName, amount, entity.amount), 'diff'); 
+              if (amount > max) { 
+                this.builder.addDescription('- '+bundle.format(this.locale, 'shop.notEnough_item', localName, amount, max), 'diff'); 
               } 
               else if (visitor.money < amount * money) { 
                 this.builder.addDescription('- '+bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'); 
@@ -63,22 +62,21 @@ export default class BuyManager extends SelectManager {
               else {
                 owner.money += money * amount;
                 visitor.money -= money * amount;
-                visitor.giveItem(item, amount);
-                entity.remove(amount);
-                if (entity.amount <= 0)	owner.inventory.items.splice(owner.inventory.items.indexOf(entity), 1);
+                visitor.giveItem(entity.item, amount);
+                owner.inventory.remove(entity.item, amount);
                 
-                (button as Discord.MessageButton).setLabel(`${localName} (${entity.amount + bundle.format(this.locale, 'unit.item')}): ${money + bundle.format(this.locale, 'unit.money')}`).setStyle('PRIMARY');
+                (button as Discord.MessageButton).setLabel(`${localName} (${max + bundle.format(this.locale, 'unit.item')}): ${money + bundle.format(this.locale, 'unit.money')}`).setStyle('PRIMARY');
                 this.builder.addDescription('+ '+bundle.format(this.locale, 'shop.sold', localName, amount, this.user.money, (this.user.money + money * amount)), 'diff');
               }
             }
           }
         })
-        components.push(new MessageButton().setCustomId(`${localName}${i}${ii}`).setLabel(`${localName} (${entity.amount + bundle.format(this.locale, 'unit.item')}): ${money + bundle.format(this.locale, 'unit.money')}`).setStyle('PRIMARY'));
+        components.push(new MessageButton().setCustomId(`${localName}${i}${ii}`).setLabel(`${localName} (${max + bundle.format(this.locale, 'unit.item')}): ${money + bundle.format(this.locale, 'unit.money')}`).setStyle('PRIMARY'));
       })
       buttons.push(new MessageActionRow().setComponents(components));
     })
     this.builder.setComponents(buttons).setTriggers(triggers).setFields([
-      {	name: this.user.user?.username||'you', value: this.user.money+bundle.find(this.locale, 'unit.money'), inline: true },
+      {	name: this.user.user.username, value: this.user.money+bundle.find(this.locale, 'unit.money'), inline: true },
       {	name: Units.find(this.target.id).localName(this.user), value: 
         this.target.money+bundle.find(this.locale, 'unit.money'), inline: true }
     ]);

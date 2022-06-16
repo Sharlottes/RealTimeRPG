@@ -62,7 +62,7 @@ namespace CommandManager {
 			interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
 		});
 
-		registerEvent(15, (user, interaction) => {
+		registerEvent(1225, (user, interaction) => {
 			const { builder } = findMessage(interaction.id);
 			new EncounterManager(user, interaction, new UnitEntity(Units.find(Random.int(0,1))), builder).start();
 		});
@@ -78,13 +78,12 @@ namespace CommandManager {
     })(), (user, interaction) => {
 			const id = interaction.options.getInteger('target', true);
 			const amount = interaction.options.getInteger('amount', false)||1;
-			const stack: ItemStack | undefined = user.inventory.items.find((i) => i.id == id);
-			if (!stack) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.notFound', Items.find(id).localName(user)));
-			else if (stack.amount <= 0) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', stack.getItem().localName(user)));
-			else if (stack.amount < amount) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.getItem().localName(user), amount));
+			const stack = user.inventory.items.find((i) => i.item.id == id);
+			if (!stack) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', Items.find(id).localName(user)));
+			else if (stack instanceof ItemStack ? stack.amount : user.inventory.items.filter(store=>store.item.id==id).length < amount) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.item.localName(user), amount));
 			else {
-				const potion = Items.find(stack.id) as Potion;
-				stack.remove(amount);
+				const potion = stack.item as Potion;
+				user.inventory.remove(potion, amount);
 				potion.consume(user, amount);
 				BaseManager.newTextEmbed(user, interaction, bundle.format(user.locale, 'consume', potion.localName(user), amount, potion.buffes.map((b) => b.description(user, amount, b, user.locale)).join('\n  ')));
 			}

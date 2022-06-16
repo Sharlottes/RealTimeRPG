@@ -1,11 +1,11 @@
 import { Item, Unit, Units, StatusEffect, Weapon } from "@RTTRPG/game/contents";
-import { EntityI, Inventory, Stat } from '@RTTRPG/@type';
-import { ItemStack, StatusEntity } from "@RTTRPG/game";
+import { EntityI, Stat } from '@RTTRPG/@type';
+import { Inventory, StatusEntity, WeaponEntity } from "@RTTRPG/game";
 
 export default class UnitEntity implements EntityI {
   public readonly id: number;
   public readonly stats: Stat;
-  public readonly inventory: Inventory;
+  public readonly inventory = new Inventory();
   public statuses: StatusEntity[] = [];
   public exp = 0;
   public level: number;
@@ -15,10 +15,8 @@ export default class UnitEntity implements EntityI {
   constructor(unit: Unit) {
     this.id = unit.id;
     this.stats = Object.assign({}, unit.stats);
-    this.inventory = {
-      items: unit.inventory.items.slice(),
-      weapon: new ItemStack(unit.inventory.weapon.id)
-    }
+    unit.inventory.items.forEach(store => this.inventory.items.push(store));
+    this.inventory.equipments.weapon = unit.inventory.equipments.weapon;
     this.statuses = [];
     this.level = unit.level;
     this.name = (locale: string)=>unit.localName(locale);
@@ -32,7 +30,7 @@ export default class UnitEntity implements EntityI {
   }
 
   public removeStatus(status: StatusEffect) {
-    this.statuses.splice(this.statuses.findIndex(entity=>entity.status.id==status.id), 1);
+    this.statuses.splice(this.statuses.findIndex(entity => entity.status.id == status.id), 1);
   }
 
   public update() {
@@ -46,22 +44,18 @@ export default class UnitEntity implements EntityI {
   }
 
   public giveItem(item: Item, amount = 1) { 
-    const stack = this.inventory.items.find((i) => i.id == item.id);
-    if (stack) {
-      stack.add(amount);
-    } else this.inventory.items.push(new ItemStack(item.id, amount));
+    this.inventory.add(item, amount);
   }
 
 	public getUnit<T extends Unit>(): T {
 		return Units.find<T>(this.id);
 	}
 
-  public switchWeapon(weapon: Weapon, targetEntity: ItemStack) {
-    targetEntity.remove();
-    if (targetEntity.amount <= 0) this.inventory.items.splice(this.inventory.items.indexOf(targetEntity), 1);
-
-    this.giveItem(this.inventory.weapon.getItem());
-    this.inventory.weapon = new ItemStack(weapon.id);
+  public switchWeapon(weapon: Weapon) {
+    const entity = this.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == weapon);
+    if (!entity) return;
+    this.inventory.items.push(this.inventory.equipments.weapon);
+    this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
+    this.inventory.equipments.weapon = entity ;
   }
-
 }

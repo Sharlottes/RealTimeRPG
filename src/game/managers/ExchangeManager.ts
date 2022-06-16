@@ -25,9 +25,9 @@ export default class ExchangeManager extends SelectManager {
 		//고블린 인벤토리 생성
 		for (let i = 0; i < 20; i++) {
 			const item = getOne(Items.items.filter((i) => i.dropOnShop && i.id !== 5 && (typeof i)));
-			const exist = this.target.inventory.items.find((e) => e.id == item.id);
-			if (exist) exist.add();
-			else this.target.inventory.items.push(new ItemStack(item.id));
+			const exist = this.target.inventory.items.find<ItemStack>((store): store is ItemStack => store instanceof ItemStack && store.item == item);
+			if (exist) exist.amount++;
+			else this.target.inventory.items.push(new ItemStack(item));
 		}
 
 		if(this.builder) {
