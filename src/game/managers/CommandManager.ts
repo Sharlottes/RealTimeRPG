@@ -122,12 +122,15 @@ namespace CommandManager {
 		});
 
     registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), (user, interaction) => {
+			getOne(eventData).start(user, interaction);
+			/*
 			if (user.stats.energy >= 7) {
 				user.stats.energy -= 7;
 				getOne(eventData).start(user, interaction);
 			} else {
 				BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.low_energy', user.stats.energy.toFixed(1), 7));
 			}
+			*/
 		});
 
     registerCmd(new SlashCommandBuilder().setName('intro').setDescription('introduce bot info(WIP)'), (user, interaction) => {

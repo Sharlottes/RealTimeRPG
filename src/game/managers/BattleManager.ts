@@ -45,15 +45,21 @@ class AttackAction extends BaseAction {
 		if(this.owner.stats.health <= 0 || this.enemy.stats.health <= 0) return;
 		const entity = this.owner.inventory.equipments.weapon;
     	
+		await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+entity.item.attack(this.owner, this.enemy, this.manager.locale));
+	
 		if(entity.item != Items.punch && entity.item != Items.none) {
 			if(entity.durability > 0) entity.durability--;
 			if(entity.durability <= 0) {
 				await this.manager.updateEmbed(bundle.format(this.manager.locale, 'battle.broken', entity.item.localName(this.manager.locale)));
-				this.owner.inventory.equipments.weapon = new WeaponEntity(Items.punch);
+				const exist = this.owner.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == this.owner.inventory.equipments.weapon.item);
+				if(exist) {
+					this.owner.inventory.items.splice(this.owner.inventory.items.indexOf(exist), 1);
+					this.owner.inventory.equipments.weapon = exist;
+					await this.manager.updateEmbed(bundle.find(this.manager.locale, "battle.auto_swap"));
+				} 
+				else this.owner.inventory.equipments.weapon = new WeaponEntity(Items.punch);
 			}
 		}
-
-		await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+entity.item.attack(this.owner, this.enemy, this.manager.locale));
 	}
 
 	public description(): string {
@@ -159,77 +165,90 @@ export default class BattleManager extends SelectManager {
 
 			await this.updateEmbed();
 		});
-		let index = 0;
-		this.addMenuSelection('swap', 1, async (user, row, interactionCallback) => {
+		this.addMenuSelection('swap', 1, async (user, row, interactionCallback, component) => {
 			if (interactionCallback.isSelectMenu()) {
-				const id = Number(interactionCallback.values[0].split('.')[0]);
-				if(id === -1) {
-					if(this.swapPage == 0) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.first_page"));
-					else {
-						this.swapPage--;
-						this.updateSelectMenu();
+				const id = interactionCallback.values[0];
+				switch(id) {
+				  case '-1': {
+	  				if(this.swapPage == 0) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.first_page"));
+	  				else this.swapPage--;
+		  			break;
+	  			}
+				  case '-2': {
+	  				if(this.swapPage+1 > Math.floor(this.user.inventory.items.length/8)) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.last_page"));
+  					else this.swapPage++;
+	  				break;
+	  			}
+				  default: {
+						const entity = this.user.inventory.items[Number(id)];
+						await this.doAction(new SwapAction(this, user, entity.item as Weapon));
+	  			}
+				}
+				
+				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
+					if(store.item instanceof Weapon) {
+						if(index < this.swapPage*8 || index > (this.swapPage + 1) * 8) return a;
+						else return [...a, {
+							label: store.item.localName(this.locale),
+							value: index.toString()
+						}]
 					}
-				}
-				else if(id === -2) {
-					if(this.swapPage+1 > Math.round(this.user.inventory.items.filter(store=>store.item instanceof Weapon).length/8)) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.last_page"));
-					else {
-						this.swapPage++;
-						this.updateSelectMenu();
-					}
-				}
-				else {
-					const weapon = Items.find<Weapon>(id);
-					if(this.user.inventory.items.some(entity => entity.item.id == id)) await this.doAction(new SwapAction(this, user, weapon));
-					else BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(user.locale, 'error.notFound', Items.find(id).localName(user)));
-				}
+					else return a;
+				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 			}
 		},
 		{
 			placeholder: 'swap weapon to ...',
-			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store)=>{
+			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
 				if(store.item instanceof Weapon) {
-					index++;
-					if(index < this.swapPage*8 || index > (this.swapPage+1)*8) return a;
+					if(index < this.swapPage*8 || index > (this.swapPage + 1) * 8) return a;
 					else return [...a, {
 						label: store.item.localName(this.locale),
-						value: store.item.id.toString()+'.'+index
+						value: index.toString()
 					}]
 				 }
 				else return a;
 			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'})
 		});
-		index = 0;
-		this.addMenuSelection('consume', 2, (user, row, interactionCallback) => {
+		this.addMenuSelection('consume', 2, (user, row, interactionCallback, component) => {
 			if (interactionCallback.isSelectMenu()) {
-				const id = Number(interactionCallback.values[0].split('.')[0]);
-				if(id === -1) {
-					if(this.consumePage == 0) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.first_page"));
-					else {
-						this.consumePage--;
-						this.updateSelectMenu();
-					}
-				}
-				else if(id === -2) {
-					if(this.consumePage+1 > Math.round(this.user.inventory.items.filter(store=>store.item instanceof Potion).length/8)) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.last_page"));
-					else {
-						this.consumePage++;
-						this.updateSelectMenu();
-					}
-				}
-				else {
-					const potion = Items.find<Potion>(id);
-					if(this.user.inventory.items.some(stack=>stack.item.id==id)) new ItemSelectManager(this.user, this.interaction, potion, async amount => {
+				const id = interactionCallback.values[0];
+				switch(id) {
+				  case '-1': {
+	  				if(this.consumePage == 0) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.first_page"));
+	  				else this.consumePage--;
+		  			break;
+	  			}
+				  case '-2': {
+	  				if(this.consumePage+1 > Math.floor(this.user.inventory.items.length/8)) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.last_page"));
+  					else this.consumePage++;
+	  				break;
+	  			}
+				  default: {
+					const entity = this.user.inventory.items[Number(id)];
+					const potion = entity.item as Potion;
+					new ItemSelectManager(this.user, this.interaction, potion, async amount => {
 						await this.doAction(new ConsumeAction(this, user, potion, amount));
 					});
-					else BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(user.locale, 'error.notFound', Items.find(id).localName(user)));
+	  			}
 				}
+
+				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
+					if(store.item instanceof Weapon) {
+						if(index < this.swapPage*8 || index > (this.swapPage + 1) * 8) return a;
+						else return [...a, {
+							label: store.item.localName(this.locale),
+							value: index.toString()
+						}]
+					}
+					else return a;
+				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 			}
 		},
 		{
 			placeholder: 'consume ...',
-			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store)=>{
+			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
 				if(store.item instanceof Potion) {
-					index++;
 					if(index < (this.consumePage-1)*8 || index > this.consumePage*8) return a;
 					else return [...a, {
 						label: store.item.localName(this.locale),
@@ -246,42 +265,6 @@ export default class BattleManager extends SelectManager {
 			.setComponents(data.actions).setTriggers(data.triggers);
 		await this.actionBuilder.build();
 	  await this.updateEmbed();
-	}
-	
-	private updateSelectMenu() {
-		const rows = this.builder.getComponents();
-		if(!rows) return;
-		const swapSelection = rows[1].components[0];
-		if(swapSelection instanceof MessageSelectMenu) {
-			let index = 0;
-			swapSelection.setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store)=>{
-				if(store.item instanceof Weapon) {
-					index++;
-					if(index < this.swapPage*8 || index > (this.swapPage+1)*8) return a;
-					else return [...a, {
-						label: store.item.localName(this.locale),
-						value: store.item.id.toString()
-					}]
-				 }
-				else return a;
-			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
-		}
-		const consumeSelection = rows[2].components[0];
-		if(consumeSelection instanceof MessageSelectMenu) {
-			let index = 0;
-			consumeSelection.setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store)=>{
-				if(store.item instanceof Potion) {
-					index++;
-					if(index < (this.consumePage-1)*8 || index > this.consumePage*8) return a;
-					else return [...a, {
-						label: store.item.localName(this.locale),
-						value: store.item.id.toString()
-					}]
-				 }
-				else return a;
-			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
-		}
-		this.builder.updateComponents([swapSelection, consumeSelection]);
 	}
 
 	private async doAction(action: ActionI) {
@@ -332,7 +315,7 @@ export default class BattleManager extends SelectManager {
 	}
 
 	private async enemyTurn() {
-		if(this.enemy.inventory.equipments.weapon.item.id != 10) await this.doAction(new AttackAction(this, this.enemy, this.user));
+		if(this.enemy.inventory.equipments.weapon.item != Items.none) await this.doAction(new AttackAction(this, this.enemy, this.user));
 		if(await this.turnEnd()) return true;
 
 		this.turn = this.user;
