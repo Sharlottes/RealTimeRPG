@@ -218,7 +218,7 @@ export default class BattleManager extends SelectManager {
 				}
 				else {
 					const potion = Items.find<Potion>(id);
-					if(this.user.inventory.items.some(stack=>stack.item.id==id)) new ItemSelectManager(this.user, this.interaction, this.user.inventory.items.find(stack=>stack.item.id==potion.id) as ItemStack, async amount => {
+					if(this.user.inventory.items.some(stack=>stack.item.id==id)) new ItemSelectManager(this.user, this.interaction, potion, async amount => {
 						await this.doAction(new ConsumeAction(this, user, potion, amount));
 					});
 					else BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(user.locale, 'error.notFound', Items.find(id).localName(user)));
@@ -399,7 +399,8 @@ export default class BattleManager extends SelectManager {
 		else if(user.stats.health <= 0) {
 			await this.updateEmbed('- '+bundle.format(this.locale, 'battle.lose', user.stats.health.toFixed(2)));
 		}
-    
+		this.builder.addRemoveButton();
+    this.builder.rerender();
 		save();
 	}
 }

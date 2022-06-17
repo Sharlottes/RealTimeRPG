@@ -62,7 +62,7 @@ namespace CommandManager {
 			interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
 		});
 
-		registerEvent(1225, (user, interaction) => {
+		registerEvent(15, (user, interaction) => {
 			const { builder } = findMessage(interaction.id);
 			new EncounterManager(user, interaction, new UnitEntity(Units.find(Random.int(0,1))), builder).start();
 		});
@@ -77,10 +77,10 @@ namespace CommandManager {
 			return s;
     })(), (user, interaction) => {
 			const id = interaction.options.getInteger('target', true);
-			const amount = interaction.options.getInteger('amount', false)||1;
+			const amount = interaction.options.getInteger('amount', false)??1;
 			const stack = user.inventory.items.find((i) => i.item.id == id);
 			if (!stack) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', Items.find(id).localName(user)));
-			else if (stack instanceof ItemStack ? stack.amount : user.inventory.items.filter(store=>store.item.id==id).length < amount) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.item.localName(user), amount));
+			else if ((stack instanceof ItemStack ? stack.amount : 1) < amount) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.item.localName(user), amount));
 			else {
 				const potion = stack.item as Potion;
 				user.inventory.remove(potion, amount);

@@ -19,7 +19,7 @@ export default class Units {
 				energy_max: 100,
 				energy_regen: 0
 			},
-			ratio: 0.2,
+			ratio: 0.05,
 			inventory: new Inventory().setWeapon(new WeaponEntity(Items.find<Weapon>(10)))
 		}));
 		this.units.push(this.goblin = new Unit({
@@ -35,7 +35,7 @@ export default class Units {
 				energy_max: 100,
 				energy_regen: 0
 			},
-			ratio: 0.1,
+			ratio: 0.2,
 			inventory: new Inventory()
 		}));
 	}

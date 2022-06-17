@@ -8,14 +8,16 @@ export class BaseEmbed extends PagesBuilder {
     //remove useless buttons
     this.setPages(new MessageEmbed());
     this.setDefaultButtons([]);
-    if(removeable) {
-      this.addComponents(new MessageActionRow().addComponents([
-        new MessageButton().setCustomId('remove_embed').setLabel('Cancel').setStyle('SECONDARY')
-      ])).addTriggers({ 
-        name: 'remove_embed',
-        callback: ()=>this.remove()
-      })
-    }
+    if(removeable) this.addRemoveButton();
+  }
+
+  public addRemoveButton() {
+    this.addComponents(new MessageActionRow().addComponents([
+      new MessageButton().setCustomId('remove_embed').setLabel('Cancel').setStyle('SECONDARY')
+    ])).addTriggers({ 
+      name: 'remove_embed',
+      callback: ()=>this.remove()
+    });
   }
   
   public remove() {
