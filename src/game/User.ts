@@ -52,7 +52,7 @@ export default class User implements EntityI {
       this.user = app.client.users.cache.find(u=>u.id === data.id) as Discord.User;
       this.name = this.user?.username;
       this.id = data.id;
-      this.money = data.money;
+      this.money = Math.round(data.money);
       this.level = data.level;
       this.exp = data.exp;
       this.stats = data.stats;
@@ -73,7 +73,7 @@ export default class User implements EntityI {
   public save(): UserSave {
     return {
       id: this.id,
-      money: this.money,
+      money: Math.round(this.money),
       level: this.level,
       exp: this.exp,
       stats: this.stats,

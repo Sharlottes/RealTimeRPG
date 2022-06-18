@@ -63,10 +63,12 @@ export default class ExchangeManager extends SelectManager {
 				(component as MessageSelectMenu).setOptions(this.target.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index) => {
 					if(index < this.buyPage * 8 || index > (this.buyPage + 1) * 8) return a;
 					else return [...a, {
-						label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}`,
+						label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
 						value: index.toString()
 					}]
 				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+				await this.updateEmbed();
+				await this.builder.updateComponents(component).rerender();
 			}
 		},
 		{
@@ -74,7 +76,7 @@ export default class ExchangeManager extends SelectManager {
 			options: this.target.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
 				if(index < this.buyPage * 8 || index > (this.buyPage + 1) * 8) return a;
 				else return [...a, {
-					label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}`,
+					label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
 					value: index.toString()
 				}]
 			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'})
@@ -107,10 +109,12 @@ export default class ExchangeManager extends SelectManager {
 				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
 					if(index < this.sellPage * 8 || index > (this.sellPage + 1) * 8) return a;
 					else return [...a, {
-						label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}`,
+						label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
 						value: index.toString()
 					}]
 				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+				await this.updateEmbed();
+				await this.builder.updateComponents(component).rerender();
 			}
 		},
 		{
@@ -118,7 +122,7 @@ export default class ExchangeManager extends SelectManager {
 			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
 				if(index < this.sellPage * 8 || index > (this.sellPage + 1) * 8) return a;
 				else return [...a, {
-					label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}`,
+					label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
 					value: index.toString()
 				}]
 			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'})
@@ -134,14 +138,20 @@ export default class ExchangeManager extends SelectManager {
 
 
 	private calPrice(item: Item) {
-		return (100 - item.ratio) * 3;
+		return Math.round((100 - item.ratio) * 3);
+	}
+	
+	private async updateEmbed() {
+		await this.builder.setFields([
+			{	name: this.user.user.username, value: this.user.money + bundle.find(this.locale, 'unit.money'), inline: true },
+			{	name: Units.find(this.target.id).localName(this.locale), value: this.target.money + bundle.find(this.locale, 'unit.money'), inline: true }
+		]).rerender();
 	}
 
 	private async deal<T extends ItemStorable>(owner: EntityI, visitor: EntityI, store: T, amount: number) {
 		const max = store instanceof ItemStack ? store.amount : 1;
 		const item = store.item;
 		const money = this.calPrice(item);
-		console.log(max);
     
 		if (amount > max) { 
 			this.builder.addDescription('- '+bundle.format(this.locale, 'shop.notEnough_item', item.localName(this.locale), amount, max), 'diff'); 
@@ -156,9 +166,8 @@ export default class ExchangeManager extends SelectManager {
 			visitor.inventory.add(item, amount);
 			owner.money += money * amount;
 			owner.inventory.remove(item, amount);
-			
 		}
-		
-		await this.builder.rerender();
+
+		await this.updateEmbed();
 	}
 }

@@ -220,9 +220,13 @@ export default class BattleManager extends SelectManager {
 			}
 			else {
 				weapon.cooldown = this.user.inventory.equipments.weapon.item.cooldown;
-				await this.doAction(new AttackAction(this, this.user, this.enemy));
+				await this.addAction(new AttackAction(this, this.user, this.enemy));
 			}
 		}, {style: 'PRIMARY', disabled: this.user.inventory.equipments.weapon.cooldown > 0});
+
+		this.addButtonSelection('evasion', 0, async () => {
+			this.addAction(new EvaseAction(this, this.user))
+		});
 		this.addButtonSelection('turn', 0, async () => {
 			this.actionBuilder.getComponents()[0].components[0].setDisabled(true);
 
@@ -237,9 +241,6 @@ export default class BattleManager extends SelectManager {
 			}
 
 			await this.updateEmbed();
-		});
-		this.addButtonSelection('evasion', 0, async () => {
-			this.doAction(new EvaseAction(this, this.user))
 		});
 		this.addMenuSelection('swap', 1, async (user, row, interactionCallback, component) => {
 			if (interactionCallback.isSelectMenu()) {
@@ -306,9 +307,9 @@ export default class BattleManager extends SelectManager {
 						const entity = this.user.inventory.items[Number(id)];
 						const potion = entity.item as Potion;
 						if(entity instanceof ItemStack && entity.amount > 1) new ItemSelectManager(this.user, this.interaction, potion, async amount => {
-							await this.doAction(new ConsumeAction(this, user, potion, amount));
+							await this.addAction(new ConsumeAction(this, user, potion, amount));
 						});
-						else await this.doAction(new ReloadAction(this, user, entity.item, 1));
+						else await this.addAction(new ReloadAction(this, user, entity.item, 1));
 	  			}
 				}
 
@@ -356,9 +357,9 @@ export default class BattleManager extends SelectManager {
 				  default: {
 						const entity = this.user.inventory.items[Number(id)];
 						if(entity instanceof ItemStack && entity.amount > 1) new ItemSelectManager(this.user, this.interaction, entity.item, async amount => {
-							await this.doAction(new ReloadAction(this, user, entity.item, amount));
+							await this.addAction(new ReloadAction(this, user, entity.item, amount));
 						});
-						else await this.doAction(new ReloadAction(this, user, entity.item, 1));
+						else await this.addAction(new ReloadAction(this, user, entity.item, 1));
 	  			}
 				}
 
@@ -409,7 +410,7 @@ export default class BattleManager extends SelectManager {
 		await this.builder.updateComponents([button, reload]).rerender();
 	}
 
-	private async doAction(action: ActionI) {
+	private async addAction(action: ActionI) {
 		if(action instanceof BaseAction) {
 			if(this.isEvasion(action.owner)) {
 				BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, 'error.evasion'));
@@ -457,7 +458,7 @@ export default class BattleManager extends SelectManager {
 	}
 
 	private async enemyTurn() {
-		if(this.enemy.inventory.equipments.weapon.item != Items.none) await this.doAction(new AttackAction(this, this.enemy, this.user));
+		if(this.enemy.inventory.equipments.weapon.item != Items.none) await this.addAction(new AttackAction(this, this.enemy, this.user));
 		if(await this.turnEnd()) return true;
 
 		this.turn = this.user;
