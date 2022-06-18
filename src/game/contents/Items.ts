@@ -56,7 +56,6 @@ export default class Items {
 			dropOnShop: false
 		}));
 
-		//TODO: 문자열 반환은 매우 비직관적
 		this.items.push(new Potion({ name: 'experience_bottle', ratio: 0.1, dropOnWalk: false }, [
 			new Buff(10, 'exp', (owner: EntityI, amount: number, buff: Buff) => {
 				owner.exp += amount * buff.value;

@@ -1,6 +1,6 @@
 import { CommandInteraction, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu, MessageSelectOptionData } from 'discord.js';
 
-import {  UnitEntity, getOne, save, findMessage, User, WeaponEntity, SlotWeaponEntity, ItemStack } from '@RTTRPG/game';
+import { UnitEntity, getOne, save, findMessage, User, WeaponEntity, SlotWeaponEntity, ItemStack } from '@RTTRPG/game';
 import { Units, Item, Items, Weapon, Potion } from '@RTTRPG/game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from '@RTTRPG/util';
 import { SelectManager, BaseManager } from '@RTTRPG/game/managers';
@@ -10,6 +10,12 @@ import { BaseEmbed } from '../../modules/BaseEmbed';
 import ItemSelectManager from './ItemSelectManager';
 import AmmoItemTag from '../contents/tags/AmmoItemTag';
 import { codeBlock } from '@discordjs/builders';
+import Random from 'random';
+
+enum Status {
+	DEFAULT,
+	EVASION
+}
 
 interface ActionI {
 	name: string;
@@ -50,8 +56,14 @@ class AttackAction extends BaseAction {
 	public async run() {
 		if(this.owner.stats.health <= 0 || this.enemy.stats.health <= 0) return;
 		const entity = this.owner.inventory.equipments.weapon;
-
-		await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+entity.item.attack(this.enemy, entity, this.manager.locale));
+		if(this.manager.isEvasion(this.enemy)) { 
+			if(Random.bool()) await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'- ':'+ ')+bundle.format(this.manager.locale, "evasion_successed", typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale)));
+			else {
+				await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+bundle.format(this.manager.locale, "evasion_failed", typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale)));
+		 		await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+entity.item.attack(this.enemy, entity, this.manager.locale));
+			}
+		}
+		else await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+entity.item.attack(this.enemy, entity, this.manager.locale));
 	
 		if(entity.item != Items.punch && entity.item != Items.none) {
 			if(entity.durability > 0) entity.durability--;
@@ -149,6 +161,24 @@ class ReloadAction extends BaseAction {
 	}
 }
 
+class EvaseAction extends BaseAction {
+	constructor(manager: BattleManager, owner: EntityI, immediate = false) {
+		super(manager, owner, 1);
+		
+		if(immediate) this.run();
+	}
+
+	public async run() {
+			this.manager.status.set(this.owner, Status.EVASION);
+
+			await this.manager.updateEmbed(bundle.format(this.manager.locale, 'evasion_position', typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)));
+	}
+	
+	public description(): string {
+		return bundle.find(this.manager.locale, 'action.evase.description');
+	}
+}
+
 export default class BattleManager extends SelectManager {
 	private enemy: UnitEntity;
 	private battleLog: string[] = [];
@@ -156,7 +186,7 @@ export default class BattleManager extends SelectManager {
 	private actionBuilder: BaseEmbed;
 	private turn: EntityI = this.user; //normally, user first
 	private totalTurn = 1;
-
+	public status: Map<EntityI, Status>;
 
 	//ETC VIOLATION
 	//TODO: make selection page widget
@@ -167,6 +197,7 @@ export default class BattleManager extends SelectManager {
   public constructor(user: User, interaction: CommandInteraction, enemy: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
     super(user, interaction, builder, last);
 		this.enemy = enemy;
+		this.status = new Map<EntityI, Status>().set(this.user, Status.DEFAULT).set(this.enemy, Status.DEFAULT);
 		this.actionBuilder = new BaseEmbed(interaction, false).setPages(new MessageEmbed().setTitle('Action Queue'))
 			.addComponents([new MessageActionRow().addComponents([new MessageButton().setCustomId('remove').setLabel(bundle.find(this.locale, 'select.undo')).setStyle('DANGER').setDisabled(true)])])
 			.addTriggers([{name: 'remove', callback: (componentInteraction, components)=>{
@@ -177,18 +208,22 @@ export default class BattleManager extends SelectManager {
 		if(new.target === BattleManager) this.init();
 	}
 
+	public isEvasion(entity: EntityI) {
+	 	return this.status.get(entity) === Status.EVASION;
+	}
+
 	protected override async init() {
-		this.addButtonSelection('attack', 0, async (user) => {
-			const weapon = user.inventory.equipments.weapon;
+		this.addButtonSelection('attack', 0, async () => {
+			const weapon = this.user.inventory.equipments.weapon;
 			if(weapon.cooldown > 0) {
 				BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, 'battle.cooldown', weapon.cooldown.toFixed()));
 			}
 			else {
-				weapon.cooldown = user.inventory.equipments.weapon.item.cooldown;
-				await this.doAction(new AttackAction(this, user, this.enemy));
+				weapon.cooldown = this.user.inventory.equipments.weapon.item.cooldown;
+				await this.doAction(new AttackAction(this, this.user, this.enemy));
 			}
 		}, {style: 'PRIMARY', disabled: this.user.inventory.equipments.weapon.cooldown > 0});
-		this.addButtonSelection('turn', 0, async (user) => {
+		this.addButtonSelection('turn', 0, async () => {
 			this.actionBuilder.getComponents()[0].components[0].setDisabled(true);
 
 			this.builder.getComponents()?.forEach(rows=>rows.components.forEach(component=>component.setDisabled(true)));
@@ -202,6 +237,9 @@ export default class BattleManager extends SelectManager {
 			}
 
 			await this.updateEmbed();
+		});
+		this.addButtonSelection('evasion', 0, async () => {
+			this.doAction(new EvaseAction(this, this.user))
 		});
 		this.addMenuSelection('swap', 1, async (user, row, interactionCallback, component) => {
 			if (interactionCallback.isSelectMenu()) {
@@ -232,7 +270,7 @@ export default class BattleManager extends SelectManager {
 						}]
 					}
 					else return a;
-				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+				}, [{label: bundle.find(this.locale, 'prev')+", "+this.swapPage, value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 				this.builder.updateComponents(component).rerender();
 			}
 		},
@@ -247,7 +285,7 @@ export default class BattleManager extends SelectManager {
 					}]
 				 }
 				else return a;
-			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'})
+			}, [{label: bundle.find(this.locale, 'prev')+", "+this.swapPage, value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'})
 		});
 		this.addMenuSelection('consume', 2, async (user, row, interactionCallback, component) => {
 			if (interactionCallback.isSelectMenu()) {
@@ -283,7 +321,7 @@ export default class BattleManager extends SelectManager {
 						}]
 					}
 					else return a;
-				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+				}, [{label: bundle.find(this.locale, 'prev')+", "+this.consumePage, value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 				this.builder.updateComponents(component).rerender();
 			}
 		},
@@ -298,7 +336,7 @@ export default class BattleManager extends SelectManager {
 					}]
 				 }
 				else return a;
-			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'})
+			}, [{label: bundle.find(this.locale, 'prev')+", "+this.consumePage, value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'})
 		});
 		this.addMenuSelection('reload', 3, async (user, row, interactionCallback, component) => {
 			if (interactionCallback.isSelectMenu()) {
@@ -333,7 +371,7 @@ export default class BattleManager extends SelectManager {
 						}]
 					}
 					else return a;
-				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+				}, [{label: bundle.find(this.locale, 'prev')+", "+this.reloadPage, value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 				this.builder.updateComponents(component).rerender();
 			}
 		},
@@ -348,7 +386,7 @@ export default class BattleManager extends SelectManager {
 					}]
 				 }
 				else return a;
-			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}),
+			}, [{label: bundle.find(this.locale, 'prev')+", "+this.reloadPage, value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}),
 			disabled: !(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity)
 		});
 
@@ -360,7 +398,7 @@ export default class BattleManager extends SelectManager {
 	  await this.updateEmbed();
 	}
 
-	private validate() {
+	private async validate() {
 		const components = this.actionBuilder.getComponents();
 		if(components.length) return;
 		const button = components[0].components[0];
@@ -368,11 +406,16 @@ export default class BattleManager extends SelectManager {
 		const reload = components[2].components[0];
 		reload.setDisabled(!(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity));
 
-		this.builder.updateComponents([button, reload]).rerender();
+		await this.builder.updateComponents([button, reload]).rerender();
 	}
 
 	private async doAction(action: ActionI) {
 		if(action instanceof BaseAction) {
+			if(this.isEvasion(action.owner)) {
+				BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, 'error.evasion'));
+				return;
+			}
+
 			if(this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost) 
 				return BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost));
 			else action.owner.stats.energy -= action.cost;
@@ -402,12 +445,14 @@ export default class BattleManager extends SelectManager {
 		
 		if(this.turn.inventory.equipments.weapon.cooldown > 0)
 			this.turn.inventory.equipments.weapon.cooldown--;
-
+		
 		await this.updateEmbed();
 		if(this.turn == this.user) {
 			this.turn = this.enemy;
 			if(await this.enemyTurn()) return true;
+			this.status.set(this.turn, Status.DEFAULT);
 		}
+		this.status.set(this.turn, Status.DEFAULT);
 		await this.updateEmbed();
 	}
 
@@ -421,14 +466,14 @@ export default class BattleManager extends SelectManager {
 	}
 
 	public async updateEmbed(log?: string) {
-		if(this.turn == this.user) this.validate();
+		await this.validate();
 		if(log) {
 			if(this.battleLog.length > 5) this.battleLog.shift();
 			this.battleLog.push(log);
 		}
 		this.builder.setFields([
 			{ 
-				name: this.user.user.username+(this.turn==this.user?`   ${this.totalTurn} `+bundle.find(this.locale, "turn"):""), 
+				name: this.user.user.username+(this.turn==this.user?`   ${this.totalTurn} `+bundle.find(this.locale, "turn"):"")+(this.isEvasion(this.user) ? `   ${bundle.find(this.locale, 'evasion')}` : ""), 
 				value: 
 				  `**${bundle.find(this.locale, 'health')}**: ${this.user.stats.health.toFixed(2)}/${this.user.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.health, this.user.stats.health_max)}`+
 			  	`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.user.stats.energy.toFixed(2)}/${this.user.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.energy, this.user.stats.energy_max)}`+
@@ -437,7 +482,7 @@ export default class BattleManager extends SelectManager {
 				inline: true 
 			},
 			{ 
-				name: this.enemy.getUnit().localName(this.locale)+(this.turn==this.enemy?`   ${this.totalTurn} `+bundle.find(this.locale, "turn"):""), 
+				name: this.enemy.getUnit().localName(this.locale)+(this.turn==this.enemy?`   ${this.totalTurn} `+bundle.find(this.locale, "turn"):"")+(this.isEvasion(this.enemy) ? `   ${bundle.find(this.locale, 'evasion')}` : ""),  
 			  value: 
 					`**${bundle.find(this.locale, 'health')}**: ${this.enemy.stats.health.toFixed(2)}/${this.enemy.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}` +
 					`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.enemy.stats.energy.toFixed(2)}/${this.enemy.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.energy, this.enemy.stats.energy_max)}` +
