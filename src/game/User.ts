@@ -11,6 +11,7 @@ import { Canvas } from "@RTTRPG/util";
 import { app } from '@RTTRPG/index';
 import { BaseEmbed } from '@RTTRPG/modules';
 import { filledBar } from 'string-progressbar';
+import { SlotWeaponEntity } from './Inventory';
 
 const defaultStat: Stat = {
   health: 20,
@@ -123,10 +124,18 @@ export default class User implements EntityI {
   }
 
   public getInventoryInfo(interaction: CommandInteraction) {
-    let embed = new MessageEmbed().setTitle(bundle.find(this.locale, 'inventory'));
-    this.inventory.items.forEach(store => {
-      embed = embed.addField(store.item.localName(this.locale), `${store instanceof ItemStack ? store.amount : 1} ${bundle.find(this.locale, 'unit.item')}`, true);
-    });
+    const embed = new MessageEmbed().setTitle(bundle.find(this.locale, 'inventory'))
+      .addFields(this.inventory.items.map<Discord.EmbedFieldData>(store => ({
+        name: store.item.localName(this.locale), 
+        value: store instanceof ItemStack ? 
+          `${store.amount} ${bundle.find(this.locale, 'unit.item')}` : 
+          store instanceof WeaponEntity ? 
+              `${store.cooldown} ${bundle.find(this.locale, 'cooldown')}, ${store.durability} ${bundle.find(this.locale, 'durability')}` + 
+                (store instanceof SlotWeaponEntity ? `${store.ammos.length} ${bundle.find(this.locale, 'unit.item')} ${bundle.find(this.locale, 'ammo')}` : "") : 
+            "",
+        inline: true
+      })));
+      
     return new BaseEmbed(interaction).setPages(embed);
   }
 

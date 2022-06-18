@@ -1,6 +1,6 @@
 import { CommandInteraction, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu, MessageSelectOptionData } from 'discord.js';
 
-import { ItemStack, UnitEntity, getOne, save, findMessage, User, WeaponEntity } from '@RTTRPG/game';
+import {  UnitEntity, getOne, save, findMessage, User, WeaponEntity, SlotWeaponEntity, ItemStack } from '@RTTRPG/game';
 import { Units, Item, Items, Weapon, Potion } from '@RTTRPG/game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from '@RTTRPG/util';
 import { SelectManager, BaseManager } from '@RTTRPG/game/managers';
@@ -8,6 +8,8 @@ import { bundle } from '@RTTRPG/assets';
 import { EntityI } from '@RTTRPG/@type';
 import { BaseEmbed } from '../../modules/BaseEmbed';
 import ItemSelectManager from './ItemSelectManager';
+import AmmoItemTag from '../contents/tags/AmmoItemTag';
+import { codeBlock } from '@discordjs/builders';
 
 interface ActionI {
 	name: string;
@@ -22,10 +24,12 @@ abstract class BaseAction implements ActionI {
   public owner: EntityI;
   public cost: number;
   
-  constructor(manager: BattleManager, owner: EntityI, cost: number) {
+  constructor(manager: BattleManager, owner: EntityI, cost: number, immediate = false) {
     this.manager = manager;
     this.owner = owner;
     this.cost = cost;
+
+		if(immediate) this.run();
   }
 
 	abstract run(): Promise<void>;
@@ -35,17 +39,19 @@ abstract class BaseAction implements ActionI {
 class AttackAction extends BaseAction { 
 	private enemy: EntityI;
 	
-	constructor(manager: BattleManager, owner: EntityI, enemy: EntityI) {
+	constructor(manager: BattleManager, owner: EntityI, enemy: EntityI, immediate = false) {
 		super(manager, owner, 10);
 		this.name = 'attack';
 		this.enemy = enemy;
+
+		if(immediate) this.run();
 	}
 	
 	public async run() {
 		if(this.owner.stats.health <= 0 || this.enemy.stats.health <= 0) return;
 		const entity = this.owner.inventory.equipments.weapon;
-    	
-		await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+entity.item.attack(this.owner, this.enemy, this.manager.locale));
+
+		await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+entity.item.attack(this.enemy, entity, this.manager.locale));
 	
 		if(entity.item != Items.punch && entity.item != Items.none) {
 			if(entity.durability > 0) entity.durability--;
@@ -70,21 +76,24 @@ class AttackAction extends BaseAction {
 class SwapAction extends BaseAction {
 	private weapon: Weapon;
 
-	constructor(manager: BattleManager, owner: EntityI, weapon: Weapon) {
+	constructor(manager: BattleManager, owner: EntityI, weapon: Weapon, immediate = false) {
 		super(manager, owner, 3);
 		this.weapon = weapon;
+		
+		if(immediate) this.run();
 	}
 
 	public async run() {
 		const entity = this.owner.inventory.items.find(store => store.item == this.weapon);
 		if(!entity) return this.manager.updateEmbed(bundle.format(this.manager.locale, 'missing_item', this.weapon.localName(this.manager.locale)));
 		
-		this.owner.switchWeapon(this.weapon);
 	  await this.manager.updateEmbed(bundle.format(this.manager.locale, 'switch_change', this.weapon.localName(this.manager.locale), this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)));
+		this.owner.switchWeapon(this.weapon);
+		await this.manager.updateEmbed();
 	}
 
 	public description(): string {
-		return `swap ${this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)} to ${this.weapon.localName(this.manager.locale)}`;
+		return bundle.format(this.manager.locale, 'action.swap.description', this.owner.inventory.equipments.weapon.item.localName(this.manager.locale), this.weapon.localName(this.manager.locale));
 	}
 }
 
@@ -92,10 +101,12 @@ class ConsumeAction extends BaseAction {
 	private potion: Potion;
 	private amount: number;
 
-	constructor(manager: BattleManager, owner: EntityI, potion: Potion, amount: number) {
+	constructor(manager: BattleManager, owner: EntityI, potion: Potion, amount: number, immediate = false) {
 		super(manager, owner, 5);
 		this.potion = potion;
 		this.amount = amount;
+		
+		if(immediate) this.run();
 	}
 
 	public async run() {
@@ -108,7 +119,33 @@ class ConsumeAction extends BaseAction {
 	}
 
 	public description(): string {
-		return `consume ${this.amount} ${this.potion.localName(this.manager.locale)}`;
+		return bundle.format(this.manager.locale, 'action.consume.description', this.potion.localName(this.manager.locale), this.amount);
+	}
+}
+
+class ReloadAction extends BaseAction {
+	private ammo: Item;
+	private amount: number;
+
+	constructor(manager: BattleManager, owner: EntityI, ammo: Item, amount: number, immediate = false) {
+		super(manager, owner, 1);
+		this.ammo = ammo;
+		this.amount = amount;
+		
+		if(immediate) this.run();
+	}
+
+	public async run() {
+		const entity = this.owner.inventory.equipments.weapon;
+		if(entity instanceof SlotWeaponEntity) {
+			const inc = this.ammo.tags.find<AmmoItemTag>((tag): tag is AmmoItemTag => tag instanceof AmmoItemTag)?.itemPerAmmo ?? 1;
+			for(let i = 0; i < this.amount; i += inc) entity.ammos.push(this.ammo);	
+			await this.manager.updateEmbed(bundle.format(this.manager.locale, 'reload', this.ammo.localName(this.manager.locale), this.amount, this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)));
+		}
+	}
+	
+	public description(): string {
+		return bundle.format(this.manager.locale, 'action.reload.description', this.ammo.localName(this.manager.locale), this.amount, this.owner.inventory.equipments.weapon.item.localName(this.manager.locale));
 	}
 }
 
@@ -125,6 +162,7 @@ export default class BattleManager extends SelectManager {
 	//TODO: make selection page widget
 	private consumePage = 0;
 	private swapPage = 0;
+	private reloadPage = 0;
 
   public constructor(user: User, interaction: CommandInteraction, enemy: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
     super(user, interaction, builder, last);
@@ -181,7 +219,7 @@ export default class BattleManager extends SelectManager {
 	  			}
 				  default: {
 						const entity = this.user.inventory.items[Number(id)];
-						await this.doAction(new SwapAction(this, user, entity.item as Weapon));
+						new SwapAction(this, user, entity.item as Weapon, true);
 	  			}
 				}
 				
@@ -195,6 +233,7 @@ export default class BattleManager extends SelectManager {
 					}
 					else return a;
 				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+				this.builder.updateComponents(component).rerender();
 			}
 		},
 		{
@@ -210,7 +249,7 @@ export default class BattleManager extends SelectManager {
 				else return a;
 			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'})
 		});
-		this.addMenuSelection('consume', 2, (user, row, interactionCallback, component) => {
+		this.addMenuSelection('consume', 2, async (user, row, interactionCallback, component) => {
 			if (interactionCallback.isSelectMenu()) {
 				const id = interactionCallback.values[0];
 				switch(id) {
@@ -220,21 +259,23 @@ export default class BattleManager extends SelectManager {
 		  			break;
 	  			}
 				  case '-2': {
-	  				if(this.consumePage+1 > Math.floor(this.user.inventory.items.length/8)) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.last_page"));
+	  				if(this.consumePage+1 > Math.floor(this.user.inventory.items.length/8)) 
+							BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.last_page"));
   					else this.consumePage++;
 	  				break;
 	  			}
 				  default: {
-					const entity = this.user.inventory.items[Number(id)];
-					const potion = entity.item as Potion;
-					new ItemSelectManager(this.user, this.interaction, potion, async amount => {
-						await this.doAction(new ConsumeAction(this, user, potion, amount));
-					});
+						const entity = this.user.inventory.items[Number(id)];
+						const potion = entity.item as Potion;
+						if(entity instanceof ItemStack && entity.amount > 1) new ItemSelectManager(this.user, this.interaction, potion, async amount => {
+							await this.doAction(new ConsumeAction(this, user, potion, amount));
+						});
+						else await this.doAction(new ReloadAction(this, user, entity.item, 1));
 	  			}
 				}
 
 				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-					if(store.item instanceof Weapon) {
+					if(store.item instanceof Potion) {
 						if(index < this.swapPage*8 || index > (this.swapPage + 1) * 8) return a;
 						else return [...a, {
 							label: store.item.localName(this.locale),
@@ -243,6 +284,7 @@ export default class BattleManager extends SelectManager {
 					}
 					else return a;
 				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+				this.builder.updateComponents(component).rerender();
 			}
 		},
 		{
@@ -258,6 +300,57 @@ export default class BattleManager extends SelectManager {
 				else return a;
 			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'})
 		});
+		this.addMenuSelection('reload', 3, async (user, row, interactionCallback, component) => {
+			if (interactionCallback.isSelectMenu()) {
+				const id = interactionCallback.values[0];
+				switch(id) {
+				  case '-1': {
+	  				if(this.reloadPage == 0) BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.first_page"));
+	  				else this.reloadPage--;
+		  			break;
+	  			}
+				  case '-2': {
+	  				if(this.reloadPage+1 > Math.floor(this.user.inventory.items.length/8)) 
+							BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.last_page"));
+  					else this.reloadPage++;
+	  				break;
+	  			}
+				  default: {
+						const entity = this.user.inventory.items[Number(id)];
+						if(entity instanceof ItemStack && entity.amount > 1) new ItemSelectManager(this.user, this.interaction, entity.item, async amount => {
+							await this.doAction(new ReloadAction(this, user, entity.item, amount));
+						});
+						else await this.doAction(new ReloadAction(this, user, entity.item, 1));
+	  			}
+				}
+
+				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
+					if(store.item.tags.some(tag=>tag instanceof AmmoItemTag)) {
+						if(index < this.reloadPage*8 || index > (this.reloadPage + 1) * 8) return a;
+						else return [...a, {
+							label: store.item.localName(this.locale),
+							value: index.toString()
+						}]
+					}
+					else return a;
+				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+				this.builder.updateComponents(component).rerender();
+			}
+		},
+		{
+			placeholder: 'reload ammo with ...',
+			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
+				if(store.item.tags.some(tag=>tag instanceof AmmoItemTag)) {
+					if(index < (this.reloadPage-1)*8 || index > this.reloadPage*8) return a;
+					else return [...a, {
+						label: store.item.localName(this.locale),
+						value: store.item.id.toString()+'.'+index
+					}]
+				 }
+				else return a;
+			}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}),
+			disabled: !(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity)
+		});
 
 		const data = this.toActionData();
 		this.builder
@@ -267,22 +360,26 @@ export default class BattleManager extends SelectManager {
 	  await this.updateEmbed();
 	}
 
+	private validate() {
+		const components = this.actionBuilder.getComponents();
+		if(components.length) return;
+		const button = components[0].components[0];
+		button.setDisabled(this.user.inventory.equipments.weapon.cooldown > 0);
+		const reload = components[2].components[0];
+		reload.setDisabled(!(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity));
+
+		this.builder.updateComponents([button, reload]).rerender();
+	}
+
 	private async doAction(action: ActionI) {
-		if(this.turn == this.user) {
-			this.actionBuilder.getComponents()[0].components[0].setDisabled(false);
-			if(this.builder.getComponents()[0]) {
-				const button = this.builder.getComponents()[0].components[0];
-				button.setDisabled(this.user.inventory.equipments.weapon.cooldown > 0);
-				this.builder.updateComponents(button);
-			}
-		}
-		await this.updateEmbed();
 		if(action instanceof BaseAction) {
-			if(this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost) return BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost));
+			if(this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost) 
+				return BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost));
 			else action.owner.stats.energy -= action.cost;
 		}
 		this.actionQueue.push(action);
 		this.actionBuilder.setDescription(this.actionQueue.map<string>(a=>a.description()).join('```\n```\n')).rerender();
+		await this.updateEmbed();
 	}
 
 	private async turnEnd() {
@@ -324,6 +421,7 @@ export default class BattleManager extends SelectManager {
 	}
 
 	public async updateEmbed(log?: string) {
+		if(this.turn == this.user) this.validate();
 		if(log) {
 			if(this.battleLog.length > 5) this.battleLog.shift();
 			this.battleLog.push(log);
@@ -334,7 +432,7 @@ export default class BattleManager extends SelectManager {
 				value: 
 				  `**${bundle.find(this.locale, 'health')}**: ${this.user.stats.health.toFixed(2)}/${this.user.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.health, this.user.stats.health_max)}`+
 			  	`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.user.stats.energy.toFixed(2)}/${this.user.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.energy, this.user.stats.energy_max)}`+
-			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.user.inventory.equipments.weapon.item.localName(this.locale)}(${this.user.inventory.equipments.weapon.cooldown}), ${bundle.find(this.locale, "durability")} ${this.user.inventory.equipments.weapon.durability??"0"}`+
+			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.user.inventory.equipments.weapon.item.localName(this.locale)}(${this.user.inventory.equipments.weapon.cooldown}), ${bundle.find(this.locale, "durability")} ${this.user.inventory.equipments.weapon.durability??"0"}`+ (this.user.inventory.equipments.weapon instanceof SlotWeaponEntity ? `, ${bundle.find(this.locale, 'ammo')} ${this.user.inventory.equipments.weapon.ammos.length} ${bundle.find(this.locale, 'unit.item')}` : "") +
 					(this.user.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.user.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed()} ${bundle.find(this.locale, "turn")}`).join('\n')}` : ''),  
 				inline: true 
 			},
@@ -343,13 +441,13 @@ export default class BattleManager extends SelectManager {
 			  value: 
 					`**${bundle.find(this.locale, 'health')}**: ${this.enemy.stats.health.toFixed(2)}/${this.enemy.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}` +
 					`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.enemy.stats.energy.toFixed(2)}/${this.enemy.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.energy, this.enemy.stats.energy_max)}` +
-			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.enemy.inventory.equipments.weapon.item.localName(this.locale)}(${this.enemy.inventory.equipments.weapon.cooldown||0}), ${bundle.find(this.locale, "durability")} ${this.enemy.inventory.equipments.weapon.durability??"0"}`+
+			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.enemy.inventory.equipments.weapon.item.localName(this.locale)}(${this.enemy.inventory.equipments.weapon.cooldown||0}), ${bundle.find(this.locale, "durability")} ${this.enemy.inventory.equipments.weapon.durability??"0"}`+ (this.enemy.inventory.equipments.weapon instanceof SlotWeaponEntity ? `, ${bundle.find(this.locale, 'ammo')} ${this.enemy.inventory.equipments.weapon.ammos.length} ${bundle.find(this.locale, 'unit.item')}` : "") +
 					(this.enemy.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.enemy.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed()} ${bundle.find(this.locale, "turn")}`).join('\n')}` : ''), 
 				inline: true 
 			},
 			{
 				name: 'Logs', 
-				value: "```diff\n"+this.battleLog.join('```\n```diff\n')+"```"
+				value: this.battleLog.map(log => codeBlock('diff', log)).join('')||"Empty"
 			}
 		]).rerender();
 	}

@@ -8,6 +8,7 @@ export default class Item extends Content implements Dropable, Rationess {
 	readonly dropOnWalk: boolean;
 	readonly dropOnBattle: boolean;
 	readonly dropOnShop: boolean;
+	readonly tags: ItemTag[] = [];
 
 	constructor(data: ItemData) {
 		super(data.name, 'item');
@@ -16,5 +17,23 @@ export default class Item extends Content implements Dropable, Rationess {
 		this.dropOnBattle = data.dropOnBattle??true;
 		this.dropOnShop = data.dropOnShop??true;
 		this.dropOnWalk = data.dropOnWalk??true;
+	}
+
+	public addTags(tags: ItemTag[]): this {
+		tags.forEach(tag=>this.tags.push(tag));
+		return this;
+	}
+}
+
+class ItemTag {
+	
+}
+
+class AmmoItemTag extends ItemTag {
+	readonly itemPerAmmo: number;
+
+	constructor(itemPerAmmo: number) {
+		super();
+		this.itemPerAmmo = itemPerAmmo;
 	}
 }

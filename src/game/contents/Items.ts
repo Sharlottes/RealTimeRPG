@@ -1,5 +1,7 @@
 import { Item, Potion, Weapon, Buff, StatusEffects } from "@RTTRPG/game/contents";
 import { EntityI } from '../../@type/index';
+import { AmmoItemTag } from "./tags";
+import SlotWeapon from './SlotWeapon';
 
 
 export default class Items {
@@ -8,7 +10,7 @@ export default class Items {
 	public static none: Weapon;
 
 	static init() {
-		this.items.push(new Weapon({ name: 'stone', ratio: 0.3, damage: 1.5, cooldown: 0.3, critical_ratio: 1.2, critical_chance: 0.2, durability: 1 }));
+		this.items.push(new Weapon({ name: 'stone', ratio: 0.3, damage: 1.5, cooldown: 0.3, critical_ratio: 1.2, critical_chance: 0.2, durability: 1 }).addTags([new AmmoItemTag()]));
 		this.items.push(new Item({ name: 'fragment', ratio: 0.4 }));
 		this.items.push(new Potion({ name: 'energy_bar', ratio: 0.2 }, [
 			new Buff(10, 'energy', (owner: EntityI, amount: number, buff: Buff) => {
@@ -77,7 +79,7 @@ export default class Items {
 			ratio: 0, 
 			damage: 0, 
 			cooldown: 0, 
-			critical_ratio: 0, 
+			critical_ratio: 0,
 			critical_chance: 0, 
 			durability: 0, 
 			dropOnWalk: false,
@@ -98,6 +100,18 @@ export default class Items {
 			status: StatusEffects.find(1)
 		}));
 
+		this.items.push(new SlotWeapon({
+			name: 'cross_bow',
+			ratio: 0.25,
+			damage: 3.5,
+			cooldown: 2,
+			critical_ratio: 1.5,
+			critical_chance: 0.75,
+			durability: 20,
+			dropOnWalk: false,
+			dropOnBattle: true,
+			dropOnShop: false
+		}))
 	}
 
 	static find<T extends Item>(id: number | ((item: Item)=> boolean)): T {

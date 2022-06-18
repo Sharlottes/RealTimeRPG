@@ -13,7 +13,7 @@ export default class ExchangeManager extends SelectManager {
 	private sellPage = 0;
 
   public constructor(user: User, interaction: CommandInteraction, target: UnitEntity, builder = findMessage(interaction.id).builder, last?: SelectManager) {
-    super(user, interaction, builder);
+    super(user, interaction, builder, last);
 		this.target = target;
     if(new.target === ExchangeManager) this.init();
 	}
@@ -150,12 +150,13 @@ export default class ExchangeManager extends SelectManager {
 			this.builder.addDescription('- '+bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'); 
 		}
 		else {
+			this.builder.addDescription('+ '+bundle.format(this.locale, owner == this.user ? 'shop.sold' : 'shop.buyed', item.localName(this.locale), amount, owner.money, (owner.money + money * amount)), 'diff');
+
 			visitor.money -= money * amount;
 			visitor.inventory.add(item, amount);
 			owner.money += money * amount;
 			owner.inventory.remove(item, amount);
 			
-			this.builder.addDescription('+ '+bundle.format(this.locale, 'shop.sold', item.localName(this.locale), amount, this.user.money, (this.user.money + money * amount)), 'diff');
 		}
 		
 		await this.builder.rerender();

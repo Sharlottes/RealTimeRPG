@@ -1,5 +1,5 @@
 import { Durable, InventoryJSONdata } from "@RTTRPG/@type";
-import { Item, Items, Weapon } from "./contents";
+import { Item, Items, SlotWeapon, Weapon } from "./contents";
 
 export default class Inventory {
   public readonly items: ItemStorable[] = [];
@@ -51,18 +51,15 @@ export default class Inventory {
   public toJSON(): InventoryJSONdata {
     const data: InventoryJSONdata = {
       items: [],
-      equipments: {
-        weapon: {
-          type: "WeaponEntity",
-          item: this.equipments.weapon.item.id,
-          durability: this.equipments.weapon.durability,
-          cooldown: this.equipments.weapon.cooldown
-        }
-      }
+      equipments: {}
     } as unknown as InventoryJSONdata;
 
+    if(this.equipments.weapon instanceof SlotWeaponEntity) data.equipments.weapon = {type: "SlotWeaponEntity", item: this.equipments.weapon.item.id, durability: this.equipments.weapon.durability, cooldown: this.equipments.weapon.cooldown, ammos: this.equipments.weapon.ammos.map(item => item.id)};
+    else data.equipments.weapon = {type: "WeaponEntity", item: this.equipments.weapon.item.id, durability: this.equipments.weapon.durability, cooldown: this.equipments.weapon.cooldown};
+      
     this.items.forEach(store => {
-      if(store instanceof WeaponEntity) data.items.push({type: "WeaponEntity", item: store.item.id, durability: store.durability, cooldown: store.cooldown});
+      if(store instanceof SlotWeaponEntity) data.items.push({type: "SlotWeaponEntity", item: store.item.id, durability: store.durability, cooldown: store.cooldown, ammos: store.ammos.map(item => item.id)});
+      else if(store instanceof WeaponEntity) data.items.push({type: "WeaponEntity", item: store.item.id, durability: store.durability, cooldown: store.cooldown});
       else if(store instanceof ItemEntity) data.items.push({type: "ItemEntity", item: store.item.id});
       else if(store instanceof ItemStack) data.items.push({type: "ItemStack", item: store.item.id, amount: store.amount});
     });
@@ -89,13 +86,32 @@ export default class Inventory {
           this.items.push(entity);
           break;
         }
-        
+        case "SlotWeaponEntity": {
+          const entity = new SlotWeaponEntity(item as Weapon);
+          store.ammos?.forEach(ammo => entity.ammos.push(Items.find(ammo)));
+          entity.durability = store.durability as number;
+          entity.cooldown = store.cooldown as number;
+          this.items.push(entity);
+          break;
+        }
       }
     });
-    if(data.equipments.weapon) {
-      this.equipments.weapon = new WeaponEntity(Items.find(data.equipments.weapon.item));
-      this.equipments.weapon.durability = data.equipments.weapon.durability;
-      this.equipments.weapon.cooldown = data.equipments.weapon.cooldown;
+    switch(data.equipments.weapon.type) {
+      case "WeaponEntity" : {
+        const entity = new WeaponEntity(Items.find(data.equipments.weapon.item));
+        entity.durability = data.equipments.weapon.durability as number;
+        entity.cooldown = data.equipments.weapon.cooldown as number;
+        this.items.push(entity);
+        break;
+      }
+      case "SlotWeaponEntity": {
+        const entity = new SlotWeaponEntity(Items.find(data.equipments.weapon.item));
+        data.equipments.weapon.ammos?.forEach(ammo => entity.ammos.push(Items.find(ammo)));
+        entity.durability = data.equipments.weapon.durability as number;
+        entity.cooldown = data.equipments.weapon.cooldown as number;
+        this.items.push(entity);
+        break;
+      }
     }
   } 
 }
@@ -125,6 +141,14 @@ export class WeaponEntity implements ItemStorable, Durable {
     this.item = weapon;
     this.cooldown = weapon.cooldown;
     this.durability = weapon.durability;
+  }
+}
+
+export class SlotWeaponEntity extends WeaponEntity {
+  public ammos: Item[] = [];
+
+  constructor(weapon: SlotWeapon) {
+    super(weapon);
   }
 }
 

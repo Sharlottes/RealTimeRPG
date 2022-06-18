@@ -2,6 +2,7 @@ import { Durable, ItemData, EntityI } from "@RTTRPG/@type";
 import { bundle } from "@RTTRPG/assets";
 import Random from "random";
 import { Item, StatusEffect } from "@RTTRPG/game/contents";
+import { WeaponEntity } from "..";
 
 export default class Weapon extends Item implements Durable {
 	readonly damage: number;
@@ -27,7 +28,7 @@ export default class Weapon extends Item implements Durable {
 		this.status = data.status;
 	}
 
-	attack(attacker: EntityI, target: EntityI, locale: string) { //non-target means user is attacked
+	public attack(target: EntityI, entity: WeaponEntity, locale: string) {
 		const critical = Random.float(0, 1) < this.critical_chance;
 		const stat = target.stats;
 		const damage = this.damage + (critical ? this.critical_ratio * this.damage : 0);
