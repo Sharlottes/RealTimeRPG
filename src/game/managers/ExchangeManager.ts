@@ -55,8 +55,20 @@ export default class ExchangeManager extends SelectManager {
   				  
   					if(store instanceof ItemStack && store.amount > 1) new ItemSelectManager(this.user, this.interaction, store, async amount => {
 	  					await this.deal(this.target, this.user, store, amount);
+
+							(component as MessageSelectMenu).setOptions(this.target.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index) => {
+								if(index < this.buyPage * 8 || index > (this.buyPage + 1) * 8) return a;
+								else return [...a, {
+									label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
+									value: index.toString()
+								}]
+							}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+							await this.updateEmbed();
+							await this.builder.updateComponents(component).rerender();
 	  				});
-	  				else await this.deal(this.target, this.user, store, 1);
+	  				else {
+							await this.deal(this.target, this.user, store, 1);
+						}	
 	  			}
 				}
 
@@ -98,15 +110,26 @@ export default class ExchangeManager extends SelectManager {
 	  			}
 				  default: {
 				    const store = this.user.inventory.items[Number(id)];
-				    
   				  if(store instanceof ItemStack && store.amount > 1) new ItemSelectManager(this.user, this.interaction, store, async amount => {
 	  					await this.deal(this.user, this.target, store, amount);
+							
+							(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
+								if(index < this.sellPage * 8 || index > (this.sellPage + 1) * 8) return a;
+								else return [...a, {
+									label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
+									value: index.toString()
+								}]
+							}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
+							await this.updateEmbed();
+							await this.builder.updateComponents(component).rerender();
 	  				});
-	  				else await this.deal(this.user, this.target, store, 1);
-	  			}
+	  				else {
+							await this.deal(this.user, this.target, store, 1);
+						}
+					}
 				}
-				
 				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
+					console.log(this.user.inventory.items[Number(id)]);
 					if(index < this.sellPage * 8 || index > (this.sellPage + 1) * 8) return a;
 					else return [...a, {
 						label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,

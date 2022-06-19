@@ -14,7 +14,8 @@ import Random from 'random';
 
 enum Status {
 	DEFAULT,
-	EVASION
+	EVASION,
+	SHIELD
 }
 
 interface ActionI {
@@ -56,11 +57,15 @@ class AttackAction extends BaseAction {
 		if(this.owner.stats.health <= 0 || this.enemy.stats.health <= 0) return;
 		const entity = this.owner.inventory.equipments.weapon;
 		if(this.manager.isEvasion(this.enemy)) { 
-			if(Random.bool()) await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'- ':'+ ')+bundle.format(this.manager.locale, "evasion_successed", typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale)));
+			if(Random.bool()) await this.manager.updateEmbed((this.enemy.id == this.manager.user.id?'+ ':'- ')+bundle.format(this.manager.locale, "evasion_successed", typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale)));
 			else {
 				await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+bundle.format(this.manager.locale, "evasion_failed", typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale)));
 		 		await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+(entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale))??"ERROR");
 			}
+		}
+		else if(this.manager.isShielded(this.enemy)) {
+			if(this.enemy.inventory.equipments.shield) this.enemy.inventory.equipments.shield.durability -= this.owner.inventory.equipments.weapon.item.getWeapon().damage;
+			await this.manager.updateEmbed((this.enemy.id == this.manager.user.id?'+ ':'- ')+bundle.format(this.manager.locale, "shielded", typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale)))
 		}
 		else await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+(entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale))??"ERROR");
 	
@@ -80,7 +85,7 @@ class AttackAction extends BaseAction {
 	}
 
 	public description(): string {
-		return bundle.format(this.manager.locale, 'action.attack.description', typeof this.owner.name !== 'string' ? this.owner.name(this.manager.locale) : this.owner.name, typeof this.enemy.name !== 'string' ? this.enemy.name(this.manager.locale) : this.enemy.name, this.owner.inventory.equipments.weapon.item.localName(this.manager.locale));
+		return bundle.format(this.manager.locale, 'action.attack.description', typeof this.enemy.name !== 'string' ? this.enemy.name(this.manager.locale) : this.enemy.name, this.owner.inventory.equipments.weapon.item.localName(this.manager.locale));
 	}
 }
 
@@ -153,7 +158,7 @@ class ReloadAction extends BaseAction {
 	public async run() {
 		const entity = this.owner.inventory.equipments.weapon;
 		if(entity instanceof SlotWeaponEntity) {
-			const inc = this.ammo.tags.find<AmmoTag>((tag): tag is AmmoTag => tag instanceof AmmoTag)?.itemPerAmmo ?? 1;
+			const inc = this.ammo.getAmmo()?.itemPerAmmo ?? 1;
 			for(let i = 0; i < this.amount; i += inc) entity.ammos.push(this.ammo);	
 			await this.manager.updateEmbed(bundle.format(this.manager.locale, 'reload', this.ammo.localName(this.manager.locale), this.amount, this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)));
 		}
@@ -204,7 +209,25 @@ class DvaseAction extends BaseAction {
 	}
 }
 
+class ShieldAction extends BaseAction {
+	public title = 'shield';
 
+	constructor(manager: BattleManager, owner: EntityI, immediate = false) {
+		super(manager, owner, 1);
+
+		if(immediate) this.run();
+	}
+
+	public async run() {
+		this.manager.setShield(this.owner, true);
+
+			await this.manager.updateEmbed(bundle.format(this.manager.locale, 'shield_position', typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)));
+	}
+	
+	public description(): string {
+		return bundle.find(this.manager.locale, 'action.shield.description');
+	}
+}
 
 export default class BattleManager extends SelectManager {
 	private readonly enemy: UnitEntity;
@@ -254,6 +277,14 @@ export default class BattleManager extends SelectManager {
 	public setEvasion(owner: EntityI, evase: boolean) {
 		this.status.set(owner, evase ? Status.EVASION : Status.DEFAULT);
 	}
+	
+	public isShielded(entity: EntityI) {
+	 	return this.status.get(entity) === Status.SHIELD;
+	}
+
+	public setShield(owner: EntityI, evase: boolean) {
+		this.status.set(owner, evase ? Status.SHIELD : Status.DEFAULT);
+	}
 
 	protected override async init() {
 		this.addButtonSelection('attack', 0, async () => {
@@ -270,15 +301,16 @@ export default class BattleManager extends SelectManager {
 		this.addButtonSelection('evasion', 0, async (user, row, inter, button) => {
 			if(this.isEvasion(this.user)) {
 				this.addAction(new DvaseAction(this, this.user));
-				this.setEvasion(this.user, false);
-				(button as MessageButton).setLabel(bundle.find(this.locale, 'select.evasion'));
 			}
 			else {
 				this.addAction(new EvaseAction(this, this.user));
-				this.setEvasion(this.user, true);
-				(button as MessageButton).setLabel(bundle.find(this.locale, 'select.dvasion'));
 			}
 		});
+
+		this.addButtonSelection('shield', 0, async (user, row, inter, button) => {
+			this.addAction(new ShieldAction(this, this.user));
+		});
+
 		this.addButtonSelection('turn', 0, async () => {
 			this.actionBuilder.getComponents()[0].components[0].setDisabled(true);
 			
@@ -438,7 +470,7 @@ export default class BattleManager extends SelectManager {
 		});
 
 		const data = this.toActionData();
-		await this.builder
+		this.builder
 			.setDescription(bundle.format(this.locale, 'battle.start', this.user.user.username, Units.find(this.enemy.id).localName(this.user)))
 			.setComponents(data.actions).setTriggers(data.triggers);
 		await this.actionBuilder.build();
@@ -484,6 +516,10 @@ export default class BattleManager extends SelectManager {
 			const action = this.actionQueue.shift();
 			await this.actionBuilder.setDescription(this.actionQueue.map<string>(a=>codeBlock(a.description())).join('\n')||"Empty").rerender();
 			if(action) {
+				if(this.status.get(this.turn) !== Status.DEFAULT) {
+					await this.updateEmbed(bundle.find(this.locale, "error.action_status"));
+					continue;
+				} 
 				await action.run();
 
 				if(action instanceof BaseAction) this.comboQueue.push(action.title);
@@ -534,6 +570,7 @@ export default class BattleManager extends SelectManager {
 				  `**${bundle.find(this.locale, 'health')}**: ${this.user.stats.health.toFixed(2)}/${this.user.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.health, this.user.stats.health_max)}`+
 			  	`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.user.stats.energy.toFixed(2)}/${this.user.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.user.stats.energy, this.user.stats.energy_max)}`+
 			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.user.inventory.equipments.weapon.item.localName(this.locale)}(${this.user.inventory.equipments.weapon.cooldown}), ${bundle.find(this.locale, "durability")} ${this.user.inventory.equipments.weapon.durability??"0"}`+ (this.user.inventory.equipments.weapon instanceof SlotWeaponEntity ? `, ${bundle.find(this.locale, 'ammo')} ${this.user.inventory.equipments.weapon.ammos.length} ${bundle.find(this.locale, 'unit.item')}` : "") +
+			  	(this.user.inventory.equipments.shield ? `\n\n**${bundle.find(this.locale, 'shield')}**: ${this.user.inventory.equipments.shield.item.localName(this.locale)} ${bundle.find(this.locale, "durability")} ${this.user.inventory.equipments.shield.durability}` : "") +
 					(this.user.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.user.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed()} ${bundle.find(this.locale, "turn")}`).join('\n')}` : ''),  
 				inline: true 
 			},
@@ -543,6 +580,7 @@ export default class BattleManager extends SelectManager {
 					`**${bundle.find(this.locale, 'health')}**: ${this.enemy.stats.health.toFixed(2)}/${this.enemy.stats.health_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}` +
 					`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.enemy.stats.energy.toFixed(2)}/${this.enemy.stats.energy_max.toFixed(2)}\n${Canvas.unicodeProgressBar(this.enemy.stats.energy, this.enemy.stats.energy_max)}` +
 			  	`\n\n**${bundle.find(this.locale, 'weapon')}**: ${this.enemy.inventory.equipments.weapon.item.localName(this.locale)}(${this.enemy.inventory.equipments.weapon.cooldown||0}), ${bundle.find(this.locale, "durability")} ${this.enemy.inventory.equipments.weapon.durability??"0"}`+ (this.enemy.inventory.equipments.weapon instanceof SlotWeaponEntity ? `, ${bundle.find(this.locale, 'ammo')} ${this.enemy.inventory.equipments.weapon.ammos.length} ${bundle.find(this.locale, 'unit.item')}` : "") +
+					(this.enemy.inventory.equipments.shield ? `\n\n**${bundle.find(this.locale, 'shield')}**: ${this.enemy.inventory.equipments.shield.item.localName(this.locale)} ${bundle.find(this.locale, "durability")} ${this.enemy.inventory.equipments.shield.durability}` : "") +
 					(this.enemy.statuses.length > 0 ? `\n**${bundle.find(this.locale, 'status')}**\n${this.enemy.statuses.map(status=>`${status.status.localName(this.locale)}: ${status.duration.toFixed()} ${bundle.find(this.locale, "turn")}`).join('\n')}` : ''), 
 				inline: true 
 			},

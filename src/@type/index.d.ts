@@ -92,6 +92,11 @@ export type InventoryJSONdata = {
             durability: number,
             cooldown: number,
             ammos?: number[]
+        },
+        shield: {
+            type: string,
+            item: number,
+            durability: number
         }
     }
 }

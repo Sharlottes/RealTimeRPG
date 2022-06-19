@@ -1,6 +1,6 @@
 import { Dropable, Rationess, ItemData } from "@RTTRPG/@type";
 import { Content, Items } from ".";
-import { AmmoTag, ConsumeTag, ItemTag, SlotWeaponTag, WeaponTag } from "./tags";
+import { AmmoTag, ConsumeTag, ItemTag, ShieldTag, SlotWeaponTag, WeaponTag } from "./tags";
 import { CommandInteraction } from 'discord.js';
 import { BaseEmbed } from "@RTTRPG/modules";
 
@@ -59,5 +59,12 @@ export default class Item extends Content implements Dropable, Rationess {
 	}
 	public getConsume(): ConsumeTag {
 		return this.tags.find<ConsumeTag>((tag): tag is ConsumeTag => tag instanceof ConsumeTag) as ConsumeTag; 
+	}
+
+	public hasShield(): boolean {
+		return this.tags.some(tag => tag instanceof ShieldTag);
+	}
+	public getShield(): ShieldTag {
+		return this.tags.find<ShieldTag>((tag): tag is ShieldTag => tag instanceof ShieldTag) as ShieldTag; 
 	}
 }

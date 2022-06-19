@@ -3,7 +3,9 @@ import { Item, Items } from "./contents";
 
 export default class Inventory {
   public readonly items: ItemStorable[] = [];
-  public readonly equipments: Equipments = {weapon: new WeaponEntity(Items.find(5))};
+  public readonly equipments: Equipments = {
+    weapon: new WeaponEntity(Items.find(5))
+  };
 
   public setWeapon(entity: WeaponEntity): this {
     this.equipments.weapon = entity;
@@ -56,9 +58,11 @@ export default class Inventory {
 
     if(this.equipments.weapon instanceof SlotWeaponEntity) data.equipments.weapon = {type: "SlotWeaponEntity", item: this.equipments.weapon.item.id, durability: this.equipments.weapon.durability, cooldown: this.equipments.weapon.cooldown, ammos: this.equipments.weapon.ammos.map(item => item.id)};
     else data.equipments.weapon = {type: "WeaponEntity", item: this.equipments.weapon.item.id, durability: this.equipments.weapon.durability, cooldown: this.equipments.weapon.cooldown};
-      
+    if(this.equipments.shield) data.equipments.shield = {type: "ShieldEntity", item: this.equipments.shield.item.id, durability: this.equipments.shield.durability};  
+
     this.items.forEach(store => {
-      if(store instanceof SlotWeaponEntity) data.items.push({type: "SlotWeaponEntity", item: store.item.id, durability: store.durability, cooldown: store.cooldown, ammos: store.ammos.map(item => item.id)});
+      if(store instanceof ShieldEntity) data.items.push({type: "ShieldEntity", item: store.item.id, durability: store.durability});
+      else if(store instanceof SlotWeaponEntity) data.items.push({type: "SlotWeaponEntity", item: store.item.id, durability: store.durability, cooldown: store.cooldown, ammos: store.ammos.map(item => item.id)});
       else if(store instanceof WeaponEntity) data.items.push({type: "WeaponEntity", item: store.item.id, durability: store.durability, cooldown: store.cooldown});
       else if(store instanceof ItemEntity) data.items.push({type: "ItemEntity", item: store.item.id});
       else if(store instanceof ItemStack) data.items.push({type: "ItemStack", item: store.item.id, amount: store.amount});
@@ -96,8 +100,16 @@ export default class Inventory {
           this.items.push(entity);
           break;
         }
+        case "ShieldEntity": {
+          if(!item.hasShield()) throw "got crashed during loading user inventory";
+          const entity = new ShieldEntity(item);
+          entity.durability = store.durability as number;
+          this.items.push(entity);
+          break;
+        }
       }
     });
+
     switch(data.equipments.weapon.type) {
       case "WeaponEntity" : {
         if(!Items.find(data.equipments.weapon.item).hasWeapon()) throw "got crashed during loading user inventory";
@@ -117,11 +129,18 @@ export default class Inventory {
         break;
       }
     }
-  } 
+
+    if(data.equipments.shield) {
+      const entity = new ShieldEntity(Items.find(data.equipments.shield.item));
+      entity.durability = data.equipments.shield.durability;
+      this.equipments.shield = entity;
+    }
+  }
 }
 
 export type Equipments = {
   weapon: WeaponEntity
+  shield?: ShieldEntity
 }
 
 export interface ItemStorable {
@@ -133,6 +152,16 @@ export class ItemEntity implements ItemStorable {
 
   constructor(item: Item) {
     this.item = item;
+  }
+}
+
+export class ShieldEntity implements ItemStorable, Durable {
+  public item: Item;
+  public durability: number;
+
+  constructor(shield: Item) {
+    this.item = shield;
+    this.durability = shield.getShield().durability;
   }
 }
 

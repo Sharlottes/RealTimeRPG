@@ -1,6 +1,6 @@
 import { Item, Buff, StatusEffects } from "@RTTRPG/game/contents";
 import { EntityI } from '../../@type/index';
-import { AmmoTag, ConsumeTag, SlotWeaponTag, WeaponTag } from "./tags";
+import { AmmoTag, ConsumeTag, ShieldTag, SlotWeaponTag, WeaponTag } from "./tags";
 
 
 export default class Items {
@@ -137,6 +137,17 @@ export default class Items {
 		(()=>{
 			const item = this.items[this.items.length-1];
 			item.addTags([new SlotWeaponTag(item, { damage: 3.5, cooldown: 2,critical_ratio: 1.5,critical_chance: 0.75,durability: 20 })]);
+		})();
+
+		this.items.push(new Item('wooden_shield', {
+			ratio: 0.1,
+			dropOnWalk: false,
+			dropOnBattle: false,
+			dropOnShop: true
+		}));		
+		(()=>{
+			const item = this.items[this.items.length-1];
+			item.addTags([new ShieldTag(item, 40)]);
 		})();
 	}
 

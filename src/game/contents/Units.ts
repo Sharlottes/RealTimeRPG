@@ -31,7 +31,7 @@ export default class Units {
 				energy_max: 100
 			},
 			ratio: 0.2,
-			inventory: new Inventory()
+			inventory: new Inventory().setWeapon(new WeaponEntity(Items.find(3)))
 		}));
 	}
 
