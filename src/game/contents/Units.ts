@@ -3,7 +3,6 @@ import { Inventory, WeaponEntity } from "@RTTRPG/game";
 
 export default class Units {
 	static readonly units: Unit[] = [];
-	public static goblin: Unit;
 
 	static init() {
 		this.units.push(new Unit({
@@ -12,15 +11,15 @@ export default class Units {
 			stats: {
 				strength: 0,
 				defense: 0,
-				health: 20,
-				health_max: 20,
+				health: 7,
+				health_max: 7,
 				energy: 200,
 				energy_max: 100
 			},
 			ratio: 0.05,
 			inventory: new Inventory().setWeapon(new WeaponEntity(Items.find(10)))
 		}));
-		this.units.push(this.goblin = new Unit({
+		this.units.push(new Unit({
 			name: 'goblin',
 			level: 1,
 			stats: {

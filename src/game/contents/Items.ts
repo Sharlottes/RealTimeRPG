@@ -18,7 +18,13 @@ export default class Items {
 			]);
 		})();
 	  
-		this.items.push(new Item('fragment', { ratio: 0.4 }));
+		this.items.push(new Item('fragment', { ratio: 0.4 }));		
+		(()=>{
+			const item = this.items[this.items.length-1];
+			item.addTags([
+				new AmmoTag(item)
+			]);
+		})();
 		this.items.push(new Item('energy_bar', { ratio: 0.2 }));
 		(()=>{
 			const item = this.items[this.items.length-1];
@@ -68,7 +74,7 @@ export default class Items {
 			const item = this.items[this.items.length-1];
 			item.addTags([
 				new ConsumeTag(item, [
-					new Buff(10, 'energy', (owner: EntityI, amount: number, buff: Buff) => {
+					new Buff(10, 'exp', (owner: EntityI, amount: number, buff: Buff) => {
 						owner.exp += amount * buff.value;
 					}, (owner: EntityI, amount: number, buff: Buff, locale: string) => `* ${buff.localName(locale)} +${amount * buff.value}`)
 				])
@@ -80,7 +86,7 @@ export default class Items {
 			const item = this.items[this.items.length-1];
 			item.addTags([
 				new ConsumeTag(item, [
-					new Buff(10, 'energy', (owner: EntityI, amount: number, buff: Buff) => {
+					new Buff(10, 'health', (owner: EntityI, amount: number, buff: Buff) => {
 						owner.stats.health += amount * buff.value;
 					}, (owner: EntityI, amount: number, buff: Buff, locale: string) => `* ${buff.localName(locale)} +${amount * buff.value}`)
 				])
@@ -94,7 +100,7 @@ export default class Items {
 			const item = this.items[this.items.length-1];
 			item.addTags([
 				new ConsumeTag(item, [
-					new Buff(10, 'energy', (owner: EntityI, amount: number, buff: Buff) => {
+					new Buff(10, 'health', (owner: EntityI, amount: number, buff: Buff) => {
 						owner.stats.health += amount * buff.value;
 					}, (owner: EntityI, amount: number, buff: Buff, locale: string) => `* ${buff.localName(locale)} +${amount * buff.value}`)
 				])
@@ -142,4 +148,3 @@ export default class Items {
 		else return item;
 	}
 }
-

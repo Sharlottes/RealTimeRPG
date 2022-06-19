@@ -104,6 +104,7 @@ export default class Inventory {
         const entity = new WeaponEntity(Items.find(data.equipments.weapon.item));
         entity.durability = data.equipments.weapon.durability as number;
         entity.cooldown = data.equipments.weapon.cooldown as number;
+        this.equipments.weapon = entity;
         break;
       }
       case "SlotWeaponEntity": {
@@ -112,6 +113,7 @@ export default class Inventory {
         data.equipments.weapon.ammos?.forEach(ammo => entity.ammos.push(Items.find(ammo)));
         entity.durability = data.equipments.weapon.durability as number;
         entity.cooldown = data.equipments.weapon.cooldown as number;
+        this.equipments.weapon = entity;
         break;
       }
     }

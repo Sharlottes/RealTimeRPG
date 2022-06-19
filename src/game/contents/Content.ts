@@ -14,4 +14,3 @@ export default class Content {
 		this.details = (user: User|string)=>bundle.find(typeof user === 'string' ? user : user.locale, `content.${type}.${name}.details`);
 	}
 }
-
