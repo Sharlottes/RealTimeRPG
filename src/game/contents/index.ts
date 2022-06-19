@@ -7,7 +7,4 @@ export { default as Items } from "./Items";
 export { default as Unit } from "./Unit";
 export { default as Units } from "./Units";
 
-export { default as Weapon } from "./Weapon";
-export { default as SlotWeapon } from "./SlotWeapon";
-export { default as Potion } from "./Potion";
 export { default as Buff } from "./Buff";

@@ -1,5 +1,8 @@
 import { Dropable, Rationess, ItemData } from "@RTTRPG/@type";
 import { Content, Items } from ".";
+import { AmmoTag, ConsumeTag, ItemTag, SlotWeaponTag, WeaponTag } from "./tags";
+import { CommandInteraction } from 'discord.js';
+import { BaseEmbed } from "@RTTRPG/modules";
 
 
 export default class Item extends Content implements Dropable, Rationess {
@@ -10,8 +13,8 @@ export default class Item extends Content implements Dropable, Rationess {
 	readonly dropOnShop: boolean;
 	readonly tags: ItemTag[] = [];
 
-	constructor(data: ItemData) {
-		super(data.name, 'item');
+	constructor(name: string, data: ItemData) {
+		super(name, 'item');
 		this.ratio = data.ratio;
 		this.id = Items.items.length;
 		this.dropOnBattle = data.dropOnBattle??true;
@@ -23,17 +26,38 @@ export default class Item extends Content implements Dropable, Rationess {
 		tags.forEach(tag=>this.tags.push(tag));
 		return this;
 	}
-}
 
-class ItemTag {
-	
-}
+	public async showInfo(interaction: CommandInteraction) {
+		await new BaseEmbed(interaction).setTitle(this.localName(interaction.locale))
+			.setAuthor({name: interaction.user.username, iconURL: interaction.user.displayAvatarURL(), url: interaction.user.displayAvatarURL()})
+			.build();
+	}
 
-class AmmoItemTag extends ItemTag {
-	readonly itemPerAmmo: number;
+	public hasAmmo(): boolean {
+		return this.tags.some(tag => tag instanceof AmmoTag);
+	}
+	public getAmmo(): AmmoTag {
+		return this.tags.find<AmmoTag>((tag): tag is AmmoTag => tag instanceof AmmoTag) as AmmoTag;
+	}
 
-	constructor(itemPerAmmo: number) {
-		super();
-		this.itemPerAmmo = itemPerAmmo;
+	public hasWeapon(): boolean {
+		return this.tags.some(tag => tag instanceof WeaponTag);
+	}
+	public getWeapon(): WeaponTag {
+		return this.tags.find<WeaponTag>((tag): tag is WeaponTag => tag instanceof WeaponTag) as WeaponTag;
+	}
+
+	public hasSlotWeapon(): boolean {
+		return this.tags.some(tag => tag instanceof SlotWeaponTag);
+	}
+	public getSlotWeapon(): SlotWeaponTag {
+		return this.tags.find<SlotWeaponTag>((tag): tag is SlotWeaponTag => tag instanceof SlotWeaponTag) as SlotWeaponTag;
+	}
+
+	public hasConsume(): boolean {
+		return this.tags.some(tag => tag instanceof ConsumeTag);
+	}
+	public getConsume(): ConsumeTag {
+		return this.tags.find<ConsumeTag>((tag): tag is ConsumeTag => tag instanceof ConsumeTag) as ConsumeTag; 
 	}
 }

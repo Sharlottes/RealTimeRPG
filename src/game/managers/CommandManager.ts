@@ -5,7 +5,7 @@ import Random from 'random';
 
 import { UnitEntity, ItemStack, BaseEvent, User, findMessage, getOne, save } from '@RTTRPG/game';
 import { BaseManager, EncounterManager } from '@RTTRPG/game/managers';
-import { Items, Units, Content, Potion } from '@RTTRPG/game/contents';
+import { Items, Units, Content } from '@RTTRPG/game/contents';
 import { CommandCategory } from '@RTTRPG/@type';
 import { BaseEmbed } from '@RTTRPG/modules';
 import { bundle } from '@RTTRPG/assets';
@@ -67,12 +67,12 @@ namespace CommandManager {
 			new EncounterManager(user, interaction, new UnitEntity(Units.find(Random.int(0,1))), builder).start();
 		});
 
-    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), (user, interaction) => user.getUserInfo(interaction).build());
-    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), (user, interaction) => user.getInventoryInfo(interaction).build());
+    registerCmd(new SlashCommandBuilder().setName('status').setDescription('show your own status'), (user, interaction) => user.showUserInfo(interaction));
+    registerCmd(new SlashCommandBuilder().setName('inventory').setDescription('show your own inventory'), (user, interaction) => user.showInventoryInfo(interaction));
 
     registerCmd((() => {
       const s = new SlashCommandBuilder().setName('consume').setDescription('consume item');
-      s.addIntegerOption((option) => option.setName('target').setDescription('item name').setRequired(true).addChoices(Items.items.reduce<[name: string, value: number][]>((a, i) => i instanceof Potion ? [...a, [i.name, i.id]] : a, [])));
+      s.addIntegerOption((option) => option.setName('target').setDescription('item name').setRequired(true).addChoices(Items.items.reduce<[name: string, value: number][]>((a, i) => i.hasConsume() ? [...a, [i.name, i.id]] : a, [])));
 			s.addIntegerOption((option) => option.setName('amount').setDescription('item amount'));
 			return s;
     })(), (user, interaction) => {
@@ -82,10 +82,11 @@ namespace CommandManager {
 			if (!stack) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', Items.find(id).localName(user)));
 			else if ((stack instanceof ItemStack ? stack.amount : 1) < amount) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.item.localName(user), amount));
 			else {
-				const potion = stack.item as Potion;
+				const potion = stack.item;
+				const cons = potion.getConsume();
 				user.inventory.remove(potion, amount);
-				potion.consume(user, amount);
-				BaseManager.newTextEmbed(user, interaction, bundle.format(user.locale, 'consume', potion.localName(user), amount, potion.buffes.map((b) => b.description(user, amount, b, user.locale)).join('\n  ')));
+				cons.consume(user, amount);
+				BaseManager.newTextEmbed(user, interaction, bundle.format(user.locale, 'consume', potion.localName(user), amount, cons.buffes.map((b) => b.description(user, amount, b, user.locale)).join('\n  ')));
 			}
 		});
 

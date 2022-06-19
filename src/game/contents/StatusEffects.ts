@@ -1,4 +1,4 @@
-import { Weapon, StatusEffect } from '.';
+import { StatusEffect } from '.';
 
 export default class StatusEffects {
 	static readonly statuses: StatusEffect[] = [];

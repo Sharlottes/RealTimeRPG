@@ -1,5 +1,5 @@
 import { Durable, InventoryJSONdata } from "@RTTRPG/@type";
-import { Item, Items, SlotWeapon, Weapon } from "./contents";
+import { Item, Items } from "./contents";
 
 export default class Inventory {
   public readonly items: ItemStorable[] = [];
@@ -23,7 +23,7 @@ export default class Inventory {
     }
     else {
       for(let i = 0; i < amount; i++) {
-        if(item instanceof Weapon) this.items.push(new WeaponEntity(item));
+        if(item.hasWeapon()) this.items.push(new WeaponEntity(item));
         else this.items.push(new ItemEntity(item));
       }
     }
@@ -45,7 +45,7 @@ export default class Inventory {
   }
 
   public isStorable(item: Item): boolean {
-    return !(item instanceof Weapon);
+    return !item.hasWeapon();
   }
 
   public toJSON(): InventoryJSONdata {
@@ -80,14 +80,16 @@ export default class Inventory {
           break;
         }
         case "WeaponEntity" : {
-          const entity = new WeaponEntity(item as Weapon);
+          if(!item.hasWeapon()) throw "got crashed during loading user inventory";
+          const entity = new WeaponEntity(item);
           entity.durability = store.durability as number;
           entity.cooldown = store.cooldown as number;
           this.items.push(entity);
           break;
         }
         case "SlotWeaponEntity": {
-          const entity = new SlotWeaponEntity(item as Weapon);
+          if(!item.hasSlotWeapon()) throw "got crashed during loading user inventory";
+          const entity = new SlotWeaponEntity(item);
           store.ammos?.forEach(ammo => entity.ammos.push(Items.find(ammo)));
           entity.durability = store.durability as number;
           entity.cooldown = store.cooldown as number;
@@ -98,6 +100,7 @@ export default class Inventory {
     });
     switch(data.equipments.weapon.type) {
       case "WeaponEntity" : {
+        if(!Items.find(data.equipments.weapon.item).hasWeapon()) throw "got crashed during loading user inventory";
         const entity = new WeaponEntity(Items.find(data.equipments.weapon.item));
         entity.durability = data.equipments.weapon.durability as number;
         entity.cooldown = data.equipments.weapon.cooldown as number;
@@ -105,6 +108,7 @@ export default class Inventory {
         break;
       }
       case "SlotWeaponEntity": {
+        if(!Items.find(data.equipments.weapon.item).hasSlotWeapon()) throw "got crashed during loading user inventory";
         const entity = new SlotWeaponEntity(Items.find(data.equipments.weapon.item));
         data.equipments.weapon.ammos?.forEach(ammo => entity.ammos.push(Items.find(ammo)));
         entity.durability = data.equipments.weapon.durability as number;
@@ -133,21 +137,22 @@ export class ItemEntity implements ItemStorable {
 }
 
 export class WeaponEntity implements ItemStorable, Durable {
-  public item: Weapon;
+  public item: Item;
   public cooldown: number;
   public durability: number;
 
-  constructor(weapon: Weapon) {
+  constructor(weapon: Item) {
     this.item = weapon;
-    this.cooldown = weapon.cooldown;
-    this.durability = weapon.durability;
+    const tag = weapon.getWeapon();
+    this.cooldown = tag.cooldown;
+    this.durability = tag.durability;
   }
 }
 
 export class SlotWeaponEntity extends WeaponEntity {
   public ammos: Item[] = [];
 
-  constructor(weapon: SlotWeapon) {
+  constructor(weapon: Item) {
     super(weapon);
   }
 }

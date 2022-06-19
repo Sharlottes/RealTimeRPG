@@ -1,14 +1,14 @@
 import { CommandInteraction, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu, MessageSelectOptionData } from 'discord.js';
 
 import { UnitEntity, getOne, save, findMessage, User, WeaponEntity, SlotWeaponEntity, ItemStack } from '@RTTRPG/game';
-import { Units, Item, Items, Weapon, Potion } from '@RTTRPG/game/contents';
+import { Units, Item, Items } from '@RTTRPG/game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from '@RTTRPG/util';
 import { SelectManager, BaseManager } from '@RTTRPG/game/managers';
 import { bundle } from '@RTTRPG/assets';
 import { EntityI } from '@RTTRPG/@type';
 import { BaseEmbed } from '../../modules/BaseEmbed';
 import ItemSelectManager from './ItemSelectManager';
-import AmmoItemTag from '../contents/tags/AmmoItemTag';
+import AmmoTag from '../contents/tags/AmmoTag';
 import { codeBlock } from '@discordjs/builders';
 import Random from 'random';
 
@@ -60,10 +60,10 @@ class AttackAction extends BaseAction {
 			if(Random.bool()) await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'- ':'+ ')+bundle.format(this.manager.locale, "evasion_successed", typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale)));
 			else {
 				await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+bundle.format(this.manager.locale, "evasion_failed", typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale)));
-		 		await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+entity.item.attack(this.enemy, entity, this.manager.locale));
+		 		await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+(entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale))??"ERROR");
 			}
 		}
-		else await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+entity.item.attack(this.enemy, entity, this.manager.locale));
+		else await this.manager.updateEmbed((this.owner.id == this.manager.user.id?'+ ':'- ')+(entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale))??"ERROR");
 	
 		if(entity.item != Items.punch && entity.item != Items.none) {
 			if(entity.durability > 0) entity.durability--;
@@ -86,9 +86,10 @@ class AttackAction extends BaseAction {
 }
 
 class SwapAction extends BaseAction {
-	private weapon: Weapon;
+	private weapon: Item;
 
-	constructor(manager: BattleManager, owner: EntityI, weapon: Weapon, immediate = false) {
+	constructor(manager: BattleManager, owner: EntityI, weapon: Item, immediate = false) {
+		if(!weapon.hasWeapon()) throw 'not a weapon';
 		super(manager, owner, 3);
 		this.weapon = weapon;
 		
@@ -110,10 +111,11 @@ class SwapAction extends BaseAction {
 }
 
 class ConsumeAction extends BaseAction {
-	private potion: Potion;
+	private potion: Item;
 	private amount: number;
 
-	constructor(manager: BattleManager, owner: EntityI, potion: Potion, amount: number, immediate = false) {
+	constructor(manager: BattleManager, owner: EntityI, potion: Item, amount: number, immediate = false) {
+		if(!potion.hasConsume()) throw 'not a consume';
 		super(manager, owner, 5);
 		this.potion = potion;
 		this.amount = amount;
@@ -124,10 +126,9 @@ class ConsumeAction extends BaseAction {
 	public async run() {
 		const entity = this.owner.inventory.items.find(store => store.item == this.potion);
 		if(!entity) return this.manager.updateEmbed(bundle.format(this.manager.locale, 'missing_item', this.potion.localName(this.manager.locale)));
-		const potion = entity.item as Potion;
 		this.owner.inventory.remove(this.potion, this.amount);
-		potion.consume(this.owner, this.amount);
-		await this.manager.updateEmbed(bundle.format(this.manager.locale, 'consume', this.potion.localName(this.manager.locale), this.amount, this.potion.buffes.map((b) => b.description(this.owner, this.amount, b, this.manager.locale)).join('\n  ')));
+		entity.item.getConsume().consume(this.owner, this.amount);
+		await this.manager.updateEmbed(bundle.format(this.manager.locale, 'consume', this.potion.localName(this.manager.locale), this.amount, this.potion.getConsume().buffes.map((b) => b.description(this.owner, this.amount, b, this.manager.locale)).join('\n  ')));
 	}
 
 	public description(): string {
@@ -150,7 +151,7 @@ class ReloadAction extends BaseAction {
 	public async run() {
 		const entity = this.owner.inventory.equipments.weapon;
 		if(entity instanceof SlotWeaponEntity) {
-			const inc = this.ammo.tags.find<AmmoItemTag>((tag): tag is AmmoItemTag => tag instanceof AmmoItemTag)?.itemPerAmmo ?? 1;
+			const inc = this.ammo.tags.find<AmmoTag>((tag): tag is AmmoTag => tag instanceof AmmoTag)?.itemPerAmmo ?? 1;
 			for(let i = 0; i < this.amount; i += inc) entity.ammos.push(this.ammo);	
 			await this.manager.updateEmbed(bundle.format(this.manager.locale, 'reload', this.ammo.localName(this.manager.locale), this.amount, this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)));
 		}
@@ -219,7 +220,7 @@ export default class BattleManager extends SelectManager {
 				BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, 'battle.cooldown', weapon.cooldown.toFixed()));
 			}
 			else {
-				weapon.cooldown = this.user.inventory.equipments.weapon.item.cooldown;
+				weapon.cooldown = this.user.inventory.equipments.weapon.item.getWeapon().cooldown;
 				await this.addAction(new AttackAction(this, this.user, this.enemy));
 			}
 		}, {style: 'PRIMARY', disabled: this.user.inventory.equipments.weapon.cooldown > 0});
@@ -258,12 +259,12 @@ export default class BattleManager extends SelectManager {
 	  			}
 				  default: {
 						const entity = this.user.inventory.items[Number(id)];
-						new SwapAction(this, user, entity.item as Weapon, true);
+						new SwapAction(this, user, entity.item, true);
 	  			}
 				}
 				
 				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-					if(store.item instanceof Weapon) {
+					if(store.item.hasWeapon()) {
 						if(index < this.swapPage*8 || index > (this.swapPage + 1) * 8) return a;
 						else return [...a, {
 							label: store.item.localName(this.locale),
@@ -278,7 +279,7 @@ export default class BattleManager extends SelectManager {
 		{
 			placeholder: 'swap weapon to ...',
 			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-				if(store.item instanceof Weapon) {
+				if(store.item.hasWeapon()) {
 					if(index < this.swapPage*8 || index > (this.swapPage + 1) * 8) return a;
 					else return [...a, {
 						label: store.item.localName(this.locale),
@@ -305,7 +306,7 @@ export default class BattleManager extends SelectManager {
 	  			}
 				  default: {
 						const entity = this.user.inventory.items[Number(id)];
-						const potion = entity.item as Potion;
+						const potion = entity.item;
 						if(entity instanceof ItemStack && entity.amount > 1) new ItemSelectManager(this.user, this.interaction, potion, async amount => {
 							await this.addAction(new ConsumeAction(this, user, potion, amount));
 						});
@@ -314,7 +315,7 @@ export default class BattleManager extends SelectManager {
 				}
 
 				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-					if(store.item instanceof Potion) {
+					if(store.item.hasConsume()) {
 						if(index < this.swapPage*8 || index > (this.swapPage + 1) * 8) return a;
 						else return [...a, {
 							label: store.item.localName(this.locale),
@@ -329,7 +330,7 @@ export default class BattleManager extends SelectManager {
 		{
 			placeholder: 'consume ...',
 			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-				if(store.item instanceof Potion) {
+				if(store.item.hasConsume()) {
 					if(index < (this.consumePage-1)*8 || index > this.consumePage*8) return a;
 					else return [...a, {
 						label: store.item.localName(this.locale),
@@ -364,7 +365,7 @@ export default class BattleManager extends SelectManager {
 				}
 
 				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-					if(store.item.tags.some(tag=>tag instanceof AmmoItemTag)) {
+					if(store.item.tags.some(tag=>tag instanceof AmmoTag)) {
 						if(index < this.reloadPage*8 || index > (this.reloadPage + 1) * 8) return a;
 						else return [...a, {
 							label: store.item.localName(this.locale),
@@ -379,7 +380,7 @@ export default class BattleManager extends SelectManager {
 		{
 			placeholder: 'reload ammo with ...',
 			options: this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-				if(store.item.tags.some(tag=>tag instanceof AmmoItemTag)) {
+				if(store.item.tags.some(tag=>tag instanceof AmmoTag)) {
 					if(index < (this.reloadPage-1)*8 || index > this.reloadPage*8) return a;
 					else return [...a, {
 						label: store.item.localName(this.locale),

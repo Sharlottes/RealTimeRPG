@@ -1,5 +1,5 @@
-import { Items, Unit, Weapon } from ".";
-import { Inventory, ItemStack, WeaponEntity } from "@RTTRPG/game";
+import { Items, Unit } from ".";
+import { Inventory, WeaponEntity } from "@RTTRPG/game";
 
 export default class Units {
 	static readonly units: Unit[] = [];
@@ -14,13 +14,11 @@ export default class Units {
 				defense: 0,
 				health: 20,
 				health_max: 20,
-				health_regen: 1,
 				energy: 200,
-				energy_max: 100,
-				energy_regen: 0
+				energy_max: 100
 			},
 			ratio: 0.05,
-			inventory: new Inventory().setWeapon(new WeaponEntity(Items.find<Weapon>(10)))
+			inventory: new Inventory().setWeapon(new WeaponEntity(Items.find(10)))
 		}));
 		this.units.push(this.goblin = new Unit({
 			name: 'goblin',
@@ -30,10 +28,8 @@ export default class Units {
 				defense: 0,
 				health: 5,
 				health_max: 5,
-				health_regen: 0,
 				energy: 100,
-				energy_max: 100,
-				energy_regen: 0
+				energy_max: 100
 			},
 			ratio: 0.2,
 			inventory: new Inventory()

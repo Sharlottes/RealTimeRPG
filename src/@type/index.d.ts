@@ -3,36 +3,20 @@ import Discord, { CacheType, MessageActionRow, MessageComponentInteraction, Mess
 import { PagesBuilder } from 'discord.js-pages';
 import { StatusEntity, ItemStack, User, Inventory } from '@RTTRPG/game';
 import { BaseEmbed } from '@RTTRPG/modules';
-import { StatusEffect, Weapon } from '@RTTRPG/game/contents';
+import { StatusEffect } from '@RTTRPG/game/contents';
 
 export interface Heathy { 
     health: number
     health_max: number
-    health_regen: number
 }
 
 export interface Energy {
     energy: number
     energy_max: number
-    energy_regen: number
-}
-
-export interface Consumable {
-    consume(user: User, amount: number): void
 }
 
 export interface Durable {
     durability: number
-}
-
-export interface Dropable {
-    dropOnWalk?: boolean
-    dropOnShop?: boolean
-    dropOnBattle?: boolean
-}
-
-export interface Rationess {
-	ratio: number
 }
 
 export type Stat = {
@@ -63,9 +47,17 @@ export type ContentData = {
     details: string
 }
 
-export type ItemData = {
-    name: string
-} & Rationess & Dropable
+export interface Dropable {
+    dropOnWalk?: boolean
+    dropOnShop?: boolean
+    dropOnBattle?: boolean
+}
+
+export interface Rationess {
+	ratio: number
+}
+
+export type ItemData = Rationess & Dropable
 
 export type UnitData = {
     name: string
@@ -123,7 +115,7 @@ export interface EntityI extends StatusI {
     public exp: number;
     public level: number;
     public money: number;
-    public switchWeapon: (weapon: Weapon) => void;
+    public switchWeapon: (weapon: Item) => void;
 }
 
 export interface StatusI {
