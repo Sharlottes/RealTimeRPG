@@ -393,19 +393,19 @@ export default class BattleManager extends SelectManager {
 		});
 
 		const data = this.toActionData();
-		this.builder
+		await this.builder
 			.setDescription(bundle.format(this.locale, 'battle.start', this.user.user.username, Units.find(this.enemy.id).localName(this.user)))
-			.setComponents(data.actions).setTriggers(data.triggers);
+			.setComponents(data.actions).setTriggers(data.triggers).rerender();
 		await this.actionBuilder.build();
 	  await this.updateEmbed();
 	}
 
 	private async validate() {
-		const components = this.actionBuilder.getComponents();
-		if(components.length) return;
+		const components = this.builder.getComponents();
+		if(!components.length) return;
 		const button = components[0].components[0];
 		button.setDisabled(this.user.inventory.equipments.weapon.cooldown > 0);
-		const reload = components[2].components[0];
+		const reload = components[3].components[0];
 		reload.setDisabled(!(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity));
 
 		await this.builder.updateComponents([button, reload]).rerender();

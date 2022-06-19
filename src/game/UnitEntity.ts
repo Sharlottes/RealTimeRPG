@@ -1,4 +1,4 @@
-import { Item, Unit, Units, StatusEffect } from "@RTTRPG/game/contents";
+import { Item, Unit, Units, StatusEffect, Items } from "@RTTRPG/game/contents";
 import { EntityI, Stat } from '@RTTRPG/@type';
 import { Inventory, StatusEntity, WeaponEntity } from "@RTTRPG/game";
 
@@ -54,8 +54,8 @@ export default class UnitEntity implements EntityI {
   public switchWeapon(weapon: Item) {
     const entity = this.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == weapon);
     if (!entity) return;
-    this.inventory.items.push(this.inventory.equipments.weapon);
+    if(this.inventory.equipments.weapon.item != Items.none && this.inventory.equipments.weapon.item != Items.punch) this.inventory.items.push(this.inventory.equipments.weapon);
     this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
-    this.inventory.equipments.weapon = entity ;
+    this.inventory.equipments.weapon = entity;
   }
 }

@@ -3,7 +3,7 @@ import Discord, { MessageAttachment, MessageEmbed, MessagePayload, CommandIntera
 
 import Canvass from 'canvas';
 
-import { Item, StatusEffect } from '@RTTRPG/game/contents';
+import { Item, Items, StatusEffect } from '@RTTRPG/game/contents';
 import { EntityI, Stat, UserSave } from '@RTTRPG/@type';
 import { save, ItemStack, StatusEntity, Inventory, WeaponEntity } from "@RTTRPG/game";
 import { bundle } from '@RTTRPG/assets';
@@ -99,7 +99,7 @@ export default class User implements EntityI {
   public switchWeapon(weapon: Item) {
     const entity = this.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == weapon);
     if (!entity) return bundle.format(this.locale, 'missing_item', weapon.localName(this));
-    this.inventory.items.push(this.inventory.equipments.weapon);
+    if(this.inventory.equipments.weapon.item != Items.none && this.inventory.equipments.weapon.item != Items.punch) this.inventory.items.push(this.inventory.equipments.weapon);
     this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
     this.inventory.equipments.weapon = entity ;
   }
