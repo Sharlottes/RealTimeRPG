@@ -42,10 +42,10 @@ export default class WeaponTag extends ItemTag {
 		return bundle.format(locale, 'battle.hit',
 			critical ? bundle.find(locale, 'battle.critical') : '',
 			typeof target.name !== 'string'?target.name(locale):target.name, //target's
-			damage.toFixed(2), //damaged
+			damage, //damaged
 			this.item.localName(locale), //by weapon
-			stat.health.toFixed(2), //before hp
-			(stat.health -= this.damage).toFixed(2) //after hp
+			stat.health, //before hp
+			(stat.health -= damage) //after hp
 		);
 	}
 
@@ -55,7 +55,7 @@ export default class WeaponTag extends ItemTag {
 			.setTitle(this.item.localName(interaction.locale))
 			.setAuthor({name: interaction.user.username, iconURL: interaction.user.displayAvatarURL(), url: interaction.user.displayAvatarURL()})
 			.addFields( 
-				{ name: 'critical', value: `${(this.critical_ratio * 100).toFixed(2)}% damages in ${(this.critical_chance * 100).toFixed(2)} chance`},
+				{ name: 'critical', value: `${(this.critical_ratio * 100)}% damages in ${(this.critical_chance * 100)} chance`},
 				{ name: 'damage', value: this.damage.toString(), inline: true},
 				{ name: 'cooldown', value: this.cooldown.toString(), inline: true},
 			)

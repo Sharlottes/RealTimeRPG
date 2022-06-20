@@ -25,7 +25,8 @@ export default class Inventory {
     }
     else {
       for(let i = 0; i < amount; i++) {
-        if(item.hasWeapon()) this.items.push(new WeaponEntity(item));
+        if(item.hasSlotWeapon()) this.items.push(new SlotWeaponEntity(item));
+        else if(item.hasWeapon()) this.items.push(new WeaponEntity(item));
         else this.items.push(new ItemEntity(item));
       }
     }

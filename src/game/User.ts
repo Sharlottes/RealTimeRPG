@@ -111,9 +111,9 @@ export default class User implements EntityI {
       this.user.username,
       this.level,
       this.level + 1,
-      Math.round((this.stats.health_max += this.level ** 0.6 * 5) * 100) / 100,
+      this.stats.health_max += Math.round((this.level ** 0.6 * 5) * 100) / 100,
       this.stats.energy_max,
-      Math.round((this.stats.energy_max += this.level ** 0.4 * 2.5) * 100) / 100,
+      this.stats.energy_max += Math.round((this.level ** 0.4 * 2.5) * 100) / 100,
     ));
     this.stats.health = this.stats.health_max;
     this.stats.energy = this.stats.energy_max;
@@ -165,8 +165,8 @@ export default class User implements EntityI {
       .setThumbnail("attachment://profile-image.png")
       .addFiles(attachment)
       .addFields(
-        { name: "Health", value: `${filledBar(this.stats.health_max, Math.max(0,this.stats.health), 10, "\u2593", "\u2588")[0]}\n${this.stats.health.toFixed(2)}/${this.stats.health_max}`, inline: true},
-        { name: "Energy", value: `${filledBar(this.stats.energy_max, this.stats.energy, 10, "\u2593", "\u2588")[0]}\n${this.stats.energy.toFixed(2)}/${this.stats.energy_max}`, inline: true},
+        { name: "Health", value: `${filledBar(this.stats.health_max, Math.max(0,this.stats.health), 10, "\u2593", "\u2588")[0]}\n${this.stats.health}/${this.stats.health_max}`, inline: true},
+        { name: "Energy", value: `${filledBar(this.stats.energy_max, this.stats.energy, 10, "\u2593", "\u2588")[0]}\n${this.stats.energy}/${this.stats.energy_max}`, inline: true},
         { name: '\u200B', value: '\u200B'},
         { name: 'Money', value: `${this.money} ${bundle.find(this.locale, 'unit.money')}`, inline: true },
         { name: 'Equipped Weapon', value: weapon.localName(this), inline: true },

@@ -129,7 +129,6 @@ export default class ExchangeManager extends SelectManager {
 					}
 				}
 				(component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-					console.log(this.user.inventory.items[Number(id)]);
 					if(index < this.sellPage * 8 || index > (this.sellPage + 1) * 8) return a;
 					else return [...a, {
 						label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
