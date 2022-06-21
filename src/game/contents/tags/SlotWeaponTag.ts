@@ -1,6 +1,7 @@
 import { Durable, EntityI, ItemData } from "@RTTRPG/@type";
 import { bundle } from "@RTTRPG/assets";
 import { SlotWeaponEntity } from "@RTTRPG/game/Inventory";
+import { BaseEmbed } from "@RTTRPG/modules";
 import { Item } from "..";
 import StatusEffect from "../StatusEffect";
 import WeaponTag from "./WeaponTag";
@@ -21,5 +22,11 @@ export default class SlotWeaponTag extends WeaponTag {
 		entity.ammos.pop()
 		//?.tags.find<AmmoTag>((tag): tag is AmmoTag => tag instanceof AmmoTag).callback(); //do something later
     return super.attack(target, entity, locale);
+	}
+
+	public buildInfo(builder: BaseEmbed, entity?: SlotWeaponEntity): BaseEmbed {
+		super.buildInfo(builder, entity);
+		if(entity) builder.addField('ammos', entity.ammos.length.toString() )
+		return builder;
 	}
 }

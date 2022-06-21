@@ -36,8 +36,7 @@ export default class ItemSelectManager extends SelectManager {
     this.addButtonSelection("done", 3, () => {
       if(this.amount > this.stack.amount) {
         BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, "shop.notEnough_item", this.stack.item.localName(this.locale), this.amount, this.stack.amount));
-      }
-      else {
+      } else {
         this.callback(this.amount);
         this.builder.remove();
       }

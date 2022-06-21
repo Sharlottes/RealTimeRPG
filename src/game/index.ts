@@ -47,15 +47,16 @@ export function findMessage(id: Snowflake): Message {
 	throw new Error('message is undefined');
 }
 
-export function save() {
+export async function save() {
 	const saves: UserSave[] = [];
-	Vars.users.forEach((user) => {
+	for(let i = 0; i < Vars.users.length; i++) {
+		const user = Vars.users[i];
 		if (user.exp >= user.level ** 2 * 50) {
-			user.levelup();
+			await user.levelup();
 		}
 
 		saves.push(user.save());
-	});
+	}
 
 	Database.writeObject('./Database/user_data', saves);
 }

@@ -45,8 +45,7 @@ export default class User implements EntityI {
       this.user = data;
       this.id = data.id;
       this.name = this.user.username;
-    }
-    else {
+    } else {
       this.user = app.client.users.cache.find(u=>u.id === data.id) as Discord.User;
       this.name = this.user?.username;
       this.id = data.id;
@@ -97,15 +96,15 @@ export default class User implements EntityI {
   }
   
   public switchWeapon(weapon: Item) {
-    const entity = this.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == weapon);
+    const entity = weapon == Items.punch ? new WeaponEntity(weapon) : this.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == weapon);
     if (!entity) return bundle.format(this.locale, 'missing_item', weapon.localName(this));
     if(this.inventory.equipments.weapon.item != Items.none && this.inventory.equipments.weapon.item != Items.punch) this.inventory.items.push(this.inventory.equipments.weapon);
     this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
-    this.inventory.equipments.weapon = entity ;
+    this.inventory.equipments.weapon = entity;
   }
 
-  public levelup() {
-    this.sendDM(bundle.format(
+  public async levelup() {
+    await this.sendDM(bundle.format(
       this.locale,
       'levelup',
       this.user.username,
@@ -179,7 +178,7 @@ export default class User implements EntityI {
       .addTriggers([
         {
           name: 'weapon_info',
-          callback: () => weapon.showInfo(interaction)
+          callback: () => weapon.showInfo(interaction, this.inventory.equipments.weapon)
         },
         {
           name: 'inventory_info',

@@ -22,8 +22,7 @@ export default class Inventory {
       const stack: ItemStack | undefined = this.items.find<ItemStack>((store): store is ItemStack => store instanceof ItemStack && store.item == item);
       if(stack) stack.apply(amount);
       else this.items.push(new ItemStack(item, amount));
-    }
-    else {
+    } else {
       for(let i = 0; i < amount; i++) {
         if(item.hasSlotWeapon()) this.items.push(new SlotWeaponEntity(item));
         else if(item.hasWeapon()) this.items.push(new WeaponEntity(item));
@@ -39,8 +38,7 @@ export default class Inventory {
         stack.amount -= amount;
         if(stack.amount <= 0) this.items.splice(this.items.findIndex((store => store.item.id == item.id)), 1);
       }
-    }
-    else {
+    } else {
       for(let i = 0, j = 0; i < this.items.length && j < amount; i++) {
         this.items.splice(this.items.findIndex((store => store.item.id == item.id)), 1);
       }

@@ -1,10 +1,11 @@
-import { CommandInteraction, InteractionButtonOptions, MessageActionRow, MessageActionRowComponent, MessageButton, MessageSelectMenu, MessageSelectMenuOptions } from 'discord.js';
+import { CommandInteraction, InteractionButtonOptions, MessageActionRow, MessageActionRowComponent, MessageButton, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData } from 'discord.js';
 import { ITrigger } from 'discord.js-pages';
 
 import Assets from '@RTTRPG/assets';
 import { BaseManager } from '@RTTRPG/game/managers';
 import { findMessage, save, User } from '@RTTRPG/game';
 import { EventSelection, EventTrigger } from '@RTTRPG/@type';
+import { bundle } from '@RTTRPG/assets';
 
 export default class SelectManager extends BaseManager {
   protected readonly selections: EventSelection[][]
@@ -29,8 +30,7 @@ export default class SelectManager extends BaseManager {
   public addButtonSelection(name: string, row: number, callback: EventTrigger, option?: Omit<InteractionButtonOptions, 'customId'>) {
     this.resizeSelection(row);
 
-    const rowselection = this.selections[row];
-    rowselection.push({
+    this.selections[row].push({
       name: name,
       type: 'button',
       callback: callback,
@@ -43,8 +43,7 @@ export default class SelectManager extends BaseManager {
   public addMenuSelection(name: string, row: number, callback: EventTrigger, option?: Omit<MessageSelectMenuOptions, 'customId'>) {
     this.resizeSelection(row);
 
-    const rowselection = this.selections[row];
-    rowselection.push({
+    this.selections[row].push({
       name: name,
       type: 'select',
       callback: callback,
@@ -53,10 +52,55 @@ export default class SelectManager extends BaseManager {
 
     return this;
   }
+  
+  public addPagedMenuSelection<T>(name: string, row: number, callback: EventTrigger, list: T[], reducer: (elem: T, index: number) => MessageSelectOptionData, placeholder?: string) {
+    let page = 0;
+    const reoption = () => list.reduce<MessageSelectOptionData[]>((acc, elem, index) => {
+      if(index < page * 8 || index > (page + 1) * 8) return acc;
+      return [...acc, reducer(elem, index)];
+    }, page == 0 ? [] : [{label: `<-- ${page}/${Math.floor(list.length/8)+1}`, value: '-1'}]).concat({label: `${page + 2}/${Math.floor(list.length/8)+1} -->`, value: '-2'});
+     
+    this.resizeSelection(row);
+    this.selections[row].push({
+      name: name,
+      type: 'select',
+      callback: async (user, row, interactionCallback, component) => {
+			  if (interactionCallback.isSelectMenu()) {
+	  			const id = interactionCallback.values[0];
+
+		  		switch(id) {
+				    case '-1': {
+	    				if(page == 0) 
+	    				  BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.first_page"));
+              else page--;
+	  	  			break;
+	    			}
+  				  case '-2': {
+  	  				if(page + 1 > Math.floor(list.length/8)) 
+  							BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.last_page"));
+              else page++;
+  	  				break;
+  	  			}
+  				  default: {
+  				    callback(user, row, interactionCallback, component);
+  				  }
+	  			}
+
+          (component as MessageSelectMenu).setOptions(reoption());
+          this.builder.updateComponents(component).rerender();
+			  }  
+      },
+      options: {
+        placeholder: placeholder ?? "select...",
+        options: reoption()
+      }
+    });
+
+    return this;
+  }
 
   public override start() {
     const data = this.toActionData();
-
     this.builder.addComponents(data.actions).addTriggers(data.triggers)
     return super.start();
   }

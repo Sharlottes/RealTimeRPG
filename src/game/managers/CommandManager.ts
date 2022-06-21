@@ -79,11 +79,15 @@ namespace CommandManager {
 			const id = interaction.options.getInteger('target', true);
 			const amount = interaction.options.getInteger('amount', false)??1;
 			const stack = user.inventory.items.find((i) => i.item.id == id);
-			if (!stack) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', Items.find(id).localName(user)));
-			else if ((stack instanceof ItemStack ? stack.amount : 1) < amount) BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.item.localName(user), amount));
-			else {
+			
+			if (!stack) {
+				BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.missing_item', Items.find(id).localName(user)));
+			} else if ((stack instanceof ItemStack ? stack.amount : 1) < amount) {
+				BaseManager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.not_enough', stack.item.localName(user), amount));
+			} else {
 				const potion = stack.item;
 				const cons = potion.getConsume();
+
 				user.inventory.remove(potion, amount);
 				cons.consume(user, amount);
 				BaseManager.newTextEmbed(user, interaction, bundle.format(user.locale, 'consume', potion.localName(user), amount, cons.buffes.map((b) => b.description(user, amount, b, user.locale)).join('\n  ')));

@@ -3,6 +3,7 @@ import { Content, Items } from ".";
 import { AmmoTag, ConsumeTag, ItemTag, ShieldTag, SlotWeaponTag, WeaponTag } from "./tags";
 import { CommandInteraction } from 'discord.js';
 import { BaseEmbed } from "@RTTRPG/modules";
+import { ItemEntity } from "..";
 
 
 export default class Item extends Content implements Dropable, Rationess {
@@ -27,10 +28,12 @@ export default class Item extends Content implements Dropable, Rationess {
 		return this;
 	}
 
-	public async showInfo(interaction: CommandInteraction) {
-		await new BaseEmbed(interaction).setTitle(this.localName(interaction.locale))
+	public async showInfo(interaction: CommandInteraction, entity?: ItemEntity) {
+		const builder = new BaseEmbed(interaction)
+			.setTitle(this.localName(interaction.locale))
 			.setAuthor({name: interaction.user.username, iconURL: interaction.user.displayAvatarURL(), url: interaction.user.displayAvatarURL()})
-			.build();
+		this.tags.forEach(tag => tag.buildInfo(builder, entity));
+		builder.build();
 	}
 
 	public hasAmmo(): boolean {
