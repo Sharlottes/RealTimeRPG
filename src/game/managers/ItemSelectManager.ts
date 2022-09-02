@@ -1,24 +1,23 @@
-import { CommandInteraction, MessageEmbed } from "discord.js";
 import { ItemStack, User } from "..";
 import SelectManager from "./SelectManager";
-import { BaseEmbed } from '../../modules/BaseEmbed';
-import BaseManager from './BaseManager';
 import { bundle } from '../../assets/index';
 import { Item } from "../contents";
+import { ManagerConstructOptions } from "@RTTRPG/@type";
+import Manager from "./Manager";
+import { MessageEmbed } from "discord.js";
 
 export default class ItemSelectManager extends SelectManager {
 	private amount = 0;
   private stack: ItemStack;
   private callback: (amount: number)=>void;
 
-  public constructor(user: User, interaction: CommandInteraction, item: Item|ItemStack, callback: (amount: number)=>void, builder = new BaseEmbed(interaction).setPages(new MessageEmbed()), last?: SelectManager) {
-    super(user, interaction, builder, last);
-    this.stack = item instanceof ItemStack ? item : new ItemStack(item);
-    this.callback = callback;
-		if(new.target === ItemSelectManager) this.init();
+  public constructor(options: ManagerConstructOptions & { user: User, item: Item|ItemStack, callback: (amount: number)=>void, last?: SelectManager }) {
+    super(options);
+    this.stack = options.item instanceof ItemStack ? options.item : new ItemStack(options.item);
+    this.callback = options.callback;
 	}
   
-  protected override async init() {
+  public override async init() {
     for(let i = 1; i <= 9; i++) {
     	this.addButtonSelection(i.toString(), Math.floor((i-1)/3), () => {
 	      this.amount = this.amount*10+i;
@@ -35,14 +34,14 @@ export default class ItemSelectManager extends SelectManager {
     }, {style: 'DANGER'});
     this.addButtonSelection("done", 3, () => {
       if(this.amount > this.stack.amount) {
-        BaseManager.newErrorEmbed(this.user, this.interaction, bundle.format(this.locale, "shop.notEnough_item", this.stack.item.localName(this.locale), this.amount, this.stack.amount));
+        Manager.newErrorEmbed(this.interaction, bundle.format(this.locale, "shop.notEnough_item", this.stack.item.localName(this.locale), this.amount, this.stack.amount));
       } else {
         this.callback(this.amount);
-        this.builder.remove();
+        this.remove();
       }
     }, {style: 'SUCCESS'});
     this.addButtonSelection("cancel", 4, () => {
-      this.builder.remove();
+      this.remove();
     }, {style: 'SECONDARY'});
     this.addButtonSelection("reset", 4, () => {
       this.amount = 0;
@@ -52,15 +51,18 @@ export default class ItemSelectManager extends SelectManager {
       this.amount = this.stack.amount;
       this.updateEmbed();
     }, {style: 'SECONDARY'});
-    const data = this.toActionData();
-		this.builder
+		this.setEmbeds([new MessageEmbed()
       .setTitle("ItemPad")
-			.setFields([{name: "Item", value: this.stack.item.localName(this.locale)}, {name: "Amount", value: this.amount.toString()}])
-			.setComponents(data.actions).setTriggers(data.triggers).build();
+			.setFields([
+        {name: "Item", value: this.stack.item.localName(this.locale)}, 
+        {name: "Amount", value: this.amount.toString()
+      }])
+    ]);
+	  this.send();
   }
   
   public updateEmbed() {
-    this.builder.setFields([{name: "Item", value: this.stack.item.localName(this.locale)}, {name: "Amount", value: this.amount.toString()}]);
-    this.builder.getComponents()[3].components[2].setDisabled(this.amount > this.stack.amount);
+    this.embeds[0].setFields([{name: "Item", value: this.stack.item.localName(this.locale)}, {name: "Amount", value: this.amount.toString()}]);
+    this.components[3].components[2].setDisabled(this.amount > this.stack.amount);
   }
 }

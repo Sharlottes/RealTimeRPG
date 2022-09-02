@@ -6,7 +6,7 @@ export class Mathf {
     return from + Math.random() * (to - from);
   }
 
-  public static clamp(value: number, min: number, max: number) {
+  public static clamp(value: number, min = 0, max = 1) {
     if (value > max) return max;
     else if (value < min) return min;
     else return value;
@@ -90,14 +90,13 @@ export class Database {
 
 export class Canvas {
   public static unicodeProgressBar(progress: number, max: number, showPercent = false) {
-    const per = progress / max;
+    const per = Mathf.clamp(progress / max);
 
     let bar = "";
-    for(let i = 0; i < per * 20; i++) bar += per * 20 < i ? "\u2591" : "\u2588";
-    
+    for(let i = 0; i < 9; i++) bar += per > i / 10 ? "\u2588" : "\u2591";
 
-    bar += ["\u258f", "\u258e", "\u258d", "\u258c", "\u258b", "\u258a", "\u2589", "\u2588"][Mathf.clamp(Math.round(per/8), 0, 8)];
-    if(showPercent) bar += (per * 100).toFixed(2) + "%";
+    bar += ["\u2591", "\u258f", "\u258e", "\u258d", "\u258c", "\u258b", "\u258a", "\u2589", "\u2588"][Mathf.clamp(Math.floor(per/8), 0, 8)];
+    if(showPercent) bar += `  (${(per * 100).toFixed(2)}%`;
 
     return bar;
   }

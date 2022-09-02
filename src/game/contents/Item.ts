@@ -1,10 +1,9 @@
 import { Dropable, Rationess, ItemData } from "@RTTRPG/@type";
 import { Content, Items } from ".";
 import { AmmoTag, ConsumeTag, ItemTag, ShieldTag, SlotWeaponTag, WeaponTag } from "./tags";
-import { CommandInteraction } from 'discord.js';
-import { BaseEmbed } from "@RTTRPG/modules";
+import { CommandInteraction, MessageEmbed } from 'discord.js';
 import { ItemEntity } from "..";
-
+import Manager from "../managers/Manager";
 
 export default class Item extends Content implements Dropable, Rationess {
 	readonly ratio: number;
@@ -18,22 +17,28 @@ export default class Item extends Content implements Dropable, Rationess {
 		super(name, 'item');
 		this.ratio = data.ratio;
 		this.id = Items.items.length;
-		this.dropOnBattle = data.dropOnBattle??true;
-		this.dropOnShop = data.dropOnShop??true;
-		this.dropOnWalk = data.dropOnWalk??true;
+		this.dropOnBattle = data.dropOnBattle ?? true;
+		this.dropOnShop = data.dropOnShop ?? true;
+		this.dropOnWalk = data.dropOnWalk ?? true;
 	}
 
 	public addTags(tags: ItemTag[]): this {
-		tags.forEach(tag=>this.tags.push(tag));
+		tags.forEach(tag => this.tags.push(tag));
 		return this;
 	}
 
 	public async showInfo(interaction: CommandInteraction, entity?: ItemEntity) {
-		const builder = new BaseEmbed(interaction)
-			.setTitle(this.localName(interaction.locale))
-			.setAuthor({name: interaction.user.username, iconURL: interaction.user.displayAvatarURL(), url: interaction.user.displayAvatarURL()})
-		this.tags.forEach(tag => tag.buildInfo(builder, entity));
-		builder.build();
+		const embed = new MessageEmbed()
+		.setTitle(this.localName(interaction.locale))
+		.setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL(), url: interaction.user.displayAvatarURL() })
+		.addFields(
+			{ name: "Description", value: this.description(interaction.locale) || 'empty' },
+			{ name: "Details", value: this.details(interaction.locale) || 'empty' },
+			{ name: "Tags", value: this.tags.map(tag => `\`${tag.name}\``).join('  ') }
+		);
+
+		this.tags.forEach(tag => tag.buildInfo(embed, entity));
+		Manager.start({ interaction: interaction, embeds: [embed]});
 	}
 
 	public hasAmmo(): boolean {
@@ -61,13 +66,13 @@ export default class Item extends Content implements Dropable, Rationess {
 		return this.tags.some(tag => tag instanceof ConsumeTag);
 	}
 	public getConsume(): ConsumeTag {
-		return this.tags.find<ConsumeTag>((tag): tag is ConsumeTag => tag instanceof ConsumeTag) as ConsumeTag; 
+		return this.tags.find<ConsumeTag>((tag): tag is ConsumeTag => tag instanceof ConsumeTag) as ConsumeTag;
 	}
 
 	public hasShield(): boolean {
 		return this.tags.some(tag => tag instanceof ShieldTag);
 	}
 	public getShield(): ShieldTag {
-		return this.tags.find<ShieldTag>((tag): tag is ShieldTag => tag instanceof ShieldTag) as ShieldTag; 
+		return this.tags.find<ShieldTag>((tag): tag is ShieldTag => tag instanceof ShieldTag) as ShieldTag;
 	}
 }

@@ -2,18 +2,19 @@ import { Item } from '..';
 import ItemTag from './ItemTag';
 import { Durable } from '../../../@type/index';
 import { ShieldEntity } from '@RTTRPG/game/Inventory';
-import { BaseEmbed } from '../../../modules/BaseEmbed';
+import { MessageEmbed } from 'discord.js';
 
 export default class ShieldTag extends ItemTag implements Durable {
-  public durability: number;
+  public readonly durability: number;
+  public readonly name = "Shield";
   
   constructor(item: Item, durability: number) {
     super(item);
     this.durability = durability;
   }
 
-  public buildInfo(builder: BaseEmbed, entity?: ShieldEntity) {
-    if(entity) builder.addField('current durability', entity.durability.toString());
-    return builder.addField('durability', this.durability.toString());
+  public buildInfo(embed: MessageEmbed, entity?: ShieldEntity) {
+    if(entity) embed.addField('current durability', entity.durability.toString());
+    return embed.addField('durability', this.durability.toString());
   }
 }

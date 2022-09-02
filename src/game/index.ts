@@ -8,7 +8,7 @@ export * from "./Inventory";
 import { Snowflake } from 'discord.js';
 
 import { Rationess, Message, UserSave } from '@RTTRPG/@type';
-import { CommandManager } from '@RTTRPG/game/managers';
+import CommandManager from '@RTTRPG/commands/CommandManager';
 import { Items, Units, StatusEffects } from "@RTTRPG/game/contents";
 import { Database } from '@RTTRPG/util';
 import Vars from "@RTTRPG/Vars";
@@ -47,19 +47,17 @@ export function findMessage(id: Snowflake): Message {
 	throw new Error('message is undefined');
 }
 
-export async function save() {
+//autosave
+setInterval(() => {
 	const saves: UserSave[] = [];
 	for(let i = 0; i < Vars.users.length; i++) {
 		const user = Vars.users[i];
 		if (user.exp >= user.level ** 2 * 50) {
-			await user.levelup();
+			user.levelup();
 		}
 
 		saves.push(user.save());
 	}
 
 	Database.writeObject('./Database/user_data', saves);
-}
-
-//autosave
-setInterval(save, 1000);
+}, 1000);

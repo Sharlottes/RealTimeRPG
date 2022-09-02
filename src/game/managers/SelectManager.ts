@@ -1,157 +1,112 @@
-import { CommandInteraction, InteractionButtonOptions, MessageActionRow, MessageActionRowComponent, MessageButton, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData } from 'discord.js';
-import { ITrigger } from 'discord.js-pages';
+import { InteractionButtonOptions, MessageActionRow, MessageButton, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData } from 'discord.js';
+import { ComponentTrigger, type ManagerConstructOptions } from "@RTTRPG/@type";
 
-import Assets from '@RTTRPG/assets';
-import { BaseManager } from '@RTTRPG/game/managers';
-import { findMessage, save, User } from '@RTTRPG/game';
-import { EventSelection, EventTrigger } from '@RTTRPG/@type';
+import { User } from '@RTTRPG/game';
+import { EventSelection } from '@RTTRPG/@type';
 import { bundle } from '@RTTRPG/assets';
+import Manager from './Manager';
 
-export default class SelectManager extends BaseManager {
-  protected readonly selections: EventSelection[][]
+type MenuSelectOptions<T> = {
+  customId: string;
+  row: number;
+  callback: ComponentTrigger;
+  list: T[];
+  reducer?: (elem: T, index: number) => MessageSelectOptionData;
+  placeholder?: string
+}
+
+export default class SelectManager extends Manager {
+  protected readonly selections: EventSelection[][];
   protected readonly last?: SelectManager;
 
-  public constructor(user: User, interaction: CommandInteraction, builder = findMessage(interaction.id).builder, last?: SelectManager) {
-    super(user, interaction, builder);
+  public constructor(options: ManagerConstructOptions & { user: User, last?: SelectManager }) {
+    super(options);
     this.selections = [];
-    this.last = last;
-    if(new.target === SelectManager) this.init();
+    this.last = options.last;
   }
 
-  protected override init() {
+  public init() {
+    this.selections.length = 0;
     if(this.last) {
-      this.addButtonSelection('back_select', 0, (user)=> {
+      this.addButtonSelection('back_select', 0, (user) => {
         if(!this.last) return;
         this.changeManager(this.last);
-      }, { style: 'SECONDARY'});
+      }, { style: 'SECONDARY' });
     }
   }
 
-  public addButtonSelection(name: string, row: number, callback: EventTrigger, option?: Omit<InteractionButtonOptions, 'customId'>) {
+  public addButtonSelection(name: string, row: number, callback: ComponentTrigger, option: Omit<InteractionButtonOptions, 'customId'> = {style: 'PRIMARY'}) {
     this.resizeSelection(row);
 
-    this.selections[row].push({
-      name: name,
-      type: 'button',
-      callback: callback,
-      options: option
-    });
+    this.components[row].addComponents(new MessageButton().setCustomId(name).setStyle(option.style));
+    this.setTriggers(name, callback);
 
     return this;
   }  
   
-  public addMenuSelection(name: string, row: number, callback: EventTrigger, option?: Omit<MessageSelectMenuOptions, 'customId'>) {
+  /**
+   * 
+   * @param customId - 컴포넌트의 customId
+   * @param list - 선택할 아이템 리스트
+   * @param placeholder - 선택 전 힌트
+   * @param reducer - 아이템과 인덱스를 받아 재처리하는 함수
+   * @param row - 추가할 열
+   * @param callback - 선택 완료 콜백함수
+   */
+  public addMenuSelection<T>({ customId, list, placeholder = "select...", reducer, row, callback }: MenuSelectOptions<T>): this {
     this.resizeSelection(row);
 
-    this.selections[row].push({
-      name: name,
-      type: 'select',
-      callback: callback,
-      options: option
-    });
-
-    return this;
-  }
-  
-  public addPagedMenuSelection<T>(name: string, row: number, callback: EventTrigger, list: T[], reducer: (elem: T, index: number) => MessageSelectOptionData, placeholder?: string) {
     let page = 0;
     const reoption = () => list.reduce<MessageSelectOptionData[]>((acc, elem, index) => {
       if(index < page * 8 || index > (page + 1) * 8) return acc;
-      return [...acc, reducer(elem, index)];
-    }, page == 0 ? [] : [{label: `<-- ${page}/${Math.floor(list.length/8)+1}`, value: '-1'}]).concat({label: `${page + 2}/${Math.floor(list.length/8)+1} -->`, value: '-2'});
+      return [...acc, reducer ? reducer(elem, index) : { label: `#${index} item`, value: index.toString() }];
+    }, page == 0 ? [] : [{ label: `<-- ${page}/${Math.floor(list.length/8)+1}`, value: '-1' }]).concat({label: `${page + 2}/${Math.floor(list.length/8)+1} -->`, value: '-2'});
      
-    this.resizeSelection(row);
-    this.selections[row].push({
-      name: name,
-      type: 'select',
-      callback: async (user, row, interactionCallback, component) => {
-			  if (interactionCallback.isSelectMenu()) {
-	  			const id = interactionCallback.values[0];
+    this.components[row].addComponents(
+      new MessageSelectMenu()
+        .setCustomId(customId)
+        .setPlaceholder(placeholder)
+        .setOptions(reoption())
+    );
 
-		  		switch(id) {
-				    case '-1': {
-	    				if(page == 0) 
-	    				  BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.first_page"));
-              else page--;
-	  	  			break;
-	    			}
-  				  case '-2': {
-  	  				if(page + 1 > Math.floor(list.length/8)) 
-  							BaseManager.newErrorEmbed(this.user, this.interaction, bundle.find(this.locale, "error.last_page"));
-              else page++;
-  	  				break;
-  	  			}
-  				  default: {
-  				    callback(user, row, interactionCallback, component);
-  				  }
-	  			}
+    this.setTriggers(customId, (interaction, manager) => {
+      if (!(interaction.isSelectMenu() && interaction.component instanceof MessageSelectMenu)) return;
+      const id = interaction.values[0];
 
-          (component as MessageSelectMenu).setOptions(reoption());
-          this.builder.updateComponents(component).rerender();
-			  }  
-      },
-      options: {
-        placeholder: placeholder ?? "select...",
-        options: reoption()
+      switch(id) {
+        case '-1': {
+          if(page == 0) 
+            Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.first_page"));
+          else page--;
+          break;
+        }
+        case '-2': {
+          if(page + 1 > Math.floor(list.length/8)) 
+            Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.last_page"));
+          else page++;
+          break;
+        }
+        default: {
+          callback(interaction, manager);
+        }
       }
-    });
+
+      interaction.component.setOptions(reoption());
+      this.send();
+    })
 
     return this;
   }
 
-  public override start() {
-    const data = this.toActionData();
-    this.builder.addComponents(data.actions).addTriggers(data.triggers)
-    return super.start();
-  }
-
   private resizeSelection(size: number) {
-    while(this.selections.length <= size+1) {
-      this.selections.push([]);
+    while(this.components.length <= size+1) {
+      this.components.push(new MessageActionRow());
     }
   }
 
   protected changeManager<T extends SelectManager>(target: T) {
-		this.builder.setComponents([]);
-    target.selections.length = 0;
     target.init();
-    const data = target.toActionData();
-    this.builder.setComponents(data.actions).setTriggers(data.triggers);
-  }
-
-  protected toActionData(): {actions: MessageActionRow[], triggers: ITrigger<MessageActionRowComponent>[]} {
-    const actions: MessageActionRow[] = [];
-    const triggers: ITrigger<MessageActionRowComponent>[] = [];
-
-    this.selections.forEach((e, i)=>{
-      if(e.length == 0) return;
-      const action = new MessageActionRow();
-      e.forEach((select, ii) => {
-        const id = `${select.name}${i}${ii}`;
-        const name = Assets.bundle.find(this.locale, `select.${select.name}`);
-        
-        if(select.type === "button") {
-          const option = (select.options || {style: 'PRIMARY'}) as InteractionButtonOptions;
-          if(!option.style) option.style = 'PRIMARY';
-          action.addComponents(new MessageButton(option).setCustomId(id).setLabel(name));
-        } else if(select.type === "select") {
-          const option = select.options as MessageSelectMenuOptions;
-          action.addComponents(new MessageSelectMenu(option).setCustomId(id));
-        }
-        triggers.push({
-          name: id,
-          callback: (interactionCallback, currentRow)=> {
-            select.callback(this.user, actions, interactionCallback, currentRow);
-            save();
-          }
-        });
-      });
-      actions.push(action);
-    });
-
-    return {
-      actions: actions,
-      triggers: triggers
-    }
+    this.components = target.components;
+    this.send();
   }
 }

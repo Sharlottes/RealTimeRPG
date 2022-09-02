@@ -1,20 +1,20 @@
 import { Durable, EntityI } from "@RTTRPG/@type";
 import { bundle } from "@RTTRPG/assets";
 import { WeaponEntity } from "@RTTRPG/game/Inventory";
-import { BaseEmbed } from "@RTTRPG/modules";
-import { CommandInteraction } from "discord.js";
+import { MessageEmbed } from "discord.js";
 import Random from "random";
 import { ItemTag } from ".";
 import { Item } from "..";
 import StatusEffect from "../StatusEffect";
 
 export default class WeaponTag extends ItemTag {
-	readonly damage: number;
-	readonly cooldown: number;
-	readonly critical_ratio: number;
-	readonly critical_chance: number;
-  readonly durability: number;
-	readonly status?: StatusEffect;
+	public readonly damage: number;
+	public readonly cooldown: number;
+	public readonly critical_ratio: number;
+	public readonly critical_chance: number;
+  public readonly durability: number;
+	public readonly status?: StatusEffect;
+	public name = "Weapon";
 
 	constructor(item: Item, data: Durable & {
     damage: number,
@@ -49,12 +49,12 @@ export default class WeaponTag extends ItemTag {
 		);
 	}
   
-	public buildInfo(builder: BaseEmbed, entity?: WeaponEntity): BaseEmbed {
-		if(entity) builder.addFields(
+	public override buildInfo(embed: MessageEmbed, entity?: WeaponEntity): MessageEmbed {
+		if(entity) embed.addFields(
 			{ name: 'current cooldown', value: entity.cooldown.toString() },
 			{ name: 'current durability', value: entity.durability.toString(), inline: true }
 		)
-		return builder.addFields( 
+		return embed.addFields( 
 			{ name: 'critical', value: `${(this.critical_ratio * 100)}% damages in ${(this.critical_chance * 100)} chance`, inline: true },
 			{ name: 'damage', value: this.damage.toString(), inline: true },
 			{ name: 'cooldown', value: this.cooldown.toString(), inline: true  },

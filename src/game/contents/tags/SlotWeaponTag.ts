@@ -1,7 +1,7 @@
-import { Durable, EntityI, ItemData } from "@RTTRPG/@type";
+import { Durable, EntityI } from "@RTTRPG/@type";
 import { bundle } from "@RTTRPG/assets";
 import { SlotWeaponEntity } from "@RTTRPG/game/Inventory";
-import { BaseEmbed } from "@RTTRPG/modules";
+import { MessageEmbed } from "discord.js";
 import { Item } from "..";
 import StatusEffect from "../StatusEffect";
 import WeaponTag from "./WeaponTag";
@@ -15,6 +15,7 @@ export default class SlotWeaponTag extends WeaponTag {
 		status?: StatusEffect
   }) {
     super(item, data);
+    this.name = "SlotWeapon";
   }
   
 	public override attack(target: EntityI, entity: SlotWeaponEntity, locale: string) {
@@ -24,9 +25,9 @@ export default class SlotWeaponTag extends WeaponTag {
     return super.attack(target, entity, locale);
 	}
 
-	public buildInfo(builder: BaseEmbed, entity?: SlotWeaponEntity): BaseEmbed {
-		super.buildInfo(builder, entity);
-		if(entity) builder.addField('ammos', entity.ammos.length.toString() )
-		return builder;
+	public buildInfo(embed: MessageEmbed, entity?: SlotWeaponEntity): MessageEmbed {
+		super.buildInfo(embed, entity);
+		if(entity) embed.addField('ammos', entity.ammos.length.toString() )
+		return embed;
 	}
 }

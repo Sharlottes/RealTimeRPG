@@ -1,9 +1,19 @@
-import Discord, { CacheType, MessageActionRow, MessageComponentInteraction, MessageActionRowComponent } from 'discord.js';
+import Discord, { Interaction, Message, MessageEmbed, MessageOptions, CacheType, MessageActionRow, MessageComponentInteraction, MessageActionRowComponent } from 'discord.js';
 
 import { PagesBuilder } from 'discord.js-pages';
 import { StatusEntity, ItemStack, User, Inventory } from '@RTTRPG/game';
-import { BaseEmbed } from '@RTTRPG/modules';
 import { StatusEffect } from '@RTTRPG/game/contents';
+import Manager from '@RTTRPG/game/managers/Manager';
+
+export type ComponentTrigger = (interaction: MessageComponentInteraction, manager: Manager) => void;
+export type ManagerConstructOptions = {
+    content?: string;
+    embeds?: MessageEmbed[];
+    components?: MessageActionRow[];
+    triggers?: Map<string, ComponentTrigger>;
+    files?: Exclude<MessageOptions['files'], undefined>;
+    interaction: Interaction;
+}
 
 export interface Heathy { 
     health: number
@@ -26,7 +36,6 @@ export type Stat = {
 
 export type Message = {
     interaction: Discord.CommandInteraction<CacheType>,
-    builder: BaseEmbed,
     sender: User
 }
 

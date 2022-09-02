@@ -6,7 +6,7 @@ import assets from "@RTTRPG/assets";
 import config from "@RTTRPG/discord.json";
 
 import { init } from './game';
-import { CommandManager } from './game/managers';
+import CommandManager from './commands/CommandManager';
 
 import Vars from './Vars';
 
@@ -87,3 +87,7 @@ client.on("messageCreate", async message => {
         }
     }
 });
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection at', promise, 'reason:', reason);
+})
