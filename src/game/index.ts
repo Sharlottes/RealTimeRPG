@@ -1,6 +1,6 @@
 export { default as UnitEntity } from "./UnitEntity";
 export { default as StatusEntity } from "./StatusEntity";
-export { default as BaseEvent } from "./BaseEvent";
+export { default as BaseEvent } from "./contents/types/BaseEvent";
 export { default as User } from "./User";
 export { default as Inventory } from "./Inventory";
 export * from "./Inventory";
@@ -12,11 +12,13 @@ import CommandManager from '@RTTRPG/commands/CommandManager';
 import { Items, Units, StatusEffects } from "@RTTRPG/game/contents";
 import { Database } from '@RTTRPG/util';
 import Vars from "@RTTRPG/Vars";
+import Events from "./contents/Events";
 
 export function init() {
 	StatusEffects.init();
 	Items.init();
 	Units.init();
+	Events.init();
 	CommandManager.init();
 }
 

@@ -55,8 +55,8 @@ export default class ItemSelectManager extends SelectManager {
       .setTitle("ItemPad")
 			.setFields([
         {name: "Item", value: this.stack.item.localName(this.locale)}, 
-        {name: "Amount", value: this.amount.toString()
-      }])
+        {name: "Amount", value: this.amount.toString()}
+      ])
     ]);
 	  this.send();
   }

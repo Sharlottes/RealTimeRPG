@@ -1,10 +1,7 @@
 import { CommandInteraction, MessageEmbed } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 
-import Random from 'random';
-
-import { UnitEntity, ItemStack, BaseEvent, User, getOne } from '@RTTRPG/game';
-import EncounterManager from '@RTTRPG/game/managers/EncounterManager';
+import { ItemStack, User, getOne } from '@RTTRPG/game';
 import { Items, Units, Content } from '@RTTRPG/game/contents';
 import { CommandCategory } from '@RTTRPG/@type';
 import { bundle } from '@RTTRPG/assets';
@@ -12,12 +9,7 @@ import { Arrays } from '@RTTRPG/util';
 import CM from '@RTTRPG/commands';
 import Vars from '@RTTRPG/Vars';
 import Manager from '../game/managers/Manager';
-
-const eventData: BaseEvent[] = [];
-
-function registerEvent(ratio: number, callback: (user: User, interaction: CommandInteraction) => void) {
-	eventData.push(new BaseEvent(ratio, callback));
-}
+import Events from '@RTTRPG/game/contents/Events';
 
 function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: CommandInteraction) => void), category: CommandCategory = 'guild') {
 	CM.register({
@@ -45,27 +37,6 @@ function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, inter
 
 namespace CommandManager {
 	export function init() {
-		eventData.length = 0;
-		registerEvent(15, (user, interaction) => {
-			const money = 2 + Math.floor(Math.random() * 10);
-			user.money += money;
-			interaction.followUp(bundle.format(user.locale, 'event.money', money));
-		});
-
-		registerEvent(10, (user, interaction) => {
-			const item = getOne(Items.items.filter((i) => i.dropOnWalk));
-			user.giveItem(item);
-			interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
-		});
-
-		registerEvent(15, (user, interaction) => {
-			EncounterManager.start<typeof EncounterManager>({
-				user: user,
-				interaction: interaction, 
-				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1)))
-			});
-		});
-
 		registerCmd(
 			new SlashCommandBuilder()
 				.addUserOption((option) => option.setName('target').setDescription('target user'))
@@ -136,15 +107,15 @@ namespace CommandManager {
 				const type = interaction.options.getString('type', false);
 				const contents: Content[] = [];
 				const embeds: MessageEmbed[] = [];
-
-				if (!type || type == 'unit') {
+				
+				if (type === null || type == 'unit') {
 					for (const unit of Units.units) {
 						if (!user.foundContents.units.includes(unit.id)) continue;
 						contents.push(unit);
 					}
 				}
 
-				if (!type || type == 'item') {
+				if (type === null || type == 'item') {
 					for (const item of Items.items) {
 						if (!user.foundContents.items.includes(item.id)) continue;
 						contents.push(item);
@@ -166,15 +137,7 @@ namespace CommandManager {
 		);
 
 		registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), (user, interaction) => {
-			getOne(eventData).start(user, interaction);
-			/*
-			if (user.stats.energy >= 7) {
-				user.stats.energy -= 7;
-				getOne(eventData).start(user, interaction);
-			} else {
-				Manager.newErrorEmbed(user, interaction, bundle.format(user.locale, 'error.low_energy', user.stats.energy.toFixed(1), 7));
-			}
-			*/
+			user.gameManager.startEvent(getOne(Events.events), interaction);
 		});
 
 		registerCmd(

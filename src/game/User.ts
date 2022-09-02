@@ -12,6 +12,7 @@ import { app } from '@RTTRPG/index';
 import { filledBar } from 'string-progressbar';
 import { SlotWeaponEntity } from './Inventory';
 import Manager from './managers/Manager';
+import GameManager from './managers/GameManager';
 
 const defaultStat: Stat = {
   health: 20,
@@ -30,6 +31,7 @@ export default class User implements EntityI {
   public user: Discord.User; /*should be non-null*/
   public readonly foundContents = { items: [-1], units: [-1] };
   public readonly statuses: StatusEntity[] = [];
+  public readonly gameManager: GameManager = new GameManager(this);
   public exp = 0;
   public level = 1;
   public money = 0;

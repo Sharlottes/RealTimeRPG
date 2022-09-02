@@ -3,7 +3,7 @@ import { bundle } from "@RTTRPG/assets";
 import { SlotWeaponEntity } from "@RTTRPG/game/Inventory";
 import { MessageEmbed } from "discord.js";
 import { Item } from "..";
-import StatusEffect from "../StatusEffect";
+import StatusEffect from "../types/StatusEffect";
 import WeaponTag from "./WeaponTag";
 
 export default class SlotWeaponTag extends WeaponTag {

@@ -2,7 +2,7 @@ import { EntityI } from '@RTTRPG/@type';
 import { ItemEntity } from '@RTTRPG/game/Inventory';
 import { MessageEmbed } from 'discord.js';
 import Buff from '../Buff';
-import Item from '../Item';
+import Item from '../types/Item';
 import ItemTag from './ItemTag';
 
 export default class ConsumeTag extends ItemTag {

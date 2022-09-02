@@ -1,6 +1,6 @@
 import { EntityI } from "@RTTRPG/@type";
-import { Content, StatusEffects } from ".";
-import { StatusEntity } from "..";
+import { Content, StatusEffects } from "..";
+import { StatusEntity } from "../..";
 
 export default class StatusEffect extends Content {
 	readonly id: number;

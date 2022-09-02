@@ -11,36 +11,37 @@ import { MessageEmbed } from 'discord.js';
 
 export default class EncounterManager extends SelectManager {
   private target: UnitEntity;
+  private user: User;
 
   public constructor(options: ManagerConstructOptions & { user: User, target: UnitEntity, last?: SelectManager }) {
     super(options);
+    this.user = options.user;
 		this.target = options.target;
-    console.log(options);
 	}
 
   public override init() {
     this.setEmbeds([new MessageEmbed().setTitle(bundle.find(this.locale, `event.${this.target.getUnit().name}`))]);
 
-    this.addButtonSelection('battle', 0, (user) => BattleManager.start<typeof BattleManager>({ user: user, interaction: this.interaction, enemy: this.target }));
-    this.addButtonSelection('run', 0, (user) => {
+    this.addButtonSelection('battle', 0, () => BattleManager.start<typeof BattleManager>({ user: this.user, interaction: this.interaction, enemy: this.target }));
+    this.addButtonSelection('run', 0, () => {
       if (Random.boolean()) {
         const money = Math.floor(Mathf.range(2, 10));
-        user.money -= money;
-        this.embeds[0].addFields({name: "Result:", value: "```\n"+bundle.format(user.locale, 'event.goblin_run_failed', money)+"\n```"});
+        this.user.money -= money;
+        this.embeds[0].addFields({name: "Result:", value: "```\n"+bundle.format(this.user.locale, 'event.goblin_run_failed', money)+"\n```"});
       } else {
-        this.embeds[0].addFields({name: "Result:", value: "```\n"+bundle.find(user.locale, 'event.goblin_run_success')+"\n```"});
+        this.embeds[0].addFields({name: "Result:", value: "```\n"+bundle.find(this.user.locale, 'event.goblin_run_success')+"\n```"});
       }
       this.setComponents([]);
     });
 
     if(this.target.id == 1) { 
-      this.addButtonSelection('talking', 0, (user) => {
+      this.addButtonSelection('talking', 0, () => {
         const money = Math.floor(Mathf.range(2, 5));
-        user.money -= money;
-        this.embeds[0].addFields({name: "Result:", value: "```\n"+bundle.format(user.locale, 'event.goblin_talking', money)+"\n```"});
+        this.user.money -= money;
+        this.embeds[0].addFields({name: "Result:", value: "```\n"+bundle.format(this.user.locale, 'event.goblin_talking', money)+"\n```"});
         this.setComponents([]);
       });
-      this.addButtonSelection('exchange', 0, (user) => ExchangeManager.start<typeof ExchangeManager>({ user: user, interaction: this.interaction, target: this.target }));
+      this.addButtonSelection('exchange', 0, () => ExchangeManager.start<typeof ExchangeManager>({ user: this.user, interaction: this.interaction, target: this.target }));
     }
   }
 }

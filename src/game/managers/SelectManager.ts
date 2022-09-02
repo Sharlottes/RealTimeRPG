@@ -16,17 +16,14 @@ type MenuSelectOptions<T> = {
 }
 
 export default class SelectManager extends Manager {
-  protected readonly selections: EventSelection[][];
   protected readonly last?: SelectManager;
 
   public constructor(options: ManagerConstructOptions & { user: User, last?: SelectManager }) {
     super(options);
-    this.selections = [];
     this.last = options.last;
   }
 
   public init() {
-    this.selections.length = 0;
     if(this.last) {
       this.addButtonSelection('back_select', 0, (user) => {
         if(!this.last) return;
@@ -38,7 +35,7 @@ export default class SelectManager extends Manager {
   public addButtonSelection(name: string, row: number, callback: ComponentTrigger, option: Omit<InteractionButtonOptions, 'customId'> = {style: 'PRIMARY'}) {
     this.resizeSelection(row);
 
-    this.components[row].addComponents(new MessageButton().setCustomId(name).setStyle(option.style));
+    this.components[row].addComponents(new MessageButton().setLabel(bundle.find(this.locale, `select.${name}`)).setCustomId(name).setStyle(option.style));
     this.setTriggers(name, callback);
 
     return this;
@@ -98,8 +95,8 @@ export default class SelectManager extends Manager {
     return this;
   }
 
-  private resizeSelection(size: number) {
-    while(this.components.length <= size+1) {
+  private resizeSelection(index: number) {
+    while(this.components.length <= index) {
       this.components.push(new MessageActionRow());
     }
   }

@@ -5,7 +5,7 @@ import { MessageEmbed } from "discord.js";
 import Random from "random";
 import { ItemTag } from ".";
 import { Item } from "..";
-import StatusEffect from "../StatusEffect";
+import StatusEffect from "../types/StatusEffect";
 
 export default class WeaponTag extends ItemTag {
 	public readonly damage: number;

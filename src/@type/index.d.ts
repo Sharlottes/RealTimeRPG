@@ -1,8 +1,7 @@
 import Discord, { Interaction, Message, MessageEmbed, MessageOptions, CacheType, MessageActionRow, MessageComponentInteraction, MessageActionRowComponent } from 'discord.js';
 
-import { PagesBuilder } from 'discord.js-pages';
 import { StatusEntity, ItemStack, User, Inventory } from '@RTTRPG/game';
-import { StatusEffect } from '@RTTRPG/game/contents';
+import StatusEffect from '@RTTRPG/game/contents/StatusEffect';
 import Manager from '@RTTRPG/game/managers/Manager';
 
 export type ComponentTrigger = (interaction: MessageComponentInteraction, manager: Manager) => void;

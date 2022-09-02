@@ -1,9 +1,9 @@
 import { Dropable, Rationess, ItemData } from "@RTTRPG/@type";
-import { Content, Items } from ".";
-import { AmmoTag, ConsumeTag, ItemTag, ShieldTag, SlotWeaponTag, WeaponTag } from "./tags";
+import { Content, Items } from "..";
+import { AmmoTag, ConsumeTag, ItemTag, ShieldTag, SlotWeaponTag, WeaponTag } from "../tags";
 import { CommandInteraction, MessageEmbed } from 'discord.js';
-import { ItemEntity } from "..";
-import Manager from "../managers/Manager";
+import { ItemEntity } from "../..";
+import Manager from "../../managers/Manager";
 
 export default class Item extends Content implements Dropable, Rationess {
 	readonly ratio: number;

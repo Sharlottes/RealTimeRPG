@@ -65,7 +65,6 @@ class Manager {
             else return this.interaction.reply(options);
         }
         else return this.interaction.channel?.send(options).then(msg => this.message = msg);
-
     }
     
     /**
