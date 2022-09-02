@@ -175,15 +175,26 @@ export default class User implements EntityI {
           { name: 'Money', value: `${this.money} ${bundle.find(this.locale, 'unit.money')}`, inline: true },
           { name: 'Equipped Weapon', value: weapon.localName(this), inline: true },
           { name: 'Inventory', value: this.inventory.items.length.toString(), inline: true }
-      )] 
+      )]
     })
-      .addFiles(attachment)
-      .addComponents(new MessageActionRow().addComponents([
-        new MessageButton().setCustomId('weapon_info').setLabel('show Weapon Info').setStyle('PRIMARY'),
-        new MessageButton().setCustomId('inventory_info').setLabel('show Inventory Info').setStyle('PRIMARY')
-      ]))
-      .setTriggers('weapon_info', () => weapon.showInfo(interaction, this.inventory.equipments.weapon))
-      .setTriggers('inventory_info', () => this.showInventoryInfo(interaction))
+      .apply(manager => {
+        manager.files.push(attachment)
+        manager.components.push(
+          new MessageActionRow()
+            .addComponents([
+              new MessageButton()
+                .setCustomId('weapon_info')
+                .setLabel('show Weapon Info')
+                .setStyle('PRIMARY'),
+              new MessageButton()
+                .setCustomId('inventory_info')
+                .setLabel('show Inventory Info')
+                .setStyle('PRIMARY')
+            ])
+        )
+        manager.triggers.set('weapon_info', () => weapon.showInfo(interaction, this.inventory.equipments.weapon))
+        manager.triggers.set('inventory_info', () => this.showInventoryInfo(interaction))
+      })
       .send();
   }
 }

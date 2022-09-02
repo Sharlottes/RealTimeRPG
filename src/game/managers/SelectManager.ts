@@ -2,7 +2,6 @@ import { InteractionButtonOptions, MessageActionRow, MessageButton, MessageSelec
 import { ComponentTrigger, type ManagerConstructOptions } from "@RTTRPG/@type";
 
 import { User } from '@RTTRPG/game';
-import { EventSelection } from '@RTTRPG/@type';
 import { bundle } from '@RTTRPG/assets';
 import Manager from './Manager';
 

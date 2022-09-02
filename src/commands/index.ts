@@ -48,7 +48,7 @@ namespace CommandManager {
             if(command.category !== target) continue;
             const data = command.setHiddenConfig(command.builder).toJSON();
             await application.commands.create(data as ApplicationCommandDataResolvable, guild?.id);
-            console.log(`[Command] registing [ /${command.builder.name} ] to ${command.category} ] command has been done.`);
+            console.log(`[Command] registing [ /${command.builder.name} ] to ${command.category} command has been done.`);
         }
     }
 }

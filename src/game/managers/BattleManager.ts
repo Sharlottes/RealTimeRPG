@@ -1,4 +1,4 @@
-import { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
+import { MessageActionRow, MessageButton, MessageEmbed, TextBasedChannel } from 'discord.js';
 
 import { UnitEntity, getOne, User, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from '@RTTRPG/game';
 import { Units, Item, Items } from '@RTTRPG/game/contents';
@@ -312,7 +312,11 @@ export default class BattleManager extends SelectManager {
 				this.actionQueueManager.embeds[0].setDescription(this.actionQueue.map<string>(a => a.description()).join('```\n```\n'));
 				this.actionQueueManager.send();
 			});
+	}
+
+	public override async send(channel?: TextBasedChannel) {
 		this.actionQueueManager.send();
+		super.send();
 	}
 
 	public isEvasion(entity: EntityI) {
@@ -467,15 +471,14 @@ export default class BattleManager extends SelectManager {
 			if (status.duration <= 0) this.turn.statuses.splice(this.turn.statuses.findIndex(s => s == status), 1);
 		}
 
+		if (this.status.get(this.turn) !== Status.DEFAULT) {
+			await this.updateEmbed(bundle.find(this.locale, "error.action_status"));
+		}
 		for (; this.actionQueue.length > 0;) {
 			const action = this.actionQueue.shift();
 			this.actionQueueManager.embeds[0].setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join('\n') || "Empty");
 			await this.send();
 			if (action) {
-				if (this.status.get(this.turn) !== Status.DEFAULT) {
-					await this.updateEmbed(bundle.find(this.locale, "error.action_status"));
-					continue;
-				}
 				await action.run();
 
 				if (action instanceof BaseAction) this.comboQueue.push(action.title);
