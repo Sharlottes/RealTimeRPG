@@ -8,6 +8,7 @@ import { MessageEmbed } from "discord.js";
 
 export default class ItemSelectManager extends SelectManager {
 	private amount = 0;
+  private mainEmbed: MessageEmbed;
   private stack: ItemStack;
   private callback: (amount: number)=>void;
 
@@ -15,6 +16,10 @@ export default class ItemSelectManager extends SelectManager {
     super(options);
     this.stack = options.item instanceof ItemStack ? options.item : new ItemStack(options.item);
     this.callback = options.callback;
+    this.mainEmbed = new MessageEmbed().setTitle("ItemPad").setFields([
+      {name: `Item (${this.stack.amount})`, value: this.stack.item.localName(this.locale)}, 
+      {name: "Amount", value: this.amount.toString()}
+    ]);
 	}
   
   public override async init() {
@@ -51,18 +56,12 @@ export default class ItemSelectManager extends SelectManager {
       this.amount = this.stack.amount;
       this.updateEmbed();
     }, {style: 'SECONDARY'});
-		this.setEmbeds([new MessageEmbed()
-      .setTitle("ItemPad")
-			.setFields([
-        {name: "Item", value: this.stack.item.localName(this.locale)}, 
-        {name: "Amount", value: this.amount.toString()}
-      ])
-    ]);
-	  this.send();
+		this.setEmbeds([ this.mainEmbed ]);
   }
   
   public updateEmbed() {
-    this.embeds[0].setFields([{name: "Item", value: this.stack.item.localName(this.locale)}, {name: "Amount", value: this.amount.toString()}]);
+    this.mainEmbed.setFields([{name: `Item (${this.stack.amount})`, value: this.stack.item.localName(this.locale)}, {name: "Amount", value: this.amount.toString()}]);
     this.components[3].components[2].setDisabled(this.amount > this.stack.amount);
+    this.send();
   }
 }

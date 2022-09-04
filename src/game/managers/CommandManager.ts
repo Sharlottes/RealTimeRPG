@@ -8,7 +8,7 @@ import { bundle } from '@RTTRPG/assets';
 import { Arrays } from '@RTTRPG/util';
 import CM from '@RTTRPG/commands';
 import Vars from '@RTTRPG/Vars';
-import Manager from '../game/managers/Manager';
+import Manager from './Manager';
 import Events from '@RTTRPG/game/contents/Events';
 
 function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: CommandInteraction) => void), category: CommandCategory = 'guild') {
@@ -129,10 +129,12 @@ namespace CommandManager {
 				});
 				if (embeds.length <= 0) embeds.push(new MessageEmbed().setDescription('< empty >'));
 				//TODO: make page
+				/*
 				Manager.start({
 					interaction: interaction, 
 					embeds: [new MessageEmbed()]
 				});
+				*/
 			}
 		);
 

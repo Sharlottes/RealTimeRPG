@@ -8,7 +8,7 @@ export * from "./Inventory";
 import { Snowflake } from 'discord.js';
 
 import { Rationess, Message, UserSave } from '@RTTRPG/@type';
-import CommandManager from '@RTTRPG/commands/CommandManager';
+import CommandManager from '@RTTRPG/game/managers/CommandManager';
 import { Items, Units, StatusEffects } from "@RTTRPG/game/contents";
 import { Database } from '@RTTRPG/util';
 import Vars from "@RTTRPG/Vars";

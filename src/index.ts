@@ -6,7 +6,7 @@ import assets from "@RTTRPG/assets";
 import config from "@RTTRPG/discord.json";
 
 import { init } from './game';
-import CommandManager from './commands/CommandManager';
+import CommandManager from './game/managers/CommandManager';
 
 import Vars from './Vars';
 
@@ -88,6 +88,16 @@ client.on("messageCreate", async message => {
     }
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection at', promise, 'reason:', reason);
-})
+process
+    .on("unhandledRejection", async (err) => {
+        console.error("Unhandled Promise Rejection:\n", err);
+    })
+    .on("uncaughtException", async (err) => {
+        console.error("Uncaught Promise Exception:\n", err);
+    })
+    .on("uncaughtExceptionMonitor", async (err) => {
+        console.error("Uncaught Promise Exception (Monitor):\n", err);
+    })
+    .on("multipleResolves", async (type, promise, reason) => {
+        console.error("Multiple Resolves:\n", type, promise, reason);
+    });

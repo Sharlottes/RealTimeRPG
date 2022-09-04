@@ -31,7 +31,7 @@ export default class ExchangeManager extends SelectManager {
 		}
 		
 	  this.addButtonSelection('back', 0, () => {
-			this.addContentBlock(bundle.find(this.locale, 'shop.end'));
+			this.addContent(bundle.find(this.locale, 'shop.end'));
 			this.setComponents([]);
 			this.addRemoveButton();
 			this.send();
@@ -183,12 +183,12 @@ export default class ExchangeManager extends SelectManager {
 		const money = this.calPrice(item);
     
 		if (amount > max) { 
-			this.addContentBlock('- '+bundle.format(this.locale, 'shop.notEnough_item', item.localName(this.locale), amount, max), 'diff'); 
+			this.addContent('- '+bundle.format(this.locale, 'shop.notEnough_item', item.localName(this.locale), amount, max), 'diff'); 
 		} 
 		else if (visitor.money < amount * money) { 
-			this.addContentBlock('- '+bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'); 
+			this.addContent('- '+bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'); 
 		} else {
-			this.addContentBlock('+ '+bundle.format(this.locale, owner == this.user ? 'shop.sold' : 'shop.buyed', item.localName(this.locale), amount, owner.money, (owner.money + money * amount)), 'diff');
+			this.addContent('+ '+bundle.format(this.locale, owner == this.user ? 'shop.sold' : 'shop.buyed', item.localName(this.locale), amount, owner.money, (owner.money + money * amount)), 'diff');
 
 			visitor.money -= money * amount;
 			visitor.inventory.add(item, amount);
