@@ -1,11 +1,11 @@
-import { MessageActionRow, MessageButton, MessageEmbed, TextBasedChannel } from 'discord.js';
+import { MessageButton, MessageEmbed } from 'discord.js';
 
 import { UnitEntity, getOne, User, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from '@RTTRPG/game';
 import { Units, Item, Items } from '@RTTRPG/game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from '@RTTRPG/util';
 import SelectManager from '@RTTRPG/game/managers/SelectManager';
 import { bundle } from '@RTTRPG/assets';
-import { EntityI, ManagerConstructOptions } from '@RTTRPG/@type';
+import { EntityI, SelectManagerConstructOptions } from '@RTTRPG/@type';
 import ItemSelectManager from './ItemSelectManager';
 import { codeBlock } from '@discordjs/builders';
 import Random from 'random';
@@ -304,7 +304,6 @@ export default class BattleManager extends SelectManager {
 	private readonly actionQueue: BaseAction[] = [];
 	private readonly status: Map<EntityI, Status>;
 
-	public readonly user: User;
 	public readonly enemy: UnitEntity;
 	public turn: EntityI; //normally, user first
 
@@ -321,9 +320,8 @@ export default class BattleManager extends SelectManager {
 			await this.updateLog(bundle.find(this.locale, "combo.overeat")).send();
 		});
 
-	public constructor(options: ManagerConstructOptions & { user: User, enemy: UnitEntity, last?: SelectManager }) {
+	public constructor(options: SelectManagerConstructOptions & { enemy: UnitEntity }) {
 		super(options);
-		this.user = options.user;
 		this.enemy = options.enemy;
 		this.turn = options.user;
 		this.status = new Map<EntityI, Status>()
@@ -335,7 +333,9 @@ export default class BattleManager extends SelectManager {
 	}
 
 	public override async init() {
-		this.setContent(bundle.format(this.locale, 'battle.start', this.user.user.username, Units.find(this.enemy.id).localName(this.user)));
+		super.init();
+
+		this.setContent(bundle.format(this.locale, 'battle.start', this.user.user.username, this.enemy.type.localName(this.user)));
 		this.setEmbeds([ this.mainEmbed, this.actionEmbed ]);
 	    this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
 		this.updateBar();
@@ -534,7 +534,7 @@ export default class BattleManager extends SelectManager {
 
 		//둘 중 하나가 죽으면 전투 끝
 		if (this.user.stats.health <= 0 || this.enemy.stats.health <= 0) {
-			await this.battleEnd(this.user);
+			await this.battleEnd();
 			return;
 		}
 		
@@ -573,7 +573,7 @@ export default class BattleManager extends SelectManager {
 				inline: true
 			},
 			{
-				name: this.enemy.getUnit().localName(this.locale) + (this.turn == this.enemy ? `   ${this.totalTurn} ` + bundle.find(this.locale, "turn") : "") + (this.isEvasion(this.enemy) ? `   ${bundle.find(this.locale, 'evasion')}` : ""),
+				name: this.enemy.type.localName(this.locale) + (this.turn == this.enemy ? `   ${this.totalTurn} ` + bundle.find(this.locale, "turn") : "") + (this.isEvasion(this.enemy) ? `   ${bundle.find(this.locale, 'evasion')}` : ""),
 				value:
 					`**${bundle.find(this.locale, 'health')}**: ${this.enemy.stats.health}/${this.enemy.stats.health_max}\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}` +
 					`\n\n**${bundle.find(this.locale, 'energy')}**: ${this.enemy.stats.energy}/${this.enemy.stats.energy_max}\n${Canvas.unicodeProgressBar(this.enemy.stats.energy, this.enemy.stats.energy_max)}` +
@@ -586,12 +586,11 @@ export default class BattleManager extends SelectManager {
 		]);
 	}
 
-	private async battleEnd(user: User) {
-		this.setComponents([]);
+	private async battleEnd() {
 		this.setEmbeds([ this.mainEmbed ]);
 		this.updateBar();
 		if (this.enemy.stats.health <= 0) {
-			const unit = Units.find(this.enemy.id);
+			const unit = this.enemy.type;
 			const items: { item: Item, amount: number }[] = [];
 
 			//전투 보상은 최소 1개, 최대 적 레벨의 4배만큼의 랜덤한 아이템
@@ -607,17 +606,16 @@ export default class BattleManager extends SelectManager {
 				'Battle End',
 				Strings.color(
 					bundle.format(this.locale, 'battle.result',
-						user.exp,
-						user.exp += unit.level * (1 + unit.ratio) * 10,
-						items.map((i) => `${i.item.localName(user)} +${i.amount} ${bundle.find(this.locale, 'unit.item')}`).join('\n')
-					) + '\n' + items.map((i) => user.giveItem(i.item)).filter((e) => e).join('\n'),
+						this.user.exp,
+						this.user.exp += unit.level * (1 + unit.ratio) * 10,
+						items.map((i) => `${i.item.localName(this.locale)} +${i.amount} ${bundle.find(this.locale, 'unit.item')}`).join('\n')
+					) + '\n' + items.map((i) => this.user.giveItem(i.item)).filter((e) => e).join('\n'),
 					[ANSIStyle.BLUE])
 			);
-		} else if (user.stats.health <= 0) {
-			this.updateLog('- ' + bundle.format(this.locale, 'battle.lose', user.stats.health));
+		} else if (this.user.stats.health <= 0) {
+			this.updateLog('- ' + bundle.format(this.locale, 'battle.lose', this.user.stats.health));
+			//TODO: 패배 부분 구현하기
 		}
-		this.addRemoveButton();
-		await this.send();
-		this.user.gameManager.endEvent();
+		this.endManager(15 * 1000);
 	}
 }

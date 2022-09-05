@@ -20,7 +20,7 @@ namespace CommandManager {
 
         if(!commands.has(commandName)) {
             commands.set(commandName, command);
-            console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} ] command.`);
+            console.log(`[Command] register [ /${command.builder.name} ] to ${command.category} command.`);
             return true;
         } else {
             return false;

@@ -13,6 +13,7 @@ export type ManagerConstructOptions = {
     files?: Exclude<MessageOptions['files'], undefined>;
     interaction: Interaction;
 }
+export type SelectManagerConstructOptions<L=SelectManager> = ManagerConstructOptions & { user: User, last?: L }
 
 export interface Heathy { 
     health: number

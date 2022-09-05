@@ -1,9 +1,9 @@
-import { InteractionButtonOptions, MessageActionRow, MessageButton, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData } from 'discord.js';
-import { ComponentTrigger, type ManagerConstructOptions } from "@RTTRPG/@type";
+import { InteractionButtonOptions, MessageActionRow, MessageButton, MessageSelectMenu, MessageSelectOptionData } from 'discord.js';
+import { ComponentTrigger, type SelectManagerConstructOptions } from "@RTTRPG/@type";
 
-import { User } from '@RTTRPG/game';
 import { bundle } from '@RTTRPG/assets';
 import Manager from './Manager';
+import User from '../User';
 
 type MenuSelectOptions<T> = {
   customId: string;
@@ -15,18 +15,23 @@ type MenuSelectOptions<T> = {
 }
 
 export default class SelectManager extends Manager {
+  public readonly user: User;
   protected readonly last?: SelectManager;
 
-  public constructor(options: ManagerConstructOptions & { user: User, last?: SelectManager }) {
+  public constructor(options: SelectManagerConstructOptions) {
     super(options);
+    this.user = options.user;
     this.last = options.last;
   }
 
   public init() {
+    super.init();
+
     if(this.last) {
-      this.addButtonSelection('back_select', 0, (user) => {
+      this.addButtonSelection('back_select', 0, () => {
         if(!this.last) return;
-        this.changeManager(this.last);
+        this.last.init();
+        this.last.send();
       }, { style: 'SECONDARY' });
     }
   }
@@ -57,7 +62,7 @@ export default class SelectManager extends Manager {
       if(index < page * 8 || index > (page + 1) * 8) return acc;
       return [...acc, reducer ? reducer(elem, index) : { label: `#${index} item`, value: index.toString() }];
     }, page == 0 ? [] : [{ label: `<-- ${page}/${Math.floor(list.length/8)+1}`, value: '-1' }]).concat({label: `${page + 2}/${Math.floor(list.length/8)+1} -->`, value: '-2'});
-     
+    
     this.components[row].addComponents(
       new MessageSelectMenu()
         .setCustomId(customId)
@@ -100,9 +105,19 @@ export default class SelectManager extends Manager {
     }
   }
 
-  protected changeManager<T extends SelectManager>(target: T) {
-    target.init();
-    this.components = target.components;
-    this.send();
+  /**
+   * 이 메시지와의 상호작용을 종료합니다.   
+   * 모든 버튼이 사라지고 삭제 버튼이 생성됩니다. 메시지는 5초 후 자동 삭제됩니다.   
+   * 이전 매니저가 존재할 경우 이 매니저를 팝업으로 판단하고 이전 매니저로 전환합니다.   
+   * 이전 매니저가 존재하지 않을 경우 이 매니저를 메인으로 판단하고 이벤트를 종료하고 계속 진행합니다.   
+   */
+  public async endManager(timeout = 5000): Promise<void> {
+    if(this.last) {
+      this.last.init();
+      await this.last.send();
+    } else {
+      this.user.gameManager.endEvent();
+      await super.endManager(timeout);
+    }
   }
 }

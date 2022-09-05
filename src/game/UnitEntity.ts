@@ -4,6 +4,7 @@ import { Inventory, StatusEntity, WeaponEntity } from "@RTTRPG/game";
 
 export default class UnitEntity implements EntityI {
   public readonly id: number;
+  public readonly type: Unit;
   public readonly stats: Stat;
   public readonly inventory = new Inventory();
   public statuses: StatusEntity[] = [];
@@ -13,6 +14,7 @@ export default class UnitEntity implements EntityI {
   public money = 1000;
 
   constructor(unit: Unit) {
+    this.type = unit;
     this.id = unit.id;
     this.stats = Object.assign({}, unit.stats);
     unit.inventory.items.forEach(store => this.inventory.items.push(store));
@@ -46,10 +48,6 @@ export default class UnitEntity implements EntityI {
   public giveItem(item: Item, amount = 1) { 
     this.inventory.add(item, amount);
   }
-
-	public getUnit<T extends Unit>(): T {
-		return Units.find<T>(this.id);
-	}
 
   public switchWeapon(weapon: Item) {
     const entity = this.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == weapon);

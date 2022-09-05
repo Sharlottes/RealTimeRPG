@@ -1,18 +1,18 @@
-import { ItemStack, User } from "..";
+import { ItemStack } from "..";
 import SelectManager from "./SelectManager";
 import { bundle } from '../../assets/index';
 import { Item } from "../contents";
-import { ManagerConstructOptions } from "@RTTRPG/@type";
+import { SelectManagerConstructOptions } from "@RTTRPG/@type";
 import Manager from "./Manager";
 import { MessageEmbed } from "discord.js";
 
 export default class ItemSelectManager extends SelectManager {
 	private amount = 0;
-  private mainEmbed: MessageEmbed;
-  private stack: ItemStack;
-  private callback: (amount: number)=>void;
+  private readonly mainEmbed: MessageEmbed;
+  private readonly stack: ItemStack;
+  private readonly callback: (amount: number)=>void;
 
-  public constructor(options: ManagerConstructOptions & { user: User, item: Item|ItemStack, callback: (amount: number)=>void, last?: SelectManager }) {
+  public constructor(options: SelectManagerConstructOptions & { item: Item|ItemStack, callback: (amount: number) => void }) {
     super(options);
     this.stack = options.item instanceof ItemStack ? options.item : new ItemStack(options.item);
     this.callback = options.callback;
@@ -59,7 +59,7 @@ export default class ItemSelectManager extends SelectManager {
 		this.setEmbeds([ this.mainEmbed ]);
   }
   
-  public updateEmbed() {
+  private updateEmbed() {
     this.mainEmbed.setFields([{name: `Item (${this.stack.amount})`, value: this.stack.item.localName(this.locale)}, {name: "Amount", value: this.amount.toString()}]);
     this.components[3].components[2].setDisabled(this.amount > this.stack.amount);
     this.send();
