@@ -31,7 +31,7 @@ export default class SelectManager extends Manager {
       this.addButtonSelection('back_select', 0, () => {
         if(!this.last) return;
         this.last.init();
-        this.last.send();
+        this.last.update();
       }, { style: 'SECONDARY' });
     }
   }
@@ -93,7 +93,7 @@ export default class SelectManager extends Manager {
       }
 
       interaction.component.setOptions(reoption());
-      this.send();
+      this.update();
     })
 
     return this;
@@ -114,7 +114,7 @@ export default class SelectManager extends Manager {
   public async endManager(timeout = 5000): Promise<void> {
     if(this.last) {
       this.last.init();
-      await this.last.send();
+      await this.last.update();
     } else {
       this.user.gameManager.endEvent();
       await super.endManager(timeout);

@@ -1,10 +1,10 @@
 import { type ManagerConstructOptions, type ComponentTrigger } from "@RTTRPG/@type";
-import { Formatters, type Interaction, MessageActionRow, type MessageOptions, Message, MessageEmbed, MessageButton, TextBasedChannel, InteractionReplyOptions, CacheType, InteractionCollector, MessageComponentInteraction } from "discord.js";
+import { Formatters, type Interaction, MessageActionRow, type MessageOptions, Message, MessageEmbed, MessageButton, TextBasedChannel, InteractionReplyOptions, CacheType, InteractionCollector, MessageComponentInteraction, Options } from "discord.js";
 import { KotlinLike } from '../../util'
 
 type Files = Exclude<MessageOptions['files'], undefined>;
 /**
- * 임베드와 컴포넌트의 생성, 수신, 상호작용을 총괄함
+ * 임베드와 컴포넌트의 생성, 통신, 상호작용을 총괄함
  */
 class Manager extends KotlinLike<Manager> {
     public content?: string;
@@ -37,10 +37,11 @@ class Manager extends KotlinLike<Manager> {
         });
     }
 
-    public static start<T extends abstract new (...args: any) => any = typeof this>(options: ConstructorParameters<T>[0], channel?: TextBasedChannel) {
+    public static start<T extends abstract new (...args: any) => any = typeof this>(options: ConstructorParameters<T>[0] & { channel?: TextBasedChannel, update?: boolean }) {
         const manager = new this(options);
         manager.init();
-        manager.send(channel);
+        if(options.update) manager.update();
+        else manager.send(options.channel);
     }
         
     public init(): void {
@@ -63,27 +64,27 @@ class Manager extends KotlinLike<Manager> {
     }
 
     /**
-     * 현재 데이터를 메시지를 보내거나 수정합니다.
-     * 데이터를 수정하고 업데이트할 때 꼭 필요합니다.
-     * 성공적으로 완료되었으면 message를 업데이트합니다.
-     * TODO: 한 함수에서 너무 많은 책임 분기를 가지고 있으므로 분리가 필요
-     * @param {TextBasedChannel} channel - 수신할 채널, 생략할 경우 interaction editreply - reply - send 우선적으로 수신합니다.
+     * 현재 데이터를 갱신합니다.   
+     * 메시지가 있다면 그 메시지로, 없다면 상호작용의 메시지를 수정하여 갱신합니다.   
+     * @param elseSend - 갱신할 메시지가 없다면 새로 만들어 송신합니다. 
+     * @param channel - 송신할 체널
      */
-    public async send(channel?: TextBasedChannel | undefined | null, skipMessage = false): Promise<void> {
+    public async update(elseSend: boolean, channel?: TextBasedChannel | null): Promise<void>;
+    public async update(): Promise<void>;
+    public async update(elseSend = false, channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
         const options = { content: this.content, embeds: this.embeds, components: this.components, files: this.files };
-        const msg = await (async () => {
-            if(channel) return channel.send(options);
-            else if(this.message?.editable && !skipMessage) return this.message.edit(options);
-            else if(this.interaction.isRepliable()) {
-                if(!this.interaction.replied&&!this.interaction.deferred) return this.interaction.reply(options);
-                if(!this.interaction.deferred) await this.interaction.deferReply();
-                return this.interaction.editReply(options);
-            }
-            else return this.interaction.channel?.send(options);
-        })();
-        
-        if(!(msg instanceof Message)) return;
-        this.message = msg;
+
+        if(this.message?.editable) await this.message.edit(options);
+        else if(this.interaction.isRepliable()) await this.interaction.editReply(options);
+        else if(elseSend) this.send(channel);
+    }
+    /**   
+     * 현재 데이터를 송신하고 message를 갱신합니다.
+     * @param channel - 송신할 채널  
+     */
+    public async send(channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
+        const options = { content: this.content, embeds: this.embeds, components: this.components, files: this.files };
+        await channel?.send(options).then(message => this.message = message);
     }
     
     /**
@@ -102,7 +103,7 @@ class Manager extends KotlinLike<Manager> {
     public async endManager(timeout = 5000) : Promise<void> {
       this.setComponents([]);
       this.addRemoveButton(timeout);
-      await this.send();
+      await this.update();
     }
 
     public addRemoveButton(timeout = 5000): this {

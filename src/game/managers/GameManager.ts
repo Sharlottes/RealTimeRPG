@@ -13,7 +13,6 @@ export default class GameManager {
 
     startEvent(event: BaseEvent, interaction: CommandInteraction<CacheType>) {
         if(this.currentEvent) {
-            if(!(interaction.deferred || interaction.replied)) interaction.deferReply();
             interaction.editReply(bundle.find(this.user.locale, "error.event_existing"));
             return;
         }

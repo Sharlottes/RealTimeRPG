@@ -137,7 +137,7 @@ export default class User implements EntityI {
               (store instanceof SlotWeaponEntity ? `${store.ammos.length} ${bundle.find(this.locale, 'unit.item')} ${bundle.find(this.locale, 'ammo')}` : "") : "",
           inline: true
         })))]
-    }).send();
+    }).update();
   }
 
   public async showUserInfo(interaction: CommandInteraction) {
@@ -195,6 +195,6 @@ export default class User implements EntityI {
         manager.triggers.set('weapon_info', () => weapon.showInfo(interaction, this.inventory.equipments.weapon))
         manager.triggers.set('inventory_info', () => this.showInventoryInfo(interaction))
       })
-      .send();
+      .update();
   }
 }

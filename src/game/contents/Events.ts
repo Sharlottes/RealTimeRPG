@@ -29,7 +29,8 @@ export default class Events {
 			EncounterManager.start<typeof EncounterManager>({
 				user: user,
 				interaction: interaction, 
-				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1)))
+				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),
+				update: true
 			});
 		}));
     }

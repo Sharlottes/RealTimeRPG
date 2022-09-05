@@ -37,7 +37,7 @@ export default class ExchangeManager extends SelectManager {
 			this.addContent(bundle.find(this.locale, 'shop.end'));
 			this.setComponents([]);
 			this.addRemoveButton();
-			this.send();
+			this.update();
 		});
 
 		this.addMenuSelection({
@@ -73,7 +73,7 @@ export default class ExchangeManager extends SelectManager {
 									}]
 								}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 									await this.updateEmbed();
-									await this.send();
+									await this.update();
 								}
 							});
 						} else {
@@ -90,7 +90,7 @@ export default class ExchangeManager extends SelectManager {
 					}]
 				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 				await this.updateEmbed();
-				await this.send();
+				await this.update();
 			},
 			reducer: (store, index) => ({
 				label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
@@ -135,7 +135,7 @@ export default class ExchangeManager extends SelectManager {
 										}]
 									}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 									await this.updateEmbed();
-									await this.send();
+									await this.update();
 								}
 							});
 						} else {
@@ -151,7 +151,7 @@ export default class ExchangeManager extends SelectManager {
 					}]
 				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 				await this.updateEmbed();
-				await this.send();
+				await this.update();
 			},
 			reducer: (store, index) => ({
 				label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
@@ -177,7 +177,7 @@ export default class ExchangeManager extends SelectManager {
 			{ name: this.user.user.username, value: this.user.money + bundle.find(this.locale, 'unit.money'), inline: true },
 			{ name: this.target.type.localName(this.locale), value: this.target.money + bundle.find(this.locale, 'unit.money'), inline: true }
 		]);
-		await this.send();
+		await this.update();
 	}
 
 	private async deal<T extends ItemStorable>(owner: EntityI, visitor: EntityI, store: T, amount: number) {

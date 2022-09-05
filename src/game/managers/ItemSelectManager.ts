@@ -62,6 +62,6 @@ export default class ItemSelectManager extends SelectManager {
   private updateEmbed() {
     this.mainEmbed.setFields([{name: `Item (${this.stack.amount})`, value: this.stack.item.localName(this.locale)}, {name: "Amount", value: this.amount.toString()}]);
     this.components[3].components[2].setDisabled(this.amount > this.stack.amount);
-    this.send();
+    this.update();
   }
 }

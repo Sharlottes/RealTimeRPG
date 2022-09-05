@@ -60,27 +60,27 @@ class AttackAction extends BaseAction {
 		const name = typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale);
 		if (this.manager.isEvasion(this.enemy)) {
 			if (Random.bool()) {
-				await this.manager.updateLog((isUser ? '- ' : '+ ') + bundle.format(this.manager.locale, "evasion_successed", name)).send();
+				await this.manager.updateLog((isUser ? '- ' : '+ ') + bundle.format(this.manager.locale, "evasion_successed", name)).update();
 			} else {
-				await this.manager.updateLog((isUser ? '+ ' : '- ') + bundle.format(this.manager.locale, "evasion_failed", name)).send();
-				await this.manager.updateLog((isUser ? '+ ' : '- ') + entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale)).send();
+				await this.manager.updateLog((isUser ? '+ ' : '- ') + bundle.format(this.manager.locale, "evasion_failed", name)).update();
+				await this.manager.updateLog((isUser ? '+ ' : '- ') + entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale)).update();
 			}
 		} else if (this.manager.isShielded(this.enemy)) {
 			if (this.enemy.inventory.equipments.shield) this.enemy.inventory.equipments.shield.durability -= this.owner.inventory.equipments.weapon.item.getWeapon().damage;
-			await this.manager.updateLog((isUser ? '- ' : '+ ') + bundle.format(this.manager.locale, "shielded", name)).send();
+			await this.manager.updateLog((isUser ? '- ' : '+ ') + bundle.format(this.manager.locale, "shielded", name)).update();
 		} else {
-			await this.manager.updateLog((isUser ? '+ ' : '- ') + entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale)).send();
+			await this.manager.updateLog((isUser ? '+ ' : '- ') + entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale)).update();
 		}
 
 		if (entity.item != Items.punch && entity.item != Items.none) {
 			if (entity.durability > 0) entity.durability--;
 			if (entity.durability <= 0) {
-				await this.manager.updateLog(bundle.format(this.manager.locale, 'battle.broken', entity.item.localName(this.manager.locale))).send();
+				await this.manager.updateLog(bundle.format(this.manager.locale, 'battle.broken', entity.item.localName(this.manager.locale))).update();
 				const exist = this.owner.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == this.owner.inventory.equipments.weapon.item);
 				if (exist) {
 					this.owner.inventory.items.splice(this.owner.inventory.items.indexOf(exist), 1);
 					this.owner.inventory.equipments.weapon = exist;
-					await this.manager.updateLog(bundle.find(this.manager.locale, "battle.auto_swap")).send();
+					await this.manager.updateLog(bundle.find(this.manager.locale, "battle.auto_swap")).update();
 				}
 				else this.owner.inventory.equipments.weapon = new WeaponEntity(Items.punch);
 			}
@@ -120,7 +120,7 @@ class SwapAction extends BaseAction {
 
 	public async run() {
 		if (this.weapon != Items.punch && !this.owner.inventory.items.some(store => store.item == this.weapon)) {
-			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.weapon.localName(this.manager.locale))).send();
+			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.weapon.localName(this.manager.locale))).update();
 			return;
 		}
 		this.manager.updateLog(bundle.format(this.manager.locale, 'switch_change', 
@@ -130,7 +130,7 @@ class SwapAction extends BaseAction {
 		this.owner.switchWeapon(this.weapon);
 		this.manager.updateBar();
 		this.manager.validate();
-		await this.manager.send();
+		await this.manager.update();
 	}
 
 	public description(): string {
@@ -158,7 +158,7 @@ class ConsumeAction extends BaseAction {
 	public async run() {
 		const entity = this.owner.inventory.items.find(store => store.item == this.potion);
 		if (!entity) {
-			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.potion.localName(this.manager.locale))).send();
+			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.potion.localName(this.manager.locale))).update();
 			return;
 		}
 		this.owner.inventory.remove(this.potion, this.amount);
@@ -168,7 +168,7 @@ class ConsumeAction extends BaseAction {
 			this.potion.localName(this.manager.locale), 
 			this.amount, 
 			this.potion.getConsume().buffes.map((b) => b.description(this.owner, this.amount, b, this.manager.locale)).join('\n  ')
-		)).send();
+		)).update();
 	}
 
 	public description(): string {
@@ -202,7 +202,7 @@ class ReloadAction extends BaseAction {
 				this.ammo.localName(this.manager.locale), 
 				this.amount, 
 				this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
-			)).send();
+			)).update();
 		}
 	}
 
@@ -233,7 +233,7 @@ class EvaseAction extends BaseAction {
 
 		await this.manager.updateLog(bundle.format(this.manager.locale, 'evasion_position', 
 			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
-		)).send();
+		)).update();
 	}
 
 	public description(): string {
@@ -259,7 +259,7 @@ class DvaseAction extends BaseAction {
 
 		await this.manager.updateLog(bundle.format(this.manager.locale, 'dvasion_position', 
 			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
-		)).send();
+		)).update();
 	}
 
 	public description(): string {
@@ -285,7 +285,7 @@ class ShieldAction extends BaseAction {
 
 		await this.manager.updateLog(bundle.format(this.manager.locale, 'shield_position', 
 			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
-		)).send();
+		)).update();
 	}
 
 	public description(): string {
@@ -309,15 +309,15 @@ export default class BattleManager extends SelectManager {
 
 	private totalTurn = 1;
 
-	private readonly comboList: Map<string, () => Promise<unknown>> = new Map<string, () => Promise<unknown>>()
+	private readonly comboList: Map<string, () => Promise<void>> = new Map<string, () => Promise<void>>()
 		.set("reload-attack-evase", async () => {
 			(this.turn.inventory.equipments.weapon as SlotWeaponEntity).ammos.push(Items.find(0), Items.find(0), Items.find(0));
-			await this.updateLog(bundle.find(this.locale, "combo.evasing_attack")).send();
+			await this.updateLog(bundle.find(this.locale, "combo.evasing_attack")).update();
 			new AttackAction(this, this.turn, this.turn == this.user ? this.enemy : this.user, true);
 		})
 		.set("consume-consume-consume", async () => {
 			this.turn.stats.health += 5;
-			await this.updateLog(bundle.find(this.locale, "combo.overeat")).send();
+			await this.updateLog(bundle.find(this.locale, "combo.overeat")).update();
 		});
 
 	public constructor(options: SelectManagerConstructOptions & { enemy: UnitEntity }) {
@@ -395,7 +395,7 @@ export default class BattleManager extends SelectManager {
 						item: entity,
 						interaction: this.interaction,
 						callback: async amount => await this.addAction(new ConsumeAction(this, this.user, entity.item, amount))
-					}, interaction.channel ?? undefined);
+					});
 				} else {
 					await this.addAction(new ConsumeAction(this, this.user, entity.item, 1));
 				}
@@ -421,7 +421,7 @@ export default class BattleManager extends SelectManager {
 						item: entity, 
 						interaction: this.interaction, 
 						callback: amount => this.addAction(new ReloadAction(this, this.user, entity.item, amount))
-					}, interaction.channel ?? undefined);
+					});
 				} else {
 					await this.addAction(new ReloadAction(this, this.user, entity.item, 1));
 				}
@@ -433,10 +433,11 @@ export default class BattleManager extends SelectManager {
 			})
 		});
 
-		this.addButtonSelection('undo', 4, (interaction, manager) => {
+		this.addButtonSelection('undo', 4, () => {
 			this.actionQueue.pop()?.undo();
-			if (this.actionQueue.length == 0 && interaction.component.type == "BUTTON") interaction.component.setDisabled(true);
-			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => a.description()).join('```\n```\n'));
+			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join(''));
+			this.validate();
+			this.update();
 		}, {
 			style: 'DANGER',
 			disabled: true
@@ -500,7 +501,7 @@ export default class BattleManager extends SelectManager {
 		this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join(''));
 		this.updateBar();
 		this.validate();
-		await this.send();
+		await this.update();
 	}
 
 	private async turnEnd() {
@@ -519,8 +520,8 @@ export default class BattleManager extends SelectManager {
 		//엑션/콤보 실행
 		while (this.actionQueue.length > 0) {
 			const action = this.actionQueue.shift();
-			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join('\n'));
-			await this.send();
+			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join(''));
+			await this.update();
 			if (!action) continue;
 			await action.run();
 
@@ -551,7 +552,7 @@ export default class BattleManager extends SelectManager {
 
 		this.updateBar();
 		this.validate();
-		await this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn)).send();
+		await this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn)).update();
 	}
 
 	public updateLog(log: string): this {
