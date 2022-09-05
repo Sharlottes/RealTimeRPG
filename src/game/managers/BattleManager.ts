@@ -17,11 +17,13 @@ enum Status {
 	SHIELD
 }
 
+//TODO: action을 굳이 새로 만들 필요가 있을까?
 abstract class BaseAction {
 	public abstract title: string;
 	public manager: BattleManager;
 	public owner: EntityI;
 	public cost: number;
+	private bloody = false;
 
 	constructor(manager: BattleManager, owner: EntityI, cost: number, immediate = false) {
 		this.manager = manager;
@@ -35,10 +37,17 @@ abstract class BaseAction {
 	public abstract description(): string;
 	public abstract isValid(): boolean;
 	public undo(): void {
-		this.owner.stats.energy += this.cost;
+		if(this.bloody) this.owner.stats.health += this.cost; 
+		else this.owner.stats.energy += this.cost;
 	}
 	public onAdded(): void {
-		this.owner.stats.energy -= this.cost;
+		if(this.owner.stats.energy < this.cost) {
+			this.owner.stats.health -= this.cost;
+			this.bloody = true;
+			Manager.newTextEmbed(this.manager.interaction, bundle.find(this.manager.locale, 'alert.bloody_action'), bundle.find(this.manager.locale, 'alert'));
+		} else {
+			this.owner.stats.energy -= this.cost;
+		}
 	}
 }
 
@@ -505,8 +514,6 @@ export default class BattleManager extends SelectManager {
 	}
 
 	private async turnEnd() {
-		//애너지 충전 - TODO: 대체제 만들기
-		this.turn.stats.energy = Math.min(this.turn.stats.energy + 20, this.turn.stats.energy_max);
 		//쿨다운 감소
 		this.turn.inventory.equipments.weapon.cooldown = Math.max(0, this.turn.inventory.equipments.weapon.cooldown - 1);
 
