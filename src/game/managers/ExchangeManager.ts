@@ -2,7 +2,7 @@ import { MessageEmbed, MessageSelectMenu, MessageSelectOptionData } from 'discor
 
 import { ItemStack, ItemStorable, UnitEntity, getOne } from '@RTTRPG/game';
 import SelectManager from '@RTTRPG/game/managers/SelectManager';
-import { Item, Items, Units } from '@RTTRPG/game/contents';
+import { Item, Items } from '@RTTRPG/game/contents';
 import { bundle } from '@RTTRPG/assets';
 import ItemSelectManager from './ItemSelectManager';
 import { EntityI, SelectManagerConstructOptions } from '@RTTRPG/@type';
@@ -11,8 +11,6 @@ import Manager from './Manager';
 export default class ExchangeManager extends SelectManager {
 	private readonly target: UnitEntity;
 	private readonly mainEmbed: MessageEmbed;
-	private buyPage = 0;
-	private sellPage = 0;
 
 	public constructor(options: SelectManagerConstructOptions & { target: UnitEntity }) {
 		super(options);
@@ -46,51 +44,22 @@ export default class ExchangeManager extends SelectManager {
 			callback: async (interaction) => {
 				if (!interaction.isSelectMenu()) return;
 				const id = interaction.values[0];
-
-				switch(id) {
-					case '-1': {
-						if(this.buyPage == 0) Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.first_page"));
-						else this.buyPage--;
-						break;
-					}
-					case '-2': {
-						if(this.buyPage+1 > Math.floor(this.target.inventory.items.length/8)) Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.last_page"));
-						else this.buyPage++;
-						break;
-					}
-					default: {
-						const store = this.target.inventory.items[Number(id)];
-						
-						if(store instanceof ItemStack && store.amount > 1) {
-							ItemSelectManager.start<typeof ItemSelectManager>({ user: this.user, interaction: this.interaction, item: store, callback: async amount => {
-								await this.deal(this.target, this.user, store, amount);
-
-								(interaction.component as MessageSelectMenu).setOptions(this.target.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index) => {
-									if(index < this.buyPage * 8 || index > (this.buyPage + 1) * 8) return a;
-									else return [...a, {
-										label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
-										value: index.toString()
-									}]
-								}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
-									await this.updateEmbed();
-									await this.update();
-								}
-							});
-						} else {
-							await this.deal(this.target, this.user, store, 1);
-						}	
-					}
+				const store = this.target.inventory.items[Number(id)];
+				
+				if(store instanceof ItemStack && store.amount > 1) {
+					ItemSelectManager.start<typeof ItemSelectManager>({ 
+						user: this.user, 
+						interaction: this.interaction, 
+						item: store, 
+						callback: async amount => {
+							await this.deal(this.target, this.user, store, amount);
+							await this.updateEmbed();
+						}
+					});
+				} else {
+					await this.deal(this.target, this.user, store, 1);
 				}
-
-				(interaction.component as MessageSelectMenu).setOptions(this.target.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index) => {
-					if(index < this.buyPage * 8 || index > (this.buyPage + 1) * 8) return a;
-					else return [...a, {
-						label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
-						value: index.toString()
-					}]
-				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 				await this.updateEmbed();
-				await this.update();
 			},
 			reducer: (store, index) => ({
 				label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
@@ -106,52 +75,21 @@ export default class ExchangeManager extends SelectManager {
 			callback: async (interaction) => {
 				if (!interaction.isSelectMenu()) return;
 				const id = interaction.values[0];
-				switch(id) {
-					case '-1': {
-						if(this.sellPage == 0) Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.first_page"));
-						else this.sellPage--;
-						break;
-					}
-					case '-2': {
-						if(this.sellPage+1 > Math.floor(this.user.inventory.items.length/8)) Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.last_page"));
-						else this.sellPage++;
-						break;
-					}
-					default: {
-						const store = this.user.inventory.items[Number(id)];
-						if(store instanceof ItemStack && store.amount > 1) {
-							ItemSelectManager.start<typeof ItemSelectManager>({ 
-								user: this.user, 
-								interaction: this.interaction, 
-								item: store, 
-								callback: async amount => {
-									await this.deal(this.user, this.target, store, amount);
-									
-									(interaction.component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-										if(index < this.sellPage * 8 || index > (this.sellPage + 1) * 8) return a;
-										else return [...a, {
-											label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
-											value: index.toString()
-										}]
-									}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
-									await this.updateEmbed();
-									await this.update();
-								}
-							});
-						} else {
-							await this.deal(this.user, this.target, store, 1);
+				const store = this.user.inventory.items[Number(id)];
+				if(store instanceof ItemStack && store.amount > 1) {
+					ItemSelectManager.start<typeof ItemSelectManager>({ 
+						user: this.user, 
+						interaction: this.interaction, 
+						item: store, 
+						callback: async amount => {
+							await this.deal(this.user, this.target, store, amount);
+							await this.updateEmbed();
 						}
-					}
+					});
+				} else {
+					await this.deal(this.user, this.target, store, 1);
 				}
-				(interaction.component as MessageSelectMenu).setOptions(this.user.inventory.items.reduce<MessageSelectOptionData[]>((a, store, index)=>{
-					if(index < this.sellPage * 8 || index > (this.sellPage + 1) * 8) return a;
-					else return [...a, {
-						label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
-						value: index.toString()
-					}]
-				}, [{label: bundle.find(this.locale, 'prev'), value: '-1'}]).concat({label: bundle.find(this.locale, 'next'), value: '-2'}));
 				await this.updateEmbed();
-				await this.update();
 			},
 			reducer: (store, index) => ({
 				label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,

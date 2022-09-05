@@ -11,7 +11,7 @@ type MenuSelectOptions<T> = {
   callback: ComponentTrigger;
   list: T[];
   reducer?: (elem: T, index: number) => MessageSelectOptionData;
-  placeholder?: string
+  placeholder?: string;
 }
 
 export default class SelectManager extends Manager {
@@ -44,9 +44,21 @@ export default class SelectManager extends Manager {
 
     return this;
   }  
-  
+  /*
+  public updateMenu<T>(options: Partial<Omit<MenuSelectOptions<T>, 'row'>>&{row: number}) {
+    const component = this.components[options.row]?.components[0];
+    if(component instanceof MessageSelectMenu) {
+      this.components[options.row].spliceComponents(0, 1);
+      
+      this.addMenuSelection({ 
+        customId: options.customId ?? component.customId,
+        row: options.row,
+        callback: this.callback });
+      this.update();
+    }
+  }
+  */
   /**
-   * 
    * @param customId - 컴포넌트의 customId
    * @param list - 선택할 아이템 리스트
    * @param placeholder - 선택 전 힌트

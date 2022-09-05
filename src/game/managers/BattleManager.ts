@@ -1,7 +1,7 @@
-import { MessageButton, MessageEmbed } from 'discord.js';
+import { MessageButton, MessageEmbed, MessageSelectMenu } from 'discord.js';
 
-import { UnitEntity, getOne, User, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from '@RTTRPG/game';
-import { Units, Item, Items } from '@RTTRPG/game/contents';
+import { UnitEntity, getOne, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from '@RTTRPG/game';
+import { Item, Items } from '@RTTRPG/game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from '@RTTRPG/util';
 import SelectManager from '@RTTRPG/game/managers/SelectManager';
 import { bundle } from '@RTTRPG/assets';
@@ -17,7 +17,6 @@ enum Status {
 	SHIELD
 }
 
-//TODO: action을 굳이 새로 만들 필요가 있을까?
 abstract class BaseAction {
 	public abstract title: string;
 	public manager: BattleManager;
@@ -102,7 +101,6 @@ class AttackAction extends BaseAction {
 
 	public isValid(): boolean {
 		return this.owner.inventory.equipments.weapon.cooldown == 0;
-
 	}
 
 	public override undo(): void {
@@ -171,7 +169,6 @@ class ConsumeAction extends BaseAction {
 			return;
 		}
 		this.owner.inventory.remove(this.potion, this.amount);
-		//TODO: amount 감소시키기
 		entity.item.getConsume().consume(this.owner, this.amount);
 		await this.manager.updateLog(bundle.format(this.manager.locale, 'consume', 
 			this.potion.localName(this.manager.locale), 
