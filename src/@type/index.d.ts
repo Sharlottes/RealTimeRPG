@@ -4,6 +4,14 @@ import { StatusEntity, ItemStack, User, Inventory } from '@RTTRPG/game';
 import StatusEffect from '@RTTRPG/game/contents/StatusEffect';
 import Manager from '@RTTRPG/game/managers/Manager';
 
+declare global {
+    namespace NodeJS {
+        interface ProcessEnv {
+            DISCORD_TOKEN: string,
+        }
+    }
+}
+
 export type ComponentTrigger = (interaction: MessageComponentInteraction, manager: Manager) => void;
 export type ManagerConstructOptions = {
     content?: string;
@@ -13,9 +21,9 @@ export type ManagerConstructOptions = {
     files?: Exclude<MessageOptions['files'], undefined>;
     interaction: Interaction;
 }
-export type SelectManagerConstructOptions<L=SelectManager> = ManagerConstructOptions & { user: User, last?: L }
+export type SelectManagerConstructOptions<L = SelectManager> = ManagerConstructOptions & { user: User, last?: L }
 
-export interface Heathy { 
+export interface Heathy {
     health: number
     health_max: number
 }
@@ -30,9 +38,9 @@ export interface Durable {
 }
 
 export type Stat = {
-  strength: number
-  defense: number
-} & Heathy & Energy; 
+    strength: number
+    defense: number
+} & Heathy & Energy;
 
 export type Message = {
     interaction: Discord.CommandInteraction<CacheType>,
@@ -63,7 +71,7 @@ export interface Dropable {
 }
 
 export interface Rationess {
-	ratio: number
+    ratio: number
 }
 
 export type ItemData = Rationess & Dropable
@@ -82,7 +90,7 @@ export type UserSave = {
     exp: number,
     stats: Stat,
     inventory: InventoryJSONdata,
-    fountContents: {items: number[], units: number[]}
+    fountContents: { items: number[], units: number[] }
 }
 
 export type InventoryJSONdata = {
@@ -110,7 +118,7 @@ export type InventoryJSONdata = {
     }
 }
 
-export type EventTrigger = (user: User, components: MessageActionRow[], interactionCallback: MessageComponentInteraction, currentRow: MessageActionRowComponent)=>void;
+export type EventTrigger = (user: User, components: MessageActionRow[], interactionCallback: MessageComponentInteraction, currentRow: MessageActionRowComponent) => void;
 
 export type EventSelection = {
     readonly name: string;
@@ -122,10 +130,10 @@ export type EventSelection = {
 export type CommandCategory = "guild" | "global"
 
 export interface EntityI extends StatusI {
-    public readonly id: number|string;
+    public readonly id: number | string;
     public readonly stats: Stat;
     public readonly inventory: Inventory;
-    public readonly name: string|((locale: string)=>string);
+    public readonly name: string | ((locale: string) => string);
     public exp: number;
     public level: number;
     public money: number;

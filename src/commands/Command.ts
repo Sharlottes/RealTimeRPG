@@ -1,5 +1,4 @@
-import { CommandInteraction, CacheType, ApplicationCommandDataResolvable } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandInteraction, CacheType, SlashCommandBuilder } from "discord.js";
 
 import { CommandCategory } from "@RTTRPG/@type";
 
@@ -8,11 +7,11 @@ abstract class Command {
     public readonly dmOnly: boolean;
     public readonly debug: boolean;
     public readonly builder: SlashCommandBuilder;
-    
+
     public abstract run(interaction: CommandInteraction<CacheType>): void;
 
     constructor(
-        category: CommandCategory = "guild", 
+        category: CommandCategory = "guild",
         debug = true,
         dmOnly = false,
         builder = new SlashCommandBuilder()
@@ -21,10 +20,10 @@ abstract class Command {
         this.category = category;
         this.dmOnly = dmOnly;
         this.debug = debug;
-        
+
         this.builder.setDefaultPermission(false);
     }
-    
+
     public setHiddenConfig(option: SlashCommandBuilder): SlashCommandBuilder {
         return option;
     }

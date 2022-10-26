@@ -9,12 +9,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@discordjs/builders": "^0.10.0",
-    "@discordjs/rest": "^0.2.0-canary.0",
-    "@types/properties-reader": "^2.1.1",
     "canvas": "^2.9.0",
     "discord-api-types": "^0.26.0",
     "discord.js": "^13.6.0",
+    "dotenv": "^16.0.3",
     "properties-reader": "^2.2.0",
     "random": "^3.0.6",
     "string-progressbar": "^1.0.4"
@@ -22,19 +20,7 @@
   "devDependencies": {
     "@types/node": "^17.0.1",
     "@types/properties-reader": "^2.1.1",
-    "@typescript-eslint/eslint-plugin": "^5.10.2",
-    "@typescript-eslint/parser": "^5.10.2",
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-promise": "^5.2.0",
     "prettier": "2.5.1",
-    "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",
     "tsconfig-paths": "^3.12.0",
     "typescript": "^4.5.4"

@@ -1,25 +1,5 @@
-# 외부 모듈
 node_modules/
-
-# 빌드 파일
-build/
-
-# doc
-out/
-
-# DB
 Database/
 
-# 테스트 코드
-test/
-error.json
-
-# sdk
-src/discord.json
-
-
-.prettierrc.json
-.eslintrc.json
 .gitignore
-
-window_connect.bat
+.env
