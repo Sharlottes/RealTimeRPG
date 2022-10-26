@@ -8,12 +8,12 @@ import Units from "./Units";
 import Event from './types/BaseEvent';
 
 export default class Events {
-    static readonly events: Event[] = [];
-    
-	public static init() {
-        this.events.length = 0;
+	static readonly events: Event[] = [];
 
-        this.events.push(new Event(15, (user, interaction) => {
+	public static init() {
+		this.events.length = 0;
+
+		this.events.push(new Event(15, (user, interaction) => {
 			const money = 2 + Math.floor(Math.random() * 10);
 			user.money += money;
 			interaction.followUp(bundle.format(user.locale, 'event.money', money));
@@ -28,10 +28,10 @@ export default class Events {
 		this.events.push(new Event(12225, (user, interaction) => {
 			EncounterManager.start<typeof EncounterManager>({
 				user: user,
-				interaction: interaction, 
+				interaction: interaction,
 				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),
 				update: true
 			});
 		}));
-    }
+	}
 }

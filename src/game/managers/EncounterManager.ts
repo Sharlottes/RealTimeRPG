@@ -13,14 +13,14 @@ export default class EncounterManager extends SelectManager {
   private readonly target: UnitEntity;
   private readonly mainEmbed: MessageEmbed;
 
-  public constructor(options: SelectManagerConstructOptions & {target: UnitEntity }) {
+  public constructor(options: SelectManagerConstructOptions & { target: UnitEntity }) {
     super(options);
-		this.target = options.target;
+    this.target = options.target;
     this.mainEmbed = new MessageEmbed().setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
   }
 
   public override init() {
-		super.init();
+    super.init();
 
     this.setEmbeds([this.mainEmbed]);
 
@@ -32,18 +32,19 @@ export default class EncounterManager extends SelectManager {
       if (Random.boolean()) {
         const money = Math.floor(Mathf.range(2, 10));
         this.user.money -= money;
-        this.mainEmbed.addFields({name: "Result:", value: "```\n"+bundle.format(this.user.locale, 'event.goblin_run_failed', money)+"\n```"});
+        this.mainEmbed.addFields({ name: "Result:", value: "```\n" + bundle.format(this.user.locale, 'event.goblin_run_failed', money) + "\n```" });
       } else {
-        this.mainEmbed.addFields({name: "Result:", value: "```\n"+bundle.find(this.user.locale, 'event.goblin_run_success')+"\n```"});
-      }        
+        this.mainEmbed.addFields({ name: "Result:", value: "```\n" + bundle.find(this.user.locale, 'event.goblin_run_success') + "\n```" });
+      }
       this.endManager();
     });
 
-    if(this.target.id == 1) { 
+
+    if (this.target.id == 1) {
       this.addButtonSelection('talking', 0, () => {
         const money = Math.floor(Mathf.range(2, 5));
         this.user.money -= money;
-        this.mainEmbed.addFields({name: "Result:", value: "```\n"+bundle.format(this.user.locale, 'event.goblin_talking', money)+"\n```"});
+        this.mainEmbed.addFields({ name: "Result:", value: "```\n" + bundle.format(this.user.locale, 'event.goblin_talking', money) + "\n```" });
         this.endManager();
       });
       this.addButtonSelection('exchange', 0, () => ExchangeManager.start<typeof ExchangeManager>({ user: this.user, interaction: this.interaction, target: this.target, update: true }));

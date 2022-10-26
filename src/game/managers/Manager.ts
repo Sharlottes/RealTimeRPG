@@ -12,26 +12,26 @@ class Manager extends KotlinLike<Manager> {
     public components: MessageActionRow[] = [];
     public triggers: Map<string, ComponentTrigger> = new Map();
     public files: Files = [];
-	public readonly locale: string;
+    public readonly locale: string;
     public readonly interaction: Interaction;
     private message?: Message | undefined;
     private readonly collector?: InteractionCollector<MessageComponentInteraction<CacheType>>;
 
-    public constructor({ content, embeds, components, files, interaction, triggers } : ManagerConstructOptions) {
+    public constructor({ content, embeds, components, files, interaction, triggers }: ManagerConstructOptions) {
         super()
-        if(components) this.components = components;
-        if(triggers) this.triggers = triggers;
-        if(embeds) this.embeds = embeds;
-        if(files) this.files = files;
+        if (components) this.components = components;
+        if (triggers) this.triggers = triggers;
+        if (embeds) this.embeds = embeds;
+        if (files) this.files = files;
         this.content = content;
 
         this.interaction = interaction;
-		this.locale = interaction.locale;
+        this.locale = interaction.locale;
 
         this.collector = interaction.channel?.createMessageComponentCollector();
         this.collector?.on('collect', async (interaction) => {
             const trigger = this.triggers.get(interaction.customId);
-            if(trigger) {
+            if (trigger) {
                 interaction.deferUpdate({ fetchReply: true }).then(() => trigger(interaction, this));
             }
         });
@@ -40,10 +40,10 @@ class Manager extends KotlinLike<Manager> {
     public static start<T extends abstract new (...args: any) => any = typeof this>(options: ConstructorParameters<T>[0] & { channel?: TextBasedChannel, update?: boolean }) {
         const manager = new this(options);
         manager.init();
-        if(options.update) manager.update();
+        if (options.update) manager.update();
         else manager.send(options.channel);
     }
-        
+
     public init(): void {
         this.message = undefined;
         this.content = undefined;
@@ -57,7 +57,7 @@ class Manager extends KotlinLike<Manager> {
      * 보냈을 때 업데이트한 메시지를 삭제합니다.
      */
     public remove(): void {
-        if(this.message?.deletable) {
+        if (this.message?.deletable) {
             this.collector?.stop();
             this.message.delete();
         } else console.warn("this manager doesn't have any way to remove message");
@@ -74,9 +74,9 @@ class Manager extends KotlinLike<Manager> {
     public async update(elseSend = false, channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
         const options = { content: this.content, embeds: this.embeds, components: this.components, files: this.files };
 
-        if(this.message?.editable) await this.message.edit(options);
-        else if(this.interaction.isRepliable()) await this.interaction.editReply(options);
-        else if(elseSend) this.send(channel);
+        if (this.message?.editable) await this.message.edit(options);
+        else if (this.interaction.isRepliable()) await this.interaction.editReply(options);
+        else if (elseSend) await this.send(channel);
     }
     /**   
      * 현재 데이터를 송신하고 message를 갱신합니다.
@@ -86,7 +86,7 @@ class Manager extends KotlinLike<Manager> {
         const options = { content: this.content, embeds: this.embeds, components: this.components, files: this.files };
         await channel?.send(options).then(message => this.message = message);
     }
-    
+
     /**
      * 메시지에 문자열을 추가합니다.
      * @param content - 추가할 문자열
@@ -100,10 +100,10 @@ class Manager extends KotlinLike<Manager> {
      * 이 메시지와의 상호작용을 종료합니다.   
      * 모든 버튼이 사라지고 삭제 버튼이 생성됩니다. 메시지는 5초 후 자동 삭제됩니다.
      */
-    public async endManager(timeout = 5000) : Promise<void> {
-      this.setComponents([]);
-      this.addRemoveButton(timeout);
-      await this.update();
+    public async endManager(timeout = 5000): Promise<void> {
+        this.setComponents([]);
+        this.addRemoveButton(timeout);
+        await this.update();
     }
 
     public addRemoveButton(timeout = 5000): this {
@@ -122,7 +122,7 @@ class Manager extends KotlinLike<Manager> {
         }, timeout);
         return this;
     }
-    
+
     public setContent(content: string): this {
         this.content = content;
         return this;
@@ -132,7 +132,7 @@ class Manager extends KotlinLike<Manager> {
         return this;
     }
     public addEmbeds(embeds: MessageEmbed | MessageEmbed[]): this {
-        for(const embed of Array.isArray(embeds) ? embeds : [embeds]) this.embeds.push(embed);
+        for (const embed of Array.isArray(embeds) ? embeds : [embeds]) this.embeds.push(embed);
         return this;
     }
     public setComponents(components: MessageActionRow[]): this {
@@ -140,7 +140,7 @@ class Manager extends KotlinLike<Manager> {
         return this;
     }
     public addComponents(components: MessageActionRow | MessageActionRow[]): this {
-        for(const component of Array.isArray(components) ? components : [components]) this.components.push(component);
+        for (const component of Array.isArray(components) ? components : [components]) this.components.push(component);
         return this;
     }
     public setTriggers(customId: string, trigger: ComponentTrigger): this {
@@ -152,10 +152,10 @@ class Manager extends KotlinLike<Manager> {
         return this;
     }
     public addFiles(files: Files[number] | Files): this {
-        for(const file of Array.isArray(files) ? files : [files]) this.files.push(file);
+        for (const file of Array.isArray(files) ? files : [files]) this.files.push(file);
         return this;
     }
-    
+
 
     public static newErrorEmbed(interaction: Interaction, description: string) {
         new Manager({ interaction, embeds: [new MessageEmbed().setTitle("ERROR").setDescription(description)] }).addRemoveButton().send(interaction.channel as TextBasedChannel);

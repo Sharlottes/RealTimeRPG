@@ -7,12 +7,12 @@ import User from "../User";
  * 이벤트 관리 클래스, user에 종속됨
  */
 export default class GameManager {
-    currentEvent: BaseEvent | undefined;
+    private currentEvent: BaseEvent | undefined;
 
-    constructor(private readonly user: User) {};
+    constructor(private readonly user: User) { };
 
     startEvent(event: BaseEvent, interaction: CommandInteraction<CacheType>) {
-        if(this.currentEvent) {
+        if (this.currentEvent) {
             interaction.editReply(bundle.find(this.user.locale, "error.event_existing"));
             return;
         }

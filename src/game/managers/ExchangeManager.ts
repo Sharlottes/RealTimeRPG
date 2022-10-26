@@ -18,10 +18,10 @@ export default class ExchangeManager extends SelectManager {
 		//TODO: 구현하기
 		this.mainEmbed = new MessageEmbed().setTitle("WIP").setDescription("WIP");
 	}
-	
+
 	public override init() {
 		super.init();
-		this.setEmbeds([ this.mainEmbed ]);
+		this.setEmbeds([this.mainEmbed]);
 
 		//고블린 인벤토리 생성
 		for (let i = 0; i < 20; i++) {
@@ -30,29 +30,31 @@ export default class ExchangeManager extends SelectManager {
 			if (exist) exist.amount++;
 			else this.target.inventory.items.push(new ItemStack(item));
 		}
-		
-	  	this.addButtonSelection('back', 0, () => {
+
+		this.addButtonSelection('back', 0, () => {
 			this.addContent(bundle.find(this.locale, 'shop.end'));
 			this.setComponents([]);
 			this.addRemoveButton();
 			this.update();
 		});
 
-		this.addMenuSelection({
-			customId: 'buy', 
-			row: 1, 
+
+		const buyRefresher = this.addMenuSelection({
+			customId: 'buy',
+			row: 1,
 			callback: async (interaction) => {
 				if (!interaction.isSelectMenu()) return;
 				const id = interaction.values[0];
 				const store = this.target.inventory.items[Number(id)];
-				
-				if(store instanceof ItemStack && store.amount > 1) {
-					ItemSelectManager.start<typeof ItemSelectManager>({ 
-						user: this.user, 
-						interaction: this.interaction, 
-						item: store, 
+
+				if (store instanceof ItemStack && store.amount > 1) {
+					ItemSelectManager.start<typeof ItemSelectManager>({
+						user: this.user,
+						interaction: this.interaction,
+						item: store,
 						callback: async amount => {
 							await this.deal(this.target, this.user, store, amount);
+							await buyRefresher();
 							await this.updateEmbed();
 						}
 					});
@@ -62,27 +64,28 @@ export default class ExchangeManager extends SelectManager {
 				await this.updateEmbed();
 			},
 			reducer: (store, index) => ({
-				label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
+				label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
 				value: index.toString()
 			}),
 			list: this.target.inventory.items,
 			placeholder: 'select item to buy ...'
 		});
-		
-		this.addMenuSelection({
-			customId: 'sell', 
-			row: 2, 
+
+		const sellRefresher = this.addMenuSelection({
+			customId: 'sell',
+			row: 2,
 			callback: async (interaction) => {
 				if (!interaction.isSelectMenu()) return;
 				const id = interaction.values[0];
 				const store = this.user.inventory.items[Number(id)];
-				if(store instanceof ItemStack && store.amount > 1) {
-					ItemSelectManager.start<typeof ItemSelectManager>({ 
-						user: this.user, 
-						interaction: this.interaction, 
-						item: store, 
+				if (store instanceof ItemStack && store.amount > 1) {
+					ItemSelectManager.start<typeof ItemSelectManager>({
+						user: this.user,
+						interaction: this.interaction,
+						item: store,
 						callback: async amount => {
 							await this.deal(this.user, this.target, store, amount);
+							await sellRefresher();
 							await this.updateEmbed();
 						}
 					});
@@ -92,7 +95,7 @@ export default class ExchangeManager extends SelectManager {
 				await this.updateEmbed();
 			},
 			reducer: (store, index) => ({
-				label: store.item.localName(this.locale)+` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
+				label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
 				value: index.toString()
 			}),
 			list: this.user.inventory.items,
@@ -109,7 +112,7 @@ export default class ExchangeManager extends SelectManager {
 	private calPrice(item: Item) {
 		return Math.round((100 - item.ratio) * 3);
 	}
-	
+
 	private async updateEmbed() {
 		this.mainEmbed.setFields([
 			{ name: this.user.user.username, value: this.user.money + bundle.find(this.locale, 'unit.money'), inline: true },
@@ -122,14 +125,14 @@ export default class ExchangeManager extends SelectManager {
 		const max = store instanceof ItemStack ? store.amount : 1;
 		const item = store.item;
 		const money = this.calPrice(item);
-    
-		if (amount > max) { 
-			this.addContent('- '+bundle.format(this.locale, 'shop.notEnough_item', item.localName(this.locale), amount, max), 'diff'); 
-		} 
-		else if (visitor.money < amount * money) { 
-			this.addContent('- '+bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'); 
+
+		if (amount > max) {
+			this.addContent('- ' + bundle.format(this.locale, 'shop.notEnough_item', item.localName(this.locale), amount, max), 'diff');
+		}
+		else if (visitor.money < amount * money) {
+			this.addContent('- ' + bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff');
 		} else {
-			this.addContent('+ '+bundle.format(this.locale, owner == this.user ? 'shop.sold' : 'shop.buyed', item.localName(this.locale), amount, owner.money, (owner.money + money * amount)), 'diff');
+			this.addContent('+ ' + bundle.format(this.locale, owner == this.user ? 'shop.sold' : 'shop.buyed', item.localName(this.locale), amount, owner.money, (owner.money + money * amount)), 'diff');
 
 			visitor.money -= money * amount;
 			visitor.inventory.add(item, amount);

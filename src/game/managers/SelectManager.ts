@@ -27,37 +27,24 @@ export default class SelectManager extends Manager {
   public init() {
     super.init();
 
-    if(this.last) {
+    if (this.last) {
       this.addButtonSelection('back_select', 0, () => {
-        if(!this.last) return;
+        if (!this.last) return;
         this.last.init();
         this.last.update();
       }, { style: 'SECONDARY' });
     }
   }
 
-  public addButtonSelection(name: string, row: number, callback: ComponentTrigger, option: Omit<InteractionButtonOptions, 'customId'> = {style: 'PRIMARY'}) {
+  public addButtonSelection(name: string, row: number, callback: ComponentTrigger, option: Omit<InteractionButtonOptions, 'customId'> = { style: 'PRIMARY' }) {
     this.resizeSelection(row);
 
     this.components[row].addComponents(new MessageButton().setLabel(bundle.find(this.locale, `select.${name}`)).setCustomId(name).setStyle(option.style));
     this.setTriggers(name, callback);
 
     return this;
-  }  
-  /*
-  public updateMenu<T>(options: Partial<Omit<MenuSelectOptions<T>, 'row'>>&{row: number}) {
-    const component = this.components[options.row]?.components[0];
-    if(component instanceof MessageSelectMenu) {
-      this.components[options.row].spliceComponents(0, 1);
-      
-      this.addMenuSelection({ 
-        customId: options.customId ?? component.customId,
-        row: options.row,
-        callback: this.callback });
-      this.update();
-    }
   }
-  */
+
   /**
    * @param customId - 컴포넌트의 customId
    * @param list - 선택할 아이템 리스트
@@ -66,15 +53,15 @@ export default class SelectManager extends Manager {
    * @param row - 추가할 열
    * @param callback - 선택 완료 콜백함수
    */
-  public addMenuSelection<T>({ customId, list, placeholder = "select...", reducer, row, callback }: MenuSelectOptions<T>): this {
+  public addMenuSelection<T>({ customId, list, placeholder = "select...", reducer, row, callback }: MenuSelectOptions<T>) {
     this.resizeSelection(row);
 
     let page = 0;
     const reoption = () => list.reduce<MessageSelectOptionData[]>((acc, elem, index) => {
-      if(index < page * 8 || index > (page + 1) * 8) return acc;
+      if (index < page * 8 || index > (page + 1) * 8) return acc;
       return [...acc, reducer ? reducer(elem, index) : { label: `#${index} item`, value: index.toString() }];
-    }, page == 0 ? [] : [{ label: `<-- ${page}/${Math.floor(list.length/8)+1}`, value: '-1' }]).concat({label: `${page + 2}/${Math.floor(list.length/8)+1} -->`, value: '-2'});
-    
+    }, page == 0 ? [] : [{ label: `<-- ${page}/${Math.floor(list.length / 8) + 1}`, value: '-1' }]).concat({ label: `${page + 2}/${Math.floor(list.length / 8) + 1} -->`, value: '-2' });
+
     this.components[row].addComponents(
       new MessageSelectMenu()
         .setCustomId(customId)
@@ -86,15 +73,15 @@ export default class SelectManager extends Manager {
       if (!(interaction.isSelectMenu() && interaction.component instanceof MessageSelectMenu)) return;
       const id = interaction.values[0];
 
-      switch(id) {
+      switch (id) {
         case '-1': {
-          if(page == 0) 
+          if (page == 0)
             Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.first_page"));
           else page--;
           break;
         }
         case '-2': {
-          if(page + 1 > Math.floor(list.length/8)) 
+          if (page + 1 > Math.floor(list.length / 8))
             Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.last_page"));
           else page++;
           break;
@@ -108,11 +95,14 @@ export default class SelectManager extends Manager {
       this.update();
     })
 
-    return this;
+    return async () => {
+      (this.components[row]?.components[0] as MessageSelectMenu).setOptions(reoption());
+      await this.update();
+    };
   }
 
   private resizeSelection(index: number) {
-    while(this.components.length <= index) {
+    while (this.components.length <= index) {
       this.components.push(new MessageActionRow());
     }
   }
@@ -124,7 +114,7 @@ export default class SelectManager extends Manager {
    * 이전 매니저가 존재하지 않을 경우 이 매니저를 메인으로 판단하고 이벤트를 종료하고 계속 진행합니다.   
    */
   public async endManager(timeout = 5000): Promise<void> {
-    if(this.last) {
+    if (this.last) {
       this.last.init();
       await this.last.update();
     } else {

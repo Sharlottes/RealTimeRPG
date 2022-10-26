@@ -36,11 +36,11 @@ abstract class BaseAction {
 	public abstract description(): string;
 	public abstract isValid(): boolean;
 	public undo(): void {
-		if(this.bloody) this.owner.stats.health += this.cost; 
+		if (this.bloody) this.owner.stats.health += this.cost;
 		else this.owner.stats.energy += this.cost;
 	}
 	public onAdded(): void {
-		if(this.owner.stats.energy < this.cost) {
+		if (this.owner.stats.energy < this.cost) {
 			this.owner.stats.health -= this.cost;
 			this.bloody = true;
 			Manager.newTextEmbed(this.manager.interaction, bundle.find(this.manager.locale, 'alert.bloody_action'), bundle.find(this.manager.locale, 'alert'));
@@ -130,14 +130,14 @@ class SwapAction extends BaseAction {
 			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.weapon.localName(this.manager.locale))).update();
 			return;
 		}
-		this.manager.updateLog(bundle.format(this.manager.locale, 'switch_change', 
-			this.weapon.localName(this.manager.locale), 
+		this.manager.updateLog(bundle.format(this.manager.locale, 'switch_change',
+			this.weapon.localName(this.manager.locale),
 			this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
 		));
 		this.owner.switchWeapon(this.weapon);
 		this.manager.updateBar();
 		this.manager.validate();
-		await this.manager.update();
+		await this.manager.swapRefresher();
 	}
 
 	public description(): string {
@@ -170,11 +170,12 @@ class ConsumeAction extends BaseAction {
 		}
 		this.owner.inventory.remove(this.potion, this.amount);
 		entity.item.getConsume().consume(this.owner, this.amount);
-		await this.manager.updateLog(bundle.format(this.manager.locale, 'consume', 
-			this.potion.localName(this.manager.locale), 
-			this.amount, 
+		this.manager.updateLog(bundle.format(this.manager.locale, 'consume',
+			this.potion.localName(this.manager.locale),
+			this.amount,
 			this.potion.getConsume().buffes.map((b) => b.description(this.owner, this.amount, b, this.manager.locale)).join('\n  ')
-		)).update();
+		))
+		await this.manager.consumeRefresher();
 	}
 
 	public description(): string {
@@ -187,14 +188,11 @@ class ConsumeAction extends BaseAction {
 }
 
 class ReloadAction extends BaseAction {
-	private ammo: Item;
-	private amount: number;
 	public title = 'reload';
 
-	constructor(manager: BattleManager, owner: EntityI, ammo: Item, amount: number, immediate = false) {
+	constructor(manager: BattleManager, owner: EntityI, public stack: ItemStack, public amount: number,
+		immediate = false) {
 		super(manager, owner, 1);
-		this.ammo = ammo;
-		this.amount = amount;
 
 		if (immediate) this.run();
 	}
@@ -202,26 +200,28 @@ class ReloadAction extends BaseAction {
 	public async run() {
 		const entity = this.owner.inventory.equipments.weapon;
 		if (entity instanceof SlotWeaponEntity) {
-			const inc = this.ammo.getAmmo()?.itemPerAmmo ?? 1;
-			for (let i = 0; i < this.amount; i += inc) entity.ammos.push(this.ammo);
-			await this.manager.updateLog(bundle.format(this.manager.locale, 'reload', 
-				this.ammo.localName(this.manager.locale), 
-				this.amount, 
+			const inc = this.stack.item.getAmmo()?.itemPerAmmo ?? 1;
+			this.owner.inventory.remove(this.stack.item, this.amount);
+			for (let i = 0; i < this.amount; i += inc) entity.ammos.push(this.stack.item);
+			this.manager.updateLog(bundle.format(this.manager.locale, 'reload',
+				this.stack.item.localName(this.manager.locale),
+				this.amount,
 				this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
-			)).update();
+			));
+			await this.manager.reloadRefresher();
 		}
 	}
 
 	public description(): string {
-		return bundle.format(this.manager.locale, 'action.reload.description', 
-			this.ammo.localName(this.manager.locale), 
-			this.amount, 
+		return bundle.format(this.manager.locale, 'action.reload.description',
+			this.stack.item.localName(this.manager.locale),
+			this.stack.amount,
 			this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
 		);
 	}
 
 	public isValid(): boolean {
-		return this.ammo.hasAmmo();
+		return this.stack.item.hasAmmo();
 	}
 }
 
@@ -237,7 +237,7 @@ class EvaseAction extends BaseAction {
 	public async run() {
 		this.manager.setEvasion(this.owner, true);
 
-		await this.manager.updateLog(bundle.format(this.manager.locale, 'evasion_position', 
+		await this.manager.updateLog(bundle.format(this.manager.locale, 'evasion_position',
 			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
 		)).update();
 	}
@@ -263,7 +263,7 @@ class DvaseAction extends BaseAction {
 	public async run() {
 		this.manager.setEvasion(this.owner, false);
 
-		await this.manager.updateLog(bundle.format(this.manager.locale, 'dvasion_position', 
+		await this.manager.updateLog(bundle.format(this.manager.locale, 'dvasion_position',
 			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
 		)).update();
 	}
@@ -289,7 +289,7 @@ class ShieldAction extends BaseAction {
 	public async run() {
 		this.manager.setShield(this.owner, true);
 
-		await this.manager.updateLog(bundle.format(this.manager.locale, 'shield_position', 
+		await this.manager.updateLog(bundle.format(this.manager.locale, 'shield_position',
 			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
 		)).update();
 	}
@@ -314,6 +314,10 @@ export default class BattleManager extends SelectManager {
 	public turn: EntityI; //normally, user first
 
 	private totalTurn = 1;
+
+	public swapRefresher = async () => { };
+	public consumeRefresher = async () => { };
+	public reloadRefresher = async () => { };
 
 	private readonly comboList: Map<string, () => Promise<void>> = new Map<string, () => Promise<void>>()
 		.set("reload-attack-evase", async () => {
@@ -342,8 +346,8 @@ export default class BattleManager extends SelectManager {
 		super.init();
 
 		this.setContent(bundle.format(this.locale, 'battle.start', this.user.user.username, this.enemy.type.localName(this.user)));
-		this.setEmbeds([ this.mainEmbed, this.actionEmbed ]);
-	    this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
+		this.setEmbeds([this.mainEmbed, this.actionEmbed]);
+		this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
 		this.updateBar();
 
 		this.addButtonSelection('attack', 0, async () => {
@@ -367,9 +371,9 @@ export default class BattleManager extends SelectManager {
 			await this.turnEnd();
 		});
 
-		this.addMenuSelection({
+		this.swapRefresher = this.addMenuSelection({
 			customId: 'swap',
-			placeholder: "swap weapon to ...", 
+			placeholder: "swap weapon to ...",
 			row: 1,
 			callback: (interaction) => {
 				if (interaction.isSelectMenu()) {
@@ -387,16 +391,16 @@ export default class BattleManager extends SelectManager {
 			})
 		});
 
-		this.addMenuSelection({
+		this.consumeRefresher = this.addMenuSelection({
 			customId: 'consume',
-			placeholder: "consume ...", 
+			placeholder: "consume ...",
 			row: 2,
 			callback: async (interaction) => {
 				if (!interaction.isSelectMenu()) return;
 				const id = interaction.values[0];
 				const entity = this.user.inventory.items.filter(store => store.item.hasConsume())[Number(id)];
 				if (entity instanceof ItemStack && entity.amount > 1) {
-					ItemSelectManager.start<typeof ItemSelectManager>({ 
+					ItemSelectManager.start<typeof ItemSelectManager>({
 						user: this.user,
 						item: entity,
 						interaction: this.interaction,
@@ -413,23 +417,22 @@ export default class BattleManager extends SelectManager {
 			})
 		});
 
-		this.addMenuSelection({
-			customId: 'reload', 
+		this.reloadRefresher = this.addMenuSelection({
+			customId: 'reload',
 			placeholder: "reload ammo with ...",
 			row: 3,
 			callback: async (interaction) => {
 				if (!interaction.isSelectMenu()) return;
-				const id = interaction.values[0];
-				const entity = this.user.inventory.items.filter(store => store.item.hasAmmo())[Number(id)];
+				const entity = this.user.inventory.items.filter(store => store.item.hasAmmo())[Number(interaction.values[0])];
 				if (entity instanceof ItemStack && entity.amount > 1) {
 					ItemSelectManager.start<typeof ItemSelectManager>({
-						user: this.user, 
-						item: entity, 
-						interaction: this.interaction, 
-						callback: amount => this.addAction(new ReloadAction(this, this.user, entity.item, amount))
+						user: this.user,
+						item: entity,
+						interaction: this.interaction,
+						callback: amount => this.addAction(new ReloadAction(this, this.user, entity, amount))
 					});
 				} else {
-					await this.addAction(new ReloadAction(this, this.user, entity.item, 1));
+					await this.addAction(new ReloadAction(this, this.user, new ItemStack(entity.item, 1), 1));
 				}
 			},
 			list: this.user.inventory.items.filter(store => store.item.hasAmmo()),
@@ -463,12 +466,12 @@ export default class BattleManager extends SelectManager {
 	validate() {
 		//자신의 턴일때만 활성화
 		this.components.forEach(row => row.components.forEach(component => component.setDisabled(this.turn != this.user)));
-		if(this.turn != this.user) return;
-		
-		const [ 
-			{ components: [ attack, evase, shield ] },,, 
-			{ components: [ reload ] }, 
-			{ components: [ actionCancel ] } 
+		if (this.turn != this.user) return;
+
+		const [
+			{ components: [attack, evase, shield] }, , ,
+			{ components: [reload] },
+			{ components: [actionCancel] }
 		] = this.components;
 
 		//엑션이 있으면 취소버튼 활성
@@ -493,7 +496,7 @@ export default class BattleManager extends SelectManager {
 			Manager.newErrorEmbed(this.interaction, bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost));
 			return;
 		}
-		
+
 		/*
 		TODO: action valid 함수 만들기
 		if (this.status.get(this.user) !== Status.DEFAULT) {
@@ -542,7 +545,7 @@ export default class BattleManager extends SelectManager {
 			await this.battleEnd();
 			return;
 		}
-		
+
 		if (this.turn == this.user) {
 			this.turn = this.enemy;
 			this.status.set(this.enemy, Status.DEFAULT);
@@ -592,7 +595,7 @@ export default class BattleManager extends SelectManager {
 	}
 
 	private async battleEnd() {
-		this.setEmbeds([ this.mainEmbed ]);
+		this.setEmbeds([this.mainEmbed]);
 		this.updateBar();
 		if (this.enemy.stats.health <= 0) {
 			const unit = this.enemy.type;
