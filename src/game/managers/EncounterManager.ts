@@ -1,22 +1,22 @@
 import Random from 'random';
 
-import BattleManager from '@RTTRPG/game/managers/BattleManager';
-import ExchangeManager from '@RTTRPG/game/managers/ExchangeManager';
-import SelectManager from '@RTTRPG/game/managers/SelectManager';
-import { User, UnitEntity } from '@RTTRPG/game';
-import { bundle } from '@RTTRPG/assets';
-import { Mathf } from '@RTTRPG/util';
-import { SelectManagerConstructOptions } from '@RTTRPG/@type';
-import { MessageEmbed } from 'discord.js';
+import BattleManager from 'game/managers/BattleManager';
+import ExchangeManager from 'game/managers/ExchangeManager';
+import SelectManager from 'game/managers/SelectManager';
+import { User, UnitEntity } from 'game';
+import { bundle } from 'assets';
+import { Mathf } from 'utils';
+import { SelectManagerConstructOptions } from '@type';
+import { EmbedBuilder } from 'discord.js';
 
 export default class EncounterManager extends SelectManager {
   private readonly target: UnitEntity;
-  private readonly mainEmbed: MessageEmbed;
+  private readonly mainEmbed: EmbedBuilder;
 
   public constructor(options: SelectManagerConstructOptions & { target: UnitEntity }) {
     super(options);
     this.target = options.target;
-    this.mainEmbed = new MessageEmbed().setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
+    this.mainEmbed = new EmbedBuilder().setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
   }
 
   public override init() {

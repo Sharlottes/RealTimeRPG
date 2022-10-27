@@ -1,5 +1,5 @@
-import { ItemEntity } from "@RTTRPG/game/Inventory";
-import { MessageEmbed } from "discord.js";
+import { ItemEntity } from "game/Inventory";
+import { EmbedBuilder } from "discord.js";
 import { ItemTag } from ".";
 import { Item } from "..";
 
@@ -12,7 +12,7 @@ export default class AmmoTag extends ItemTag {
 		this.itemPerAmmo = itemPerAmmo;
 	}
 	
-	public buildInfo(embed: MessageEmbed, entity?: ItemEntity | undefined): MessageEmbed {
+	public buildInfo(embed: EmbedBuilder, entity?: ItemEntity | undefined): EmbedBuilder {
 		return embed.addField('items/ammo', this.itemPerAmmo.toString());
 	}
 }

@@ -1,4 +1,4 @@
-import { EntityI } from "@RTTRPG/@type";
+import { EntityI } from "@type";
 import { Content, StatusEffects } from "..";
 import { StatusEntity } from "../..";
 

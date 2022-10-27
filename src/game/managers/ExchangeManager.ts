@@ -1,22 +1,21 @@
-import { MessageEmbed, MessageSelectMenu, MessageSelectOptionData } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 
-import { ItemStack, ItemStorable, UnitEntity, getOne } from '@RTTRPG/game';
-import SelectManager from '@RTTRPG/game/managers/SelectManager';
-import { Item, Items } from '@RTTRPG/game/contents';
-import { bundle } from '@RTTRPG/assets';
+import { ItemStack, ItemStorable, UnitEntity, getOne } from 'game';
+import SelectManager from 'game/managers/SelectManager';
+import { Item, Items } from 'game/contents';
+import { bundle } from 'assets';
 import ItemSelectManager from './ItemSelectManager';
-import { EntityI, SelectManagerConstructOptions } from '@RTTRPG/@type';
-import Manager from './Manager';
+import { EntityI, SelectManagerConstructOptions } from '@type';
 
 export default class ExchangeManager extends SelectManager {
 	private readonly target: UnitEntity;
-	private readonly mainEmbed: MessageEmbed;
+	private readonly mainEmbed: EmbedBuilder;
 
 	public constructor(options: SelectManagerConstructOptions & { target: UnitEntity }) {
 		super(options);
 		this.target = options.target;
 		//TODO: 구현하기
-		this.mainEmbed = new MessageEmbed().setTitle("WIP").setDescription("WIP");
+		this.mainEmbed = new EmbedBuilder().setTitle("WIP").setDescription("WIP");
 	}
 
 	public override init() {

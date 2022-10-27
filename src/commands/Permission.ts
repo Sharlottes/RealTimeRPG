@@ -1,6 +1,6 @@
 import { Guild, Snowflake } from "discord.js";
 
-import { Command } from "@RTTRPG/commands"
+import { Command } from "commands"
 
 type defaultPermArgs = {
     commandID: Snowflake | Snowflake[] | Command | Command[],

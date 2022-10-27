@@ -1,7 +1,7 @@
-import { Dropable, Rationess, ItemData } from "@RTTRPG/@type";
+import { Dropable, Rationess, ItemData } from "@type";
 import { Content, Items } from "..";
 import { AmmoTag, ConsumeTag, ItemTag, ShieldTag, SlotWeaponTag, WeaponTag } from "../tags";
-import { CommandInteraction, MessageEmbed } from 'discord.js';
+import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { ItemEntity } from "../..";
 import Manager from "../../managers/Manager";
 
@@ -28,7 +28,7 @@ export default class Item extends Content implements Dropable, Rationess {
 	}
 
 	public async showInfo(interaction: CommandInteraction, entity?: ItemEntity) {
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 		.setTitle(this.localName(interaction.locale))
 		.setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL(), url: interaction.user.displayAvatarURL() })
 		.addFields(

@@ -7,11 +7,11 @@ export * from "./Inventory";
 
 import { Snowflake } from 'discord.js';
 
-import { Rationess, Message, UserSave } from '@RTTRPG/@type';
-import CommandManager from '@RTTRPG/game/managers/CommandManager';
-import { Items, Units, StatusEffects } from "@RTTRPG/game/contents";
-import { Database } from '@RTTRPG/util';
-import Vars from "@RTTRPG/Vars";
+import { Rationess, Message, UserSave } from '@type';
+import CommandManager from 'game/managers/CommandManager';
+import { Items, Units, StatusEffects } from "game/contents";
+import { Database } from 'utils';
+import Vars from "Vars";
 import Events from "./contents/Events";
 
 export function init() {
@@ -36,17 +36,6 @@ export function getOne<T extends Rationess>(arr: T[]): T {
 		}
 	}
 	return arr[0];
-}
-
-/**
- * latestMsgs 배열에서 해당 유저의 최근 메시지를 찾습니다.
- * @param {Snowflake} id 인터렉션 케시 id
- * @returns {Message} 해당 유저의 최근 메시지
- */
-export function findMessage(id: Snowflake): Message {
-	const msg = Vars.messageCache.get(id);
-	if(msg) return msg;
-	throw new Error('message is undefined');
 }
 
 //autosave

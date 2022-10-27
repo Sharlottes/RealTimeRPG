@@ -1,7 +1,14 @@
-import { InteractionButtonOptions, MessageActionRow, MessageButton, MessageSelectMenu, MessageSelectOptionData } from 'discord.js';
-import { ComponentTrigger, type SelectManagerConstructOptions } from "@RTTRPG/@type";
+import { 
+  ActionRowBuilder, 
+  ButtonBuilder, 
+  SelectMenuBuilder, 
+  ButtonStyle, 
+  APIButtonComponent, 
+  SelectMenuComponentOptionData 
+} from 'discord.js';
+import { ComponentTrigger, type SelectManagerConstructOptions } from "@type";
 
-import { bundle } from '@RTTRPG/assets';
+import { bundle } from 'assets';
 import Manager from './Manager';
 import User from '../User';
 
@@ -10,7 +17,7 @@ type MenuSelectOptions<T> = {
   row: number;
   callback: ComponentTrigger;
   list: T[];
-  reducer?: (elem: T, index: number) => MessageSelectOptionData;
+  reducer?: (elem: T, index: number) => SelectMenuComponentOptionData ;
   placeholder?: string;
 }
 
@@ -27,19 +34,18 @@ export default class SelectManager extends Manager {
   public init() {
     super.init();
 
-    if (this.last) {
-      this.addButtonSelection('back_select', 0, () => {
-        if (!this.last) return;
-        this.last.init();
-        this.last.update();
-      }, { style: 'SECONDARY' });
-    }
+    if (!this.last) return;
+    this.addButtonSelection('back_select', 0, () => {
+      if (!this.last) return;
+      this.last.init();
+      this.last.update();
+    }, { style: ButtonStyle.Secondary });
   }
 
-  public addButtonSelection(name: string, row: number, callback: ComponentTrigger, option: Omit<InteractionButtonOptions, 'customId'> = { style: 'PRIMARY' }) {
+  public addButtonSelection(name: string, row: number, callback: ComponentTrigger, option: Partial<Omit<APIButtonComponent, 'label' | 'customId'>> = { style: ButtonStyle.Primary }) {
     this.resizeSelection(row);
 
-    this.components[row].addComponents(new MessageButton().setLabel(bundle.find(this.locale, `select.${name}`)).setCustomId(name).setStyle(option.style));
+    this.components[row].addComponents(new ButtonBuilder(option).setLabel(bundle.find(this.locale, `select.${name}`)).setCustomId(name));
     this.setTriggers(name, callback);
 
     return this;
@@ -57,20 +63,37 @@ export default class SelectManager extends Manager {
     this.resizeSelection(row);
 
     let page = 0;
-    const reoption = () => list.reduce<MessageSelectOptionData[]>((acc, elem, index) => {
-      if (index < page * 8 || index > (page + 1) * 8) return acc;
-      return [...acc, reducer ? reducer(elem, index) : { label: `#${index} item`, value: index.toString() }];
-    }, page == 0 ? [] : [{ label: `<-- ${page}/${Math.floor(list.length / 8) + 1}`, value: '-1' }]).concat({ label: `${page + 2}/${Math.floor(list.length / 8) + 1} -->`, value: '-2' });
+    const reoption = () => list
+    .reduce<SelectMenuComponentOptionData []>(
+      (acc, elem, index) => 
+        index < page * 8 || index > (page + 1) * 8 ? acc
+          : [...acc, reducer ? reducer(elem, index) 
+          : { 
+            label: `#${index} item`, 
+            value: index.toString() 
+          }
+        ]
+      , page == 0 
+        ? [] 
+        : [{ 
+            label: `<-- ${page}/${Math.floor(list.length / 8) + 1}`, 
+            value: '-1' 
+          }]
+    )
+    .concat({ 
+      label: `${page + 2}/${Math.floor(list.length / 8) + 1} -->`, 
+      value: '-2' 
+    });
 
     this.components[row].addComponents(
-      new MessageSelectMenu()
+      new SelectMenuBuilder()
         .setCustomId(customId)
         .setPlaceholder(placeholder)
         .setOptions(reoption())
     );
 
     this.setTriggers(customId, (interaction, manager) => {
-      if (!(interaction.isSelectMenu() && interaction.component instanceof MessageSelectMenu)) return;
+      if (!(interaction.isSelectMenu() && interaction.component instanceof SelectMenuBuilder)) return;
       const id = interaction.values[0];
 
       switch (id) {
@@ -96,14 +119,14 @@ export default class SelectManager extends Manager {
     })
 
     return async () => {
-      (this.components[row]?.components[0] as MessageSelectMenu).setOptions(reoption());
+      (this.components[row]?.components[0] as SelectMenuBuilder).setOptions(reoption());
       await this.update();
     };
   }
 
   private resizeSelection(index: number) {
     while (this.components.length <= index) {
-      this.components.push(new MessageActionRow());
+      this.components.push(new ActionRowBuilder());
     }
   }
 

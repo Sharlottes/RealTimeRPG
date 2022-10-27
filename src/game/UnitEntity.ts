@@ -1,6 +1,6 @@
-import { Item, Unit, Units, StatusEffect, Items } from "@RTTRPG/game/contents";
-import { EntityI, Stat } from '@RTTRPG/@type';
-import { Inventory, StatusEntity, WeaponEntity } from "@RTTRPG/game";
+import { Item, Unit, Units, StatusEffect, Items } from "game/contents";
+import { EntityI, Stat } from '@type';
+import { Inventory, StatusEntity, WeaponEntity } from "game";
 
 export default class UnitEntity implements EntityI {
   public readonly id: number;

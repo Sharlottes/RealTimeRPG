@@ -1,4 +1,4 @@
-import { Rationess, Stat, UnitData } from "@RTTRPG/@type";
+import { Rationess, Stat, UnitData } from "@type";
 import { Inventory } from "../..";
 import { Content, Units } from "..";
 

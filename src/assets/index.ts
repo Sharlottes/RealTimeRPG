@@ -1,6 +1,6 @@
 import properties from "properties-reader";
 
-import { Strings } from "@RTTRPG/util";
+import { Strings } from "utils";
 
 namespace Assets {
     const rootDir = "./assets/";

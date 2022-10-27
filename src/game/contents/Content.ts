@@ -1,4 +1,4 @@
-import { bundle } from "@RTTRPG/assets";
+import { bundle } from "assets";
 import { User } from "..";
 
 export default class Content {

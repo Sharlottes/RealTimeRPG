@@ -1,5 +1,5 @@
 import { Items, Unit } from ".";
-import { Inventory, WeaponEntity } from "@RTTRPG/game";
+import { Inventory, WeaponEntity } from "game";
 
 export default class Units {
 	static readonly units: Unit[] = [];

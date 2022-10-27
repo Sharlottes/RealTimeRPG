@@ -1,4 +1,4 @@
-import { bundle } from "@RTTRPG/assets";
+import { bundle } from "assets";
 import { CommandInteraction, CacheType } from "discord.js";
 import BaseEvent from "../contents/types/BaseEvent";
 import User from "../User";

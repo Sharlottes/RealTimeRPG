@@ -1,4 +1,4 @@
-import { bundle } from "@RTTRPG/assets";
+import { bundle } from "assets";
 import Random from "random";
 import { getOne } from "..";
 import EncounterManager from "../managers/EncounterManager";

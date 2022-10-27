@@ -1,14 +1,14 @@
 
-import Discord, { MessageAttachment, MessageEmbed, MessagePayload, CommandInteraction, MessageActionRow, MessageButton, MessageOptions } from 'discord.js';
+import Discord, { AttachmentBuilder, EmbedBuilder, MessagePayload, CommandInteraction, ActionRowBuilder, ButtonBuilder, BaseMessageOptions, ButtonStyle } from 'discord.js';
 
 import Canvass from 'canvas';
 
-import { Item, Items, StatusEffect } from '@RTTRPG/game/contents';
-import { EntityI, Stat, UserSave } from '@RTTRPG/@type';
-import { ItemStack, StatusEntity, Inventory, WeaponEntity } from "@RTTRPG/game";
-import { bundle } from '@RTTRPG/assets';
-import { Canvas } from "@RTTRPG/util";
-import { app } from '@RTTRPG/index';
+import { Item, Items, StatusEffect } from 'game/contents';
+import { EntityI, Stat, UserSave } from '@type';
+import { ItemStack, StatusEntity, Inventory, WeaponEntity } from "game";
+import { bundle } from 'assets';
+import { Canvas } from "utils";
+import { app } from 'index';
 import { filledBar } from 'string-progressbar';
 import { SlotWeaponEntity } from './Inventory';
 import Manager from './managers/Manager';
@@ -96,7 +96,7 @@ export default class User implements EntityI {
     }
   }
 
-  public sendDM(options: string | MessagePayload | MessageOptions): Promise<Discord.Message> | undefined {
+  public sendDM(options: string | MessagePayload | BaseMessageOptions): Promise<Discord.Message> | undefined {
     if (!this.user.dmChannel) this.user.createDM();
     return this.user.dmChannel?.send(options);
   }
@@ -128,9 +128,9 @@ export default class User implements EntityI {
   public async showInventoryInfo(interaction: CommandInteraction) {
     await new Manager({
       interaction: interaction,
-      embeds: [new MessageEmbed()
+      embeds: [new EmbedBuilder()
         .setTitle(bundle.find(this.locale, 'inventory'))
-        .addFields(this.inventory.items.map<Discord.EmbedFieldData>(store => ({
+        .addFields(this.inventory.items.map<Discord.APIEmbedField>(store => ({
           name: store.item.localName(this.locale),
           value: store instanceof ItemStack ? `${store.amount} ${bundle.find(this.locale, 'unit.item')}` :
             store instanceof WeaponEntity ? `${store.cooldown} ${bundle.find(this.locale, 'cooldown')}, ${store.durability} ${bundle.find(this.locale, 'durability')}` +
@@ -159,11 +159,11 @@ export default class User implements EntityI {
         text: ""
       }
     });
-    const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
+    const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'profile-image.png' });
 
     await new Manager({ 
       interaction: interaction, 
-      embeds: [new MessageEmbed()
+      embeds: [new EmbedBuilder()
         .setColor('#0099ff')
         .setTitle('User Status Information')
         .setAuthor({ name: this.user.username, iconURL: this.user.displayAvatarURL(), url: this.user.displayAvatarURL() })
@@ -180,16 +180,16 @@ export default class User implements EntityI {
       .apply(manager => {
         manager.files.push(attachment)
         manager.components.push(
-          new MessageActionRow()
+          new ActionRowBuilder<ButtonBuilder>()
             .addComponents([
-              new MessageButton()
+              new ButtonBuilder()
                 .setCustomId('weapon_info')
                 .setLabel('show Weapon Info')
-                .setStyle('PRIMARY'),
-              new MessageButton()
+                .setStyle(ButtonStyle.Primary),
+              new ButtonBuilder()
                 .setCustomId('inventory_info')
                 .setLabel('show Inventory Info')
-                .setStyle('PRIMARY')
+                .setStyle(ButtonStyle.Primary)
             ])
         )
         manager.triggers.set('weapon_info', () => weapon.showInfo(interaction, this.inventory.equipments.weapon))

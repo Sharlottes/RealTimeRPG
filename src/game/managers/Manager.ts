@@ -1,28 +1,45 @@
-import { type ManagerConstructOptions, type ComponentTrigger } from "@RTTRPG/@type";
-import { Formatters, type Interaction, MessageActionRow, type MessageOptions, Message, MessageEmbed, MessageButton, TextBasedChannel, InteractionReplyOptions, CacheType, InteractionCollector, MessageComponentInteraction, Options } from "discord.js";
-import { KotlinLike } from '../../util'
+import { type ManagerConstructOptions, type ComponentTrigger } from "@type";
+import { 
+    BaseInteraction, 
+    type BaseMessageOptions, 
+    type CacheType, 
+    Message, 
+    ActionRowBuilder, 
+    EmbedBuilder, 
+    ButtonBuilder, 
+    TextBasedChannel, 
+    InteractionCollector, 
+    MessagePayload, 
+    MessagePayloadOption, 
+    ButtonInteraction, 
+    SelectMenuInteraction,
+    codeBlock,
+    ButtonStyle,
+    SelectMenuBuilder
+} from "discord.js";
+import { KotlinLike } from '../../utils'
 
-type Files = Exclude<MessageOptions['files'], undefined>;
+type Files = Exclude<BaseMessageOptions['files'], undefined>;
 /**
  * 임베드와 컴포넌트의 생성, 통신, 상호작용을 총괄함
  */
 class Manager extends KotlinLike<Manager> {
     public content?: string;
-    public embeds: MessageEmbed[] = [];
-    public components: MessageActionRow[] = [];
+    public embeds: EmbedBuilder[] = [];
+    public components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[] = [];
     public triggers: Map<string, ComponentTrigger> = new Map();
     public files: Files = [];
     public readonly locale: string;
-    public readonly interaction: Interaction;
+    public readonly interaction: BaseInteraction;
     private message?: Message | undefined;
-    private readonly collector?: InteractionCollector<MessageComponentInteraction<CacheType>>;
+    private readonly collector?: InteractionCollector<SelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>>;
 
-    public constructor({ content, embeds, components, files, interaction, triggers }: ManagerConstructOptions) {
+    public constructor({ content, embeds = [], components = [], files = [], interaction, triggers = new Map() }: ManagerConstructOptions) {
         super()
-        if (components) this.components = components;
-        if (triggers) this.triggers = triggers;
-        if (embeds) this.embeds = embeds;
-        if (files) this.files = files;
+        this.components = components as ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[];
+        this.triggers = triggers;
+        this.embeds = embeds;
+        this.files = files;
         this.content = content;
 
         this.interaction = interaction;
@@ -72,10 +89,15 @@ class Manager extends KotlinLike<Manager> {
     public async update(elseSend: boolean, channel?: TextBasedChannel | null): Promise<void>;
     public async update(): Promise<void>;
     public async update(elseSend = false, channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
-        const options = { content: this.content, embeds: this.embeds, components: this.components, files: this.files };
+        const options: MessagePayloadOption = { 
+            content: this.content,
+            embeds: this.embeds, 
+            components: this.components, 
+            files: this.files 
+        };
 
-        if (this.message?.editable) await this.message.edit(options);
-        else if (this.interaction.isRepliable()) await this.interaction.editReply(options);
+        if (this.message?.editable) await this.message.edit(MessagePayload.create(this.message, options));
+        else if (this.interaction.isRepliable()) await this.interaction.editReply(MessagePayload.create(this.interaction, options));
         else if (elseSend) await this.send(channel);
     }
     /**   
@@ -83,8 +105,13 @@ class Manager extends KotlinLike<Manager> {
      * @param channel - 송신할 채널  
      */
     public async send(channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
-        const options = { content: this.content, embeds: this.embeds, components: this.components, files: this.files };
-        await channel?.send(options).then(message => this.message = message);
+        const options: MessagePayloadOption = { 
+            content: this.content, 
+            embeds: this.embeds, 
+            components: this.components, 
+            files: this.files 
+        };
+        await channel?.send(MessagePayload.create(channel, options)).then(message => this.message = message);
     }
 
     /**
@@ -93,7 +120,7 @@ class Manager extends KotlinLike<Manager> {
      * @param type - 코드블록 언어, 빈 문자열은 하이라이트 X
      */
     public addContent(content: string, type?: string): void {
-        this.content += type === undefined ? content : Formatters.codeBlock(type, content);
+        this.content += type === undefined ? content : codeBlock(type, content);
     }
 
     /**
@@ -108,12 +135,12 @@ class Manager extends KotlinLike<Manager> {
 
     public addRemoveButton(timeout = 5000): this {
         this.addComponents(
-            new MessageActionRow()
+            new ActionRowBuilder<ButtonBuilder>()
                 .addComponents([
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('remove_embed')
                         .setLabel('Cancel')
-                        .setStyle('SECONDARY')
+                        .setStyle(ButtonStyle.Secondary)
                 ])
         )
             .setTriggers('remove_embed', () => this.remove());
@@ -127,19 +154,19 @@ class Manager extends KotlinLike<Manager> {
         this.content = content;
         return this;
     }
-    public setEmbeds(embeds: MessageEmbed[]): this {
+    public setEmbeds(embeds: EmbedBuilder[]): this {
         this.embeds = embeds;
         return this;
     }
-    public addEmbeds(embeds: MessageEmbed | MessageEmbed[]): this {
+    public addEmbeds(embeds: EmbedBuilder | EmbedBuilder[]): this {
         for (const embed of Array.isArray(embeds) ? embeds : [embeds]) this.embeds.push(embed);
         return this;
     }
-    public setComponents(components: MessageActionRow[]): this {
+    public setComponents(components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[]): this {
         this.components = components;
         return this;
     }
-    public addComponents(components: MessageActionRow | MessageActionRow[]): this {
+    public addComponents(components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder> | ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[]): this {
         for (const component of Array.isArray(components) ? components : [components]) this.components.push(component);
         return this;
     }
@@ -157,12 +184,12 @@ class Manager extends KotlinLike<Manager> {
     }
 
 
-    public static newErrorEmbed(interaction: Interaction, description: string) {
-        new Manager({ interaction, embeds: [new MessageEmbed().setTitle("ERROR").setDescription(description)] }).addRemoveButton().send(interaction.channel as TextBasedChannel);
+    public static newErrorEmbed(interaction: BaseInteraction, description: string) {
+        new Manager({ interaction, embeds: [new EmbedBuilder().setTitle("ERROR").setDescription(description)] }).addRemoveButton().send(interaction.channel as TextBasedChannel);
     }
 
-    public static newTextEmbed(interaction: Interaction, description: string, title = "") {
-        new Manager({ interaction, embeds: [new MessageEmbed().setTitle(title).setDescription(description)] }).addRemoveButton().send(interaction.channel as TextBasedChannel);
+    public static newTextEmbed(interaction: BaseInteraction, description: string, title = "") {
+        new Manager({ interaction, embeds: [new EmbedBuilder().setTitle(title).setDescription(description)] }).addRemoveButton().send(interaction.channel as TextBasedChannel);
     }
 }
 

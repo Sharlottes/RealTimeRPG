@@ -1,15 +1,22 @@
-import { MessageButton, MessageEmbed, MessageSelectMenu } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, EmbedBuilder, SelectMenuBuilder } from 'discord.js';
 
-import { UnitEntity, getOne, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from '@RTTRPG/game';
-import { Item, Items } from '@RTTRPG/game/contents';
-import { Mathf, Canvas, Strings, ANSIStyle } from '@RTTRPG/util';
-import SelectManager from '@RTTRPG/game/managers/SelectManager';
-import { bundle } from '@RTTRPG/assets';
-import { EntityI, SelectManagerConstructOptions } from '@RTTRPG/@type';
+import { UnitEntity, getOne, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from 'game';
+import { Item, Items } from 'game/contents';
+import { Mathf, Canvas, Strings, ANSIStyle } from 'utils';
+import SelectManager from 'game/managers/SelectManager';
+import { bundle } from 'assets';
+import { EntityI, SelectManagerConstructOptions } from '@type';
 import ItemSelectManager from './ItemSelectManager';
 import { codeBlock } from '@discordjs/builders';
-import Random from 'random';
 import Manager from './Manager';
+import { AttackAction } from './actions/AttackAction';
+import { BaseAction } from './actions/BaseAction';
+import { ConsumeAction } from './actions/ConsumeAction';
+import { DvaseAction } from './actions/DvaseAction';
+import { EvaseAction } from './actions/EvaseAction';
+import { ReloadAction } from './actions/ReloadAction';
+import { ShieldAction } from './actions/ShieldAction';
+import { SwapAction } from './actions/SwapAction';
 
 enum Status {
 	DEFAULT,
@@ -17,295 +24,9 @@ enum Status {
 	SHIELD
 }
 
-abstract class BaseAction {
-	public abstract title: string;
-	public manager: BattleManager;
-	public owner: EntityI;
-	public cost: number;
-	private bloody = false;
-
-	constructor(manager: BattleManager, owner: EntityI, cost: number, immediate = false) {
-		this.manager = manager;
-		this.owner = owner;
-		this.cost = cost;
-
-		if (immediate) this.run();
-	}
-
-	public abstract run(): Promise<void>;
-	public abstract description(): string;
-	public abstract isValid(): boolean;
-	public undo(): void {
-		if (this.bloody) this.owner.stats.health += this.cost;
-		else this.owner.stats.energy += this.cost;
-	}
-	public onAdded(): void {
-		if (this.owner.stats.energy < this.cost) {
-			this.owner.stats.health -= this.cost;
-			this.bloody = true;
-			Manager.newTextEmbed(this.manager.interaction, bundle.find(this.manager.locale, 'alert.bloody_action'), bundle.find(this.manager.locale, 'alert'));
-		} else {
-			this.owner.stats.energy -= this.cost;
-		}
-	}
-}
-
-class AttackAction extends BaseAction {
-	private enemy: EntityI;
-	public title = 'attack';
-
-	constructor(manager: BattleManager, owner: EntityI, enemy: EntityI, immediate = false) {
-		super(manager, owner, 10);
-		this.enemy = enemy;
-
-		if (immediate) this.run();
-	}
-
-	public async run(): Promise<void> {
-		if (this.owner.stats.health <= 0 || this.enemy.stats.health <= 0) return;
-		const entity = this.owner.inventory.equipments.weapon;
-		const isUser = this.owner.id == this.manager.user.id;
-		const name = typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale);
-		if (this.manager.isEvasion(this.enemy)) {
-			if (Random.bool()) {
-				await this.manager.updateLog((isUser ? '- ' : '+ ') + bundle.format(this.manager.locale, "evasion_successed", name)).update();
-			} else {
-				await this.manager.updateLog((isUser ? '+ ' : '- ') + bundle.format(this.manager.locale, "evasion_failed", name)).update();
-				await this.manager.updateLog((isUser ? '+ ' : '- ') + entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale)).update();
-			}
-		} else if (this.manager.isShielded(this.enemy)) {
-			if (this.enemy.inventory.equipments.shield) this.enemy.inventory.equipments.shield.durability -= this.owner.inventory.equipments.weapon.item.getWeapon().damage;
-			await this.manager.updateLog((isUser ? '- ' : '+ ') + bundle.format(this.manager.locale, "shielded", name)).update();
-		} else {
-			await this.manager.updateLog((isUser ? '+ ' : '- ') + entity.item.getWeapon()?.attack(this.enemy, entity, this.manager.locale)).update();
-		}
-
-		if (entity.item != Items.punch && entity.item != Items.none) {
-			if (entity.durability > 0) entity.durability--;
-			if (entity.durability <= 0) {
-				await this.manager.updateLog(bundle.format(this.manager.locale, 'battle.broken', entity.item.localName(this.manager.locale))).update();
-				const exist = this.owner.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == this.owner.inventory.equipments.weapon.item);
-				if (exist) {
-					this.owner.inventory.items.splice(this.owner.inventory.items.indexOf(exist), 1);
-					this.owner.inventory.equipments.weapon = exist;
-					await this.manager.updateLog(bundle.find(this.manager.locale, "battle.auto_swap")).update();
-				}
-				else this.owner.inventory.equipments.weapon = new WeaponEntity(Items.punch);
-			}
-		}
-	}
-
-	public description(): string {
-		return bundle.format(this.manager.locale, 'action.attack.description', typeof this.enemy.name !== 'string' ? this.enemy.name(this.manager.locale) : this.enemy.name, this.owner.inventory.equipments.weapon.item.localName(this.manager.locale));
-	}
-
-	public isValid(): boolean {
-		return this.owner.inventory.equipments.weapon.cooldown == 0;
-	}
-
-	public override undo(): void {
-		super.undo();
-		this.owner.inventory.equipments.weapon.cooldown = 0;
-	}
-
-	public override onAdded(): void {
-		super.onAdded();
-		this.owner.inventory.equipments.weapon.cooldown = this.owner.inventory.equipments.weapon.item.getWeapon().cooldown;
-	}
-}
-
-class SwapAction extends BaseAction {
-	private weapon: Item;
-	public title = 'swap';
-
-	constructor(manager: BattleManager, owner: EntityI, weapon: Item, immediate = false) {
-		super(manager, owner, 3);
-		this.weapon = weapon;
-
-		if (immediate) this.run();
-	}
-
-	public async run() {
-		if (this.weapon != Items.punch && !this.owner.inventory.items.some(store => store.item == this.weapon)) {
-			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.weapon.localName(this.manager.locale))).update();
-			return;
-		}
-		this.manager.updateLog(bundle.format(this.manager.locale, 'switch_change',
-			this.weapon.localName(this.manager.locale),
-			this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
-		));
-		this.owner.switchWeapon(this.weapon);
-		this.manager.updateBar();
-		this.manager.validate();
-		await this.manager.swapRefresher();
-	}
-
-	public description(): string {
-		return bundle.format(this.manager.locale, 'action.swap.description', this.owner.inventory.equipments.weapon.item.localName(this.manager.locale), this.weapon.localName(this.manager.locale));
-	}
-
-	public isValid(): boolean {
-		return this.weapon.hasWeapon();
-	}
-}
-
-class ConsumeAction extends BaseAction {
-	private potion: Item;
-	private amount: number;
-	public title = 'consume';
-
-	constructor(manager: BattleManager, owner: EntityI, potion: Item, amount: number, immediate = false) {
-		super(manager, owner, 5);
-		this.potion = potion;
-		this.amount = amount;
-
-		if (immediate) this.run();
-	}
-
-	public async run() {
-		const entity = this.owner.inventory.items.find(store => store.item == this.potion);
-		if (!entity) {
-			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.potion.localName(this.manager.locale))).update();
-			return;
-		}
-		this.owner.inventory.remove(this.potion, this.amount);
-		entity.item.getConsume().consume(this.owner, this.amount);
-		this.manager.updateLog(bundle.format(this.manager.locale, 'consume',
-			this.potion.localName(this.manager.locale),
-			this.amount,
-			this.potion.getConsume().buffes.map((b) => b.description(this.owner, this.amount, b, this.manager.locale)).join('\n  ')
-		))
-		await this.manager.consumeRefresher();
-	}
-
-	public description(): string {
-		return bundle.format(this.manager.locale, 'action.consume.description', this.potion.localName(this.manager.locale), this.amount);
-	}
-
-	public isValid(): boolean {
-		return this.potion.hasConsume();
-	}
-}
-
-class ReloadAction extends BaseAction {
-	public title = 'reload';
-
-	constructor(manager: BattleManager, owner: EntityI, public stack: ItemStack, public amount: number,
-		immediate = false) {
-		super(manager, owner, 1);
-
-		if (immediate) this.run();
-	}
-
-	public async run() {
-		const entity = this.owner.inventory.equipments.weapon;
-		if (entity instanceof SlotWeaponEntity) {
-			const inc = this.stack.item.getAmmo()?.itemPerAmmo ?? 1;
-			this.owner.inventory.remove(this.stack.item, this.amount);
-			for (let i = 0; i < this.amount; i += inc) entity.ammos.push(this.stack.item);
-			this.manager.updateLog(bundle.format(this.manager.locale, 'reload',
-				this.stack.item.localName(this.manager.locale),
-				this.amount,
-				this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
-			));
-			await this.manager.reloadRefresher();
-		}
-	}
-
-	public description(): string {
-		return bundle.format(this.manager.locale, 'action.reload.description',
-			this.stack.item.localName(this.manager.locale),
-			this.stack.amount,
-			this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
-		);
-	}
-
-	public isValid(): boolean {
-		return this.stack.item.hasAmmo();
-	}
-}
-
-class EvaseAction extends BaseAction {
-	public title = 'evase';
-
-	constructor(manager: BattleManager, owner: EntityI, immediate = false) {
-		super(manager, owner, 1);
-
-		if (immediate) this.run();
-	}
-
-	public async run() {
-		this.manager.setEvasion(this.owner, true);
-
-		await this.manager.updateLog(bundle.format(this.manager.locale, 'evasion_position',
-			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
-		)).update();
-	}
-
-	public description(): string {
-		return bundle.find(this.manager.locale, 'action.evase.description');
-	}
-
-	public isValid(): boolean {
-		return !this.manager.isEvasion(this.owner);
-	}
-}
-
-class DvaseAction extends BaseAction {
-	public title = 'dvase';
-
-	constructor(manager: BattleManager, owner: EntityI, immediate = false) {
-		super(manager, owner, 1);
-
-		if (immediate) this.run();
-	}
-
-	public async run() {
-		this.manager.setEvasion(this.owner, false);
-
-		await this.manager.updateLog(bundle.format(this.manager.locale, 'dvasion_position',
-			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
-		)).update();
-	}
-
-	public description(): string {
-		return bundle.find(this.manager.locale, 'action.dvase.description');
-	}
-
-	public isValid(): boolean {
-		return this.manager.isEvasion(this.owner);
-	}
-}
-
-class ShieldAction extends BaseAction {
-	public title = 'shield';
-
-	constructor(manager: BattleManager, owner: EntityI, immediate = false) {
-		super(manager, owner, 1);
-
-		if (immediate) this.run();
-	}
-
-	public async run() {
-		this.manager.setShield(this.owner, true);
-
-		await this.manager.updateLog(bundle.format(this.manager.locale, 'shield_position',
-			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
-		)).update();
-	}
-
-	public description(): string {
-		return bundle.find(this.manager.locale, 'action.shield.description');
-	}
-
-	public isValid(): boolean {
-		return !this.manager.isShielded(this.owner);
-	}
-}
-
 export default class BattleManager extends SelectManager {
-	private readonly mainEmbed: MessageEmbed;
-	private readonly actionEmbed: MessageEmbed;
+	private readonly mainEmbed: EmbedBuilder;
+	private readonly actionEmbed: EmbedBuilder;
 	private readonly comboQueue: string[] = [];
 	private readonly actionQueue: BaseAction[] = [];
 	private readonly status: Map<EntityI, Status>;
@@ -338,8 +59,8 @@ export default class BattleManager extends SelectManager {
 			.set(options.user, Status.DEFAULT)
 			.set(this.enemy, Status.DEFAULT);
 
-		this.mainEmbed = new MessageEmbed().setTitle("Battle Status");
-		this.actionEmbed = new MessageEmbed().setTitle('Action Queue').setDescription("Empty");
+		this.mainEmbed = new EmbedBuilder().setTitle("Battle Status");
+		this.actionEmbed = new EmbedBuilder().setTitle('Action Queue').setDescription("Empty");
 	}
 
 	public override async init() {
@@ -357,7 +78,7 @@ export default class BattleManager extends SelectManager {
 			} else {
 				await this.addAction(new AttackAction(this, this.user, this.enemy));
 			}
-		}, { style: 'PRIMARY', disabled: this.user.inventory.equipments.weapon.cooldown > 0 });
+		}, { style: ButtonStyle.Primary, disabled: this.user.inventory.equipments.weapon.cooldown > 0 });
 
 		this.addButtonSelection('evasion', 0, async () => {
 			this.addAction(this.isEvasion(this.user) ? new DvaseAction(this, this.user) : new EvaseAction(this, this.user));
@@ -448,7 +169,7 @@ export default class BattleManager extends SelectManager {
 			this.validate();
 			this.update();
 		}, {
-			style: 'DANGER',
+			style: ButtonStyle.Danger,
 			disabled: true
 		})
 
@@ -488,7 +209,7 @@ export default class BattleManager extends SelectManager {
 		reload.setDisabled(!(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity));
 
 		//회피 on/off
-		(evase as MessageButton).setLabel(bundle.find(this.locale, this.isEvasion(this.user) ? 'select.dvasion' : 'select.evasion'));
+		(evase as ButtonBuilder).setLabel(bundle.find(this.locale, this.isEvasion(this.user) ? 'select.dvasion' : 'select.evasion'));
 	}
 
 	private async addAction(action: BaseAction) {
@@ -610,16 +331,16 @@ export default class BattleManager extends SelectManager {
 			}
 
 			this.updateLog('+ ' + (this.enemy.stats.health < 0 ? bundle.find(this.locale, 'battle.overkill') + ' ' : '') + bundle.format(this.locale, 'battle.win', this.enemy.stats.health));
-			this.mainEmbed.addField(
-				'Battle End',
-				Strings.color(
+			this.mainEmbed.addFields({
+				name: 'Battle End',
+				value: Strings.color(
 					bundle.format(this.locale, 'battle.result',
 						this.user.exp,
 						this.user.exp += unit.level * (1 + unit.ratio) * 10,
 						items.map((i) => `${i.item.localName(this.locale)} +${i.amount} ${bundle.find(this.locale, 'unit.item')}`).join('\n')
 					) + '\n' + items.map((i) => this.user.giveItem(i.item)).filter((e) => e).join('\n'),
 					[ANSIStyle.BLUE])
-			);
+			});
 		} else if (this.user.stats.health <= 0) {
 			this.updateLog('- ' + bundle.format(this.locale, 'battle.lose', this.user.stats.health));
 			//TODO: 패배 부분 구현하기

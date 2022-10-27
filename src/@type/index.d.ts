@@ -1,8 +1,8 @@
-import Discord, { Interaction, Message, MessageEmbed, MessageOptions, CacheType, MessageActionRow, MessageComponentInteraction, MessageActionRowComponent } from 'discord.js';
+import Discord, { Interaction, BaseInteraction, Message, EmbedBuilder, MessageOptions, CacheType, ActionRowBuilder, MessageComponentInteraction, ActionRowBuilderComponent } from 'discord.js';
 
-import { StatusEntity, ItemStack, User, Inventory } from '@RTTRPG/game';
-import StatusEffect from '@RTTRPG/game/contents/StatusEffect';
-import Manager from '@RTTRPG/game/managers/Manager';
+import { StatusEntity, ItemStack, User, Inventory } from 'game';
+import StatusEffect from 'game/contents/StatusEffect';
+import Manager from 'game/managers/Manager';
 
 declare global {
     namespace NodeJS {
@@ -15,11 +15,11 @@ declare global {
 export type ComponentTrigger = (interaction: MessageComponentInteraction, manager: Manager) => void;
 export type ManagerConstructOptions = {
     content?: string;
-    embeds?: MessageEmbed[];
-    components?: MessageActionRow[];
+    embeds?: EmbedBuilder[];
+    components?: ActionRowBuilder[];
     triggers?: Map<string, ComponentTrigger>;
     files?: Exclude<MessageOptions['files'], undefined>;
-    interaction: Interaction;
+    interaction: BaseInteraction;
 }
 export type SelectManagerConstructOptions<L = SelectManager> = ManagerConstructOptions & { user: User, last?: L }
 
@@ -118,7 +118,7 @@ export type InventoryJSONdata = {
     }
 }
 
-export type EventTrigger = (user: User, components: MessageActionRow[], interactionCallback: MessageComponentInteraction, currentRow: MessageActionRowComponent) => void;
+export type EventTrigger = (user: User, components: ActionRowBuilder[], interactionCallback: MessageComponentInteraction, currentRow: ActionRowBuilderComponent) => void;
 
 export type EventSelection = {
     readonly name: string;

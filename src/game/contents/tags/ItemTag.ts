@@ -1,5 +1,5 @@
-import { ItemEntity } from "@RTTRPG/game";
-import { MessageEmbed } from "discord.js";
+import { ItemEntity } from "game";
+import { EmbedBuilder } from "discord.js";
 import { Item } from "..";
 
 export default abstract class ItemTag {
@@ -10,5 +10,5 @@ export default abstract class ItemTag {
     this.item = item;
   }
 
-  public abstract buildInfo(builder: MessageEmbed, entity?: ItemEntity): MessageEmbed;
+  public abstract buildInfo(builder: EmbedBuilder, entity?: ItemEntity): EmbedBuilder;
 }

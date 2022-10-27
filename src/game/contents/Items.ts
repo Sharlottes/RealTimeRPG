@@ -1,4 +1,4 @@
-import { Item, Buff, StatusEffects } from "@RTTRPG/game/contents";
+import { Item, Buff, StatusEffects } from "game/contents";
 import { EntityI } from '../../@type/index';
 import { AmmoTag, ConsumeTag, ShieldTag, SlotWeaponTag, WeaponTag } from "./tags";
 

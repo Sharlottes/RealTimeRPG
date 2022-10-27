@@ -1,4 +1,4 @@
-import { Durable, InventoryJSONdata } from "@RTTRPG/@type";
+import { Durable, InventoryJSONdata } from "@type";
 import { Item, Items } from "./contents";
 
 export default class Inventory {

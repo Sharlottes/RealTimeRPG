@@ -3,9 +3,9 @@ export { default as Command } from "./Command";
 import { ApplicationCommandDataResolvable, Collection, Guild } from "discord.js";
 import { Routes } from "discord-api-types/v9";
 
-import { CommandInfo } from "@RTTRPG/@type";
-import { Command } from "@RTTRPG/commands";
-import { app } from "@RTTRPG/index";
+import { CommandInfo } from "@type";
+import { Command } from "commands";
+import { app } from "index";
 
 namespace CommandManager {
     export const commands: Collection<string, Command> = new Collection();

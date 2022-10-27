@@ -1,6 +1,6 @@
 import { CommandInteraction, CacheType, SlashCommandBuilder } from "discord.js";
 
-import { CommandCategory } from "@RTTRPG/@type";
+import { CommandCategory } from "@type";
 
 abstract class Command {
     public readonly category: CommandCategory;

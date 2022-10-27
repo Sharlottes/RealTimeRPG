@@ -1,7 +1,7 @@
-import { Durable, EntityI } from "@RTTRPG/@type";
-import { bundle } from "@RTTRPG/assets";
-import { WeaponEntity } from "@RTTRPG/game/Inventory";
-import { MessageEmbed } from "discord.js";
+import { Durable, EntityI } from "@type";
+import { bundle } from "assets";
+import { WeaponEntity } from "game/Inventory";
+import { EmbedBuilder } from "discord.js";
 import Random from "random";
 import { ItemTag } from ".";
 import { Item } from "..";
@@ -49,7 +49,7 @@ export default class WeaponTag extends ItemTag {
 		);
 	}
   
-	public override buildInfo(embed: MessageEmbed, entity?: WeaponEntity): MessageEmbed {
+	public override buildInfo(embed: EmbedBuilder, entity?: WeaponEntity): EmbedBuilder {
 		if(entity) embed.addFields(
 			{ name: 'current cooldown', value: entity.cooldown.toString() },
 			{ name: 'current durability', value: entity.durability.toString(), inline: true }
