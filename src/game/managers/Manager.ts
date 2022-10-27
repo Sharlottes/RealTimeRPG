@@ -53,6 +53,7 @@ class Manager extends KotlinLike<Manager> {
         else await manager.send(options.channel).then(message => manager.message = message);
 
         manager.updateCollector();
+        return manager as InstanceType<T>;
     }
 
     public updateCollector() {
@@ -61,7 +62,7 @@ class Manager extends KotlinLike<Manager> {
             if (trigger) {
                 (async () => {
                     if (!interaction.deferred) await interaction.deferUpdate({ fetchReply: true }).then(message => this.message = message);
-                    await trigger(interaction, this);
+                    trigger(interaction, this);
                 })();
             }
         });
@@ -75,13 +76,8 @@ class Manager extends KotlinLike<Manager> {
     public async remove(): Promise<void> {
         this.collector?.stop();
 
-        console.log('message ', this.message);
-        await this.message?.delete().then(res => console.log('res ', res), err => console.log('err ', err)).catch(err => console.log('catched ', err));
-        /*
-        if (this.message?.deletable) {
-            this.message.delete();
-        } else console.warn("this manager doesn't have any way to remove message");
-        */
+        if (!this.message) console.log('message is empty');
+        else await this.message.delete();
     }
 
     /**
@@ -117,7 +113,7 @@ class Manager extends KotlinLike<Manager> {
             files: this.files
         };
         this.updateCollector();
-        return await channel?.send(MessagePayload.create(channel, options));
+        return await channel?.send(MessagePayload.create(channel, options)).then(message => this.message = message);
     }
 
     /**
@@ -192,12 +188,16 @@ class Manager extends KotlinLike<Manager> {
     }
 
 
-    public static newErrorEmbed(interaction: BaseInteraction, description: string) {
-        new Manager({ interaction, embeds: [new EmbedBuilder().setTitle("ERROR").setDescription(description)] }).addRemoveButton().send(interaction.channel as TextBasedChannel);
+    public static async newErrorEmbed(interaction: BaseInteraction, description: string) {
+        const manager = new Manager({ interaction, embeds: [new EmbedBuilder().setTitle("ERROR").setDescription(description)] });
+        await manager.addRemoveButton().send(interaction.channel as TextBasedChannel);
+        return manager;
     }
 
-    public static newTextEmbed(interaction: BaseInteraction, description: string, title = "") {
-        new Manager({ interaction, embeds: [new EmbedBuilder().setTitle(title).setDescription(description)] }).addRemoveButton().send(interaction.channel as TextBasedChannel);
+    public static async newTextEmbed(interaction: BaseInteraction, description: string, title = "") {
+        const manager = new Manager({ interaction, embeds: [new EmbedBuilder().setTitle(title).setDescription(description)] });
+        await manager.addRemoveButton().send(interaction.channel as TextBasedChannel);
+        return manager;
     }
 }
 

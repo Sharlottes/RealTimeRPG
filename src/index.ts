@@ -89,13 +89,13 @@ app.client
 
 process
     .on("unhandledRejection", async (err) => {
-        console.error("Unhandled Promise Rejection:\n", err);
+        console.error(`[${new Date().toISOString()}] Unhandled Promise Rejection:\n`, err);
     })
     .on("uncaughtException", async (err) => {
-        console.error("Uncaught Promise Exception:\n", err);
+        console.error(`[${new Date().toISOString()}] Uncaught Promise Exception:\n`, err);
     })
     .on("uncaughtExceptionMonitor", async (err) => {
-        console.error("Uncaught Promise Exception (Monitor):\n", err);
+        console.error(`[${new Date().toISOString()}] Uncaught Promise Exception (Monitor):\n`, err);
     })
     .on("multipleResolves", async (type, promise, reason) => {
         //console.error("Multiple Resolves:\n", type, promise, reason);

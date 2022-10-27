@@ -129,7 +129,7 @@ export default class SelectManager extends Manager {
 
   private resizeSelection(index: number) {
     while (this.components.length <= index) {
-      this.components.push(new ActionRowBuilder());
+      this.components.push(new ActionRowBuilder({ components: [] }));
     }
   }
 

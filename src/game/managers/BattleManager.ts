@@ -1,4 +1,4 @@
-import { ButtonBuilder, ButtonStyle, EmbedBuilder, SelectMenuBuilder } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, SelectMenuBuilder } from 'discord.js';
 
 import { UnitEntity, getOne, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from 'game';
 import { Item, Items } from 'game/contents';
@@ -213,8 +213,25 @@ export default class BattleManager extends SelectManager {
 	}
 
 	private async addAction(action: BaseAction) {
-		if (this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost) {
-			Manager.newErrorEmbed(this.interaction, bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost));
+		if (!action.bloody && this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost) {
+			SelectManager.start<typeof SelectManager>({
+				interaction: this.interaction,
+				embeds: [new EmbedBuilder()
+					.setTitle('ALERT')
+					.setDescription(bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost))
+				],
+				user: this.user
+			}).then(async manager => {
+				await manager
+					.addButtonSelection('useHealth', 0, (_, manager) => {
+						manager.remove();
+						action.enableBloody();
+						this.addAction(action);
+					}, { style: ButtonStyle.Secondary }
+					)
+					.addRemoveButton()
+					.update();
+			})
 			return;
 		}
 
@@ -228,7 +245,7 @@ export default class BattleManager extends SelectManager {
 
 		action.onAdded();
 		this.actionQueue.push(action);
-		this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join(''));
+		this.actionEmbed.setDescription(this.actionQueue.map<string>(act => codeBlock((act.bloody ? bundle.find(this.locale, 'action.withHealth') : '') + ' ' + act.description())).join(''));
 		this.updateBar();
 		this.validate();
 		await this.update();
@@ -248,7 +265,7 @@ export default class BattleManager extends SelectManager {
 		//엑션/콤보 실행
 		while (this.actionQueue.length > 0) {
 			const action = this.actionQueue.shift();
-			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join('') || null);
+			this.actionEmbed.setDescription(this.actionQueue.map<string>(act => codeBlock((act.bloody ? bundle.find(this.locale, 'action.withHealth') : '') + ' ' + act.description())).join('') || null);
 			await this.update();
 			if (!action) continue;
 			await action.run();

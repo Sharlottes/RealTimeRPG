@@ -8,7 +8,7 @@ export abstract class BaseAction {
 	public manager: BattleManager;
 	public owner: EntityI;
 	public cost: number;
-	private bloody = false;
+	public bloody = false;
 
 	constructor(manager: BattleManager, owner: EntityI, cost: number, immediate = false) {
 		this.manager = manager;
@@ -21,15 +21,20 @@ export abstract class BaseAction {
 	public abstract run(): Promise<void>;
 	public abstract description(): string;
 	public abstract isValid(): boolean;
+
 	public undo(): void {
 		if (this.bloody) this.owner.stats.health += this.cost;
 		else this.owner.stats.energy += this.cost;
 	}
+
+	public enableBloody(): void {
+		this.bloody = true;
+		Manager.newTextEmbed(this.manager.interaction, bundle.find(this.manager.locale, 'alert.bloody_action'), bundle.find(this.manager.locale, 'alert'));
+	}
+
 	public onAdded(): void {
-		if (this.owner.stats.energy < this.cost) {
+		if (this.bloody) {
 			this.owner.stats.health -= this.cost;
-			this.bloody = true;
-			Manager.newTextEmbed(this.manager.interaction, bundle.find(this.manager.locale, 'alert.bloody_action'), bundle.find(this.manager.locale, 'alert'));
 		} else {
 			this.owner.stats.energy -= this.cost;
 		}
