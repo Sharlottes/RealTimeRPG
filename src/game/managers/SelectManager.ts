@@ -1,10 +1,12 @@
-import { 
-  ActionRowBuilder, 
-  ButtonBuilder, 
-  SelectMenuBuilder, 
-  ButtonStyle, 
-  APIButtonComponent, 
-  SelectMenuComponentOptionData 
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  SelectMenuBuilder,
+  ButtonStyle,
+  APIButtonComponent,
+  SelectMenuComponentOptionData,
+  ComponentType,
+  APISelectMenuOption
 } from 'discord.js';
 import { ComponentTrigger, type SelectManagerConstructOptions } from "@type";
 
@@ -17,7 +19,7 @@ type MenuSelectOptions<T> = {
   row: number;
   callback: ComponentTrigger;
   list: T[];
-  reducer?: (elem: T, index: number) => SelectMenuComponentOptionData ;
+  reducer?: (elem: T, index: number) => APISelectMenuOption;
   placeholder?: string;
 }
 
@@ -64,26 +66,26 @@ export default class SelectManager extends Manager {
 
     let page = 0;
     const reoption = () => list
-    .reduce<SelectMenuComponentOptionData []>(
-      (acc, elem, index) => 
-        index < page * 8 || index > (page + 1) * 8 ? acc
-          : [...acc, reducer ? reducer(elem, index) 
-          : { 
-            label: `#${index} item`, 
-            value: index.toString() 
-          }
-        ]
-      , page == 0 
-        ? [] 
-        : [{ 
-            label: `<-- ${page}/${Math.floor(list.length / 8) + 1}`, 
-            value: '-1' 
+      .reduce<APISelectMenuOption[]>(
+        (acc, elem, index) =>
+          index < page * 8 || index > (page + 1) * 8 ? acc
+            : [...acc, reducer ? reducer(elem, index)
+              : {
+                label: `#${index} item`,
+                value: index.toString()
+              }
+            ]
+        , page == 0
+          ? []
+          : [{
+            label: `<-- ${page}/${Math.floor(list.length / 8) + 1}`,
+            value: '-1'
           }]
-    )
-    .concat({ 
-      label: `${page + 2}/${Math.floor(list.length / 8) + 1} -->`, 
-      value: '-2' 
-    });
+      )
+      .concat({
+        label: `${page + 1}/${Math.floor(list.length / 8) + 1} -->`,
+        value: '-2'
+      });
 
     this.components[row].addComponents(
       new SelectMenuBuilder()
@@ -93,7 +95,7 @@ export default class SelectManager extends Manager {
     );
 
     this.setTriggers(customId, (interaction, manager) => {
-      if (!(interaction.isSelectMenu() && interaction.component instanceof SelectMenuBuilder)) return;
+      if (!(interaction.isSelectMenu() && interaction.component.type == ComponentType.SelectMenu)) return;
       const id = interaction.values[0];
 
       switch (id) {
@@ -114,7 +116,8 @@ export default class SelectManager extends Manager {
         }
       }
 
-      interaction.component.setOptions(reoption());
+      interaction.component.options.length = 0;
+      interaction.component.options.push(...reoption());
       this.update();
     })
 

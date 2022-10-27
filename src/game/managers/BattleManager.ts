@@ -248,7 +248,7 @@ export default class BattleManager extends SelectManager {
 		//엑션/콤보 실행
 		while (this.actionQueue.length > 0) {
 			const action = this.actionQueue.shift();
-			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join(''));
+			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join('') || null);
 			await this.update();
 			if (!action) continue;
 			await action.run();

@@ -22,30 +22,30 @@ export const app = {
             GatewayIntentBits.Guilds,
             GatewayIntentBits.GuildMessages
         ]
-    }),
-    option: new Map<string, boolean | number | string>(),
+    })
 };
 
-const time = Date.now();
+let time = Date.now();
+
 // 애셋 파일 로딩
 assets.init();
 console.log(`asset initialization has been done: ${Date.now() - time}ms`);
 
 //기본 명령어 로딩
 CM.commands.clear();
-console.log(`command initialization has been done in ${(Date.now() - time)}ms`);
+console.log(`command initialization has been done in ${Date.now() - time}ms`);
 
 //게임 콘텐츠 로딩
 init();
-console.log(`game initialization has been done in ${(Date.now() - time)}ms`);
+console.log(`game initialization has been done in ${Date.now() - time}ms`);
 
 //전역 변수 로딩
 Vars.init();
 console.log(`vars initialization has been done: ${Date.now() - time}ms`);
 
 //디스코드 봇 로그인
-app.client.login(process.env.DISCORD_TOKEN).then(() => 
-    console.log(`discord bot login has been done in ${(Date.now() - time)}ms`)
+app.client.login(process.env.DISCORD_TOKEN).then(() =>
+    console.log(`discord bot login has been done in ${Date.now() - time}ms`)
 );
 
 app.client
@@ -56,10 +56,10 @@ app.client
         if (interaction.isCommand()) {
             const command = CM.commands.get(interaction.commandName);
             if (!command || !interaction.channel) return;
-            await interaction.deferReply().catch(async e => setTimeout(() => interaction.deferReply().catch(console.log), 1000));
+            await interaction.deferReply();
 
             if (interaction.channel.isDMBased() || !command.dmOnly) command.run(interaction);
-            else interaction.editReply("This command is available only in the dm channel.");
+            else await interaction.editReply("This command is available only in the dm channel.");
         }
     })
     .on("messageCreate", async message => {
@@ -98,5 +98,5 @@ process
         console.error("Uncaught Promise Exception (Monitor):\n", err);
     })
     .on("multipleResolves", async (type, promise, reason) => {
-        console.error("Multiple Resolves:\n", type, promise, reason);
+        //console.error("Multiple Resolves:\n", type, promise, reason);
     });

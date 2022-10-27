@@ -1,17 +1,17 @@
 import { type ManagerConstructOptions, type ComponentTrigger } from "@type";
-import { 
-    BaseInteraction, 
-    type BaseMessageOptions, 
-    type CacheType, 
-    Message, 
-    ActionRowBuilder, 
-    EmbedBuilder, 
-    ButtonBuilder, 
-    TextBasedChannel, 
-    InteractionCollector, 
-    MessagePayload, 
-    MessagePayloadOption, 
-    ButtonInteraction, 
+import {
+    BaseInteraction,
+    type BaseMessageOptions,
+    type CacheType,
+    Message,
+    ActionRowBuilder,
+    EmbedBuilder,
+    ButtonBuilder,
+    TextBasedChannel,
+    InteractionCollector,
+    MessagePayload,
+    MessagePayloadOption,
+    ButtonInteraction,
     SelectMenuInteraction,
     codeBlock,
     ButtonStyle,
@@ -32,7 +32,7 @@ class Manager extends KotlinLike<Manager> {
     public readonly locale: string;
     public readonly interaction: BaseInteraction;
     private message?: Message | undefined;
-    private readonly collector?: InteractionCollector<SelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>>;
+    private collector?: InteractionCollector<SelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>>;
 
     public constructor({ content, embeds = [], components = [], files = [], interaction, triggers = new Map() }: ManagerConstructOptions) {
         super()
@@ -44,40 +44,40 @@ class Manager extends KotlinLike<Manager> {
 
         this.interaction = interaction;
         this.locale = interaction.locale;
+    }
 
-        this.collector = interaction.channel?.createMessageComponentCollector();
-        this.collector?.on('collect', async (interaction) => {
-            const trigger = this.triggers.get(interaction.customId);
+    public static async start<T extends abstract new (...args: any) => any = typeof this>(options: ConstructorParameters<T>[0] & { channel?: TextBasedChannel, update?: boolean }) {
+        const manager = new this(options);
+        manager.init();
+        if (options.update) await manager.update();
+        else await manager.send(options.channel).then(message => manager.message = message);
+
+        manager.collector = manager.message?.createMessageComponentCollector().on('collect', async (interaction) => {
+            const trigger = manager.triggers.get(interaction.customId);
             if (trigger) {
-                interaction.deferUpdate({ fetchReply: true }).then(() => trigger(interaction, this));
+                (async () => {
+                    if (!interaction.deferred) await interaction.deferUpdate({ fetchReply: true }).then(message => manager.message = message);
+                    await trigger(interaction, manager);
+                })();
             }
         });
     }
 
-    public static start<T extends abstract new (...args: any) => any = typeof this>(options: ConstructorParameters<T>[0] & { channel?: TextBasedChannel, update?: boolean }) {
-        const manager = new this(options);
-        manager.init();
-        if (options.update) manager.update();
-        else manager.send(options.channel);
-    }
-
-    public init(): void {
-        this.message = undefined;
-        this.content = undefined;
-        this.embeds = [];
-        this.files = [];
-        this.components = [];
-        this.triggers.clear();
-    }
+    public init(): void { }
 
     /**
      * 보냈을 때 업데이트한 메시지를 삭제합니다.
      */
-    public remove(): void {
+    public async remove(): Promise<void> {
+        this.collector?.stop();
+
+        console.log('message ', this.message);
+        await this.message?.delete().then(res => console.log('res ', res), err => console.log('err ', err)).catch(err => console.log('catched ', err));
+        /*
         if (this.message?.deletable) {
-            this.collector?.stop();
             this.message.delete();
         } else console.warn("this manager doesn't have any way to remove message");
+        */
     }
 
     /**
@@ -89,29 +89,30 @@ class Manager extends KotlinLike<Manager> {
     public async update(elseSend: boolean, channel?: TextBasedChannel | null): Promise<void>;
     public async update(): Promise<void>;
     public async update(elseSend = false, channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
-        const options: MessagePayloadOption = { 
+        const options: MessagePayloadOption = {
             content: this.content,
-            embeds: this.embeds, 
-            components: this.components, 
-            files: this.files 
+            embeds: this.embeds,
+            components: this.components,
+            files: this.files
         };
 
-        if (this.message?.editable) await this.message.edit(MessagePayload.create(this.message, options));
-        else if (this.interaction.isRepliable()) await this.interaction.editReply(MessagePayload.create(this.interaction, options));
-        else if (elseSend) await this.send(channel);
+        if (this.message?.editable) await this.message.edit(MessagePayload.create(this.message, options)).then(message => this.message = message);
+        else if (this.interaction.isRepliable()) await this.interaction.editReply(MessagePayload.create(this.interaction, options)).then(message => this.message = message);
+        else if (elseSend && (channel || this.interaction.channel)) await this.send(channel).then(message => this.message = message);
+        else throw new Error('cannot send message');
     }
     /**   
      * 현재 데이터를 송신하고 message를 갱신합니다.
      * @param channel - 송신할 채널  
      */
-    public async send(channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
-        const options: MessagePayloadOption = { 
-            content: this.content, 
-            embeds: this.embeds, 
-            components: this.components, 
-            files: this.files 
+    public async send(channel: TextBasedChannel | null = this.interaction.channel): Promise<Message<boolean> | undefined> {
+        const options: MessagePayloadOption = {
+            content: this.content,
+            embeds: this.embeds,
+            components: this.components,
+            files: this.files
         };
-        await channel?.send(MessagePayload.create(channel, options)).then(message => this.message = message);
+        return await channel?.send(MessagePayload.create(channel, options));
     }
 
     /**
@@ -125,7 +126,7 @@ class Manager extends KotlinLike<Manager> {
 
     /**
      * 이 메시지와의 상호작용을 종료합니다.   
-     * 모든 버튼이 사라지고 삭제 버튼이 생성됩니다. 메시지는 5초 후 자동 삭제됩니다.
+     * 모든 버튼이 사라지고 삭제 버튼이 생성됩니다. 메시지는 기본 5초 후 자동 삭제됩니다.
      */
     public async endManager(timeout = 5000): Promise<void> {
         this.setComponents([]);
@@ -134,6 +135,8 @@ class Manager extends KotlinLike<Manager> {
     }
 
     public addRemoveButton(timeout = 5000): this {
+        const id = setTimeout(() => timeout != -1 && this.remove(), timeout);
+
         this.addComponents(
             new ActionRowBuilder<ButtonBuilder>()
                 .addComponents([
@@ -143,10 +146,10 @@ class Manager extends KotlinLike<Manager> {
                         .setStyle(ButtonStyle.Secondary)
                 ])
         )
-            .setTriggers('remove_embed', () => this.remove());
-        setTimeout(() => {
-            this.remove();
-        }, timeout);
+            .setTriggers('remove_embed', async () => {
+                await this.remove();
+                clearTimeout(id);
+            });
         return this;
     }
 
