@@ -52,12 +52,16 @@ class Manager extends KotlinLike<Manager> {
         if (options.update) await manager.update();
         else await manager.send(options.channel).then(message => manager.message = message);
 
-        manager.collector = manager.message?.createMessageComponentCollector().on('collect', async (interaction) => {
-            const trigger = manager.triggers.get(interaction.customId);
+        manager.updateCollector();
+    }
+
+    public updateCollector() {
+        this.collector ??= this.message?.createMessageComponentCollector().on('collect', async (interaction) => {
+            const trigger = this.triggers.get(interaction.customId);
             if (trigger) {
                 (async () => {
-                    if (!interaction.deferred) await interaction.deferUpdate({ fetchReply: true }).then(message => manager.message = message);
-                    await trigger(interaction, manager);
+                    if (!interaction.deferred) await interaction.deferUpdate({ fetchReply: true }).then(message => this.message = message);
+                    await trigger(interaction, this);
                 })();
             }
         });
@@ -112,6 +116,7 @@ class Manager extends KotlinLike<Manager> {
             components: this.components,
             files: this.files
         };
+        this.updateCollector();
         return await channel?.send(MessagePayload.create(channel, options));
     }
 
