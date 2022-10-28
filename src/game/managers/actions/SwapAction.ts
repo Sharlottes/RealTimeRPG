@@ -16,6 +16,8 @@ export class SwapAction extends BaseAction {
 	}
 
 	public async run() {
+		super.run();
+		
 		if (this.weapon != Items.punch && !this.owner.inventory.items.some(store => store.item == this.weapon)) {
 			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.weapon.localName(this.manager.locale))).update();
 			return;

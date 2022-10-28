@@ -35,7 +35,7 @@ export default class WeaponTag extends ItemTag {
 	public attack(target: EntityI, entity: WeaponEntity, locale: string) {
 		const critical = Random.float(0, 1) < this.critical_chance;
 		const stat = target.stats;
-		const damage = Math.round((this.damage + (critical ? this.critical_ratio * this.damage : 0))*100)/100;
+		const damage = Math.round((this.damage + (critical ? this.critical_ratio * this.damage : 0)) * 100) / 100;
 
 		if(this.status) target.applyStatus(this.status);
 		

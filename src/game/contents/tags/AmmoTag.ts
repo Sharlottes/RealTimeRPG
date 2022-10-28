@@ -13,6 +13,9 @@ export default class AmmoTag extends ItemTag {
 	}
 	
 	public buildInfo(embed: EmbedBuilder, entity?: ItemEntity | undefined): EmbedBuilder {
-		return embed.addField('items/ammo', this.itemPerAmmo.toString());
+		return embed.addFields({
+			name: 'items/ammo', 
+			value: this.itemPerAmmo.toString()
+		});
 	}
 }

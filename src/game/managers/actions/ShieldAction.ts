@@ -13,6 +13,8 @@ export class ShieldAction extends BaseAction {
 	}
 
 	public async run() {
+		super.run();
+		
 		this.manager.setShield(this.owner, true);
 
 		await this.manager.updateLog(bundle.format(this.manager.locale, 'shield_position',

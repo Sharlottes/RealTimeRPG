@@ -4,15 +4,21 @@ import { StatusEntity } from "../..";
 
 export default class StatusEffect extends Content {
 	readonly id: number;
-  readonly duration: number;
-  readonly power: number;
-  readonly callback: (entity: EntityI, status: StatusEntity) => void;
+  public multiplier = 1; 
 
-  constructor(name: string, duration = -1, power = 1, callback: (entity: EntityI, status: StatusEntity) => void = ()=>{return}) {
+  constructor(
+    name: string, 
+    public readonly duration = -1, 
+    public readonly callback: (entity: EntityI, status: StatusEntity) => void = () => {}
+  ) {
     super(name, 'status');
-    this.duration = duration;
-    this.power = power;
-    this.callback = callback;
+
     this.id = StatusEffects.statuses.length;
+    StatusEffects.statuses.push(this);
+  }
+
+  setMultiplier(multiplier: number): this {
+    this.multiplier = multiplier;
+    return this;
   }
 }

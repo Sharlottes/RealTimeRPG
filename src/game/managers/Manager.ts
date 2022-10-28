@@ -148,8 +148,8 @@ class Manager extends KotlinLike<Manager> {
                 ])
         )
             .setTriggers('remove_embed', async () => {
-                await this.remove();
                 clearTimeout(id);
+                await this.remove();
             });
         return this;
     }

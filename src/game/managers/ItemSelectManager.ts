@@ -10,7 +10,7 @@ export default class ItemSelectManager extends SelectManager {
 	private amount = 0;
   private readonly mainEmbed: EmbedBuilder;
   private readonly stack: ItemStack;
-  private readonly callback: (amount: number)=>void;
+  private readonly callback: (amount: number) => void;
 
   public constructor(options: SelectManagerConstructOptions & { item: Item|ItemStack, callback: (amount: number) => void }) {
     super(options);
@@ -24,17 +24,18 @@ export default class ItemSelectManager extends SelectManager {
   
   public override async init() {
     for(let i = 1; i <= 9; i++) {
-    	this.addButtonSelection(i.toString(), Math.floor((i-1)/3), () => {
-	      this.amount = this.amount*10+i;
+    	this.addButtonSelection(i.toString(), Math.floor((i - 1) / 3), () => {
+        this.amount *= 10;
+        this.amount += i;
         this.updateEmbed();
       });
     }
     this.addButtonSelection('0', 3, () => {
-      this.amount = this.amount*10;
+      this.amount *= 10;
       this.updateEmbed();
       });
     this.addButtonSelection("del", 3, () => {
-      this.amount = Math.floor(this.amount/10);
+      this.amount = Math.floor(this.amount / 10);
       this.updateEmbed();
     }, { style: ButtonStyle.Danger });
     this.addButtonSelection("done", 3, () => {

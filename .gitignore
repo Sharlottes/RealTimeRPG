@@ -1,5 +1,5 @@
 node_modules/
-Database/
+Database/user_data
 
 .gitignore
 .env

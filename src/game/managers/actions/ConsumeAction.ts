@@ -18,6 +18,8 @@ export class ConsumeAction extends BaseAction {
 	}
 
 	public async run() {
+		super.run();
+		
 		const entity = this.owner.inventory.items.find(store => store.item == this.potion);
 		if (!entity) {
 			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.potion.localName(this.manager.locale))).update();

@@ -13,6 +13,8 @@ export class EvaseAction extends BaseAction {
 	}
 
 	public async run() {
+		super.run();
+		
 		this.manager.setEvasion(this.owner, true);
 
 		await this.manager.updateLog(bundle.format(this.manager.locale, 'evasion_position',

@@ -1,25 +1,34 @@
 import { StatusEffect } from '.';
 
 export default class StatusEffects {
-	static readonly statuses: StatusEffect[] = [];
+	public static readonly statuses: StatusEffect[] = [];
+  public static heal: StatusEffect;
+  public static poison: StatusEffect;
+  public static mana: StatusEffect;
+  public static weakness: StatusEffect;
+  public static annoyed: StatusEffect;
 
   static init() {
-    this.statuses.push(new StatusEffect('heal', 3, 1, (unit, status)=>{
-      unit.stats.health += Math.min(unit.stats.health_max-unit.stats.health, status.power/status.status.duration) * 100 / 1000;
-    }));
-    this.statuses.push(new StatusEffect('poison', 2, 2, (unit, status)=>{
-      unit.stats.health -= Math.min(unit.stats.health_max-unit.stats.health, status.power/status.status.duration) * 100 / 1000;
-    }));
-    this.statuses.push(new StatusEffect('mana', 3, 1, (unit, status)=>{
-      unit.stats.energy += Math.min(unit.stats.energy_max-unit.stats.energy, status.power/status.status.duration) * 100 / 1000;
-    }));
-    this.statuses.push(new StatusEffect('weakness', 3, 1, (unit, status)=>{
-      unit.inventory.equipments.weapon.durability -= status.power/status.status.duration * 100 / 1000;
-      if(unit.inventory.equipments.weapon.durability <= 0) return unit.removeStatus(status.status);
-    }));
-  }
+    this.heal = new StatusEffect('heal', 3, (unit, status) => {
+      unit.stats.health += status.getValue(5);
+    });
 
-	static find<T extends StatusEffect>(id: number): T {
-		return this.statuses[id] as T;
-	}
+    this.poison = new StatusEffect('poison', 2, (unit, status) => {
+      unit.stats.health -= status.getValue(6);
+    });
+
+    this.mana = new StatusEffect('mana', 3, (unit, status) => {
+      unit.stats.energy += status.getValue(15);
+    });
+
+    this.weakness = new StatusEffect('weakness', 3, (unit, status) => {
+      unit.inventory.equipments.weapon.durability -= status.getValue(3);
+      if(unit.inventory.equipments.weapon.durability <= 0) return unit.removeStatus(status.status);
+    });
+
+    this.annoyed = new StatusEffect('annoyed', 1, (unit, status) => {
+      unit.stats.health -= status.getValue(5);
+      unit.inventory.equipments.weapon.durability -= status.getValue(1);
+    });
+  }
 }

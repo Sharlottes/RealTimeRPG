@@ -27,7 +27,10 @@ export default class SlotWeaponTag extends WeaponTag {
 
 	public buildInfo(embed: EmbedBuilder, entity?: SlotWeaponEntity): EmbedBuilder {
 		super.buildInfo(embed, entity);
-		if(entity) embed.addField('ammos', entity.ammos.length.toString() )
+		if(entity) embed.addFields({
+			name: 'ammos', 
+			value: entity.ammos.length.toString() 
+		})
 		return embed;
 	}
 }

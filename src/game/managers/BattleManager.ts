@@ -1,7 +1,7 @@
-import { ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, SelectMenuBuilder } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
 
 import { UnitEntity, getOne, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from 'game';
-import { Item, Items } from 'game/contents';
+import { Item, Items, StatusEffects } from 'game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from 'utils';
 import SelectManager from 'game/managers/SelectManager';
 import { bundle } from 'assets';
@@ -35,6 +35,7 @@ export default class BattleManager extends SelectManager {
 	public turn: EntityI; //normally, user first
 
 	private totalTurn = 1;
+	private evaseBtnSelected = false;
 
 	public swapRefresher = async () => { };
 	public consumeRefresher = async () => { };
@@ -49,6 +50,10 @@ export default class BattleManager extends SelectManager {
 		.set("consume-consume-consume", async () => {
 			this.turn.stats.health += 5;
 			await this.updateLog(bundle.find(this.locale, "combo.overeat")).update();
+		})
+		.set('evase-dvase-evase', async () => {
+			this.getItsOpponent(this.turn)?.applyStatus(StatusEffects.annoyed);
+			await this.updateLog(bundle.find(this.locale, 'combo.tea_bagging')).update();
 		});
 
 	public constructor(options: SelectManagerConstructOptions & { enemy: UnitEntity }) {
@@ -76,12 +81,31 @@ export default class BattleManager extends SelectManager {
 			if (weapon.cooldown > 0) {
 				Manager.newErrorEmbed(this.interaction, bundle.format(this.locale, 'battle.cooldown', weapon.cooldown.toFixed()));
 			} else {
-				await this.addAction(new AttackAction(this, this.user, this.enemy));
+				await this.addAction(
+					new AttackAction(this, this.user, this.enemy)
+						.addListener('undo', () => this.user.inventory.equipments.weapon.cooldown = 0)
+						.addListener('added', () => 
+							this.user.inventory.equipments.weapon.cooldown = this.user.inventory.equipments.weapon.item.getWeapon().cooldown
+						)
+				);
 			}
 		}, { style: ButtonStyle.Primary, disabled: this.user.inventory.equipments.weapon.cooldown > 0 });
 
 		this.addButtonSelection('evasion', 0, async () => {
-			this.addAction(this.isEvasion(this.user) ? new DvaseAction(this, this.user) : new EvaseAction(this, this.user));
+			if(this.evaseBtnSelected) {
+				this.addAction(
+					new DvaseAction(this, this.user)
+						.addListener('undo', () => this.evaseBtnSelected = true)
+						.addListener('runned', () => this.evaseBtnSelected = false)
+				);
+			} else {
+				this.addAction(
+					new EvaseAction(this, this.user)
+						.addListener('undo', () => this.evaseBtnSelected = false)
+						.addListener('runned', () => this.evaseBtnSelected = false)
+				);
+			}
+			this.evaseBtnSelected = !this.evaseBtnSelected;
 		});
 
 		this.addButtonSelection('shield', 0, async () => this.addAction(new ShieldAction(this, this.user)));
@@ -176,10 +200,15 @@ export default class BattleManager extends SelectManager {
 		this.validate();
 	}
 
-	isEvasion = (entity: EntityI) => this.status.get(entity) === Status.EVASION
+	isEvasion = (owner: EntityI) => this.status.get(owner) === Status.EVASION
 	setEvasion = (owner: EntityI, evase: boolean) => this.status.set(owner, evase ? Status.EVASION : Status.DEFAULT)
-	isShielded = (entity: EntityI) => this.status.get(entity) === Status.SHIELD
+	isShielded = (owner: EntityI) => this.status.get(owner) === Status.SHIELD
 	setShield = (owner: EntityI, evase: boolean) => this.status.set(owner, evase ? Status.SHIELD : Status.DEFAULT)
+
+	getItsOpponent(owner: EntityI) {
+		if(owner == this.user) return this.enemy;
+		if(owner == this.enemy) return this.user;
+	}
 
 	/**
 	 * 모든 컴포넌트에 대해 유효성 검사를 합니다.
@@ -209,7 +238,7 @@ export default class BattleManager extends SelectManager {
 		reload.setDisabled(!(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity));
 
 		//회피 on/off
-		(evase as ButtonBuilder).setLabel(bundle.find(this.locale, this.isEvasion(this.user) ? 'select.dvasion' : 'select.evasion'));
+		(evase as ButtonBuilder).setLabel(bundle.find(this.locale, this.evaseBtnSelected ? 'select.dvasion' : 'select.evasion'));
 	}
 
 	private async addAction(action: BaseAction) {
@@ -243,7 +272,7 @@ export default class BattleManager extends SelectManager {
 		}
 		*/
 
-		action.onAdded();
+		action.added();
 		this.actionQueue.push(action);
 		this.actionEmbed.setDescription(this.actionQueue.map<string>(act => codeBlock((act.bloody ? bundle.find(this.locale, 'action.withHealth') : '') + ' ' + act.description())).join(''));
 		this.updateBar();

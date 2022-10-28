@@ -15,6 +15,8 @@ export class ReloadAction extends BaseAction {
 	}
 
 	public async run() {
+		super.run();
+		
 		const entity = this.owner.inventory.equipments.weapon;
 		if (entity instanceof SlotWeaponEntity) {
 			const inc = this.stack.item.getAmmo()?.itemPerAmmo ?? 1;

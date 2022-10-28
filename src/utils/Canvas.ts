@@ -9,7 +9,7 @@ export class Canvas {
     let bar = "";
     for(let i = 0; i < 9; i++) bar += per > i / 10 ? "\u2588" : "\u2591";
 
-    bar += ["\u2591", "\u258f", "\u258e", "\u258d", "\u258c", "\u258b", "\u258a", "\u2589", "\u2588"][Mathf.clamp(Math.floor(per/8), 0, 8)];
+    bar += ["\u2591", "\u258f", "\u258e", "\u258d", "\u258c", "\u258b", "\u258a", "\u2589", "\u2588"][Mathf.clamp(Math.floor(per / 8), 0, 8)];
     if(showPercent) bar += `  (${(per * 100).toFixed(2)}%`;
 
     return bar;
@@ -46,8 +46,8 @@ export class Canvas {
 
     const context = canvas.getContext('2d');
     const centerX = canvas.width / 2, centerY = canvas.height / 2;
-    const rad = (Math.min(canvas.width, canvas.height)-barWidth)/2;
-    const progress = options.progress.now/options.progress.max;
+    const rad = (Math.min(canvas.width, canvas.height) - barWidth) / 2;
+    const progress = options.progress.now / options.progress.max;
       
     context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -62,13 +62,13 @@ export class Canvas {
     context.font = mainFont;
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.fillText(`${mainText} ${(progress*100).toFixed()}%`, centerX, centerY);
+    context.fillText(`${mainText} ${(progress * 100).toFixed()}%`, centerX, centerY);
 
     context.fillStyle = subStyle;
     context.font = subFont;
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.fillText(`${subText} ${options.progress.now}/${options.progress.max}`, centerX, centerY+rad/2);
+    context.fillText(`${subText} ${options.progress.now}/${options.progress.max}`, centerX, centerY + rad / 2);
 
     context.beginPath();
     context.strokeStyle = barStyle;

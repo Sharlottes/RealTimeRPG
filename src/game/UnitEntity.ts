@@ -10,7 +10,7 @@ export default class UnitEntity implements EntityI {
   public statuses: StatusEntity[] = [];
   public exp = 0;
   public level: number;
-  public name: (locale: string)=>string;
+  public name: (locale: string) => string;
   public money = 1000;
 
   constructor(unit: Unit) {
@@ -21,7 +21,7 @@ export default class UnitEntity implements EntityI {
     this.inventory.equipments.weapon = unit.inventory.equipments.weapon;
     this.statuses = [];
     this.level = unit.level;
-    this.name = (locale: string)=>unit.localName(locale);
+    this.name = (locale: string) => unit.localName(locale);
   }
 
 

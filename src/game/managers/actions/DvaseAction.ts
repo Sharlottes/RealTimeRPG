@@ -7,12 +7,14 @@ export class DvaseAction extends BaseAction {
 	public title = 'dvase';
 
 	constructor(manager: BattleManager, owner: EntityI, immediate = false) {
-		super(manager, owner, 1);
+		super(manager, owner, 0);
 
 		if (immediate) this.run();
 	}
 
 	public async run() {
+		super.run();
+		
 		this.manager.setEvasion(this.owner, false);
 
 		await this.manager.updateLog(bundle.format(this.manager.locale, 'dvasion_position',

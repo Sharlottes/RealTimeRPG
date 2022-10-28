@@ -6,6 +6,6 @@ export default class Vars {
   public static users: User[] = [];
 
   public static init(): void {
-    Vars.users = Database.readObject<UserSave[]>('./Database/user_data').map(data=>new User(data));
+    Vars.users = (Database.readObject<UserSave[]>('./Database/user_data')||[]).map(data => new User(data));
   }
 }

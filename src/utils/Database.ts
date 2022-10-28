@@ -6,8 +6,8 @@ export class Database {
     }
     public static readObject<T>(fileName: string): T {
       if(!fs.existsSync(fileName)) {
-        this.writeObject(fileName, {});
-        return {} as T;
+        this.writeObject(fileName, []);
+        return [] as T;
       }
       return JSON.parse(fs.readFileSync(fileName).toString()) as T;
     }

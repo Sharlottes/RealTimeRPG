@@ -18,6 +18,8 @@ export class AttackAction extends BaseAction {
 	}
 
 	public async run(): Promise<void> {
+		super.run();
+
 		if (this.owner.stats.health <= 0 || this.enemy.stats.health <= 0) return;
 		const entity = this.owner.inventory.equipments.weapon;
 		const isUser = this.owner.id == this.manager.user.id;
@@ -57,15 +59,5 @@ export class AttackAction extends BaseAction {
 
 	public isValid(): boolean {
 		return this.owner.inventory.equipments.weapon.cooldown == 0;
-	}
-
-	public override undo(): void {
-		super.undo();
-		this.owner.inventory.equipments.weapon.cooldown = 0;
-	}
-
-	public override onAdded(): void {
-		super.onAdded();
-		this.owner.inventory.equipments.weapon.cooldown = this.owner.inventory.equipments.weapon.item.getWeapon().cooldown;
 	}
 }

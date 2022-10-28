@@ -14,7 +14,13 @@ export default class ShieldTag extends ItemTag implements Durable {
   }
 
   public buildInfo(embed: EmbedBuilder, entity?: ShieldEntity) {
-    if(entity) embed.addField('current durability', entity.durability.toString());
-    return embed.addField('durability', this.durability.toString());
+    if(entity) embed.addFields({
+      name: 'current durability', 
+      value: entity.durability.toString()
+    });
+    return embed.addFields({
+      name: 'durability', 
+      value: this.durability.toString()
+    });
   }
 }

@@ -67,12 +67,14 @@ export default class User implements EntityI {
   };
 
   public applyStatus(status: StatusEffect) {
-    const exist = this.statuses.find(s => s.status.id == status.id);
+    const exist = this.statuses.find(s => s.status === status);
     if (exist) exist.duration += status.duration;
     else this.statuses.push(new StatusEntity(status));
   }
 
   public removeStatus(status: StatusEffect) {
+    const index = this.statuses.findIndex(s => s.status === status);
+    if(index != -1) this.statuses.splice(index, 1);
   }
 
   public save(): UserSave {
