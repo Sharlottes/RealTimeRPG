@@ -1,5 +1,5 @@
 import { bundle } from "assets";
-import { CommandInteraction, CacheType } from "discord.js";
+import { ChatInputCommandInteraction, CacheType } from "discord.js";
 import BaseEvent from "../contents/types/BaseEvent";
 import User from "../User";
 
@@ -11,7 +11,7 @@ export default class GameManager {
 
     constructor(private readonly user: User) { };
 
-    startEvent(event: BaseEvent, interaction: CommandInteraction<CacheType>) {
+    startEvent(event: BaseEvent, interaction: ChatInputCommandInteraction<CacheType>) {
         if (this.currentEvent) {
             interaction.editReply(bundle.find(this.user.locale, "error.event_existing"));
             return;

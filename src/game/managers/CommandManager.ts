@@ -1,4 +1,4 @@
-import { CommandInteraction, Embed, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, Embed, EmbedBuilder } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 
 import { ItemStack, User, getOne } from 'game';
@@ -11,7 +11,7 @@ import Vars from 'Vars';
 import Manager from './Manager';
 import Events from 'game/contents/Events';
 
-function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: CommandInteraction) => void), category: CommandCategory = 'guild') {
+function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: ChatInputCommandInteraction) => void), category: CommandCategory = 'guild') {
 	CM.register({
 		category: category,
 		dmOnly: false,
@@ -79,8 +79,8 @@ namespace CommandManager {
 				.setName('consume')
 				.setDescription('consume item'),
 			(user, interaction) => {
-				const id = interaction.options.get('target', true).value as number;
-				const amount = interaction.options.get('amount', false)?.value as number ?? 1;
+				const id = interaction.options.getInteger('target', true);
+				const amount = interaction.options.getInteger('amount', false) ?? 1;
 				const stack = user.inventory.items.find((i) => i.item.id == id);
 
 				if (!stack) {
@@ -107,7 +107,7 @@ namespace CommandManager {
 				.setName('info')
 				.setDescription('show content information'),
 			(user, interaction) => {
-				const type = interaction.options.get('type', false)?.value as string;
+				const type = interaction.options.getString('type', false);
 				const contents: Content[] = [];
 				const embeds: EmbedBuilder[] = [];
 

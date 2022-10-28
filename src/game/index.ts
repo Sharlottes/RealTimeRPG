@@ -5,8 +5,6 @@ export { default as User } from "./User";
 export { default as Inventory } from "./Inventory";
 export * from "./Inventory";
 
-import { Snowflake } from 'discord.js';
-
 import { Rationess, Message, UserSave } from '@type';
 import CommandManager from 'game/managers/CommandManager';
 import { Items, Units, StatusEffects } from "game/contents";
@@ -23,8 +21,8 @@ export function init() {
 }
 
 /**
- * @param {array} arr 값을 뽑을 배열
- * @returns {T} arr 배열에서 특정 비율 기반의 랜덤으로 인수 하나를 뽑아 반환
+ * @param arr 값을 뽑을 배열
+ * @returns arr 배열에서 특정 비율 기반의 랜덤으로 인수 하나를 뽑아 반환
  */
 export function getOne<T extends Rationess>(arr: T[]): T {
 	let random = Math.random();
@@ -41,7 +39,7 @@ export function getOne<T extends Rationess>(arr: T[]): T {
 //autosave
 setInterval(() => {
 	const saves: UserSave[] = [];
-	for(let i = 0; i < Vars.users.length; i++) {
+	for (let i = 0; i < Vars.users.length; i++) {
 		const user = Vars.users[i];
 		if (user.exp >= user.level ** 2 * 50) {
 			user.levelup();

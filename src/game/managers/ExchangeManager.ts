@@ -15,12 +15,14 @@ export default class ExchangeManager extends SelectManager {
 		super(options);
 		this.target = options.target;
 		//TODO: 구현하기
-		this.mainEmbed = new EmbedBuilder().setTitle("WIP").setDescription("WIP");
+		this.mainEmbed = new EmbedBuilder()
+			.setTitle("WIP")
+			.setDescription("WIP");
 	}
 
 	public override init() {
 		super.init();
-		this.setEmbeds([this.mainEmbed]);
+		this.setEmbeds(this.mainEmbed);
 
 		//고블린 인벤토리 생성
 		for (let i = 0; i < 20; i++) {
@@ -32,7 +34,7 @@ export default class ExchangeManager extends SelectManager {
 
 		this.addButtonSelection('back', 0, () => {
 			this.addContent(bundle.find(this.locale, 'shop.end'));
-			this.setComponents([]);
+			this.setComponents();
 			this.addRemoveButton();
 			this.update();
 		});

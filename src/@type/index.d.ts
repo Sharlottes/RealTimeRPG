@@ -43,7 +43,7 @@ export type Stat = {
 } & Heathy & Energy;
 
 export type Message = {
-    interaction: Discord.CommandInteraction<CacheType>,
+    interaction: Discord.ChatInputCommandInteraction<CacheType>,
     sender: User
 }
 
@@ -94,23 +94,23 @@ export type UserSave = {
 }
 
 export type InventoryJSONdata = {
-    items: [{
+    items: {
         type: string,
         item: number,
         durability?: number,
         cooldown?: number,
         amount?: number,
         ammos?: number[]
-    }],
+    }[],
     equipments: {
-        weapon: {
+        weapon?: {
             type: string,
             item: number,
             durability: number,
             cooldown: number,
             ammos?: number[]
         },
-        shield: {
+        shield?: {
             type: string,
             item: number,
             durability: number
@@ -129,6 +129,7 @@ export type EventSelection = {
 
 export type CommandCategory = "guild" | "global"
 
+// 파일 확장자에 주목  해야 합니다 추상 클래스로 두면 따로 해야죠 ㅈㅁ 엄크 
 export interface EntityI extends StatusI {
     public readonly id: number | string;
     public readonly stats: Stat;
@@ -141,6 +142,7 @@ export interface EntityI extends StatusI {
 }
 
 export interface StatusI {
+    // iwaat
     public readonly statuses: StatusEntity[] = [];
     public applyStatus: (status: StatusEffect) => void;
     public removeStatus: (status: StatusEffect) => void;

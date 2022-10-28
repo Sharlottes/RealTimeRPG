@@ -2,15 +2,16 @@ import { type ManagerConstructOptions, type ComponentTrigger } from "@type";
 import {
     BaseInteraction,
     type BaseMessageOptions,
+    type MessageCreateOptions,
+    type MessageEditOptions,
     type CacheType,
+    type Constructable,
     Message,
     ActionRowBuilder,
     EmbedBuilder,
     ButtonBuilder,
     TextBasedChannel,
     InteractionCollector,
-    MessagePayload,
-    MessagePayloadOption,
     ButtonInteraction,
     SelectMenuInteraction,
     codeBlock,
@@ -46,22 +47,26 @@ class Manager extends KotlinLike<Manager> {
         this.locale = interaction.locale;
     }
 
-    public static async start<T extends abstract new (...args: any) => any = typeof this>(options: ConstructorParameters<T>[0] & { channel?: TextBasedChannel, update?: boolean }) {
+    public static async start<T extends Constructable<any> = typeof this>(options: ConstructorParameters<T>[0] & { channel?: TextBasedChannel, update?: boolean }) {
         const manager = new this(options);
-        manager.init();
-        if (options.update) await manager.update();
-        else await manager.send(options.channel).then(message => manager.message = message);
 
+        manager.init();
+        await manager.send(options.channel);
         manager.updateCollector();
+
         return manager as InstanceType<T>;
     }
 
     public updateCollector() {
         this.collector ??= this.message?.createMessageComponentCollector().on('collect', async (interaction) => {
             const trigger = this.triggers.get(interaction.customId);
-            if (trigger) {
+            if (trigger) { //나는 뒤다
+                // 자
                 (async () => {
-                    if (!interaction.deferred) await interaction.deferUpdate({ fetchReply: true }).then(message => this.message = message);
+                    if (!interaction.deferred) {
+                        const sent = await interaction.deferUpdate({ fetchReply: true })
+                        this.message = sent;
+                    }
                     trigger(interaction, this);
                 })();
             }
@@ -83,37 +88,44 @@ class Manager extends KotlinLike<Manager> {
     /**
      * 현재 데이터를 갱신합니다.   
      * 메시지가 있다면 그 메시지로, 없다면 상호작용의 메시지를 수정하여 갱신합니다.   
-     * @param elseSend - 갱신할 메시지가 없다면 새로 만들어 송신합니다. 
-     * @param channel - 송신할 체널
+     * @param createNewIfDoesNotExist - 갱신할 메시지가 없다면 새로 만들어 송신합니다. 
+     * @param channel - 송신할 채널
      */
-    public async update(elseSend: boolean, channel?: TextBasedChannel | null): Promise<void>;
+    public async update(createNewIfDoesNotExist: boolean, channel?: TextBasedChannel | null): Promise<void>;
     public async update(): Promise<void>;
-    public async update(elseSend = false, channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
-        const options: MessagePayloadOption = {
+    public async update(createNewIfDoesNotExist = false, channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
+        const options: MessageEditOptions = {
             content: this.content,
             embeds: this.embeds,
             components: this.components,
             files: this.files
         };
 
-        if (this.message?.editable) await this.message.edit(MessagePayload.create(this.message, options)).then(message => this.message = message);
-        else if (this.interaction.isRepliable()) await this.interaction.editReply(MessagePayload.create(this.interaction, options)).then(message => this.message = message);
-        else if (elseSend && (channel || this.interaction.channel)) await this.send(channel).then(message => this.message = message);
-        else throw new Error('cannot send message');
+        const sent = await (() => {
+            if (this.message?.editable) return this.message.edit(options);
+            else if (this.interaction.isRepliable()) return this.interaction.editReply(options); //잠시 라면좀 빨고오겠
+            else if (createNewIfDoesNotExist) return this.send(channel ?? this.interaction.channel);
+            else throw new Error('cannot send message');
+        })()
+        this.message = sent;
     }
     /**   
      * 현재 데이터를 송신하고 message를 갱신합니다.
      * @param channel - 송신할 채널  
      */
     public async send(channel: TextBasedChannel | null = this.interaction.channel): Promise<Message<boolean> | undefined> {
-        const options: MessagePayloadOption = {
+        const options: MessageCreateOptions = {
             content: this.content,
             embeds: this.embeds,
             components: this.components,
             files: this.files
         };
         this.updateCollector();
-        return await channel?.send(MessagePayload.create(channel, options)).then(message => this.message = message);
+        if (channel) {
+            const sent = await channel.send(options)
+            this.message = sent;
+            return sent;
+        }
     }
 
     /**
@@ -130,7 +142,7 @@ class Manager extends KotlinLike<Manager> {
      * 모든 버튼이 사라지고 삭제 버튼이 생성됩니다. 메시지는 기본 5초 후 자동 삭제됩니다.
      */
     public async endManager(timeout = 5000): Promise<void> {
-        this.setComponents([]);
+        this.setComponents();
         this.addRemoveButton(timeout);
         await this.update();
     }
@@ -147,10 +159,10 @@ class Manager extends KotlinLike<Manager> {
                         .setStyle(ButtonStyle.Secondary)
                 ])
         )
-            .setTriggers('remove_embed', async () => {
-                clearTimeout(id);
-                await this.remove();
-            });
+        this.setTriggers('remove_embed', () => {
+            clearTimeout(id);
+            this.remove();
+        });
         return this;
     }
 
@@ -158,45 +170,68 @@ class Manager extends KotlinLike<Manager> {
         this.content = content;
         return this;
     }
-    public setEmbeds(embeds: EmbedBuilder[]): this {
+
+    public setEmbeds(...embeds: EmbedBuilder[]): this {
         this.embeds = embeds;
         return this;
     }
-    public addEmbeds(embeds: EmbedBuilder | EmbedBuilder[]): this {
-        for (const embed of Array.isArray(embeds) ? embeds : [embeds]) this.embeds.push(embed);
+
+    public addEmbeds(...embeds: EmbedBuilder[]): this {
+        this.embeds.push(...embeds);
         return this;
     }
-    public setComponents(components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[]): this {
+
+    public setComponents(...components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[]): this {
         this.components = components;
         return this;
     }
-    public addComponents(components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder> | ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[]): this {
-        for (const component of Array.isArray(components) ? components : [components]) this.components.push(component);
+
+    public addComponents(...components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[]): this {
+        this.components.push(...components);
         return this;
     }
+
     public setTriggers(customId: string, trigger: ComponentTrigger): this {
         this.triggers.set(customId, trigger);
         return this;
     }
-    public setFiles(files: Files): this {
+
+    public setFiles(...files: Files): this {
         this.files = files;
         return this;
     }
-    public addFiles(files: Files[number] | Files): this {
-        for (const file of Array.isArray(files) ? files : [files]) this.files.push(file);
+
+    public addFiles(...files: Files): this {
+        this.files.push(...files);
         return this;
     }
 
 
     public static async newErrorEmbed(interaction: BaseInteraction, description: string) {
-        const manager = new Manager({ interaction, embeds: [new EmbedBuilder().setTitle("ERROR").setDescription(description)] });
-        await manager.addRemoveButton().send(interaction.channel as TextBasedChannel);
+        const manager = new Manager({
+            interaction,
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle("ERROR")
+                    .setDescription(description)
+            ]
+        });
+        manager.addRemoveButton()
+        await manager.send(interaction.channel);
         return manager;
     }
 
     public static async newTextEmbed(interaction: BaseInteraction, description: string, title = "") {
-        const manager = new Manager({ interaction, embeds: [new EmbedBuilder().setTitle(title).setDescription(description)] });
-        await manager.addRemoveButton().send(interaction.channel as TextBasedChannel);
+        const manager = new Manager({
+            interaction,
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle(title)
+                    .setDescription(description)
+            ]
+        });
+        manager.addRemoveButton()
+        await manager.send(interaction.channel);
         return manager;
     }
 }

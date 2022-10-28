@@ -65,27 +65,30 @@ export default class SelectManager extends Manager {
     this.resizeSelection(row);
 
     let page = 0;
-    const reoption = () => list
-      .reduce<APISelectMenuOption[]>(
-        (acc, elem, index) =>
-          index < page * 8 || index > (page + 1) * 8 ? acc
-            : [...acc, reducer ? reducer(elem, index)
-              : {
-                label: `#${index} item`,
-                value: index.toString()
-              }
-            ]
-        , page == 0
-          ? []
-          : [{
-            label: `<-- ${page}/${Math.floor(list.length / 8) + 1}`,
-            value: '-1'
-          }]
-      )
-      .concat({
-        label: `${page + 1}/${Math.floor(list.length / 8) + 1} -->`,
-        value: '-2'
-      });
+    const reoption = () =>
+      [
+        ...list.reduce<APISelectMenuOption[]>(
+          (acc, elem, index) =>
+            index < page * 8 || index > (page + 1) * 8
+              ? acc
+              : [...acc, reducer ? reducer(elem, index)
+                : {
+                  label: `#${index} item`,
+                  value: index.toString()
+                }
+              ]
+          , page == 0
+            ? []
+            : [{
+              label: `<-- ${page}/${Math.floor(list.length / 8) + 1}`,
+              value: '-1'
+            }]
+        ),
+        {
+          label: `${page + 1}/${Math.floor(list.length / 8) + 1} -->`,
+          value: '-2'
+        }
+      ];
 
     this.components[row].addComponents(
       new SelectMenuBuilder()
@@ -99,21 +102,18 @@ export default class SelectManager extends Manager {
       const id = interaction.values[0];
 
       switch (id) {
-        case '-1': {
+        case '-1':
           if (page == 0)
             Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.first_page"));
           else page--;
           break;
-        }
-        case '-2': {
+        case '-2':
           if (page + 1 > Math.floor(list.length / 8))
             Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.last_page"));
           else page++;
           break;
-        }
-        default: {
+        default:
           callback(interaction, manager);
-        }
       }
 
       interaction.component.options.length = 0;

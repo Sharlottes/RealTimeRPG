@@ -1,7 +1,7 @@
 import { Dropable, Rationess, ItemData } from "@type";
 import { Content, Items } from "..";
 import { AmmoTag, ConsumeTag, ItemTag, ShieldTag, SlotWeaponTag, WeaponTag } from "../tags";
-import { CommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { ItemEntity } from "../..";
 import Manager from "../../managers/Manager";
 
@@ -27,18 +27,18 @@ export default class Item extends Content implements Dropable, Rationess {
 		return this;
 	}
 
-	public async showInfo(interaction: CommandInteraction, entity?: ItemEntity) {
+	public async showInfo(interaction: ChatInputCommandInteraction, entity?: ItemEntity) {
 		const embed = new EmbedBuilder()
-		.setTitle(this.localName(interaction.locale))
-		.setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL(), url: interaction.user.displayAvatarURL() })
-		.addFields(
-			{ name: "Description", value: this.description(interaction.locale) || 'empty' },
-			{ name: "Details", value: this.details(interaction.locale) || 'empty' },
-			{ name: "Tags", value: this.tags.map(tag => `\`${tag.name}\``).join('  ') }
-		);
+			.setTitle(this.localName(interaction.locale))
+			.setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL(), url: interaction.user.displayAvatarURL() })
+			.addFields(
+				{ name: "Description", value: this.description(interaction.locale) || 'empty' },
+				{ name: "Details", value: this.details(interaction.locale) || 'empty' },
+				{ name: "Tags", value: this.tags.map(tag => `\`${tag.name}\``).join('  ') }
+			);
 
 		this.tags.forEach(tag => tag.buildInfo(embed, entity));
-		Manager.start({ interaction: interaction, embeds: [embed]});
+		Manager.start({ interaction: interaction, embeds: [embed] });
 	}
 
 	public hasAmmo(): boolean {

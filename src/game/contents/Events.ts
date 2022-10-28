@@ -29,8 +29,7 @@ export default class Events {
 			await EncounterManager.start<typeof EncounterManager>({
 				user: user,
 				interaction: interaction,
-				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),
-				update: true
+				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1)))
 			});
 		}));
 	}

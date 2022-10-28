@@ -16,16 +16,17 @@ export default class EncounterManager extends SelectManager {
   public constructor(options: SelectManagerConstructOptions & { target: UnitEntity }) {
     super(options);
     this.target = options.target;
-    this.mainEmbed = new EmbedBuilder().setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
+    this.mainEmbed = new EmbedBuilder()
+      .setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
   }
 
   public override init() {
     super.init();
 
-    this.setEmbeds([this.mainEmbed]);
+    this.setEmbeds(this.mainEmbed);
 
     this.addButtonSelection('battle', 0, async () => {
-      BattleManager.start<typeof BattleManager>({ user: this.user, interaction: this.interaction, enemy: this.target, update: true });
+      BattleManager.start<typeof BattleManager>({ user: this.user, interaction: this.interaction, enemy: this.target });
     });
 
     this.addButtonSelection('run', 0, () => {
@@ -47,7 +48,7 @@ export default class EncounterManager extends SelectManager {
         this.mainEmbed.addFields({ name: "Result:", value: "```\n" + bundle.format(this.user.locale, 'event.goblin_talking', money) + "\n```" });
         this.endManager();
       });
-      this.addButtonSelection('exchange', 0, () => ExchangeManager.start<typeof ExchangeManager>({ user: this.user, interaction: this.interaction, target: this.target, update: true }));
+      this.addButtonSelection('exchange', 0, () => ExchangeManager.start<typeof ExchangeManager>({ user: this.user, interaction: this.interaction, target: this.target }));
     }
   }
 }

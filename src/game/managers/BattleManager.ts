@@ -64,15 +64,18 @@ export default class BattleManager extends SelectManager {
 			.set(options.user, Status.DEFAULT)
 			.set(this.enemy, Status.DEFAULT);
 
-		this.mainEmbed = new EmbedBuilder().setTitle("Battle Status");
-		this.actionEmbed = new EmbedBuilder().setTitle('Action Queue').setDescription("Empty");
+		this.mainEmbed = new EmbedBuilder()
+			.setTitle("Battle Status");
+		this.actionEmbed = new EmbedBuilder()
+			.setTitle('Action Queue')
+			.setDescription("Empty");
 	}
 
 	public override async init() {
 		super.init();
 
 		this.setContent(bundle.format(this.locale, 'battle.start', this.user.user.username, this.enemy.type.localName(this.user)));
-		this.setEmbeds([this.mainEmbed, this.actionEmbed]);
+		this.setEmbeds(this.mainEmbed, this.actionEmbed);
 		this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
 		this.updateBar();
 
@@ -84,7 +87,7 @@ export default class BattleManager extends SelectManager {
 				await this.addAction(
 					new AttackAction(this, this.user, this.enemy)
 						.addListener('undo', () => this.user.inventory.equipments.weapon.cooldown = 0)
-						.addListener('added', () => 
+						.addListener('added', () =>
 							this.user.inventory.equipments.weapon.cooldown = this.user.inventory.equipments.weapon.item.getWeapon().cooldown
 						)
 				);
@@ -92,7 +95,7 @@ export default class BattleManager extends SelectManager {
 		}, { style: ButtonStyle.Primary, disabled: this.user.inventory.equipments.weapon.cooldown > 0 });
 
 		this.addButtonSelection('evasion', 0, async () => {
-			if(this.evaseBtnSelected) {
+			if (this.evaseBtnSelected) {
 				this.addAction(
 					new DvaseAction(this, this.user)
 						.addListener('undo', () => this.evaseBtnSelected = true)
@@ -206,8 +209,8 @@ export default class BattleManager extends SelectManager {
 	setShield = (owner: EntityI, evase: boolean) => this.status.set(owner, evase ? Status.SHIELD : Status.DEFAULT)
 
 	getItsOpponent(owner: EntityI) {
-		if(owner == this.user) return this.enemy;
-		if(owner == this.enemy) return this.user;
+		if (owner == this.user) return this.enemy;
+		if (owner == this.enemy) return this.user;
 	}
 
 	/**
@@ -362,7 +365,7 @@ export default class BattleManager extends SelectManager {
 	}
 
 	private async battleEnd() {
-		this.setEmbeds([this.mainEmbed]);
+		this.setEmbeds(this.mainEmbed);
 		this.updateBar();
 		if (this.enemy.stats.health <= 0) {
 			const unit = this.enemy.type;

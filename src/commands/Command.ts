@@ -1,4 +1,4 @@
-import { CommandInteraction, CacheType, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, CacheType, SlashCommandBuilder } from "discord.js";
 
 import { CommandCategory } from "@type";
 
@@ -8,7 +8,7 @@ abstract class Command {
     public readonly debug: boolean;
     public readonly builder: SlashCommandBuilder;
 
-    public abstract run(interaction: CommandInteraction<CacheType>): void;
+    public abstract run(interaction: ChatInputCommandInteraction<CacheType>): void;
 
     constructor(
         category: CommandCategory = "guild",

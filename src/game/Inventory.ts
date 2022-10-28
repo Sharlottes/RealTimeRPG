@@ -1,8 +1,9 @@
 import { Durable, InventoryJSONdata } from "@type";
 import { Item, Items } from "./contents";
+import { predicateOf } from "utils/predicateOf";
 
 export default class Inventory {
-  public readonly items: ItemStorable[] = [];
+  public items: ItemStorable[] = [];
   public readonly equipments: Equipments = {
     weapon: new WeaponEntity(Items.find(5))
   };
@@ -14,7 +15,9 @@ export default class Inventory {
 
   public add(item: Item, amount = 1): void {
     if (this.isStorable(item)) {
-      const stack: ItemStack | undefined = this.items.find<ItemStack>((store): store is ItemStack => store instanceof ItemStack && store.item == item);
+      const stack = this.items.find(predicateOf<ItemStack>()((store) =>
+        store instanceof ItemStack && store.item == item
+      ));
       if (stack) stack.apply(amount);
       else this.items.push(new ItemStack(item, amount));
     } else {
@@ -28,15 +31,15 @@ export default class Inventory {
 
   public remove(item: Item, amount = 1): void {
     if (this.isStorable(item)) {
-      const stack: ItemStack | undefined = this.items.find<ItemStack>((store): store is ItemStack => store instanceof ItemStack && store.item == item);
+      const stack = this.items.find(predicateOf<ItemStack>()((store) =>
+        store instanceof ItemStack && store.item == item
+      ));
       if (stack) {
         stack.amount -= amount;
         if (stack.amount <= 0) this.items.splice(this.items.findIndex((store => store.item.id == item.id)), 1);
       }
     } else {
-      for (let i = 0, j = 0; i < this.items.length && j < amount; i++) {
-        this.items.splice(this.items.findIndex((store => store.item.id == item.id)), 1);
-      }
+      this.items = this.items.filter(store => store.item.id != item.id)
     }
   }
 
@@ -48,20 +51,40 @@ export default class Inventory {
     const data: InventoryJSONdata = {
       items: [],
       equipments: {}
-    } as unknown as InventoryJSONdata;
-
-    if (this.equipments.weapon instanceof SlotWeaponEntity) data.equipments.weapon = { type: "SlotWeaponEntity", item: this.equipments.weapon.item.id, durability: this.equipments.weapon.durability, cooldown: this.equipments.weapon.cooldown, ammos: this.equipments.weapon.ammos.map(item => item.id) };
-    else data.equipments.weapon = { type: "WeaponEntity", item: this.equipments.weapon.item.id, durability: this.equipments.weapon.durability, cooldown: this.equipments.weapon.cooldown };
-    if (this.equipments.shield) data.equipments.shield = { type: "ShieldEntity", item: this.equipments.shield.item.id, durability: this.equipments.shield.durability };
+    };
+    // 과연 방금의 optional 변경사항으로 인해 어떤 영향이 생겼을지 아주 흥미롭네요 어차피 상태로 돌려쓸것도 아니고 내보낼 데이터니깐 상관없...을겁니다 
+    if (this.equipments.weapon instanceof SlotWeaponEntity) {
+      data.equipments.weapon = {
+        type: "SlotWeaponEntity",
+        item: this.equipments.weapon.item.id,
+        durability: this.equipments.weapon.durability,
+        cooldown: this.equipments.weapon.cooldown,
+        ammos: this.equipments.weapon.ammos.map(item => item.id)
+      };
+    } else {
+      data.equipments.weapon = {
+        type: "WeaponEntity",
+        item: this.equipments.weapon.item.id,
+        durability: this.equipments.weapon.durability,
+        cooldown: this.equipments.weapon.cooldown
+      };
+    }
+    if (this.equipments.shield) {
+      data.equipments.shield = {
+        type: "ShieldEntity",
+        item: this.equipments.shield.item.id,
+        durability: this.equipments.shield.durability
+      };
+    }
 
     this.items.forEach(store => {
+      // item: store.item.id
       if (store instanceof ShieldEntity) data.items.push({ type: "ShieldEntity", item: store.item.id, durability: store.durability });
       else if (store instanceof SlotWeaponEntity) data.items.push({ type: "SlotWeaponEntity", item: store.item.id, durability: store.durability, cooldown: store.cooldown, ammos: store.ammos.map(item => item.id) });
       else if (store instanceof WeaponEntity) data.items.push({ type: "WeaponEntity", item: store.item.id, durability: store.durability, cooldown: store.cooldown });
       else if (store instanceof ItemEntity) data.items.push({ type: "ItemEntity", item: store.item.id });
       else if (store instanceof ItemStack) data.items.push({ type: "ItemStack", item: store.item.id, amount: store.amount });
     });
-
     return data;
   }
 
@@ -71,7 +94,11 @@ export default class Inventory {
       switch (store.type) {
         case "ItemStack": {
           this.items.push(new ItemStack(item, store.amount));
-          break;
+          break; //솔직히 이거 답없죠?ㅋㅋ 아니 개웃기네 이거 hasWeapon이 타입 가든줄 알았는데 아님ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ
+          // ??????????????? 구조가 어케된거지 미친ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ
+          // 아니 이게 상식대로라면 
+          // Weapon -> WeaponEntity
+          // 식으로 내려받아야 하는데 Weapon을 태그로 만들어서 Item에 쑤셔박아버리네 이게 뭔 미친짓이지
         }
         case "ItemEntity": {
           this.items.push(new ItemEntity(item));
@@ -80,8 +107,13 @@ export default class Inventory {
         case "WeaponEntity": {
           if (!item.hasWeapon()) throw "got crashed during loading user inventory";
           const entity = new WeaponEntity(item);
-          entity.durability = store.durability as number;
-          entity.cooldown = store.cooldown as number;
+          entity.durability = store.durability!;
+          entity.cooldown = store.cooldown!;
+          this.items.push(entity);
+          break;
+        }
+        case "DurableItemEntity": {
+          const entity = new DurableItemEntity(item, store.durability!);
           this.items.push(entity);
           break;
         }
@@ -89,38 +121,42 @@ export default class Inventory {
           if (!item.hasSlotWeapon()) throw "got crashed during loading user inventory";
           const entity = new SlotWeaponEntity(item);
           store.ammos?.forEach(ammo => entity.ammos.push(Items.find(ammo)));
-          entity.durability = store.durability as number;
-          entity.cooldown = store.cooldown as number;
+          entity.durability = store.durability!;
+          entity.cooldown = store.cooldown!;
           this.items.push(entity);
           break;
-        }
+        } //구조를 크게 갈아엎어야할 것 같은데요 이거 저 잠시 장실좀
+        // 6:50 - 살아있음 8:05 - 죽었나요
         case "ShieldEntity": {
           if (!item.hasShield()) throw "got crashed during loading user inventory";
           const entity = new ShieldEntity(item);
-          entity.durability = store.durability as number;
+          entity.durability = store.durability!;
           this.items.push(entity);
           break;
         }
       }
     });
 
-    switch (data.equipments.weapon.type) {
-      case "WeaponEntity": {
-        if (!Items.find(data.equipments.weapon.item).hasWeapon()) throw "got crashed during loading user inventory";
-        const entity = new WeaponEntity(Items.find(data.equipments.weapon.item));
-        entity.durability = data.equipments.weapon.durability as number;
-        entity.cooldown = data.equipments.weapon.cooldown as number;
-        this.equipments.weapon = entity;
-        break;
-      }
-      case "SlotWeaponEntity": {
-        if (!Items.find(data.equipments.weapon.item).hasSlotWeapon()) throw "got crashed during loading user inventory";
-        const entity = new SlotWeaponEntity(Items.find(data.equipments.weapon.item));
-        data.equipments.weapon.ammos?.forEach(ammo => entity.ammos.push(Items.find(ammo)));
-        entity.durability = data.equipments.weapon.durability as number;
-        entity.cooldown = data.equipments.weapon.cooldown as number;
-        this.equipments.weapon = entity;
-        break;
+    const equippedWeapon = data.equipments.weapon;
+    if (equippedWeapon) {
+      switch (equippedWeapon.type) {
+        case "WeaponEntity": {
+          if (!Items.find(equippedWeapon.item).hasWeapon()) throw "got crashed during loading user inventory";
+          const entity = new WeaponEntity(Items.find(equippedWeapon.item));
+          entity.durability = equippedWeapon.durability;
+          entity.cooldown = equippedWeapon.cooldown;
+          this.equipments.weapon = entity;
+          break;
+        }
+        case "SlotWeaponEntity": {
+          if (!Items.find(equippedWeapon.item).hasSlotWeapon()) throw "got crashed during loading user inventory";
+          const entity = new SlotWeaponEntity(Items.find(equippedWeapon.item));
+          equippedWeapon.ammos?.forEach(ammo => entity.ammos.push(Items.find(ammo)));
+          entity.durability = equippedWeapon.durability;
+          entity.cooldown = equippedWeapon.cooldown;
+          this.equipments.weapon = entity;
+          break;
+        }
       }
     }
 
@@ -139,30 +175,46 @@ export type Equipments = {
 
 export interface ItemStorable {
   item: Item;
+  toStateString(find: (key: string) => string): string;
 }
 
 export class ItemEntity implements ItemStorable {
   constructor(public item: Item) {
   }
-}
 
-export class ShieldEntity implements ItemStorable, Durable {
-  public durability: number;
-
-  constructor(public item: Item) {
-    this.durability = item.getShield().durability;
+  toStateString(find: (key: string) => string): string {
+    return ''
   }
 }
 
-export class WeaponEntity implements ItemStorable, Durable {
+export class DurableItemEntity implements ItemStorable, Durable {
+  constructor(
+    public item: Item,
+    public durability: number
+  ) { }
+
+  toStateString(find: (key: string) => string): string {
+    return `${this.durability} ${find('durability')}`
+  }
+}
+
+export class ShieldEntity extends DurableItemEntity {
+  constructor(public item: Item) {
+    super(item, item.getShield().durability)
+  }
+}
+
+export class WeaponEntity extends DurableItemEntity {
   public cooldown: number;
-  public durability: number;
 
   constructor(public item: Item) {
-    this.item = item;
     const { cooldown, durability } = item.getWeapon();
+    super(item, durability)
     this.cooldown = cooldown;
-    this.durability = durability;
+  }
+
+  toStateString(find: (key: string) => string): string {
+    return `${this.cooldown} ${find('cooldown')}, ${super.toStateString(find)}`
   }
 }
 
@@ -172,10 +224,18 @@ export class SlotWeaponEntity extends WeaponEntity {
   constructor(public item: Item) {
     super(item);
   }
+
+  toStateString(find: (key: string) => string): string {
+    return `${super.toStateString(find)} ${this.ammos.length} ${find('unit.item')} ${find('ammo')}`;
+  }
 }
 
 export class ItemStack implements ItemStorable {
   constructor(public item: Item, public amount: number = 1) {
+  }
+
+  toStateString(find: (key: string) => string): string {
+    return `${this.amount} ${find('unit.item')}`
   }
 
   apply(amount = 1) {

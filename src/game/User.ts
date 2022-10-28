@@ -1,5 +1,5 @@
 
-import Discord, { AttachmentBuilder, EmbedBuilder, MessagePayload, CommandInteraction, ActionRowBuilder, ButtonBuilder, BaseMessageOptions, ButtonStyle } from 'discord.js';
+import Discord, { AttachmentBuilder, EmbedBuilder, MessagePayload, ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, BaseMessageOptions, ButtonStyle } from 'discord.js';
 
 import Canvass from 'canvas';
 
@@ -10,9 +10,11 @@ import { bundle } from 'assets';
 import { Canvas } from "utils";
 import { app } from 'index';
 import { filledBar } from 'string-progressbar';
+import Entity from './Entity';
 import { SlotWeaponEntity } from './Inventory';
 import Manager from './managers/Manager';
 import GameManager from './managers/GameManager';
+import { predicateOf } from 'utils/predicateOf';
 
 const defaultStat: Stat = {
   health: 20,
@@ -23,7 +25,7 @@ const defaultStat: Stat = {
   defense: 0,
 };
 
-export default class User implements EntityI {
+export default class User extends Entity implements EntityI {
   public readonly id: string = 'unknown';
   public readonly stats: Stat = defaultStat;
   public readonly inventory: Inventory = new Inventory();
@@ -38,6 +40,7 @@ export default class User implements EntityI {
   public locale: string = bundle.defaultLocale;
 
   constructor(data: Discord.User | UserSave | string) {
+    super()
     if (typeof data === 'string') {
       this.user = app.client.users.cache.find(u => u.id === data) as Discord.User;
       this.id = data;
@@ -60,7 +63,7 @@ export default class User implements EntityI {
     }
   }
 
-  public updateData(interaction: CommandInteraction) {
+  public updateData(interaction: ChatInputCommandInteraction) {
     this.user ??= interaction.user;
     this.name ??= this.user?.username;
     this.locale = interaction.locale;
@@ -74,7 +77,7 @@ export default class User implements EntityI {
 
   public removeStatus(status: StatusEffect) {
     const index = this.statuses.findIndex(s => s.status === status);
-    if(index != -1) this.statuses.splice(index, 1);
+    if (index != -1) this.statuses.splice(index, 1);
   }
 
   public save(): UserSave {
@@ -94,25 +97,25 @@ export default class User implements EntityI {
 
     if (!this.foundContents.items.includes(item.id)) {
       this.foundContents.items.push(item.id);
-      this.sendDM(bundle.format(this.locale, 'firstget', item.localName(this)));
+      this.user.send(bundle.format(this.locale, 'firstget', item.localName(this)));
     }
   }
 
-  public sendDM(options: string | MessagePayload | BaseMessageOptions): Promise<Discord.Message> | undefined {
-    if (!this.user.dmChannel) this.user.createDM();
-    return this.user.dmChannel?.send(options);
-  }
-
+  /**
+   * 무기를 교체합니다.
+   * @param weapon 바꿀 새 무기
+   */
   public switchWeapon(weapon: Item) {
-    const entity = weapon == Items.punch ? new WeaponEntity(weapon) : this.inventory.items.find<WeaponEntity>((store): store is WeaponEntity => store instanceof WeaponEntity && store.item == weapon);
-    if (!entity) return bundle.format(this.locale, 'missing_item', weapon.localName(this));
-    if (this.inventory.equipments.weapon.item != Items.none && this.inventory.equipments.weapon.item != Items.punch) this.inventory.items.push(this.inventory.equipments.weapon);
-    this.inventory.items.splice(this.inventory.items.indexOf(entity), 1);
-    this.inventory.equipments.weapon = entity;
+    const { items } = this.inventory;
+    const index = items.findIndex((store) =>
+      store instanceof WeaponEntity && store.item == weapon
+    );
+    if (index === -1) return bundle.format(this.locale, 'missing_item', weapon.localName(this));
+    super.switchWeapon(weapon);
   }
 
   public async levelup() {
-    await this.sendDM(bundle.format(
+    await this.user.send(bundle.format(
       this.locale,
       'levelup',
       this.user.username,
@@ -127,22 +130,27 @@ export default class User implements EntityI {
     this.level++;
   }
 
-  public async showInventoryInfo(interaction: CommandInteraction) {
-    await new Manager({
+  public async showInventoryInfo(interaction: ChatInputCommandInteraction) {
+    const find = (key: string) =>
+      bundle.find(this.locale, key);
+    const manager = new Manager({
       interaction: interaction,
-      embeds: [new EmbedBuilder()
-        .setTitle(bundle.find(this.locale, 'inventory'))
-        .addFields(this.inventory.items.map<Discord.APIEmbedField>(store => ({
-          name: store.item.localName(this.locale),
-          value: store instanceof ItemStack ? `${store.amount} ${bundle.find(this.locale, 'unit.item')}` :
-            store instanceof WeaponEntity ? `${store.cooldown} ${bundle.find(this.locale, 'cooldown')}, ${store.durability} ${bundle.find(this.locale, 'durability')}` +
-              (store instanceof SlotWeaponEntity ? `${store.ammos.length} ${bundle.find(this.locale, 'unit.item')} ${bundle.find(this.locale, 'ammo')}` : "") : "",
-          inline: true
-        })))]
-    }).update();
+      embeds: [
+        new EmbedBuilder()
+          .setTitle(bundle.find(this.locale, 'inventory'))
+          .addFields(
+            this.inventory.items.map<Discord.APIEmbedField>(store => ({
+              name: store.item.localName(this.locale),
+              value: store.toStateString(find),
+              inline: true
+            }))
+          )
+      ]
+    })
+    await manager.update();
   }
 
-  public async showUserInfo(interaction: CommandInteraction) {
+  public async showUserInfo(interaction: ChatInputCommandInteraction) {
     const weapon = this.inventory.equipments.weapon.item;
     const canvas = Canvass.createCanvas(1000, 1000);
     Canvas.donutProgressBar(canvas, {
@@ -163,8 +171,8 @@ export default class User implements EntityI {
     });
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'profile-image.png' });
 
-    await new Manager({ 
-      interaction: interaction, 
+    const manager = new Manager({
+      interaction: interaction,
       embeds: [new EmbedBuilder()
         .setColor('#0099ff')
         .setTitle('User Status Information')
@@ -177,26 +185,24 @@ export default class User implements EntityI {
           { name: 'Money', value: `${this.money} ${bundle.find(this.locale, 'unit.money')}`, inline: true },
           { name: 'Equipped Weapon', value: weapon.localName(this), inline: true },
           { name: 'Inventory', value: this.inventory.items.length.toString(), inline: true }
-      )]
+        )]
     })
-      .apply(manager => {
-        manager.files.push(attachment)
-        manager.components.push(
-          new ActionRowBuilder<ButtonBuilder>()
-            .addComponents([
-              new ButtonBuilder()
-                .setCustomId('weapon_info')
-                .setLabel('show Weapon Info')
-                .setStyle(ButtonStyle.Primary),
-              new ButtonBuilder()
-                .setCustomId('inventory_info')
-                .setLabel('show Inventory Info')
-                .setStyle(ButtonStyle.Primary)
-            ])
-        )
-        manager.triggers.set('weapon_info', () => weapon.showInfo(interaction, this.inventory.equipments.weapon))
-        manager.triggers.set('inventory_info', () => this.showInventoryInfo(interaction))
-      })
-      .update();
+    manager.files.push(attachment)
+    manager.components.push(
+      new ActionRowBuilder<ButtonBuilder>()
+        .addComponents([
+          new ButtonBuilder()
+            .setCustomId('weapon_info')
+            .setLabel('show Weapon Info')
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setCustomId('inventory_info')
+            .setLabel('show Inventory Info')
+            .setStyle(ButtonStyle.Primary)
+        ])
+    )
+    manager.triggers.set('weapon_info', () => weapon.showInfo(interaction, this.inventory.equipments.weapon))
+    manager.triggers.set('inventory_info', () => this.showInventoryInfo(interaction))
+    await manager.update();
   }
 }
