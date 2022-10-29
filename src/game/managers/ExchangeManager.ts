@@ -7,6 +7,7 @@ import { Item, Items } from 'game/contents';
 import { bundle } from 'assets';
 import ItemSelectManager from './ItemSelectManager';
 import { EntityI, SelectManagerConstructOptions } from '@type';
+import BattleManager from './BattleManager';
 
 export default class ExchangeManager extends SelectManager {
 	private readonly target: UnitEntity;
@@ -39,6 +40,11 @@ export default class ExchangeManager extends SelectManager {
 			this.addRemoveButton();
 			this.update();
 		});
+		this.addButtonSelection('battle', 0, async () => {
+			await BattleManager.start<typeof BattleManager>({
+				user: this.user, interaction: this.interaction, enemy: this.target, update: true
+			});
+		})
 
 
 		const buyRefresher = this.addMenuSelection({

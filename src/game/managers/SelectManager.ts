@@ -84,11 +84,18 @@ export default class SelectManager extends Manager {
               value: '-1'
             }]
         ),
-        {
+      ].concat(page == Math.floor(list.length / 8)
+        ? []
+        : [{
           label: `${page + 1}/${Math.floor(list.length / 8) + 1} -->`,
           value: '-2'
-        }
-      ];
+        }]
+      );
+
+    const refreshOptions = async () => {
+      (this.components[row]?.components[0] as SelectMenuBuilder).setOptions(reoption());
+      await this.update();
+    };
 
     this.components[row].addComponents(
       new SelectMenuBuilder()
@@ -97,7 +104,7 @@ export default class SelectManager extends Manager {
         .setOptions(reoption())
     );
 
-    this.setTriggers(customId, (interaction, manager) => {
+    this.setTriggers(customId, async (interaction, manager) => {
       if (!(interaction.isSelectMenu() && interaction.component.type == ComponentType.SelectMenu)) return;
       const id = interaction.values[0];
 
@@ -116,15 +123,9 @@ export default class SelectManager extends Manager {
           callback(interaction, manager);
       }
 
-      interaction.component.options.length = 0;
-      interaction.component.options.push(...reoption());
-      this.update();
+      await refreshOptions();
     })
-
-    return async () => {
-      (this.components[row]?.components[0] as SelectMenuBuilder).setOptions(reoption());
-      await this.update();
-    };
+    return refreshOptions;
   }
 
   private resizeSelection(index: number) {

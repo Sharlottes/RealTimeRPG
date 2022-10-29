@@ -26,7 +26,9 @@ export default class EncounterManager extends SelectManager {
     this.setEmbeds(this.mainEmbed);
 
     this.addButtonSelection('battle', 0, async () => {
-      BattleManager.start<typeof BattleManager>({ user: this.user, interaction: this.interaction, enemy: this.target, update: true });
+      await BattleManager.start<typeof BattleManager>({
+        user: this.user, interaction: this.interaction, enemy: this.target, update: true
+      });
     });
 
     this.addButtonSelection('run', 0, () => {
@@ -48,7 +50,12 @@ export default class EncounterManager extends SelectManager {
         this.mainEmbed.addFields({ name: "Result:", value: "```\n" + bundle.format(this.user.locale, 'event.goblin_talking', money) + "\n```" });
         this.endManager();
       });
-      this.addButtonSelection('exchange', 0, () => ExchangeManager.start<typeof ExchangeManager>({ user: this.user, interaction: this.interaction, target: this.target }));
+
+      this.addButtonSelection('exchange', 0, async () => {
+        await ExchangeManager.start<typeof ExchangeManager>({
+          user: this.user, interaction: this.interaction, target: this.target, update: true
+        });
+      });
     }
   }
 }

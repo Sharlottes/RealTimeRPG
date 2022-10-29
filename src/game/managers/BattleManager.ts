@@ -125,7 +125,7 @@ export default class BattleManager extends SelectManager {
 			customId: 'swap',
 			placeholder: "swap weapon to ...",
 			row: 1,
-			callback: (interaction) => {
+			callback: async (interaction) => {
 				if (interaction.isSelectMenu()) {
 					const id = interaction.values[0];
 					new SwapAction(this, this.user, id == "0" ? Items.punch : this.user.inventory.items.filter(store => store.item.hasWeapon())[Number(id) - 1].item, true);
@@ -154,10 +154,12 @@ export default class BattleManager extends SelectManager {
 						user: this.user,
 						item: entity,
 						interaction: this.interaction,
-						callback: async amount => await this.addAction(new ConsumeAction(this, this.user, entity.item, amount))
+						callback: async amount => {
+							await this.addAction(new ConsumeAction(this, this.user, entity.item, amount).addListener('undo', this.consumeRefresher));
+						}
 					});
 				} else {
-					await this.addAction(new ConsumeAction(this, this.user, entity.item, 1));
+					await this.addAction(new ConsumeAction(this, this.user, entity.item, 1).addListener('undo', this.consumeRefresher));
 				}
 			},
 			list: this.user.inventory.items.filter(store => store.item.hasConsume()),
@@ -194,7 +196,7 @@ export default class BattleManager extends SelectManager {
 
 		this.addButtonSelection('undo', 4, () => {
 			this.actionQueue.pop()?.undo();
-			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join(''));
+			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join('') || null);
 			this.validate();
 			this.update();
 		}, {

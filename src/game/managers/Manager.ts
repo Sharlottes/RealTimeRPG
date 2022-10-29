@@ -88,9 +88,7 @@ class Manager extends KotlinLike<Manager> {
      * @param createNewIfDoesNotExist - 갱신할 메시지가 없다면 새로 만들어 송신합니다. 
      * @param channel - 송신할 채널
      */
-    public async update(createNewIfDoesNotExist: boolean, channel?: TextBasedChannel | null): Promise<void>;
-    public async update(): Promise<void>;
-    public async update(createNewIfDoesNotExist = false, channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
+    public async update(channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
         const options: MessageEditOptions = {
             content: this.content,
             embeds: this.embeds,
@@ -101,8 +99,7 @@ class Manager extends KotlinLike<Manager> {
         const sent = await (() => {
             if (this.message?.editable) return this.message.edit(options);
             else if (this.interaction.isRepliable()) return this.interaction.editReply(options);
-            else if (createNewIfDoesNotExist) return this.send(channel ?? this.interaction.channel);
-            else throw new Error('cannot send message');
+            else return this.send(channel ?? this.interaction.channel);
         })()
         this.message = sent;
     }
@@ -204,7 +201,7 @@ class Manager extends KotlinLike<Manager> {
     }
 
 
-    public static async newErrorEmbed(interaction: BaseInteraction, description: string) {
+    public static async newErrorEmbed(interaction: BaseInteraction, description: string, update: boolean = false) {
         const manager = new Manager({
             interaction,
             embeds: [
@@ -214,11 +211,12 @@ class Manager extends KotlinLike<Manager> {
             ]
         });
         manager.addRemoveButton()
-        await manager.send(interaction.channel);
+        if (update) await manager.update(interaction.channel);
+        else await manager.send(interaction.channel);
         return manager;
     }
 
-    public static async newTextEmbed(interaction: BaseInteraction, description: string, title = "") {
+    public static async newTextEmbed(interaction: BaseInteraction, description: string, title = "", update: boolean = false) {
         const manager = new Manager({
             interaction,
             embeds: [
@@ -228,7 +226,8 @@ class Manager extends KotlinLike<Manager> {
             ]
         });
         manager.addRemoveButton()
-        await manager.send(interaction.channel);
+        if (update) await manager.update(interaction.channel);
+        else await manager.send(interaction.channel);
         return manager;
     }
 }
