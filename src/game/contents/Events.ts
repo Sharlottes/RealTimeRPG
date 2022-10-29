@@ -6,6 +6,8 @@ import UnitEntity from "../UnitEntity";
 import Items from "./Items";
 import Units from "./Units";
 import Event from './types/BaseEvent';
+import PickupManager from 'game/managers/PickupManager';
+import { ItemStack } from 'game/Inventory';
 
 export default class Events {
 	static readonly events: Event[] = [];
@@ -13,25 +15,21 @@ export default class Events {
 	public static init() {
 		this.events.length = 0;
 
-		this.events.push(new Event(15, async (user, interaction) => {
-			const money = 2 + Math.floor(Math.random() * 10);
-			user.money += money;
-			await interaction.followUp(bundle.format(user.locale, 'event.money', money));
+		this.events.push(new Event(40, async (user, interaction) => {
+			const bool = Random.bool();
+			const stack = bool ? new ItemStack(getOne(Items.items.filter((i) => i.dropOnWalk)), Random.integer(1, 5)) : undefined;
+			const money = !bool ? 2 + Math.floor(Math.random() * 10) : undefined;
+
+			await PickupManager.start<typeof PickupManager>(
+				{ user, interaction, update: true, stack, money }
+			)
 		}));
 
 		this.events.push(new Event(10, async (user, interaction) => {
-			const item = getOne(Items.items.filter((i) => i.dropOnWalk));
-			user.giveItem(item);
-			await interaction.followUp(`${bundle.format(user.locale, 'event.item', item.localName(user))}`);
-		}));
-
-		this.events.push(new Event(12225, async (user, interaction) => {
 			await EncounterManager.start<typeof EncounterManager>({
-				user: user,
-				interaction: interaction,
+				user, interaction, update: true,
 				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),
-				update: true
 			});
-		}));
+		}).setOnly(true));
 	}
 }
