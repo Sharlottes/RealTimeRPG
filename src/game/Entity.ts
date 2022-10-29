@@ -21,14 +21,8 @@ export default abstract class Entity implements EntityI {
   public abstract readonly statuses: StatusEntity[];
   public abstract applyStatus(status: StatusEffect): void;
   public abstract removeStatus(status: StatusEffect): void;
-  public switchWeapon(weapon: Item) {
+  public switchWeapon(entity: WeaponEntity) {
     const { equipments, items } = this.inventory;
-    // 																								주의할 점: 제네릭때문에 호출 2번 해야 함
-    const entity = items.find(predicateOf<WeaponEntity>()((store) =>
-      store instanceof WeaponEntity && store.item == weapon
-    ));
-    if (!entity) return; //이거 여기 뭐 있지 않았나요
-    // ㄴㄴ 그거는 자식클래스에서 해서 일부러 이렇게 해놧죠
     const equippedWeapon = equipments.weapon;
     const isEquippedWeaponSwitchable = equippedWeapon.item !== Items.none && equippedWeapon.item !== Items.punch;
     if (isEquippedWeaponSwitchable) [items[items.indexOf(entity)], equipments.weapon] = [equipments.weapon, entity];

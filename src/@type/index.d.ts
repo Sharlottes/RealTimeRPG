@@ -3,6 +3,7 @@ import Discord, { Interaction, BaseInteraction, Message, EmbedBuilder, MessageOp
 import { StatusEntity, ItemStack, User, Inventory } from 'game';
 import StatusEffect from 'game/contents/StatusEffect';
 import Manager from 'game/managers/Manager';
+import { WeaponEntity } from 'game/Inventory';
 
 declare global {
     namespace NodeJS {
@@ -137,7 +138,7 @@ export interface EntityI extends StatusI {
     public exp: number;
     public level: number;
     public money: number;
-    public switchWeapon: (weapon: Item) => void;
+    public switchWeapon: (weapon: WeaponEntity) => void;
 }
 
 export interface StatusI {

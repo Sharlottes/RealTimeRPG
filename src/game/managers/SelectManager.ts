@@ -65,9 +65,9 @@ export default class SelectManager extends Manager {
     this.resizeSelection(row);
 
     let page = 0;
-    const reoption = () =>
+    const reoption = (newList = list) =>
       [
-        ...list.reduce<APISelectMenuOption[]>(
+        ...newList.reduce<APISelectMenuOption[]>(
           (acc, elem, index) =>
             index < page * 8 || index > (page + 1) * 8
               ? acc
@@ -80,20 +80,20 @@ export default class SelectManager extends Manager {
           , page == 0
             ? []
             : [{
-              label: `<-- ${page}/${Math.floor(list.length / 8) + 1}`,
+              label: `<-- ${page}/${Math.floor(newList.length / 8) + 1}`,
               value: '-1'
             }]
         ),
-      ].concat(page == Math.floor(list.length / 8)
+      ].concat(page == Math.floor(newList.length / 8)
         ? []
         : [{
-          label: `${page + 1}/${Math.floor(list.length / 8) + 1} -->`,
+          label: `${page + 1}/${Math.floor(newList.length / 8) + 1} -->`,
           value: '-2'
         }]
       );
 
-    const refreshOptions = async () => {
-      (this.components[row]?.components[0] as SelectMenuBuilder).setOptions(reoption());
+    const refreshOptions = async (newList = list) => {
+      (this.components[row]?.components[0] as SelectMenuBuilder).setOptions(reoption(newList));
       await this.update();
     };
 

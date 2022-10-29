@@ -1,4 +1,3 @@
-import { bundle } from "assets";
 import Random from "random";
 import { getOne } from "utils/getOne";
 import EncounterManager from "../managers/EncounterManager";
@@ -25,7 +24,7 @@ export default class Events {
 			)
 		}));
 
-		this.events.push(new Event(10, async (user, interaction) => {
+		this.events.push(new Event(2222210, async (user, interaction) => {
 			await EncounterManager.start<typeof EncounterManager>({
 				user, interaction, update: true,
 				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),

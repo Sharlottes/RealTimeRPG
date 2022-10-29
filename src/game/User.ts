@@ -105,13 +105,8 @@ export default class User extends Entity implements EntityI {
    * 무기를 교체합니다.
    * @param weapon 바꿀 새 무기
    */
-  public switchWeapon(weapon: Item) {
-    const { items } = this.inventory;
-    const index = items.findIndex((store) =>
-      store instanceof WeaponEntity && store.item == weapon
-    );
-    if (index === -1) return bundle.format(this.locale, 'missing_item', weapon.localName(this));
-    super.switchWeapon(weapon);
+  public switchWeapon(entity: WeaponEntity) {
+    super.switchWeapon(entity);
   }
 
   public async levelup() {

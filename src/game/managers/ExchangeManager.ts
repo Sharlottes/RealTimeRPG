@@ -62,14 +62,13 @@ export default class ExchangeManager extends SelectManager {
 						item: store,
 						callback: async amount => {
 							await this.deal(this.target, this.user, store, amount);
-							await buyRefresher();
-							await this.updateEmbed();
+							await buyRefresher(this.target.inventory.items);
 						}
 					});
 				} else {
 					await this.deal(this.target, this.user, store, 1);
+					await buyRefresher(this.target.inventory.items);
 				}
-				await this.updateEmbed();
 			},
 			reducer: (store, index) => ({
 				label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
@@ -85,7 +84,9 @@ export default class ExchangeManager extends SelectManager {
 			callback: async (interaction) => {
 				if (!interaction.isSelectMenu()) return;
 				const id = interaction.values[0];
+				console.log(interaction.values);
 				const store = this.user.inventory.items[Number(id)];
+				console.log(store, this.user.inventory.items);
 				if (store instanceof ItemStack && store.amount > 1) {
 					ItemSelectManager.start<typeof ItemSelectManager>({
 						user: this.user,
@@ -93,14 +94,13 @@ export default class ExchangeManager extends SelectManager {
 						item: store,
 						callback: async amount => {
 							await this.deal(this.user, this.target, store, amount);
-							await sellRefresher();
-							await this.updateEmbed();
+							await sellRefresher(this.user.inventory.items);
 						}
 					});
 				} else {
 					await this.deal(this.user, this.target, store, 1);
+					await sellRefresher(this.user.inventory.items);
 				}
-				await this.updateEmbed();
 			},
 			reducer: (store, index) => ({
 				label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
