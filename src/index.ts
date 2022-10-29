@@ -25,7 +25,7 @@ export const app = {
     })
 };
 
-let time = Date.now();
+const time = Date.now();
 
 // 애셋 파일 로딩
 assets.init();
@@ -53,7 +53,7 @@ app.client
         console.log(`Logged in as ${app.client.user?.tag}(${app.client.application?.id}): ${Date.now() - time}ms`)
     })
     .on("interactionCreate", async interaction => {
-        if (interaction.isCommand()) {
+        if (interaction.isChatInputCommand()) {
             const command = CM.commands.get(interaction.commandName);
             if (!command || !interaction.channel) return;
             await interaction.deferReply();

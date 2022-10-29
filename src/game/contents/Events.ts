@@ -1,6 +1,6 @@
 import { bundle } from "assets";
 import Random from "random";
-import { getOne } from "..";
+import { getOne } from "utils/getOne";
 import EncounterManager from "../managers/EncounterManager";
 import UnitEntity from "../UnitEntity";
 import Items from "./Items";

@@ -1,7 +1,8 @@
-import { ChatInputCommandInteraction, Embed, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 
-import { ItemStack, User, getOne } from 'game';
+import { getOne } from "utils/getOne";
+import { ItemStack, User } from 'game';
 import { Items, Units, Content } from 'game/contents';
 import { CommandCategory } from '@type';
 import { bundle } from 'assets';

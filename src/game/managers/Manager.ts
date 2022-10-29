@@ -80,7 +80,7 @@ class Manager extends KotlinLike<Manager> {
 
         if (!this.message) console.log('message is empty');
         else await this.message.delete();
-    } // 바부 ?!
+    }
 
     /**
      * 현재 데이터를 갱신합니다.   

@@ -1,6 +1,7 @@
 import { ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
 
-import { UnitEntity, getOne, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from 'game';
+import { UnitEntity, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from 'game';
+import { getOne } from "utils/getOne";
 import { Item, Items, StatusEffects } from 'game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from 'utils';
 import SelectManager from 'game/managers/SelectManager';
@@ -286,7 +287,7 @@ export default class BattleManager extends SelectManager {
 
 	private async turnEnd() {
 		//쿨다운 감소
-		this.turn.inventory.equipments.weapon.cooldown = Math.max(0, this.turn.inventory.equipments.weapon.cooldown - 1);
+		if (this.turn.inventory.equipments.weapon.cooldown > 0) this.turn.inventory.equipments.weapon.cooldown--;
 
 		//버프/디버프 효과
 		for (const status of this.turn.statuses) {

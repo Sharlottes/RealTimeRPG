@@ -129,7 +129,6 @@ export type EventSelection = {
 
 export type CommandCategory = "guild" | "global"
 
-// 파일 확장자에 주목  해야 합니다 추상 클래스로 두면 따로 해야죠 ㅈㅁ 엄크 
 export interface EntityI extends StatusI {
     public readonly id: number | string;
     public readonly stats: Stat;
@@ -142,8 +141,7 @@ export interface EntityI extends StatusI {
 }
 
 export interface StatusI {
-    // iwaat
-    public readonly statuses: StatusEntity[] = [];
+    public readonly statuses: Array<StatusEntity>;
     public applyStatus: (status: StatusEffect) => void;
     public removeStatus: (status: StatusEffect) => void;
 }

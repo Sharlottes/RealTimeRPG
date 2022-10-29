@@ -94,11 +94,7 @@ export default class Inventory {
       switch (store.type) {
         case "ItemStack": {
           this.items.push(new ItemStack(item, store.amount));
-          break; //솔직히 이거 답없죠?ㅋㅋ 아니 개웃기네 이거 hasWeapon이 타입 가든줄 알았는데 아님ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ
-          // ??????????????? 구조가 어케된거지 미친ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ
-          // 아니 이게 상식대로라면 
-          // Weapon -> WeaponEntity
-          // 식으로 내려받아야 하는데 Weapon을 태그로 만들어서 Item에 쑤셔박아버리네 이게 뭔 미친짓이지
+          break;
         }
         case "ItemEntity": {
           this.items.push(new ItemEntity(item));
@@ -125,8 +121,7 @@ export default class Inventory {
           entity.cooldown = store.cooldown!;
           this.items.push(entity);
           break;
-        } //구조를 크게 갈아엎어야할 것 같은데요 이거 저 잠시 장실좀
-        // 6:50 - 살아있음 8:05 - 죽었나요
+        }
         case "ShieldEntity": {
           if (!item.hasShield()) throw "got crashed during loading user inventory";
           const entity = new ShieldEntity(item);

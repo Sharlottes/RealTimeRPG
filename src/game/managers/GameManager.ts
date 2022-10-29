@@ -12,7 +12,7 @@ export default class GameManager {
     constructor(private readonly user: User) { };
 
     startEvent(event: BaseEvent, interaction: ChatInputCommandInteraction<CacheType>) {
-        if (this.currentEvent) {
+        if (this.currentEvent?.only) {
             interaction.editReply(bundle.find(this.user.locale, "error.event_existing"));
             return;
         }
