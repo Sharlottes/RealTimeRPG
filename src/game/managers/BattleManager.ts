@@ -96,19 +96,20 @@ export default class BattleManager extends SelectManager {
 
 		this.addButtonSelection('evasion', 0, async () => {
 			if (this.evaseBtnSelected) {
+				this.evaseBtnSelected = false;
 				this.addAction(
 					new DvaseAction(this, this.user)
 						.addListener('undo', () => this.evaseBtnSelected = true)
 						.addListener('runned', () => this.evaseBtnSelected = false)
 				);
 			} else {
+				this.evaseBtnSelected = true;
 				this.addAction(
 					new EvaseAction(this, this.user)
 						.addListener('undo', () => this.evaseBtnSelected = false)
 						.addListener('runned', () => this.evaseBtnSelected = false)
 				);
 			}
-			this.evaseBtnSelected = !this.evaseBtnSelected;
 		});
 
 		this.addButtonSelection('shield', 0, async () => this.addAction(new ShieldAction(this, this.user)));

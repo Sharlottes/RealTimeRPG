@@ -25,7 +25,7 @@ export class AttackAction extends BaseAction {
 		const entity = this.owner.inventory.equipments.weapon;
 		const isUser = this.owner.id == this.manager.user.id;
 		const prefixed = (content: string) =>
-			`${isUser ? '-' : '+'} ${content}`
+			`${isUser ? '+' : '-'} ${content}`
 		const name = typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale);
 		if (this.manager.isEvasion(this.enemy)) {
 			if (Random.bool()) {

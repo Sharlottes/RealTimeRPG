@@ -51,7 +51,8 @@ class Manager extends KotlinLike<Manager> {
         const manager = new this(options);
 
         manager.init();
-        await manager.send(options.channel);
+        if (options.update) await manager.update(options.channel);
+        else await manager.send(options.channel);
         manager.updateCollector();
 
         return manager as InstanceType<T>;
@@ -60,15 +61,11 @@ class Manager extends KotlinLike<Manager> {
     public updateCollector() {
         this.collector ??= this.message?.createMessageComponentCollector().on('collect', async (interaction) => {
             const trigger = this.triggers.get(interaction.customId);
-            if (trigger) { //나는 뒤다
-                // 자
-                (async () => {
-                    if (!interaction.deferred) {
-                        const sent = await interaction.deferUpdate({ fetchReply: true })
-                        this.message = sent;
-                    }
-                    trigger(interaction, this);
-                })();
+            if (trigger) {
+                if (!interaction.deferred) {
+                    this.message = await interaction.deferUpdate({ fetchReply: true })
+                }
+                trigger(interaction, this);
             }
         });
     }
@@ -83,7 +80,7 @@ class Manager extends KotlinLike<Manager> {
 
         if (!this.message) console.log('message is empty');
         else await this.message.delete();
-    }
+    } // 바부 ?!
 
     /**
      * 현재 데이터를 갱신합니다.   
@@ -100,10 +97,10 @@ class Manager extends KotlinLike<Manager> {
             components: this.components,
             files: this.files
         };
-
+        this.updateCollector();
         const sent = await (() => {
             if (this.message?.editable) return this.message.edit(options);
-            else if (this.interaction.isRepliable()) return this.interaction.editReply(options); //잠시 라면좀 빨고오겠
+            else if (this.interaction.isRepliable()) return this.interaction.editReply(options);
             else if (createNewIfDoesNotExist) return this.send(channel ?? this.interaction.channel);
             else throw new Error('cannot send message');
         })()

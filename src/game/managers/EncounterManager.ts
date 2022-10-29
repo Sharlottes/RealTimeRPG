@@ -26,7 +26,7 @@ export default class EncounterManager extends SelectManager {
     this.setEmbeds(this.mainEmbed);
 
     this.addButtonSelection('battle', 0, async () => {
-      BattleManager.start<typeof BattleManager>({ user: this.user, interaction: this.interaction, enemy: this.target });
+      BattleManager.start<typeof BattleManager>({ user: this.user, interaction: this.interaction, enemy: this.target, update: true });
     });
 
     this.addButtonSelection('run', 0, () => {
