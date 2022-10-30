@@ -50,11 +50,7 @@ export default class ExchangeManager extends SelectManager {
 		const buyRefresher = this.addMenuSelection({
 			customId: 'buy',
 			row: 1,
-			callback: async (interaction) => {
-				if (!interaction.isSelectMenu()) return;
-				const id = interaction.values[0];
-				const store = this.target.inventory.items[Number(id)];
-
+			callback: async (_, __, store) => {
 				if (store instanceof ItemStack && store.amount > 1) {
 					ItemSelectManager.start<typeof ItemSelectManager>({
 						user: this.user,
@@ -62,31 +58,26 @@ export default class ExchangeManager extends SelectManager {
 						item: store,
 						callback: async amount => {
 							await this.deal(this.target, this.user, store, amount);
-							await buyRefresher(this.target.inventory.items);
+							await buyRefresher();
 						}
 					});
 				} else {
 					await this.deal(this.target, this.user, store, 1);
-					await buyRefresher(this.target.inventory.items);
+					await buyRefresher();
 				}
 			},
 			reducer: (store, index) => ({
 				label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
 				value: index.toString()
 			}),
-			list: this.target.inventory.items,
+			list: () => this.target.inventory.items,
 			placeholder: 'select item to buy ...'
 		});
 
 		const sellRefresher = this.addMenuSelection({
 			customId: 'sell',
 			row: 2,
-			callback: async (interaction) => {
-				if (!interaction.isSelectMenu()) return;
-				const id = interaction.values[0];
-				console.log(interaction.values);
-				const store = this.user.inventory.items[Number(id)];
-				console.log(store, this.user.inventory.items);
+			callback: async (_, __, store) => {
 				if (store instanceof ItemStack && store.amount > 1) {
 					ItemSelectManager.start<typeof ItemSelectManager>({
 						user: this.user,
@@ -94,19 +85,19 @@ export default class ExchangeManager extends SelectManager {
 						item: store,
 						callback: async amount => {
 							await this.deal(this.user, this.target, store, amount);
-							await sellRefresher(this.user.inventory.items);
+							await sellRefresher();
 						}
 					});
 				} else {
 					await this.deal(this.user, this.target, store, 1);
-					await sellRefresher(this.user.inventory.items);
+					await sellRefresher();
 				}
 			},
 			reducer: (store, index) => ({
 				label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
 				value: index.toString()
 			}),
-			list: this.user.inventory.items,
+			list: () => this.user.inventory.items,
 			placeholder: 'select item to sell ...'
 		});
 

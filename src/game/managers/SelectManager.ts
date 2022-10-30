@@ -6,7 +6,8 @@ import {
   APIButtonComponent,
   SelectMenuComponentOptionData,
   ComponentType,
-  APISelectMenuOption
+  APISelectMenuOption,
+  MessageComponentInteraction
 } from 'discord.js';
 import { ComponentTrigger, type SelectManagerConstructOptions } from "@type";
 
@@ -17,8 +18,8 @@ import User from '../User';
 type MenuSelectOptions<T> = {
   customId: string;
   row: number;
-  callback: ComponentTrigger;
-  list: T[];
+  callback: (interaction: MessageComponentInteraction, manager: Manager, item: T) => void;
+  list: T[] | (() => T[]);
   reducer?: (elem: T, index: number) => APISelectMenuOption;
   placeholder?: string;
 }
@@ -64,36 +65,41 @@ export default class SelectManager extends Manager {
   public addMenuSelection<T>({ customId, list, placeholder = "select...", reducer, row, callback }: MenuSelectOptions<T>) {
     this.resizeSelection(row);
 
-    let page = 0;
-    const reoption = (newList = list) =>
-      [
-        ...newList.reduce<APISelectMenuOption[]>(
-          (acc, elem, index) =>
-            index < page * 8 || index > (page + 1) * 8
-              ? acc
-              : [...acc, reducer ? reducer(elem, index)
-                : {
-                  label: `#${index} item`,
-                  value: index.toString()
-                }
-              ]
-          , page == 0
-            ? []
-            : [{
-              label: `<-- ${page}/${Math.floor(newList.length / 8) + 1}`,
-              value: '-1'
-            }]
-        ),
-      ].concat(page == Math.floor(newList.length / 8)
-        ? []
-        : [{
-          label: `${page + 1}/${Math.floor(newList.length / 8) + 1} -->`,
-          value: '-2'
-        }]
-      );
+    const getList = () => typeof list === 'function' ? list() : list;
+    let currentPage = 0;
+    const reoption = () => {
+      const currentList = getList();
+      const options = currentList.reduce<APISelectMenuOption[]>(
+        (acc, elem, index) =>
+          index < currentPage * 8 || index > (currentPage + 1) * 8
+            ? acc
+            : [...acc, reducer ? reducer(elem, index)
+              : {
+                label: `#${index} item`,
+                value: index.toString()
+              }
+            ]
+        , currentPage == 0
+          ? []
+          : [{
+            label: `<-- ${currentPage}/${Math.floor(currentList.length / 8) + 1}`,
+            value: '-1'
+          }]
+      )
+        .concat(currentPage == Math.floor(currentList.length / 8)
+          ? []
+          : [{
+            label: `${currentPage + 1}/${Math.floor(currentList.length / 8) + 1} -->`,
+            value: '-2'
+          }]
+        );
 
-    const refreshOptions = async (newList = list) => {
-      (this.components[row]?.components[0] as SelectMenuBuilder).setOptions(reoption(newList));
+
+      return options.length === 0 ? [{ label: 'empty', value: '-10' }] : options;
+    }
+
+    const refreshOptions = async () => {
+      (this.components[row]?.components[0] as SelectMenuBuilder).setOptions(reoption());
       await this.update();
     };
 
@@ -107,20 +113,21 @@ export default class SelectManager extends Manager {
     this.setTriggers(customId, async (interaction, manager) => {
       if (!(interaction.isSelectMenu() && interaction.component.type == ComponentType.SelectMenu)) return;
       const id = interaction.values[0];
+      const list = getList();
 
       switch (id) {
         case '-1':
-          if (page == 0)
+          if (currentPage == 0)
             Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.first_page"));
-          else page--;
+          else currentPage--;
           break;
         case '-2':
-          if (page + 1 > Math.floor(list.length / 8))
+          if (currentPage + 1 > Math.floor(list.length / 8))
             Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.last_page"));
-          else page++;
+          else currentPage++;
           break;
         default:
-          callback(interaction, manager);
+          callback(interaction, manager, list[Number(id)]);
       }
 
       await refreshOptions();

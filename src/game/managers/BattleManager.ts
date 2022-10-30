@@ -38,10 +38,6 @@ export default class BattleManager extends SelectManager {
 	private totalTurn = 1;
 	private evaseBtnSelected = false;
 
-	public swapRefresher = async () => { };
-	public consumeRefresher = async () => { };
-	public reloadRefresher = async () => { };
-
 	private readonly comboList: Map<string, () => Promise<void>> = new Map<string, () => Promise<void>>()
 		.set("reload-attack-evase", async () => {
 			(this.turn.inventory.equipments.weapon as SlotWeaponEntity).ammos.push(Items.find(0), Items.find(0), Items.find(0));
@@ -121,75 +117,65 @@ export default class BattleManager extends SelectManager {
 			await this.turnEnd();
 		});
 
-		this.swapRefresher = this.addMenuSelection({
+		const swapRefresher = this.addMenuSelection({
 			customId: 'swap',
 			placeholder: "swap weapon to ...",
 			row: 1,
-			callback: async (interaction) => {
-				if (interaction.isSelectMenu()) {
-					const id = interaction.values[0];
-					new SwapAction(this, this.user, id == "0" ? Items.punch : this.user.inventory.items.filter(store => store.item.hasWeapon())[Number(id) - 1].item, true);
-				}
+			callback: async (_, __, entity) => {
+				new SwapAction(this, this.user, entity.item, true);
+				swapRefresher();
 			},
-			list: (<ItemStorable[]>[new WeaponEntity(Items.punch)]).concat(this.user.inventory.items.filter(store => store.item.hasWeapon())),
+			list: () => (<ItemStorable[]>[new WeaponEntity(Items.punch)]).concat(this.user.inventory.items.filter(store => store.item.hasWeapon())),
 			reducer: (store, index) => ({
-				label: `(${index + 1}) ` + store.item.localName(this.locale) +
-					(store instanceof ItemStack ? `${store.amount} ${bundle.find(this.locale, "unit.item")}` : "") +
-					(store instanceof WeaponEntity ? `, ${store.cooldown} ${bundle.find(this.locale, 'cooldown')}, ${store.durability} ${bundle.find(this.locale, 'durability')}` : "") +
-					(store instanceof SlotWeaponEntity ? `, ${bundle.find(this.locale, 'ammo')} ${store.ammos.length} ${bundle.find(this.locale, 'unit.item')}` : ""),
+				label: `(${index + 1}) ${store.item.localName(this.locale)}, ${store.toStateString(key => bundle.find(this.locale, key))}`,
 				value: index.toString()
 			})
 		});
 
-		this.consumeRefresher = this.addMenuSelection({
+		const consumeRefresher = this.addMenuSelection({
 			customId: 'consume',
 			placeholder: "consume ...",
 			row: 2,
-			callback: async (interaction) => {
-				if (!interaction.isSelectMenu()) return;
-				const id = interaction.values[0];
-				const entity = this.user.inventory.items.filter(store => store.item.hasConsume())[Number(id)];
+			callback: async (_, __, entity) => {
 				if (entity instanceof ItemStack && entity.amount > 1) {
 					ItemSelectManager.start<typeof ItemSelectManager>({
 						user: this.user,
 						item: entity,
 						interaction: this.interaction,
 						callback: async amount => {
-							await this.addAction(new ConsumeAction(this, this.user, entity.item, amount).addListener('undo', this.consumeRefresher));
+							await this.addAction(new ConsumeAction(this, this.user, entity.item, amount).addListener('undo', consumeRefresher));
 						}
 					});
 				} else {
-					await this.addAction(new ConsumeAction(this, this.user, entity.item, 1).addListener('undo', this.consumeRefresher));
+					await this.addAction(new ConsumeAction(this, this.user, entity.item, 1).addListener('undo', consumeRefresher));
 				}
 			},
-			list: this.user.inventory.items.filter(store => store.item.hasConsume()),
+			list: () => this.user.inventory.items.filter(store => store.item.hasConsume()),
 			reducer: (store, index) => ({
-				label: `(${index + 1}) ${store.item.localName(this.locale)} ${(store instanceof ItemStack ? `${store.amount} ${bundle.find(this.locale, "unit.item")}` : store instanceof WeaponEntity ? `${store.cooldown} ${bundle.find(this.locale, 'cooldown')}, ${store.durability} ${bundle.find(this.locale, 'durability')}` : "")}`,
+				label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString(key => bundle.find(this.locale, key))}`,
 				value: index.toString()
 			})
 		});
 
-		this.reloadRefresher = this.addMenuSelection({
+		const reloadRefresher = this.addMenuSelection({
 			customId: 'reload',
 			placeholder: "reload ammo with ...",
 			row: 3,
-			callback: async (interaction) => {
-				if (!interaction.isSelectMenu()) return;
-				const entity = this.user.inventory.items.filter(store => store.item.hasAmmo())[Number(interaction.values[0])];
+			callback: async (_, __, entity) => {
 				if (entity instanceof ItemStack && entity.amount > 1) {
 					ItemSelectManager.start<typeof ItemSelectManager>({
 						user: this.user,
 						item: entity,
 						interaction: this.interaction,
-						callback: amount => this.addAction(new ReloadAction(this, this.user, entity, amount))
+						callback: amount => this.addAction(new ReloadAction(this, this.user, entity, amount).addListener('undo', reloadRefresher))
 					});
 				} else {
-					await this.addAction(new ReloadAction(this, this.user, new ItemStack(entity.item, 1), 1));
+					await this.addAction(new ReloadAction(this, this.user, new ItemStack(entity.item, 1), 1).addListener('undo', reloadRefresher));
 				}
 			},
-			list: this.user.inventory.items.filter(store => store.item.hasAmmo()),
+			list: () => this.user.inventory.items.filter(store => store.item.hasAmmo()),
 			reducer: (store, index) => ({
-				label: `(${index + 1}) ` + store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? `${store.amount} ${bundle.find(this.locale, "unit.item")}` : store instanceof WeaponEntity ? `${store.cooldown} ${bundle.find(this.locale, 'cooldown')}, ${store.durability} ${bundle.find(this.locale, 'durability')}` : "")}`,
+				label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString(key => bundle.find(this.locale, key))}`,
 				value: index.toString()
 			})
 		});
