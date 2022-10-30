@@ -7,27 +7,36 @@ import { BaseAction } from "./BaseAction";
 export class ReloadAction extends BaseAction {
 	public title = 'reload';
 
-	constructor(manager: BattleManager, owner: EntityI, public stack: ItemStack, public amount: number,
+	constructor(manager: BattleManager, owner: EntityI, public stack: ItemStack,
 		immediate = false) {
 		super(manager, owner, 1);
 
 		if (immediate) this.run();
 	}
 
+	public added(): void {
+		this.owner.inventory.remove(this.stack.item, this.stack.amount);
+		super.added();
+	}
+
+	public undo(): void {
+		this.owner.inventory.add(this.stack.item, this.stack.amount);
+		super.undo();
+	}
+
 	public async run() {
 		super.run();
-		
+
 		const entity = this.owner.inventory.equipments.weapon;
 		if (entity instanceof SlotWeaponEntity) {
 			const inc = this.stack.item.getAmmo()?.itemPerAmmo ?? 1;
-			this.owner.inventory.remove(this.stack.item, this.amount);
-			for (let i = 0; i < this.amount; i += inc) entity.ammos.push(this.stack.item);
+			this.owner.inventory.remove(this.stack.item, this.stack.amount);
+			for (let i = 0; i < this.stack.amount; i += inc) entity.ammos.push(this.stack.item);
 			this.manager.updateLog(bundle.format(this.manager.locale, 'reload',
 				this.stack.item.localName(this.manager.locale),
-				this.amount,
+				this.stack.amount,
 				this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
 			));
-			await this.manager.reloadRefresher();
 		}
 	}
 

@@ -119,12 +119,12 @@ export default class ExchangeManager extends SelectManager {
 		const money = this.calPrice(item);
 
 		if (amount > max) {
-			this.addContent(codeBlock('- ' + bundle.format(this.locale, 'shop.notEnough_item', item.localName(this.locale), amount, max), 'diff'));
+			this.addContent(codeBlock('diff', '- ' + bundle.format(this.locale, 'shop.notEnough_item', item.localName(this.locale), amount, max)));
 		}
 		else if (visitor.money < amount * money) {
-			this.addContent(codeBlock('- ' + bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'));
+			this.addContent(codeBlock('diff', '- ' + bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money)));
 		} else {
-			this.addContent(codeBlock('+ ' + bundle.format(this.locale, owner == this.user ? 'shop.sold' : 'shop.buyed', item.localName(this.locale), amount, owner.money, (owner.money + money * amount)), 'diff'));
+			this.addContent(codeBlock('diff', '+ ' + bundle.format(this.locale, owner == this.user ? 'shop.sold' : 'shop.buyed', item.localName(this.locale), amount, owner.money, (owner.money + money * amount))));
 
 			visitor.money -= money * amount;
 			visitor.inventory.add(item, amount);

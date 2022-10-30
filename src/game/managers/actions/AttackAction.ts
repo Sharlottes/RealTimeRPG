@@ -8,13 +8,10 @@ import BattleManager from "../BattleManager";
 import { predicateOf } from "utils/predicateOf";
 
 export class AttackAction extends BaseAction {
-	private enemy: EntityI;
 	public title = 'attack';
 
-	constructor(manager: BattleManager, owner: EntityI, enemy: EntityI, immediate = false) {
+	constructor(manager: BattleManager, owner: EntityI, private enemy: EntityI, private weapon: WeaponEntity, immediate = false) {
 		super(manager, owner, 10);
-		this.enemy = enemy;
-
 		if (immediate) this.run();
 	}
 
@@ -22,37 +19,28 @@ export class AttackAction extends BaseAction {
 		super.run();
 
 		if (this.owner.stats.health <= 0 || this.enemy.stats.health <= 0) return;
-		const entity = this.owner.inventory.equipments.weapon;
 		const isUser = this.owner.id == this.manager.user.id;
-		const prefixed = (content: string) =>
-			`${isUser ? '+' : '-'} ${content}`
+		const prefixed = (content: string, benefit = true) =>
+			`${(benefit ? isUser : !isUser) ? '+' : '-'} ${content}`
 		const name = typeof this.enemy.name === 'string' ? this.enemy.name : this.enemy.name(this.manager.locale);
 		if (this.manager.isEvasion(this.enemy)) {
 			if (Random.bool()) {
-				this.manager.updateLog(prefixed(bundle.format(this.manager.locale, "evasion_successed", name)));
-				await this.manager.update();
+				await this.manager.updateLog(prefixed(bundle.format(this.manager.locale, "evasion_successed", name), false)).update();
 			} else {
-				this.manager.updateLog(prefixed(bundle.format(this.manager.locale, "evasion_failed", name)));
-				await this.manager.update();
-				this.manager.updateLog(prefixed(entity.item.getWeapon().attack(this.enemy, entity, this.manager.locale)));
-				await this.manager.update();
+				await this.manager.updateLog(prefixed(bundle.format(this.manager.locale, "evasion_failed", name))).update();
+				await this.manager.updateLog(prefixed(this.weapon.item.getWeapon().attack(this.enemy, this.weapon, this.manager.locale))).update();
 			}
-		} else if (this.manager.isShielded(this.enemy)) {
-			const { shield } = this.enemy.inventory.equipments
-			if (shield) {
-				shield.durability -= this.owner.inventory.equipments.weapon.item.getWeapon().damage;
-			}
-			this.manager.updateLog(prefixed(bundle.format(this.manager.locale, "shielded", name)));
-			await this.manager.update();
+		} else if (this.manager.isShielded(this.enemy) && this.enemy.inventory.equipments.shield) {
+			this.enemy.inventory.equipments.shield.durability -= this.owner.inventory.equipments.weapon.item.getWeapon().damage;
+			await this.manager.updateLog(prefixed(bundle.format(this.manager.locale, "shielded", name), false)).update();
 		} else {
-			this.manager.updateLog(prefixed(entity.item.getWeapon().attack(this.enemy, entity, this.manager.locale)));
-			await this.manager.update();
+			await this.manager.updateLog(prefixed(this.weapon.item.getWeapon().attack(this.enemy, this.weapon, this.manager.locale))).update();
 		}
 
-		if (entity.item != Items.punch && entity.item != Items.none) {
-			if (entity.durability > 0) entity.durability--;
-			if (entity.durability <= 0) {
-				await this.manager.updateLog(bundle.format(this.manager.locale, 'battle.broken', entity.item.localName(this.manager.locale))).update();
+		if (this.weapon.item != Items.punch && this.weapon.item != Items.none) {
+			if (this.weapon.durability > 0) this.weapon.durability--;
+			if (this.weapon.durability <= 0) {
+				await this.manager.updateLog(bundle.format(this.manager.locale, 'battle.broken', this.weapon.item.localName(this.manager.locale))).update();
 				const exist = this.owner.inventory.items.find(
 					predicateOf<WeaponEntity>()((store) =>
 						store instanceof WeaponEntity && store.item == this.owner.inventory.equipments.weapon.item

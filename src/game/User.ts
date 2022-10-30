@@ -116,6 +116,7 @@ export default class User extends Entity implements EntityI {
       this.user.username,
       this.level,
       this.level + 1,
+      this.stats.health_max,
       this.stats.health_max += Math.round((this.level ** 0.6 * 5) * 100) / 100,
       this.stats.energy_max,
       this.stats.energy_max += Math.round((this.level ** 0.4 * 2.5) * 100) / 100,

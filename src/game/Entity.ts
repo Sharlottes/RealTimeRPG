@@ -1,14 +1,6 @@
-import { Item, Items, StatusEffect } from 'game/contents';
-import { EntityI, Stat, UserSave } from '@type';
+import { Items, StatusEffect } from 'game/contents';
+import { EntityI, Stat } from '@type';
 import { ItemStack, StatusEntity, Inventory, WeaponEntity } from "game";
-import { bundle } from 'assets';
-import { Canvas } from "utils";
-import { app } from 'index';
-import { filledBar } from 'string-progressbar';
-import { SlotWeaponEntity } from './Inventory';
-import Manager from './managers/Manager';
-import GameManager from './managers/GameManager';
-import { predicateOf } from 'utils/predicateOf';
 
 export default abstract class Entity implements EntityI {
   public abstract readonly id: string | number;

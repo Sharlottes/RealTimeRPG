@@ -17,22 +17,25 @@ export class ConsumeAction extends BaseAction {
 		if (immediate) this.run();
 	}
 
+	public added(): void {
+		this.owner.inventory.remove(this.potion, this.amount);
+		super.added();
+	}
+
+	public undo(): void {
+		this.owner.inventory.add(this.potion, this.amount);
+		super.undo();
+	}
+
 	public async run() {
 		super.run();
-		
-		const entity = this.owner.inventory.items.find(store => store.item == this.potion);
-		if (!entity) {
-			await this.manager.updateLog(bundle.format(this.manager.locale, 'missing_item', this.potion.localName(this.manager.locale))).update();
-			return;
-		}
-		this.owner.inventory.remove(this.potion, this.amount);
-		entity.item.getConsume().consume(this.owner, this.amount);
+
+		this.potion.getConsume().consume(this.owner, this.amount);
 		this.manager.updateLog(bundle.format(this.manager.locale, 'consume',
 			this.potion.localName(this.manager.locale),
 			this.amount,
 			this.potion.getConsume().buffes.map((b) => b.description(this.owner, this.amount, b, this.manager.locale)).join('\n  ')
 		))
-		await this.manager.consumeRefresher();
 	}
 
 	public description(): string {

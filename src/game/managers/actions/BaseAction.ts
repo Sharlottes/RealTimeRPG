@@ -43,6 +43,9 @@ export abstract class BaseAction {
 	};
 
 	public undo(): void {
+		for (const listener of this.eventListeners.undo) {
+			listener();
+		}
 		if (this.bloody) this.owner.stats.health += this.cost;
 		else this.owner.stats.energy += this.cost;
 	}

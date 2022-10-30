@@ -38,11 +38,15 @@ export default class BattleManager extends SelectManager {
 	private totalTurn = 1;
 	private evaseBtnSelected = false;
 
+	private swapRefresher: () => Promise<void>;
+	private consumeRefresher: () => Promise<void>;
+	private reloadRefresher: () => Promise<void>;
+
 	private readonly comboList: Map<string, () => Promise<void>> = new Map<string, () => Promise<void>>()
 		.set("reload-attack-evase", async () => {
 			(this.turn.inventory.equipments.weapon as SlotWeaponEntity).ammos.push(Items.find(0), Items.find(0), Items.find(0));
 			await this.updateLog(bundle.find(this.locale, "combo.evasing_attack")).update();
-			new AttackAction(this, this.turn, this.turn == this.user ? this.enemy : this.user, true);
+			new AttackAction(this, this.turn, this.turn == this.user ? this.enemy : this.user, this.user.inventory.equipments.weapon, true)
 		})
 		.set("consume-consume-consume", async () => {
 			this.turn.stats.health += 5;
@@ -78,7 +82,7 @@ export default class BattleManager extends SelectManager {
 				Manager.newErrorEmbed(this.interaction, bundle.format(this.locale, 'battle.cooldown', weapon.cooldown.toFixed()));
 			} else {
 				await this.addAction(
-					new AttackAction(this, this.user, this.enemy)
+					new AttackAction(this, this.user, this.enemy, this.user.inventory.equipments.weapon)
 						.addListener('undo', () => this.user.inventory.equipments.weapon.cooldown = 0)
 						.addListener('added', () =>
 							this.user.inventory.equipments.weapon.cooldown = this.user.inventory.equipments.weapon.item.getWeapon().cooldown
@@ -113,12 +117,14 @@ export default class BattleManager extends SelectManager {
 			await this.turnEnd();
 		});
 
-		const swapRefresher = this.addMenuSelection('swap', 1,
+		this.swapRefresher = this.addMenuSelection('swap', 1,
 			async (_, __, entity) => {
-				new SwapAction(this, this.user, entity.item, true);
+				if (!(entity instanceof WeaponEntity)) throw new Error('it\'s not weapon entity');
+
+				new SwapAction(this, this.user, entity, true);
 				this.updateBar();
 				this.validate();
-				await swapRefresher();
+				await this.swapRefresher();
 			},
 			{
 				placeholder: "swap weapon to ...",
@@ -130,7 +136,7 @@ export default class BattleManager extends SelectManager {
 			}
 		);
 
-		const consumeRefresher = this.addMenuSelection('consume', 2,
+		this.consumeRefresher = this.addMenuSelection('consume', 2,
 			async (_, __, entity) => {
 				if (entity instanceof ItemStack && entity.amount > 1) {
 					new ItemSelectManager({
@@ -138,11 +144,16 @@ export default class BattleManager extends SelectManager {
 						item: entity,
 						interaction: this.interaction,
 						callback: async amount => {
-							await this.addAction(new ConsumeAction(this, this.user, entity.item, amount).addListener('undo', consumeRefresher));
+							await this.addAction(new ConsumeAction(this, this.user, entity.item, amount)
+								.addListener('added', () => this.consumeRefresher())
+								.addListener('undo', () => this.consumeRefresher()));
+							await this.consumeRefresher();
 						}
 					}).send();
 				} else {
-					await this.addAction(new ConsumeAction(this, this.user, entity.item, 1).addListener('undo', consumeRefresher));
+					await this.addAction(new ConsumeAction(this, this.user, entity.item, 1)
+						.addListener('added', () => this.consumeRefresher())
+						.addListener('undo', () => this.consumeRefresher()));
 				}
 			},
 			{
@@ -155,17 +166,24 @@ export default class BattleManager extends SelectManager {
 			}
 		);
 
-		const reloadRefresher = this.addMenuSelection('reload', 3,
+		this.reloadRefresher = this.addMenuSelection('reload', 3,
 			async (_, __, entity) => {
 				if (entity instanceof ItemStack && entity.amount > 1) {
 					new ItemSelectManager({
 						user: this.user,
 						item: entity,
 						interaction: this.interaction,
-						callback: amount => this.addAction(new ReloadAction(this, this.user, entity, amount).addListener('undo', reloadRefresher))
+						callback: async amount => {
+							this.addAction(new ReloadAction(this, this.user, new ItemStack(entity.item, amount))
+								.addListener('added', () => this.reloadRefresher())
+								.addListener('undo', () => this.reloadRefresher()))
+							await this.reloadRefresher();
+						}
 					}).send();
 				} else {
-					await this.addAction(new ReloadAction(this, this.user, new ItemStack(entity.item, 1), 1).addListener('undo', reloadRefresher));
+					await this.addAction(new ReloadAction(this, this.user, new ItemStack(entity.item, 1))
+						.addListener('added', () => this.reloadRefresher())
+						.addListener('undo', () => this.reloadRefresher()))
 				}
 			},
 			{
@@ -278,7 +296,10 @@ export default class BattleManager extends SelectManager {
 
 	private async turnEnd() {
 		//쿨다운 감소
-		if (this.turn.inventory.equipments.weapon.cooldown > 0) this.turn.inventory.equipments.weapon.cooldown--;
+		for (const item of this.turn.inventory.items) {
+			if (item.item.hasWeapon()) (item as WeaponEntity).cooldown = Math.max(0, (item as WeaponEntity).cooldown - 1);
+		}
+		this.turn.inventory.equipments.weapon.cooldown = Math.max(0, this.turn.inventory.equipments.weapon.cooldown - 1);
 
 		//버프/디버프 효과
 		for (const status of this.turn.statuses) {
@@ -312,7 +333,7 @@ export default class BattleManager extends SelectManager {
 		if (this.turn == this.user) {
 			this.turn = this.enemy;
 			this.status.set(this.enemy, Status.DEFAULT);
-			if (this.enemy.inventory.equipments.weapon.item != Items.none) await this.addAction(new AttackAction(this, this.enemy, this.user));
+			if (this.enemy.inventory.equipments.weapon.item != Items.none) await this.addAction(new AttackAction(this, this.enemy, this.user, this.enemy.inventory.equipments.weapon));
 			this.turnEnd();
 			return;
 		}
@@ -322,7 +343,11 @@ export default class BattleManager extends SelectManager {
 
 		this.updateBar();
 		this.validate();
-		await this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn)).update();
+		this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
+		await this.consumeRefresher();
+		await this.reloadRefresher();
+		await this.swapRefresher();
+		await this.update();
 	}
 
 	public updateLog(log: string): this {
