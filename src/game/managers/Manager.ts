@@ -132,7 +132,7 @@ class Manager extends KotlinLike<Manager> {
                         .setStyle(ButtonStyle.Secondary)
                 ])
         )
-        this.setTriggers('remove_embed', () => {
+        this.setTrigger('remove_embed', () => {
             clearTimeout(id);
             this.remove();
         });
@@ -169,7 +169,7 @@ class Manager extends KotlinLike<Manager> {
         return this;
     }
 
-    public setTriggers(customId: string, trigger: ComponentTrigger): this {
+    public setTrigger(customId: string, trigger: ComponentTrigger): this {
         this.triggers.set(customId, trigger);
         return this;
     }

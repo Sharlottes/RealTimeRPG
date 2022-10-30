@@ -18,8 +18,6 @@ export default class ExchangeManager extends SelectManager {
 		super(options);
 		this.target = options.target;
 		this.mainEmbed = new EmbedBuilder()
-			.setTitle("WIP")
-			.setDescription("WIP")
 			.setFields([
 				{ name: this.user.user.username, value: this.user.money + bundle.find(this.locale, 'unit.money'), inline: true },
 				{ name: this.target.type.localName(this.locale), value: this.target.money + bundle.find(this.locale, 'unit.money'), inline: true }
@@ -36,7 +34,7 @@ export default class ExchangeManager extends SelectManager {
 
 		this
 			.addButtonSelection('back', 0, async () => {
-				this.addContent(bundle.find(this.locale, 'shop.end'));
+				this.setContent(bundle.find(this.locale, 'shop.end'));
 				await this.endManager();
 			})
 			.addButtonSelection('battle', 0, async () => {

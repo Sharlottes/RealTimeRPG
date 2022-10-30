@@ -57,7 +57,7 @@ export default class SelectManager extends Manager {
         .setLabel(bundle.find(this.locale, `select.${name}`))
         .setCustomId(name)
     );
-    this.setTriggers(name, callback);
+    this.setTrigger(name, callback);
 
     return this;
   }
@@ -124,7 +124,7 @@ export default class SelectManager extends Manager {
         .setOptions(reoption())
     );
 
-    this.setTriggers(name, async (interaction, manager) => {
+    this.setTrigger(name, async (interaction, manager) => {
       if (!(interaction.isSelectMenu() && interaction.component.type == ComponentType.SelectMenu)) return;
       const id = interaction.values[0];
       const list = getList();

@@ -43,12 +43,12 @@ namespace CommandManager {
 					const found = Vars.users.find(user => user.id == target.id);
 					if (found) {
 						found.user ??= target;
-						await found.showUserInfo(interaction);
+						await found.showUserInfo(interaction).update();
 					} else {
 						Manager.newErrorEmbed(interaction, bundle.format(interaction.locale, 'error.notFound', target.username));
 					}
 				}
-				else await user.showUserInfo(interaction);
+				else await user.showUserInfo(interaction).update();
 			}
 		);
 		registerCmd(
@@ -60,10 +60,10 @@ namespace CommandManager {
 				const target = interaction.options.getUser('target', false);
 				if (target) {
 					const found = Vars.users.find(user => user.user.id == target.id);
-					if (found) await found.showInventoryInfo(interaction);
+					if (found) await found.showInventoryInfo(interaction).update();
 					else Manager.newErrorEmbed(interaction, bundle.format(interaction.locale, 'error.notFound', target.username));
 				}
-				else await user.showInventoryInfo(interaction);
+				else await user.showInventoryInfo(interaction).update();
 			}
 		);
 

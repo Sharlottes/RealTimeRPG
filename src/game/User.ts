@@ -126,27 +126,22 @@ export default class User extends Entity implements EntityI {
     this.level++;
   }
 
-  public async showInventoryInfo(interaction: ChatInputCommandInteraction) {
-    const find = (key: string) =>
-      bundle.find(this.locale, key);
-    const manager = new Manager({
-      interaction: interaction,
-      embeds: [
-        new EmbedBuilder()
-          .setTitle(bundle.find(this.locale, 'inventory'))
-          .addFields(
-            this.inventory.items.map<Discord.APIEmbedField>(store => ({
-              name: store.item.localName(this.locale),
-              value: store.toStateString(find),
-              inline: true
-            }))
-          )
-      ]
-    })
-    await manager.update();
+  public showInventoryInfo(interaction: ChatInputCommandInteraction) {
+    return new Manager({ interaction })
+      .setEmbeds(new EmbedBuilder()
+        .setTitle(bundle.find(this.locale, 'inventory'))
+        .addFields(
+          this.inventory.items.map<Discord.APIEmbedField>(store => ({
+            name: store.item.localName(this.locale),
+            value: store.toStateString(key => bundle.find(this.locale, key)),
+            inline: true
+          }))
+        )
+      )
+      .addRemoveButton(-1);
   }
 
-  public async showUserInfo(interaction: ChatInputCommandInteraction) {
+  public showUserInfo(interaction: ChatInputCommandInteraction) {
     const weapon = this.inventory.equipments.weapon.item;
     const canvas = Canvass.createCanvas(1000, 1000);
     Canvas.donutProgressBar(canvas, {
@@ -167,9 +162,8 @@ export default class User extends Entity implements EntityI {
     });
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'profile-image.png' });
 
-    const manager = new Manager({
-      interaction: interaction,
-      embeds: [new EmbedBuilder()
+    return new Manager({ interaction })
+      .setEmbeds(new EmbedBuilder()
         .setColor('#0099ff')
         .setTitle('User Status Information')
         .setAuthor({ name: this.user.username, iconURL: this.user.displayAvatarURL(), url: this.user.displayAvatarURL() })
@@ -181,24 +175,24 @@ export default class User extends Entity implements EntityI {
           { name: 'Money', value: `${this.money} ${bundle.find(this.locale, 'unit.money')}`, inline: true },
           { name: 'Equipped Weapon', value: weapon.localName(this), inline: true },
           { name: 'Inventory', value: this.inventory.items.length.toString(), inline: true }
-        )]
-    })
-    manager.files.push(attachment)
-    manager.components.push(
-      new ActionRowBuilder<ButtonBuilder>()
-        .addComponents([
-          new ButtonBuilder()
-            .setCustomId('weapon_info')
-            .setLabel('show Weapon Info')
-            .setStyle(ButtonStyle.Primary),
-          new ButtonBuilder()
-            .setCustomId('inventory_info')
-            .setLabel('show Inventory Info')
-            .setStyle(ButtonStyle.Primary)
-        ])
-    )
-    manager.triggers.set('weapon_info', () => weapon.showInfo(interaction, this.inventory.equipments.weapon))
-    manager.triggers.set('inventory_info', () => this.showInventoryInfo(interaction))
-    await manager.update();
+        )
+      )
+      .setFiles(attachment)
+      .setComponents(
+        new ActionRowBuilder<ButtonBuilder>()
+          .addComponents([
+            new ButtonBuilder()
+              .setCustomId('weapon_info')
+              .setLabel('show Weapon Info')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setCustomId('inventory_info')
+              .setLabel('show Inventory Info')
+              .setStyle(ButtonStyle.Primary)
+          ])
+      )
+      .setTrigger('weapon_info', async () => await weapon.showInfo(interaction, this.inventory.equipments.weapon))
+      .setTrigger('inventory_info', async () => await this.showInventoryInfo(interaction).send())
+      .addRemoveButton(-1);
   }
 }

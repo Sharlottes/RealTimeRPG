@@ -268,7 +268,7 @@ export default class BattleManager extends SelectManager {
 							.setStyle(ButtonStyle.Secondary)
 					])
 				)
-				.setTriggers('useHealth', (_, manager) => {
+				.setTrigger('useHealth', (_, manager) => {
 					manager.remove();
 					action.enableBloody();
 					this.addAction(action);
