@@ -5,7 +5,6 @@ import {
     type MessageCreateOptions,
     type MessageEditOptions,
     type CacheType,
-    type Constructable,
     Message,
     ActionRowBuilder,
     EmbedBuilder,
@@ -14,13 +13,13 @@ import {
     InteractionCollector,
     ButtonInteraction,
     SelectMenuInteraction,
-    codeBlock,
     ButtonStyle,
     SelectMenuBuilder
 } from "discord.js";
 import { KotlinLike } from '../../utils'
 
 type Files = Exclude<BaseMessageOptions['files'], undefined>;
+
 /**
  * 임베드와 컴포넌트의 생성, 통신, 상호작용을 총괄함
  */
@@ -32,8 +31,8 @@ class Manager extends KotlinLike<Manager> {
     public files: Files = [];
     public readonly locale: string;
     public readonly interaction: BaseInteraction;
-    private message?: Message | undefined;
-    private collector?: InteractionCollector<SelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>>;
+    protected message?: Message | undefined;
+    protected collector?: InteractionCollector<SelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>>;
 
     public constructor({ content, embeds = [], components = [], files = [], interaction, triggers = new Map() }: ManagerConstructOptions) {
         super()
@@ -47,18 +46,7 @@ class Manager extends KotlinLike<Manager> {
         this.locale = interaction.locale;
     }
 
-    public static async start<T extends Constructable<any> = typeof this>(options: ConstructorParameters<T>[0] & { channel?: TextBasedChannel, update?: boolean }) {
-        const manager = new this(options);
-
-        manager.init();
-        if (options.update) await manager.update(options.channel);
-        else await manager.send(options.channel);
-        manager.updateCollector();
-
-        return manager as InstanceType<T>;
-    }
-
-    public updateCollector() {
+    private updateCollector() {
         this.collector ??= this.message?.createMessageComponentCollector().on('collect', async (interaction) => {
             const trigger = this.triggers.get(interaction.customId);
             if (trigger) {
@@ -70,65 +58,46 @@ class Manager extends KotlinLike<Manager> {
         });
     }
 
-    public init(): void { }
-
-    /**
-     * 보냈을 때 업데이트한 메시지를 삭제합니다.
-     */
-    public async remove(): Promise<void> {
-        this.collector?.stop();
-
-        if (!this.message) console.log('message is empty');
-        else await this.message.delete();
-    }
-
     /**
      * 현재 데이터를 갱신합니다.   
      * 메시지가 있다면 그 메시지로, 없다면 상호작용의 메시지를 수정하여 갱신합니다.   
-     * @param createNewIfDoesNotExist - 갱신할 메시지가 없다면 새로 만들어 송신합니다. 
      * @param channel - 송신할 채널
      */
-    public async update(channel: TextBasedChannel | null = this.interaction.channel): Promise<void> {
+    public async update(channel: TextBasedChannel | null = this.interaction.channel): Promise<Message> {
+        if (!channel) throw new Error('channel does not exist');
+
         const options: MessageEditOptions = {
             content: this.content,
             embeds: this.embeds,
             components: this.components,
             files: this.files
         };
-        this.updateCollector();
         const sent = await (() => {
             if (this.message?.editable) return this.message.edit(options);
             else if (this.interaction.isRepliable()) return this.interaction.editReply(options);
-            else return this.send(channel ?? this.interaction.channel);
+            else return this.send(channel);
         })()
         this.message = sent;
+        this.updateCollector();
+        return sent;
     }
     /**   
      * 현재 데이터를 송신하고 message를 갱신합니다.
      * @param channel - 송신할 채널  
      */
-    public async send(channel: TextBasedChannel | null = this.interaction.channel): Promise<Message<boolean> | undefined> {
+    public async send(channel: TextBasedChannel | null = this.interaction.channel): Promise<Message> {
+        if (!channel) throw new Error('channel does not exist');
+
         const options: MessageCreateOptions = {
             content: this.content,
             embeds: this.embeds,
             components: this.components,
             files: this.files
         };
+        const sent = await channel.send(options)
+        this.message = sent;
         this.updateCollector();
-        if (channel) {
-            const sent = await channel.send(options)
-            this.message = sent;
-            return sent;
-        }
-    }
-
-    /**
-     * 메시지에 문자열을 추가합니다.
-     * @param content - 추가할 문자열
-     * @param type - 코드블록 언어, 빈 문자열은 하이라이트 X
-     */
-    public addContent(content: string, type?: string): void {
-        this.content += type === undefined ? content : codeBlock(type, content);
+        return sent;
     }
 
     /**
@@ -139,6 +108,16 @@ class Manager extends KotlinLike<Manager> {
         this.setComponents();
         this.addRemoveButton(timeout);
         await this.update();
+    }
+
+    /**
+     * 보냈을 때 업데이트한 메시지를 삭제합니다.
+     */
+    public async remove(): Promise<void> {
+        this.collector?.stop();
+
+        if (!this.message) console.log('message is empty');
+        else await this.message.delete();
     }
 
     public addRemoveButton(timeout = 5000): this {
@@ -157,6 +136,11 @@ class Manager extends KotlinLike<Manager> {
             clearTimeout(id);
             this.remove();
         });
+        return this;
+    }
+
+    public addContent(content: string): this {
+        this.content += content;
         return this;
     }
 

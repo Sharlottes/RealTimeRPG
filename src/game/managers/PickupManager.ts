@@ -14,23 +14,21 @@ class PickupManager extends SelectManager {
 
     this.stack = options.stack;
     this.money = options.money;
-  }
-
-  public override init() {
-    super.init();
 
     this.user.money += this.money ?? 0;
     if (this.stack) this.user.giveItem(this.stack.item, this.stack.amount);
 
-    this.setContent(codeBlock(bundle.format(
-      this.locale, 'event.pickup',
-      this.stack
-        ? this.stack.item.localName(this.locale)
-        : this.money + bundle.find(this.locale, 'unit.money'),
-      this.stack
-        ? `${this.stack.item.localName(this.locale)}: +${this.stack.amount}${bundle.find(this.locale, 'unit.item')}`
-        : `+${this.money}${bundle.find(this.locale, 'unit.money')}`
-    ))).addRemoveButton().update();
+    this
+      .setContent(codeBlock(bundle.format(
+        this.locale, 'event.pickup',
+        this.stack
+          ? this.stack.item.localName(this.locale)
+          : this.money + bundle.find(this.locale, 'unit.money'),
+        this.stack
+          ? `${this.stack.item.localName(this.locale)}: +${this.stack.amount}${bundle.find(this.locale, 'unit.item')}`
+          : `+${this.money}${bundle.find(this.locale, 'unit.money')}`
+      )))
+      .addRemoveButton();
   }
 }
 

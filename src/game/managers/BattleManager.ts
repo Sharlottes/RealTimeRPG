@@ -1,4 +1,4 @@
-import { ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
 
 import { UnitEntity, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from 'game';
 import { getOne } from "utils/getOne";
@@ -66,10 +66,6 @@ export default class BattleManager extends SelectManager {
 		this.actionEmbed = new EmbedBuilder()
 			.setTitle('Action Queue')
 			.setDescription("Empty");
-	}
-
-	public override async init() {
-		super.init();
 
 		this.setContent(bundle.format(this.locale, 'battle.start', this.user.user.username, this.enemy.type.localName(this.user)));
 		this.setEmbeds(this.mainEmbed, this.actionEmbed);
@@ -89,7 +85,7 @@ export default class BattleManager extends SelectManager {
 						)
 				);
 			}
-		}, { style: ButtonStyle.Primary, disabled: this.user.inventory.equipments.weapon.cooldown > 0 });
+		}, { style: ButtonStyle.Primary });
 
 		this.addButtonSelection('evasion', 0, async () => {
 			if (this.evaseBtnSelected) {
@@ -117,68 +113,70 @@ export default class BattleManager extends SelectManager {
 			await this.turnEnd();
 		});
 
-		const swapRefresher = this.addMenuSelection({
-			customId: 'swap',
-			placeholder: "swap weapon to ...",
-			row: 1,
-			callback: async (_, __, entity) => {
+		const swapRefresher = this.addMenuSelection('swap', 1,
+			async (_, __, entity) => {
 				new SwapAction(this, this.user, entity.item, true);
-				swapRefresher();
+				this.updateBar();
+				this.validate();
+				await swapRefresher();
 			},
-			list: () => (<ItemStorable[]>[new WeaponEntity(Items.punch)]).concat(this.user.inventory.items.filter(store => store.item.hasWeapon())),
-			reducer: (store, index) => ({
-				label: `(${index + 1}) ${store.item.localName(this.locale)}, ${store.toStateString(key => bundle.find(this.locale, key))}`,
-				value: index.toString()
-			})
-		});
+			{
+				placeholder: "swap weapon to ...",
+				list: () => (<ItemStorable[]>[new WeaponEntity(Items.punch)]).concat(this.user.inventory.items.filter(store => store.item.hasWeapon())),
+				reducer: (store, index) => ({
+					label: `(${index + 1}) ${store.item.localName(this.locale)}, ${store.toStateString(key => bundle.find(this.locale, key))}`,
+					value: index.toString()
+				})
+			}
+		);
 
-		const consumeRefresher = this.addMenuSelection({
-			customId: 'consume',
-			placeholder: "consume ...",
-			row: 2,
-			callback: async (_, __, entity) => {
+		const consumeRefresher = this.addMenuSelection('consume', 2,
+			async (_, __, entity) => {
 				if (entity instanceof ItemStack && entity.amount > 1) {
-					ItemSelectManager.start<typeof ItemSelectManager>({
+					new ItemSelectManager({
 						user: this.user,
 						item: entity,
 						interaction: this.interaction,
 						callback: async amount => {
 							await this.addAction(new ConsumeAction(this, this.user, entity.item, amount).addListener('undo', consumeRefresher));
 						}
-					});
+					}).send();
 				} else {
 					await this.addAction(new ConsumeAction(this, this.user, entity.item, 1).addListener('undo', consumeRefresher));
 				}
 			},
-			list: () => this.user.inventory.items.filter(store => store.item.hasConsume()),
-			reducer: (store, index) => ({
-				label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString(key => bundle.find(this.locale, key))}`,
-				value: index.toString()
-			})
-		});
+			{
+				placeholder: "consume ...",
+				list: () => this.user.inventory.items.filter(store => store.item.hasConsume()),
+				reducer: (store, index) => ({
+					label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString(key => bundle.find(this.locale, key))}`,
+					value: index.toString()
+				})
+			}
+		);
 
-		const reloadRefresher = this.addMenuSelection({
-			customId: 'reload',
-			placeholder: "reload ammo with ...",
-			row: 3,
-			callback: async (_, __, entity) => {
+		const reloadRefresher = this.addMenuSelection('reload', 3,
+			async (_, __, entity) => {
 				if (entity instanceof ItemStack && entity.amount > 1) {
-					ItemSelectManager.start<typeof ItemSelectManager>({
+					new ItemSelectManager({
 						user: this.user,
 						item: entity,
 						interaction: this.interaction,
 						callback: amount => this.addAction(new ReloadAction(this, this.user, entity, amount).addListener('undo', reloadRefresher))
-					});
+					}).send();
 				} else {
 					await this.addAction(new ReloadAction(this, this.user, new ItemStack(entity.item, 1), 1).addListener('undo', reloadRefresher));
 				}
 			},
-			list: () => this.user.inventory.items.filter(store => store.item.hasAmmo()),
-			reducer: (store, index) => ({
-				label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString(key => bundle.find(this.locale, key))}`,
-				value: index.toString()
-			})
-		});
+			{
+				placeholder: "reload ammo with ...",
+				list: () => this.user.inventory.items.filter(store => store.item.hasAmmo()),
+				reducer: (store, index) => ({
+					label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString(key => bundle.find(this.locale, key))}`,
+					value: index.toString()
+				})
+			}
+		);
 
 		this.addButtonSelection('undo', 4, () => {
 			this.actionQueue.pop()?.undo();
@@ -191,6 +189,7 @@ export default class BattleManager extends SelectManager {
 		})
 
 		this.validate();
+		this.update();
 	}
 
 	isEvasion = (owner: EntityI) => this.status.get(owner) === Status.EVASION
@@ -206,7 +205,7 @@ export default class BattleManager extends SelectManager {
 	/**
 	 * 모든 컴포넌트에 대해 유효성 검사를 합니다.
 	 */
-	validate() {
+	private validate() {
 		//자신의 턴일때만 활성화
 		this.components.forEach(row => row.components.forEach(component => component.setDisabled(this.turn != this.user)));
 		if (this.turn != this.user) return;
@@ -236,24 +235,28 @@ export default class BattleManager extends SelectManager {
 
 	private async addAction(action: BaseAction) {
 		if (!action.bloody && this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost) {
-			SelectManager.start<typeof SelectManager>({
+			new Manager({
 				interaction: this.interaction,
 				embeds: [new EmbedBuilder()
 					.setTitle('ALERT')
 					.setDescription(bundle.format(this.locale, 'error.low_energy', this.turn.stats.energy, action.cost))
 				],
-				user: this.user
-			}).then(async manager => {
-				await manager
-					.addButtonSelection('useHealth', 0, (_, manager) => {
-						manager.remove();
-						action.enableBloody();
-						this.addAction(action);
-					}, { style: ButtonStyle.Secondary }
-					)
-					.addRemoveButton()
-					.update();
 			})
+				.addComponents(
+					new ActionRowBuilder<ButtonBuilder>().addComponents([
+						new ButtonBuilder()
+							.setCustomId('useHealth')
+							.setLabel(bundle.find(this.locale, 'select.useHealth'))
+							.setStyle(ButtonStyle.Secondary)
+					])
+				)
+				.setTriggers('useHealth', (_, manager) => {
+					manager.remove();
+					action.enableBloody();
+					this.addAction(action);
+				})
+				.addRemoveButton()
+				.send();
 			return;
 		}
 

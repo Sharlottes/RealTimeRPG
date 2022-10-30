@@ -8,6 +8,7 @@ import { bundle } from 'assets';
 import ItemSelectManager from './ItemSelectManager';
 import { EntityI, SelectManagerConstructOptions } from '@type';
 import BattleManager from './BattleManager';
+import { codeBlock } from '@discordjs/builders';
 
 export default class ExchangeManager extends SelectManager {
 	private readonly target: UnitEntity;
@@ -16,14 +17,13 @@ export default class ExchangeManager extends SelectManager {
 	public constructor(options: SelectManagerConstructOptions & { target: UnitEntity }) {
 		super(options);
 		this.target = options.target;
-		//TODO: 구현하기
 		this.mainEmbed = new EmbedBuilder()
 			.setTitle("WIP")
-			.setDescription("WIP");
-	}
-
-	public override init() {
-		super.init();
+			.setDescription("WIP")
+			.setFields([
+				{ name: this.user.user.username, value: this.user.money + bundle.find(this.locale, 'unit.money'), inline: true },
+				{ name: this.target.type.localName(this.locale), value: this.target.money + bundle.find(this.locale, 'unit.money'), inline: true }
+			]);
 		this.setEmbeds(this.mainEmbed);
 
 		//고블린 인벤토리 생성
@@ -34,25 +34,22 @@ export default class ExchangeManager extends SelectManager {
 			else this.target.inventory.items.push(new ItemStack(item));
 		}
 
-		this.addButtonSelection('back', 0, () => {
-			this.addContent(bundle.find(this.locale, 'shop.end'));
-			this.setComponents();
-			this.addRemoveButton();
-			this.update();
-		});
-		this.addButtonSelection('battle', 0, async () => {
-			await BattleManager.start<typeof BattleManager>({
-				user: this.user, interaction: this.interaction, enemy: this.target, update: true
-			});
-		})
+		this
+			.addButtonSelection('back', 0, async () => {
+				this.addContent(bundle.find(this.locale, 'shop.end'));
+				await this.endManager();
+			})
+			.addButtonSelection('battle', 0, async () => {
+				await new BattleManager({
+					user: this.user, interaction: this.interaction, enemy: this.target
+				}).update();
+			})
 
 
-		const buyRefresher = this.addMenuSelection({
-			customId: 'buy',
-			row: 1,
-			callback: async (_, __, store) => {
+		const buyRefresher = this.addMenuSelection('buy', 1,
+			async (_, __, store) => {
 				if (store instanceof ItemStack && store.amount > 1) {
-					ItemSelectManager.start<typeof ItemSelectManager>({
+					new ItemSelectManager({
 						user: this.user,
 						interaction: this.interaction,
 						item: store,
@@ -60,26 +57,26 @@ export default class ExchangeManager extends SelectManager {
 							await this.deal(this.target, this.user, store, amount);
 							await buyRefresher();
 						}
-					});
+					}).send();
 				} else {
 					await this.deal(this.target, this.user, store, 1);
 					await buyRefresher();
 				}
 			},
-			reducer: (store, index) => ({
-				label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
-				value: index.toString()
-			}),
-			list: () => this.target.inventory.items,
-			placeholder: 'select item to buy ...'
-		});
+			{
+				list: () => this.target.inventory.items,
+				reducer: (store, index) => ({
+					label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
+					value: index.toString()
+				}),
+				placeholder: 'select item to buy ...'
+			}
+		);
 
-		const sellRefresher = this.addMenuSelection({
-			customId: 'sell',
-			row: 2,
-			callback: async (_, __, store) => {
+		const sellRefresher = this.addMenuSelection('sell', 2,
+			async (_, __, store) => {
 				if (store instanceof ItemStack && store.amount > 1) {
-					ItemSelectManager.start<typeof ItemSelectManager>({
+					new ItemSelectManager({
 						user: this.user,
 						interaction: this.interaction,
 						item: store,
@@ -87,29 +84,25 @@ export default class ExchangeManager extends SelectManager {
 							await this.deal(this.user, this.target, store, amount);
 							await sellRefresher();
 						}
-					});
+					}).send();
 				} else {
 					await this.deal(this.user, this.target, store, 1);
 					await sellRefresher();
 				}
 			},
-			reducer: (store, index) => ({
-				label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
-				value: index.toString()
-			}),
-			list: () => this.user.inventory.items,
-			placeholder: 'select item to sell ...'
-		});
-
-		this.mainEmbed.setFields([
-			{ name: this.user.user.username, value: this.user.money + bundle.find(this.locale, 'unit.money'), inline: true },
-			{ name: this.target.type.localName(this.locale), value: this.target.money + bundle.find(this.locale, 'unit.money'), inline: true }
-		]);
+			{
+				list: () => this.user.inventory.items,
+				reducer: (store, index) => ({
+					label: store.item.localName(this.locale) + ` ${(store instanceof ItemStack ? store.amount : 1)} ${bundle.find(this.locale, "unit.item")}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
+					value: index.toString()
+				}),
+				placeholder: 'select item to sell ...'
+			});
 	}
 
 
 	private calPrice(item: Item) {
-		return Math.round((100 - item.ratio) * 3);
+		return Math.round((100 - item.ratio) * 3); //WTF??
 	}
 
 	private async updateEmbed() {
@@ -126,12 +119,12 @@ export default class ExchangeManager extends SelectManager {
 		const money = this.calPrice(item);
 
 		if (amount > max) {
-			this.addContent('- ' + bundle.format(this.locale, 'shop.notEnough_item', item.localName(this.locale), amount, max), 'diff');
+			this.addContent(codeBlock('- ' + bundle.format(this.locale, 'shop.notEnough_item', item.localName(this.locale), amount, max), 'diff'));
 		}
 		else if (visitor.money < amount * money) {
-			this.addContent('- ' + bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff');
+			this.addContent(codeBlock('- ' + bundle.format(this.locale, 'shop.notEnough_money', amount * money, visitor.money), 'diff'));
 		} else {
-			this.addContent('+ ' + bundle.format(this.locale, owner == this.user ? 'shop.sold' : 'shop.buyed', item.localName(this.locale), amount, owner.money, (owner.money + money * amount)), 'diff');
+			this.addContent(codeBlock('+ ' + bundle.format(this.locale, owner == this.user ? 'shop.sold' : 'shop.buyed', item.localName(this.locale), amount, owner.money, (owner.money + money * amount)), 'diff'));
 
 			visitor.money -= money * amount;
 			visitor.inventory.add(item, amount);

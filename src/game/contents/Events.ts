@@ -19,16 +19,16 @@ export default class Events {
 			const stack = bool ? new ItemStack(getOne(Items.items.filter((i) => i.dropOnWalk)), Random.integer(1, 5)) : undefined;
 			const money = !bool ? 2 + Math.floor(Math.random() * 10) : undefined;
 
-			await PickupManager.start<typeof PickupManager>(
-				{ user, interaction, update: true, stack, money }
-			)
+			await new PickupManager(
+				{ user, interaction, stack, money }
+			).update()
 		}));
 
-		this.events.push(new Event(2222210, async (user, interaction) => {
-			await EncounterManager.start<typeof EncounterManager>({
-				user, interaction, update: true,
+		this.events.push(new Event(10, async (user, interaction) => {
+			await new EncounterManager({
+				user, interaction,
 				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),
-			});
+			}).update();
 		}).setOnly(true));
 	}
 }

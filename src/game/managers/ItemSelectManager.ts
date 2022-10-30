@@ -22,9 +22,8 @@ export default class ItemSelectManager extends SelectManager {
         { name: `Item (${this.stack.amount})`, value: this.stack.item.localName(this.locale) },
         { name: "Amount", value: this.amount.toString() }
       ]);
-  }
+    this.setEmbeds(this.mainEmbed);
 
-  public override async init() {
     for (let i = 1; i <= 9; i++) {
       this.addButtonSelection(i.toString(), Math.floor((i - 1) / 3), () => {
         this.amount *= 10;
@@ -35,34 +34,33 @@ export default class ItemSelectManager extends SelectManager {
     this.addButtonSelection('0', 3, () => {
       this.amount *= 10;
       this.updateEmbed();
-    });
-    this.addButtonSelection("del", 3, () => {
-      this.amount = Math.floor(this.amount / 10);
-      this.updateEmbed();
-    }, { style: ButtonStyle.Danger });
-    this.addButtonSelection("done", 3, () => {
-      if (this.amount > this.stack.amount) {
-        Manager.newErrorEmbed(this.interaction, bundle.format(this.locale, "shop.notEnough_item", this.stack.item.localName(this.locale), this.amount, this.stack.amount));
-      } else {
-        this.callback(this.amount);
+    })
+      .addButtonSelection("del", 3, () => {
+        this.amount = Math.floor(this.amount / 10);
+        this.updateEmbed();
+      }, { style: ButtonStyle.Danger })
+      .addButtonSelection("done", 3, () => {
+        if (this.amount > this.stack.amount) {
+          Manager.newErrorEmbed(this.interaction, bundle.format(this.locale, "shop.notEnough_item", this.stack.item.localName(this.locale), this.amount, this.stack.amount));
+        } else {
+          this.callback(this.amount);
+          this.remove();
+        }
+      }, { style: ButtonStyle.Success })
+      .addButtonSelection("cancel", 4, () => {
         this.remove();
-      }
-    }, { style: ButtonStyle.Success });
-    this.addButtonSelection("cancel", 4, () => {
-      this.remove();
-    }, { style: ButtonStyle.Secondary });
-    this.addButtonSelection("reset", 4, () => {
-      this.amount = 0;
-      this.updateEmbed();
-    }, { style: ButtonStyle.Secondary });
-    this.addButtonSelection("max", 4, () => {
-      this.amount = this.stack.amount;
-      this.updateEmbed();
-    }, { style: ButtonStyle.Secondary });
-    this.setEmbeds(this.mainEmbed);
+      }, { style: ButtonStyle.Secondary })
+      .addButtonSelection("reset", 4, () => {
+        this.amount = 0;
+        this.updateEmbed();
+      }, { style: ButtonStyle.Secondary })
+      .addButtonSelection("max", 4, () => {
+        this.amount = this.stack.amount;
+        this.updateEmbed();
+      }, { style: ButtonStyle.Secondary });
   }
 
-  private updateEmbed() {
+  private async updateEmbed() {
     this.mainEmbed.setFields([
       {
         name: `Item (${this.stack.amount})`,
@@ -74,6 +72,6 @@ export default class ItemSelectManager extends SelectManager {
       }
     ]);
     this.components[3].components[2].setDisabled(this.amount > this.stack.amount);
-    this.update();
+    await this.update();
   }
 }

@@ -36,8 +36,6 @@ export class SwapAction extends BaseAction {
 			this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
 		));
 		this.owner.switchWeapon(entity);
-		this.manager.updateBar();
-		this.manager.validate();
 	}
 
 	public description(): string {

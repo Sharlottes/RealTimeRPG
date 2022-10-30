@@ -3,7 +3,7 @@ import Random from 'random';
 import BattleManager from 'game/managers/BattleManager';
 import ExchangeManager from 'game/managers/ExchangeManager';
 import SelectManager from 'game/managers/SelectManager';
-import { User, UnitEntity } from 'game';
+import { UnitEntity } from 'game';
 import { bundle } from 'assets';
 import { Mathf } from 'utils';
 import { SelectManagerConstructOptions } from '@type';
@@ -18,17 +18,12 @@ export default class EncounterManager extends SelectManager {
     this.target = options.target;
     this.mainEmbed = new EmbedBuilder()
       .setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
-  }
-
-  public override init() {
-    super.init();
-
     this.setEmbeds(this.mainEmbed);
 
     this.addButtonSelection('battle', 0, async () => {
-      await BattleManager.start<typeof BattleManager>({
-        user: this.user, interaction: this.interaction, enemy: this.target, update: true
-      });
+      await new BattleManager({
+        user: this.user, interaction: this.interaction, enemy: this.target
+      }).update();
     });
 
     this.addButtonSelection('run', 0, () => {
@@ -52,9 +47,9 @@ export default class EncounterManager extends SelectManager {
       });
 
       this.addButtonSelection('exchange', 0, async () => {
-        await ExchangeManager.start<typeof ExchangeManager>({
-          user: this.user, interaction: this.interaction, target: this.target, update: true
-        });
+        await new ExchangeManager({
+          user: this.user, interaction: this.interaction, target: this.target
+        }).update();
       });
     }
   }

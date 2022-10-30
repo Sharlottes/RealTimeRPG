@@ -4,21 +4,17 @@ import {
   SelectMenuBuilder,
   ButtonStyle,
   APIButtonComponent,
-  SelectMenuComponentOptionData,
   ComponentType,
   APISelectMenuOption,
-  MessageComponentInteraction
+  MessageComponentInteraction,
 } from 'discord.js';
-import { ComponentTrigger, type SelectManagerConstructOptions } from "@type";
+import { ComponentTrigger, SelectManagerConstructOptions } from "@type";
 
 import { bundle } from 'assets';
 import Manager from './Manager';
 import User from '../User';
 
 type MenuSelectOptions<T> = {
-  customId: string;
-  row: number;
-  callback: (interaction: MessageComponentInteraction, manager: Manager, item: T) => void;
   list: T[] | (() => T[]);
   reducer?: (elem: T, index: number) => APISelectMenuOption;
   placeholder?: string;
@@ -32,37 +28,55 @@ export default class SelectManager extends Manager {
     super(options);
     this.user = options.user;
     this.last = options.last;
+
+    if (this.last) {
+      this.addButtonSelection('back_select', 0, () => {
+        this.collector?.stop();
+        this.last?.update();
+      }, { style: ButtonStyle.Secondary });
+    }
   }
 
-  public init() {
-    super.init();
-
-    if (!this.last) return;
-    this.addButtonSelection('back_select', 0, () => {
-      if (!this.last) return;
-      this.last.init();
-      this.last.update();
-    }, { style: ButtonStyle.Secondary });
-  }
-
-  public addButtonSelection(name: string, row: number, callback: ComponentTrigger, option: Partial<Omit<APIButtonComponent, 'label' | 'customId'>> = { style: ButtonStyle.Primary }) {
+  /**
+   * 버튼 컴포넌트를 추가합니다.
+   * 
+   * @param name - 컴포넌트 이름
+   * @param row - 컴포넌트 열 (0~4)
+   * @param callback - 선택 콜백함수
+   */
+  public addButtonSelection(
+    name: string,
+    row: number,
+    callback: ComponentTrigger,
+    option: Partial<Omit<APIButtonComponent, 'label' | 'customId'>> = { style: ButtonStyle.Primary }
+  ) {
     this.resizeSelection(row);
 
-    this.components[row].addComponents(new ButtonBuilder(option).setLabel(bundle.find(this.locale, `select.${name}`)).setCustomId(name));
+    this.components[row].addComponents(
+      new ButtonBuilder(option)
+        .setLabel(bundle.find(this.locale, `select.${name}`))
+        .setCustomId(name)
+    );
     this.setTriggers(name, callback);
 
     return this;
   }
 
   /**
-   * @param customId - 컴포넌트의 customId
-   * @param list - 선택할 아이템 리스트
+   * 선택메뉴 컴포넌트를 추가합니다.
+   * 
+   * @param name - 컴포넌트 이름
+   * @param row - 컴포넌트 열 (0~4)
+   * @param callback - 선택 콜백함수
+   * @param list - 아이템 리스트
+   * @param reducer - 아이템 리스트 매퍼
    * @param placeholder - 선택 전 힌트
-   * @param reducer - 아이템과 인덱스를 받아 재처리하는 함수
-   * @param row - 추가할 열
-   * @param callback - 선택 완료 콜백함수
    */
-  public addMenuSelection<T>({ customId, list, placeholder = "select...", reducer, row, callback }: MenuSelectOptions<T>) {
+  public addMenuSelection<T>(
+    name: string,
+    row: number,
+    callback: (interaction: MessageComponentInteraction, manager: Manager, item: T) => void,
+    { list, reducer, placeholder = "select..." }: MenuSelectOptions<T>) {
     this.resizeSelection(row);
 
     const getList = () => typeof list === 'function' ? list() : list;
@@ -105,12 +119,12 @@ export default class SelectManager extends Manager {
 
     this.components[row].addComponents(
       new SelectMenuBuilder()
-        .setCustomId(customId)
+        .setCustomId(name)
         .setPlaceholder(placeholder)
         .setOptions(reoption())
     );
 
-    this.setTriggers(customId, async (interaction, manager) => {
+    this.setTriggers(name, async (interaction, manager) => {
       if (!(interaction.isSelectMenu() && interaction.component.type == ComponentType.SelectMenu)) return;
       const id = interaction.values[0];
       const list = getList();
@@ -126,6 +140,7 @@ export default class SelectManager extends Manager {
             Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.last_page"));
           else currentPage++;
           break;
+        case '-10': break;
         default:
           callback(interaction, manager, list[Number(id)]);
       }
@@ -149,7 +164,7 @@ export default class SelectManager extends Manager {
    */
   public async endManager(timeout = 5000): Promise<void> {
     if (this.last) {
-      this.last.init();
+      this.collector?.stop();
       await this.last.update();
     } else {
       this.user.gameManager.endEvent();
