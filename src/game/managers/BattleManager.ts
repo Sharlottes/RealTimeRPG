@@ -38,9 +38,9 @@ export default class BattleManager extends SelectManager {
 	private totalTurn = 1;
 	private evaseBtnSelected = false;
 
-	private swapRefresher: () => Promise<void>;
-	private consumeRefresher: () => Promise<void>;
-	private reloadRefresher: () => Promise<void>;
+	private swapRefresher: () => this;
+	private consumeRefresher: () => this;
+	private reloadRefresher: () => this;
 
 	private readonly comboList: Map<string, () => Promise<void>> = new Map<string, () => Promise<void>>()
 		.set("reload-attack-evase", async () => {
@@ -124,7 +124,7 @@ export default class BattleManager extends SelectManager {
 				new SwapAction(this, this.user, entity, true);
 				this.updateBar();
 				this.validate();
-				await this.swapRefresher();
+				await this.swapRefresher().update();
 			},
 			{
 				placeholder: "swap weapon to ...",
@@ -145,15 +145,17 @@ export default class BattleManager extends SelectManager {
 						interaction: this.interaction,
 						callback: async amount => {
 							await this.addAction(new ConsumeAction(this, this.user, entity.item, amount)
-								.addListener('added', () => this.consumeRefresher())
-								.addListener('undo', () => this.consumeRefresher()));
-							await this.consumeRefresher();
+								.addListener('added', () => this.consumeRefresher().update())
+								.addListener('undo', () => this.consumeRefresher().update())
+							);
+							await this.consumeRefresher().update();
 						}
 					}).send();
 				} else {
 					await this.addAction(new ConsumeAction(this, this.user, entity.item, 1)
-						.addListener('added', () => this.consumeRefresher())
-						.addListener('undo', () => this.consumeRefresher()));
+						.addListener('added', () => this.consumeRefresher().update())
+						.addListener('undo', () => this.consumeRefresher().update())
+					);
 				}
 			},
 			{
@@ -175,15 +177,17 @@ export default class BattleManager extends SelectManager {
 						interaction: this.interaction,
 						callback: async amount => {
 							this.addAction(new ReloadAction(this, this.user, new ItemStack(entity.item, amount))
-								.addListener('added', () => this.reloadRefresher())
-								.addListener('undo', () => this.reloadRefresher()))
-							await this.reloadRefresher();
+								.addListener('added', () => this.reloadRefresher().update())
+								.addListener('undo', () => this.reloadRefresher().update())
+							);
+							await this.reloadRefresher().update();
 						}
 					}).send();
 				} else {
 					await this.addAction(new ReloadAction(this, this.user, new ItemStack(entity.item, 1))
-						.addListener('added', () => this.reloadRefresher())
-						.addListener('undo', () => this.reloadRefresher()))
+						.addListener('added', () => this.reloadRefresher().update())
+						.addListener('undo', () => this.reloadRefresher().update())
+					)
 				}
 			},
 			{
@@ -199,6 +203,7 @@ export default class BattleManager extends SelectManager {
 		this.addButtonSelection('undo', 4, () => {
 			this.actionQueue.pop()?.undo();
 			this.actionEmbed.setDescription(this.actionQueue.map<string>(a => codeBlock(a.description())).join('') || null);
+			this.updateBar();
 			this.validate();
 			this.update();
 		}, {
@@ -344,9 +349,9 @@ export default class BattleManager extends SelectManager {
 		this.updateBar();
 		this.validate();
 		this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
-		await this.consumeRefresher();
-		await this.reloadRefresher();
-		await this.swapRefresher();
+		this.consumeRefresher();
+		this.reloadRefresher();
+		this.swapRefresher();
 		await this.update();
 	}
 
@@ -412,6 +417,6 @@ export default class BattleManager extends SelectManager {
 			this.updateLog('- ' + bundle.format(this.locale, 'battle.lose', this.user.stats.health));
 			//TODO: 패배 부분 구현하기
 		}
-		this.endManager(15 * 1000);
+		this.endManager(-1);
 	}
 }

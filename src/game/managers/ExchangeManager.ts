@@ -53,12 +53,12 @@ export default class ExchangeManager extends SelectManager {
 						item: store,
 						callback: async amount => {
 							await this.deal(this.target, this.user, store, amount);
-							await buyRefresher();
+							await buyRefresher().update();
 						}
 					}).send();
 				} else {
 					await this.deal(this.target, this.user, store, 1);
-					await buyRefresher();
+					await buyRefresher().update();
 				}
 			},
 			{
@@ -80,12 +80,12 @@ export default class ExchangeManager extends SelectManager {
 						item: store,
 						callback: async amount => {
 							await this.deal(this.user, this.target, store, amount);
-							await sellRefresher();
+							await sellRefresher().update();
 						}
 					}).send();
 				} else {
 					await this.deal(this.user, this.target, store, 1);
-					await sellRefresher();
+					await sellRefresher().update();
 				}
 			},
 			{

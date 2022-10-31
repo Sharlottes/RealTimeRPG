@@ -112,10 +112,10 @@ export default class SelectManager extends Manager {
       return options.length === 0 ? [{ label: 'empty', value: '-10' }] : options;
     }
 
-    const refreshOptions = async () => {
+    const refreshOptions = () => {
       (this.components[row]?.components[0] as SelectMenuBuilder).setOptions(reoption());
-      await this.update();
-    };
+      return this;
+    }
 
     this.components[row].addComponents(
       new SelectMenuBuilder()
@@ -145,7 +145,7 @@ export default class SelectManager extends Manager {
           callback(interaction, manager, list[Number(id)]);
       }
 
-      await refreshOptions();
+      await refreshOptions().update();
     })
     return refreshOptions;
   }
