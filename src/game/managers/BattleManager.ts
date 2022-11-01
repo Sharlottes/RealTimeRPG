@@ -18,6 +18,7 @@ import { EvaseAction } from './actions/EvaseAction';
 import { ReloadAction } from './actions/ReloadAction';
 import { ShieldAction } from './actions/ShieldAction';
 import { SwapAction } from './actions/SwapAction';
+//test
 
 enum Status {
 	DEFAULT,
