@@ -14,15 +14,7 @@ declare global {
 }
 
 export type ComponentTrigger = (interaction: MessageComponentInteraction, manager: Manager) => void;
-export type ManagerConstructOptions = {
-    content?: string;
-    embeds?: EmbedBuilder[];
-    components?: ActionRowBuilder[];
-    triggers?: Map<string, ComponentTrigger>;
-    files?: Exclude<MessageOptions['files'], undefined>;
-    interaction: BaseInteraction;
-}
-export type SelectManagerConstructOptions<L = SelectManager> = ManagerConstructOptions & { user: User, last?: L }
+
 
 export interface Heathy {
     health: number

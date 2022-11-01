@@ -1,18 +1,16 @@
 import { ItemStack } from "..";
-import SelectManager from "./SelectManager";
+import Manager, { ManagerConstructOptions } from "./Manager";
 import { bundle } from '../../assets/index';
 import { Item } from "../contents";
-import { SelectManagerConstructOptions } from "@type";
-import Manager from "./Manager";
 import { ButtonStyle, EmbedBuilder } from "discord.js";
 
-export default class ItemSelectManager extends SelectManager {
+export default class ItemSelectManager extends Manager {
   private amount = 0;
   private readonly mainEmbed: EmbedBuilder;
   private readonly stack: ItemStack;
   private readonly callback: (amount: number) => void;
 
-  public constructor(options: SelectManagerConstructOptions & { item: Item | ItemStack, callback: (amount: number) => void }) {
+  public constructor(options: ManagerConstructOptions & { item: Item | ItemStack, callback: (amount: number) => void }) {
     super(options);
     this.stack = options.item instanceof ItemStack ? options.item : new ItemStack(options.item);
     this.callback = options.callback;

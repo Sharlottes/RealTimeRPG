@@ -1,15 +1,14 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
 
-import { UnitEntity, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable } from 'game';
+import { UnitEntity, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable, User } from 'game';
 import { getOne } from "utils/getOne";
 import { Item, Items, StatusEffects } from 'game/contents';
 import { Mathf, Canvas, Strings, ANSIStyle } from 'utils';
-import SelectManager from 'game/managers/SelectManager';
 import { bundle } from 'assets';
-import { EntityI, SelectManagerConstructOptions } from '@type';
+import { EntityI } from '@type';
 import ItemSelectManager from './ItemSelectManager';
 import { codeBlock } from '@discordjs/builders';
-import Manager from './Manager';
+import Manager, { ManagerConstructOptions } from './Manager';
 import { AttackAction } from './actions/AttackAction';
 import { BaseAction } from './actions/BaseAction';
 import { ConsumeAction } from './actions/ConsumeAction';
@@ -25,18 +24,20 @@ enum Status {
 	SHIELD
 }
 
-export default class BattleManager extends SelectManager {
+export default class BattleManager extends Manager {
 	private readonly mainEmbed: EmbedBuilder;
 	private readonly actionEmbed: EmbedBuilder;
 	private readonly comboQueue: string[] = [];
 	private readonly actionQueue: BaseAction[] = [];
 	private readonly status: Map<EntityI, Status>;
 
+	public readonly user: User;
 	public readonly enemy: UnitEntity;
 	public turn: EntityI; //normally, user first
 
 	private totalTurn = 1;
 	private evaseBtnSelected = false;
+
 
 	private swapRefresher: () => this;
 	private consumeRefresher: () => this;
@@ -57,10 +58,10 @@ export default class BattleManager extends SelectManager {
 			await this.updateLog(bundle.find(this.locale, 'combo.tea_bagging')).update();
 		});
 
-	public constructor(options: SelectManagerConstructOptions & { enemy: UnitEntity }) {
+	public constructor(options: ManagerConstructOptions & { enemy: UnitEntity, user: User }) {
 		super(options);
+		this.user = this.turn = options.user;
 		this.enemy = options.enemy;
-		this.turn = options.user;
 		this.status = new Map<EntityI, Status>()
 			.set(options.user, Status.DEFAULT)
 			.set(this.enemy, Status.DEFAULT);
@@ -140,7 +141,6 @@ export default class BattleManager extends SelectManager {
 			async (_, __, entity) => {
 				if (entity instanceof ItemStack && entity.amount > 1) {
 					new ItemSelectManager({
-						user: this.user,
 						item: entity,
 						interaction: this.interaction,
 						callback: async amount => {
@@ -172,7 +172,6 @@ export default class BattleManager extends SelectManager {
 			async (_, __, entity) => {
 				if (entity instanceof ItemStack && entity.amount > 1) {
 					new ItemSelectManager({
-						user: this.user,
 						item: entity,
 						interaction: this.interaction,
 						callback: async amount => {

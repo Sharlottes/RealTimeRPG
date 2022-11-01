@@ -1,17 +1,18 @@
-import { SelectManagerConstructOptions } from '@type';
-import SelectManager from './SelectManager';
-import Item from 'game/contents/types/Item';
+import Manager, { ManagerConstructOptions } from './Manager';
 import { bundle } from 'assets';
 import { ItemStack } from 'game/Inventory';
 import { codeBlock } from '@discordjs/builders';
+import { User } from 'game';
 
-class PickupManager extends SelectManager {
+class PickupManager extends Manager {
   public stack?: ItemStack | undefined;
   public money?: number | undefined;
+  private readonly user: User;
 
-  public constructor(options: SelectManagerConstructOptions & { stack?: ItemStack, money?: number }) {
+  public constructor(options: ManagerConstructOptions & { stack?: ItemStack, money?: number, user: User }) {
     super(options);
 
+    this.user = options.user;
     this.stack = options.stack;
     this.money = options.money;
 

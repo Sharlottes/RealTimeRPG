@@ -1,21 +1,23 @@
 import { EmbedBuilder } from 'discord.js';
 
 import { getOne } from "utils/getOne";
-import { ItemStack, ItemStorable, UnitEntity } from 'game';
-import SelectManager from 'game/managers/SelectManager';
+import { ItemStack, ItemStorable, UnitEntity, User } from 'game';
+import Manager, { ManagerConstructOptions } from 'game/managers/Manager';
 import { Item, Items } from 'game/contents';
 import { bundle } from 'assets';
 import ItemSelectManager from './ItemSelectManager';
-import { EntityI, SelectManagerConstructOptions } from '@type';
+import { EntityI } from '@type';
 import BattleManager from './BattleManager';
 import { codeBlock } from '@discordjs/builders';
 
-export default class ExchangeManager extends SelectManager {
+export default class ExchangeManager extends Manager {
+	private readonly user: User;
 	private readonly target: UnitEntity;
 	private readonly mainEmbed: EmbedBuilder;
 
-	public constructor(options: SelectManagerConstructOptions & { target: UnitEntity }) {
+	public constructor(options: ManagerConstructOptions & { target: UnitEntity, user: User }) {
 		super(options);
+		this.user = options.user;
 		this.target = options.target;
 		this.mainEmbed = new EmbedBuilder()
 			.setFields([
@@ -48,7 +50,6 @@ export default class ExchangeManager extends SelectManager {
 			async (_, __, store) => {
 				if (store instanceof ItemStack && store.amount > 1) {
 					new ItemSelectManager({
-						user: this.user,
 						interaction: this.interaction,
 						item: store,
 						callback: async amount => {
@@ -75,7 +76,6 @@ export default class ExchangeManager extends SelectManager {
 			async (_, __, store) => {
 				if (store instanceof ItemStack && store.amount > 1) {
 					new ItemSelectManager({
-						user: this.user,
 						interaction: this.interaction,
 						item: store,
 						callback: async amount => {
