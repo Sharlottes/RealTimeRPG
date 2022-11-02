@@ -1,4 +1,3 @@
-import type { ComponentTrigger } from "@type";
 import { bundle } from 'assets';
 import {
     BaseInteraction,
@@ -41,6 +40,8 @@ type MenuSelectOptions<T> = {
     reducer?: (elem: T, index: number) => APISelectMenuOption;
     placeholder?: string;
 }
+
+type ComponentTrigger = (interaction: MessageComponentInteraction, manager: Manager) => void;
 
 /**
  * 임베드와 컴포넌트의 생성, 통신, 상호작용을 총괄함
@@ -159,7 +160,7 @@ class Manager extends KotlinLike<Manager> {
      * 
      * @param name - 컴포넌트 이름
      * @param row - 컴포넌트 열 (0~4)
-     * @param callback - 선택 콜백함수
+     * @param callback - 선택 콜백함수(버튼 interaction, 버튼 manager)
      */
     public addButtonSelection(
         name: string,

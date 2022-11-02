@@ -1,7 +1,7 @@
 export { default as Command } from "./Command";
 
 import { ApplicationCommandDataResolvable, Collection, Guild } from "discord.js";
-import { Routes } from "discord-api-types/v9";
+import { Routes } from "discord-api-types/v10";
 
 import { CommandInfo } from "@type";
 import { Command } from "commands";
@@ -38,9 +38,9 @@ namespace CommandManager {
             Routes.applicationGuildCommands(application.id, guild.id) :
             Routes.applicationCommands(application.id);
 
-        const data: CommandInfo[] = await fetch(commandPath).then(res => res.json()) as CommandInfo[];
+        const data: CommandInfo[] = await app.rest.get(commandPath) as CommandInfo[];
         for (const command of data) {
-            await fetch(`${commandPath}/${command.id}`, { method: 'DELETE' });
+            await app.rest.delete(`${commandPath}/${command.id}`);
             console.log(`[Command] delecting [ /$${commandPath}/${command.id} ] command has been done.`);
         }
 

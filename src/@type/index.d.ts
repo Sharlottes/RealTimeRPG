@@ -13,9 +13,6 @@ declare global {
     }
 }
 
-export type ComponentTrigger = (interaction: MessageComponentInteraction, manager: Manager) => void;
-
-
 export interface Heathy {
     health: number
     health_max: number

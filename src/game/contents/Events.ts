@@ -21,14 +21,14 @@ export default class Events {
 
 			await new PickupManager(
 				{ user, interaction, stack, money }
-			).update()
+			).send()
 		}));
 
 		this.events.push(new Event(10, async (user, interaction) => {
 			await new EncounterManager({
 				user, interaction,
 				target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),
-			}).update();
+			}).send();
 		}).setOnly(true));
 	}
 }

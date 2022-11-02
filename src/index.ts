@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, REST } from "discord.js";
 
 import CM from "commands";
 import assets from "assets";
@@ -20,9 +20,11 @@ export const app = {
     client: new Client({
         intents: [
             GatewayIntentBits.Guilds,
-            GatewayIntentBits.GuildMessages
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.MessageContent,
         ]
-    })
+    }),
+    rest: new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN)
 };
 
 const time = Date.now();

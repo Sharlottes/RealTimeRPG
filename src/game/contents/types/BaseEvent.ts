@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction } from 'discord.js';
+import { BaseInteraction } from 'discord.js';
 
 import { Rationess } from "@type";
 import { User } from "game";
@@ -9,7 +9,7 @@ export default class BaseEvent implements Rationess {
 
     constructor(
         public ratio: number,
-        public start: (user: User, interaction: ChatInputCommandInteraction) => void
+        public start: (user: User, interaction: BaseInteraction) => void
     ) { }
 
     public setOnly(only: boolean): this {

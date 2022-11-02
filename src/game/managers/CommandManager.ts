@@ -11,6 +11,7 @@ import CM from 'commands';
 import Vars from 'Vars';
 import Manager from './Manager';
 import Events from 'game/contents/Events';
+import GameManager from 'game/managers/GameManager';
 
 function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: ChatInputCommandInteraction) => void), category: CommandCategory = 'guild') {
 	CM.register({
@@ -34,6 +35,16 @@ namespace CommandManager {
 	export function init() {
 		registerCmd(
 			new SlashCommandBuilder()
+				.setName('start')
+				.setDescription('start the game'),
+			async (user, interaction) => {
+				user.gameManager = new GameManager({ user, interaction });
+				await user.gameManager.update()
+			}
+		)
+
+		registerCmd(
+			new SlashCommandBuilder()
 				.addUserOption((option) => option.setName('target').setDescription('target user'))
 				.setName('status')
 				.setDescription('show your own status'),
@@ -51,6 +62,7 @@ namespace CommandManager {
 				else await user.showUserInfo(interaction).update();
 			}
 		);
+
 		registerCmd(
 			new SlashCommandBuilder()
 				.addUserOption((option) => option.setName('target').setDescription('target user'))
@@ -146,7 +158,7 @@ namespace CommandManager {
 		);
 
 		registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), (user, interaction) => {
-			user.gameManager.startEvent(getOne(Events.events), interaction);
+			user.gameManager?.startEvent(getOne(Events.events), interaction);
 		});
 
 		registerCmd(

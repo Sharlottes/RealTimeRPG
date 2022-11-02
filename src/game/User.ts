@@ -1,5 +1,5 @@
 
-import Discord, { AttachmentBuilder, EmbedBuilder, MessagePayload, ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, BaseMessageOptions, ButtonStyle } from 'discord.js';
+import Discord, { AttachmentBuilder, EmbedBuilder, MessagePayload, ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, BaseMessageOptions, ButtonStyle, Awaitable } from 'discord.js';
 
 import Canvass from 'canvas';
 
@@ -15,6 +15,7 @@ import { SlotWeaponEntity } from './Inventory';
 import Manager from './managers/Manager';
 import GameManager from './managers/GameManager';
 import { predicateOf } from 'utils/predicateOf';
+import Alert from './Alert';
 
 const defaultStat: Stat = {
   health: 20,
@@ -25,19 +26,26 @@ const defaultStat: Stat = {
   defense: 0,
 };
 
+export interface UserEvents {
+  alert: [Alert]
+}
+
 export default class User extends Entity implements EntityI {
   public readonly id: string = 'unknown';
   public readonly stats: Stat = defaultStat;
   public readonly inventory: Inventory = new Inventory();
   public name: string = 'Unknown User';
-  public user: Discord.User; /*should be non-null*/
+  public user: Discord.User;
   public readonly foundContents = { items: [-1], units: [-1] };
   public readonly statuses: StatusEntity[] = [];
-  public readonly gameManager: GameManager = new GameManager(this);
+  public gameManager?: GameManager | undefined;
   public exp = 0;
   public level = 1;
   public money = 0;
   public locale: string = bundle.defaultLocale;
+  public readonly alerts: Alert[] = [];
+  public readonly events: Map<keyof UserEvents, Array<((...args: UserEvents[keyof UserEvents]) => Awaitable<void>)>> = new Map<keyof UserEvents, Array<((...args: UserEvents[keyof UserEvents]) => Awaitable<void>)>>();
+
 
   constructor(data: Discord.User | UserSave | string) {
     super()
@@ -63,6 +71,11 @@ export default class User extends Entity implements EntityI {
     }
   }
 
+  public on<K extends keyof UserEvents>(event: K, listener: (...args: UserEvents[K]) => Awaitable<void>): this {
+    this.events.set(event, (this.events.get(event) ?? []).concat([listener]));
+    return this;
+  };
+
   public updateData(interaction: ChatInputCommandInteraction) {
     this.user ??= interaction.user;
     this.name ??= this.user?.username;
@@ -78,6 +91,15 @@ export default class User extends Entity implements EntityI {
   public removeStatus(status: StatusEffect) {
     const index = this.statuses.findIndex(s => s.status === status);
     if (index != -1) this.statuses.splice(index, 1);
+  }
+
+  public async addAlert(alert: Alert) {
+    this.alerts.push(alert);
+    const listeners = this.events.get('alert')
+    if (!listeners) return;
+    for await (const listener of listeners) {
+      await listener(alert);
+    }
   }
 
   public save(): UserSave {
