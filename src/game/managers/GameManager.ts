@@ -1,5 +1,5 @@
 import { bundle } from "assets";
-import { BaseInteraction, ButtonStyle, codeBlock, Embed, EmbedBuilder } from "discord.js";
+import { BaseInteraction, ButtonStyle, codeBlock, EmbedBuilder, TextBasedChannel, ChannelType } from 'discord.js';
 import BaseEvent from "../contents/types/BaseEvent";
 import User from "../User";
 import Manager, { ManagerConstructOptions } from 'game/managers/Manager';
@@ -12,10 +12,13 @@ import Alert from 'game/Alert';
  * 이벤트 관리 클래스, user에 종속됨
  */
 export default class GameManager extends Manager {
-    private readonly user: User;
     private readonly mainEmbed: EmbedBuilder;
 
-    constructor({ user, ...options }: ManagerConstructOptions & { user: User }) {
+    constructor(
+        private readonly user: User,
+        public readonly targetChannel: TextBasedChannel,
+        options: ManagerConstructOptions
+    ) {
         super(options);
         this.user = user;
         this.mainEmbed = new EmbedBuilder()
@@ -49,6 +52,8 @@ export default class GameManager extends Manager {
             })
             .addButtonSelection('exit', 0, () => {
                 this.remove();
+                if (this.targetChannel.isThread() && this.targetChannel.name === `${this.user.name}'s playground`) this.targetChannel.delete();
+                this.user.gameManager = undefined;
             }, { style: ButtonStyle.Secondary });
     };
 

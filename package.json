@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "canvas": "^2.10.2",
-    "discord-api-types": "^0.37.16",
     "discord.js": "^14.6.0",
     "dotenv": "^16.0.3",
     "properties-reader": "^2.2.0",
@@ -26,17 +25,9 @@
     "type": "git",
     "url": "git+https://github.com/Sharlottes/realtimerpg.git"
   },
-  "keywords": [
-    "discord"
-  ],
   "author": "Sharlotte",
   "contributors": [
     "AmateurPotion"
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Sharlottes/realtimerpg/issues"
-  },
-  "homepage": "https://github.com/Sharlottes/realtimerpg#readme",
-  "description": "real time rpg based on typescript discord bot"
+  "license": "MIT"
 }

@@ -50,6 +50,7 @@ app.client.login(process.env.DISCORD_TOKEN).then(() =>
     console.log(`discord bot login has been done in ${Date.now() - time}ms`)
 );
 
+
 app.client
     .once("ready", async () => {
         console.log(`Logged in as ${app.client.user?.tag}(${app.client.application?.id}): ${Date.now() - time}ms`)

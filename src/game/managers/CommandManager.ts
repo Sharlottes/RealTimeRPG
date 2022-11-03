@@ -1,7 +1,6 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChannelType, ChatInputCommandInteraction, EmbedBuilder, PublicThreadChannel, TextChannel } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 
-import { getOne } from "utils/getOne";
 import { ItemStack, User } from 'game';
 import { Items, Units, Content } from 'game/contents';
 import { CommandCategory } from '@type';
@@ -10,7 +9,6 @@ import { Arrays } from 'utils';
 import CM from 'commands';
 import Vars from 'Vars';
 import Manager from './Manager';
-import Events from 'game/contents/Events';
 import GameManager from 'game/managers/GameManager';
 
 function registerCmd(builder: SlashCommandBuilder, callback: ((user: User, interaction: ChatInputCommandInteraction) => void), category: CommandCategory = 'guild') {
@@ -35,10 +33,24 @@ namespace CommandManager {
 	export function init() {
 		registerCmd(
 			new SlashCommandBuilder()
+				.addChannelOption((options) => options.setName('target').setDescription('target channel to create game embeds').addChannelTypes(ChannelType.PublicThread).setRequired(false))
 				.setName('start')
 				.setDescription('start the game'),
 			async (user, interaction) => {
-				user.gameManager = new GameManager({ user, interaction });
+				if (user.gameManager) {
+					Manager.newErrorEmbed(interaction, bundle.find(interaction.locale, 'error.GMexist'), true);
+					return;
+				}
+				const channel = await (async () => {
+					const channel = interaction.options.getChannel('target', false);
+					if (channel) return channel;
+					if (interaction.channel instanceof TextChannel) return await interaction.channel.threads.create({
+						name: `${user.name}'s playground`,
+						type: ChannelType.PublicThread
+					});
+					throw new Error('interaction has no channel');
+				})() as PublicThreadChannel;
+				user.gameManager = new GameManager(user, channel, { interaction });
 				await user.gameManager.update()
 			}
 		)
@@ -156,10 +168,6 @@ namespace CommandManager {
 				*/
 			}
 		);
-
-		registerCmd(new SlashCommandBuilder().setName('walk').setDescription('just walk around'), (user, interaction) => {
-			user.gameManager?.startEvent(getOne(Events.events), interaction);
-		});
 
 		registerCmd(
 			new SlashCommandBuilder()
