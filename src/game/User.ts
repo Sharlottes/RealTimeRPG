@@ -9,7 +9,6 @@ import { ItemStack, StatusEntity, Inventory, WeaponEntity } from "game";
 import { bundle } from 'assets';
 import { Canvas } from "utils";
 import { app } from 'index';
-import { filledBar } from 'string-progressbar';
 import Entity from './Entity';
 import { SlotWeaponEntity } from './Inventory';
 import Manager from './managers/Manager';

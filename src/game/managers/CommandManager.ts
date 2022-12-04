@@ -1,4 +1,4 @@
-import { ChannelType, ChatInputCommandInteraction, EmbedBuilder, PublicThreadChannel, TextChannel } from 'discord.js';
+import { APIApplicationCommandOptionChoice, ChannelType, ChatInputCommandInteraction, EmbedBuilder, PublicThreadChannel, TextChannel } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 
 import { ItemStack, User } from 'game';
@@ -97,9 +97,12 @@ namespace CommandManager {
 					.setName('target')
 					.setDescription('item name')
 					.setRequired(true)
-					.addChoices(...Items.items.reduce<{ name: string, value: number }[]>((a, i) =>
-						i.hasConsume() ? [...a, { name: i.name, value: i.id }] : a
-						, [])))
+					.addChoices(...Items.items.reduce<APIApplicationCommandOptionChoice<number>[]>((a, i) =>
+						i.hasConsume() 
+							? [...a, { name: i.name, value: i.id }] 
+							: a, 
+						[]
+					)))
 				.addIntegerOption((option) => option.setName('amount').setDescription('item amount'))
 				.setName('consume')
 				.setDescription('consume item'),

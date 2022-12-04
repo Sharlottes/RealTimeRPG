@@ -6,11 +6,11 @@
     "dev": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts"
   },
   "dependencies": {
-    "canvas": "^2.10.2",
-    "discord.js": "^14.6.0",
-    "dotenv": "^16.0.3",
-    "properties-reader": "^2.2.0",
     "random": "^3.0.6",
+    "canvas": "^2.10.2",
+    "dotenv": "^16.0.3",
+    "discord.js": "^14.6.0",
+    "properties-reader": "^2.2.0",
     "string-progressbar": "^1.0.4"
   },
   "devDependencies": {
