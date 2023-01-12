@@ -1,5 +1,5 @@
 import { bundle } from "assets";
-import { BaseInteraction, ButtonStyle, codeBlock, EmbedBuilder, TextBasedChannel, ChannelType } from 'discord.js';
+import { BaseInteraction, ButtonStyle, codeBlock, EmbedBuilder, TextBasedChannel } from 'discord.js';
 import BaseEvent from "../contents/types/BaseEvent";
 import User from "../User";
 import Manager, { ManagerConstructOptions } from 'game/managers/Manager';

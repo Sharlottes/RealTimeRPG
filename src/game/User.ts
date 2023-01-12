@@ -1,20 +1,19 @@
 
-import Discord, { AttachmentBuilder, EmbedBuilder, MessagePayload, ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, BaseMessageOptions, ButtonStyle, Awaitable } from 'discord.js';
+import Discord, { AttachmentBuilder, EmbedBuilder, ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, Awaitable } from 'discord.js';
 
 import Canvass from 'canvas';
 
-import { Item, Items, StatusEffect } from 'game/contents';
+import { Item, StatusEffect } from 'game/contents';
 import { EntityI, Stat, UserSave } from '@type';
-import { ItemStack, StatusEntity, Inventory, WeaponEntity } from "game";
+import { StatusEntity, Inventory, WeaponEntity } from "game";
 import { bundle } from 'assets';
 import { Canvas } from "utils";
 import { app } from 'index';
 import Entity from './Entity';
-import { SlotWeaponEntity } from './Inventory';
 import Manager from './managers/Manager';
 import GameManager from './managers/GameManager';
-import { predicateOf } from 'utils/predicateOf';
 import Alert from './Alert';
+import { filledBar } from 'string-progressbar';
 
 const defaultStat: Stat = {
   health: 20,
@@ -131,6 +130,8 @@ export default class User extends Entity implements EntityI {
   }
 
   public async levelup() {
+    if(this.exp >= this.level ** 2 * 50) return;
+
     await this.user.send(bundle.format(
       this.locale,
       'levelup',

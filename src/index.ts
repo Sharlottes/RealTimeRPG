@@ -3,7 +3,7 @@ import { Client, GatewayIntentBits, REST } from "discord.js";
 import CM from "commands";
 import assets from "assets";
 
-import { init } from './game';
+import Game from './game';
 import CommandManager from './game/managers/CommandManager';
 
 import Vars from './Vars';
@@ -38,7 +38,7 @@ CM.commands.clear();
 console.log(`command initialization has been done in ${Date.now() - time}ms`);
 
 //게임 콘텐츠 로딩
-init();
+Game.init();
 console.log(`game initialization has been done in ${Date.now() - time}ms`);
 
 //전역 변수 로딩

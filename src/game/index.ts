@@ -5,32 +5,34 @@ export { default as User } from "./User";
 export { default as Inventory } from "./Inventory";
 export * from "./Inventory";
 
-import { Rationess, Message, UserSave } from '@type';
+import { UserSave } from '@type';
 import CommandManager from 'game/managers/CommandManager';
 import { Items, Units, StatusEffects } from "game/contents";
 import { Database } from 'utils';
 import Vars from "Vars";
 import Events from "./contents/Events";
 
-export function init() {
-	StatusEffects.init();
-	Items.init();
-	Units.init();
-	Events.init();
-	CommandManager.init();
-}
-
-//autosave
-setInterval(() => {
-	const saves: UserSave[] = [];
-	for (let i = 0; i < Vars.users.length; i++) {
-		const user = Vars.users[i];
-		if (user.exp >= user.level ** 2 * 50) {
+class Game {
+	
+	update() {
+		const saves: UserSave[] = [];
+		for (const user of Vars.users) {
 			user.levelup();
+			saves.push(user.save());
 		}
 
-		saves.push(user.save());
+		Database.writeObject('./Database/user_data', saves);
 	}
 
-	Database.writeObject('./Database/user_data', saves);
-}, 1000);
+	init() {
+		StatusEffects.init();
+		Items.init();
+		Units.init();
+		Events.init();
+		CommandManager.init();
+
+		setInterval(() => this.update(), 1000);
+	}
+}
+
+export default new Game();
