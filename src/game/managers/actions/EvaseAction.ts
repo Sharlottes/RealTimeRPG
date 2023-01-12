@@ -4,29 +4,37 @@ import BattleManager from "../BattleManager";
 import { BaseAction } from "./BaseAction";
 
 export class EvaseAction extends BaseAction {
-	public title = 'evase';
+  public title = "evase";
 
-	constructor(manager: BattleManager, owner: EntityI, immediate = false) {
-		super(manager, owner, 1);
+  constructor(manager: BattleManager, owner: EntityI, immediate = false) {
+    super(manager, owner, 1);
 
-		if (immediate) this.run();
-	}
+    if (immediate) this.run();
+  }
 
-	public async run() {
-		super.run();
-		
-		this.manager.setEvasion(this.owner, true);
+  public async run() {
+    super.run();
 
-		await this.manager.updateLog(bundle.format(this.manager.locale, 'evasion_position',
-			typeof this.owner.name === 'string' ? this.owner.name : this.owner.name(this.manager.locale)
-		)).update();
-	}
+    this.manager.setEvasion(this.owner, true);
 
-	public description(): string {
-		return bundle.find(this.manager.locale, 'action.evase.description');
-	}
+    await this.manager
+      .updateLog(
+        bundle.format(
+          this.manager.locale,
+          "evasion_position",
+          typeof this.owner.name === "string"
+            ? this.owner.name
+            : this.owner.name(this.manager.locale)
+        )
+      )
+      .update();
+  }
 
-	public isValid(): boolean {
-		return !this.manager.isEvasion(this.owner);
-	}
+  public description(): string {
+    return bundle.find(this.manager.locale, "action.evase.description");
+  }
+
+  public isValid(): boolean {
+    return !this.manager.isEvasion(this.owner);
+  }
 }

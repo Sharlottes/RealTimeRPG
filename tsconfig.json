@@ -1,42 +1,28 @@
 {
-    "include": [
-        "src/**/*.ts"
-    ],
-    "exclude": [
-        "node_modules"
-    ],
-    "compilerOptions": {
-        "target": "ES2022",
-        "module": "CommonJS",
-        "moduleResolution": "node",
-        "baseUrl": "./",
-        "paths": {
-            "*" : [
-                "./src/*"
-            ],
-            "assets/*" : [
-                "./assets/*"
-            ],
-            "external/*": [
-                "./externel_modules/*"
-          ]
-        },
-        "rootDirs": [
-            "./src/"
-        ],
-        "typeRoots": [
-            "./src/@type/"
-        ],
-        "resolveJsonModule": true,
-        "allowJs": true,
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
-        "outDir": "./build/compile/",
-        "removeComments": true,
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "skipLibCheck": true
-    }
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["./src/*"],
+      "assets/*": ["./assets/*"],
+      "external/*": ["./externel_modules/*"]
+    },
+    "rootDirs": ["./src/"],
+    "typeRoots": ["./src/@type/"],
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./build/compile/",
+    "removeComments": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  }
 }

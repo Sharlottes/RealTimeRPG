@@ -1,7 +1,7 @@
 import { Item, Unit, Units, StatusEffect, Items } from "game/contents";
-import { EntityI, Stat } from '@type';
+import { EntityI, Stat } from "@type";
 import { Inventory, StatusEntity, WeaponEntity } from "game";
-import Entity from './Entity';
+import Entity from "./Entity";
 
 export default class UnitEntity extends Entity {
   public readonly id: number;
@@ -25,15 +25,17 @@ export default class UnitEntity extends Entity {
     this.name = (locale: string) => unit.localName(locale);
   }
 
-
   public applyStatus(status: StatusEffect) {
-    const exist = this.statuses.find(s => s.status.id == status.id);
+    const exist = this.statuses.find((s) => s.status.id == status.id);
     if (exist) exist.duration += status.duration;
     else this.statuses.push(new StatusEntity(status));
   }
 
   public removeStatus(status: StatusEffect) {
-    this.statuses.splice(this.statuses.findIndex(entity => entity.status.id == status.id), 1);
+    this.statuses.splice(
+      this.statuses.findIndex((entity) => entity.status.id == status.id),
+      1
+    );
   }
 
   public update() {
@@ -43,7 +45,7 @@ export default class UnitEntity extends Entity {
 
       entity.duration -= 100 / 1000;
       entity.status.callback(this, entity);
-    })
+    });
   }
 
   public giveItem(item: Item, amount = 1) {

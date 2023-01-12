@@ -1,3 +1,4 @@
-export const predicateOf = <U>() =>
+export const predicateOf =
+  <U>() =>
   <T>(f: (x: T) => boolean) =>
-    f as (x: T) => x is T & U
+    f as (x: T) => x is T & U;

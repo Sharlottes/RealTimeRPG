@@ -1,4 +1,4 @@
-import { Rationess } from '@type';
+import { Rationess } from "@type";
 
 /**
  * @param arr 값을 뽑을 배열

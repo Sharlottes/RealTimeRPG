@@ -24,8 +24,8 @@ export enum ANSIStyle {
 
 export class Strings {
   public static color(string: string, styles: ANSIStyle[], blocklize = true) {
-    const colorized = `\x1b[${styles.join(';')}m${string}\x1b[0m`
-    return blocklize ? codeBlock('ansi', colorized) : colorized;
+    const colorized = `\x1b[${styles.join(";")}m${string}\x1b[0m`;
+    return blocklize ? codeBlock("ansi", colorized) : colorized;
   }
 
   public static format(string: string, args: string[] | string) {
@@ -38,7 +38,7 @@ export class Strings {
   public static hashCode(string: string): number {
     let hash = 0;
     for (let i = 0; i < string.length; i++) {
-      hash = ((hash << 5) - hash) + string.charCodeAt(i);
+      hash = (hash << 5) - hash + string.charCodeAt(i);
       hash = hash & hash; // Convert to 32bit integer
     }
     return hash;
