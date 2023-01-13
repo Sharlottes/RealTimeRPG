@@ -14,22 +14,22 @@ import {
   User,
 } from "game";
 import { getOne } from "utils/getOne";
-import { Item, Items, StatusEffects } from "game/contents";
+import { Item, Items } from "game/contents";
 import { Mathf, Canvas, Strings, ANSIStyle } from "utils";
 import { bundle } from "assets";
 import { EntityI } from "@type";
-import ItemSelectManager from "./ItemSelectManager";
+import ItemSelectManager from "../ItemSelectManager";
 import { codeBlock } from "@discordjs/builders";
-import Manager, { ManagerConstructOptions } from "./Manager";
-import { AttackAction } from "./actions/AttackAction";
-import { BaseAction } from "./actions/BaseAction";
-import { ConsumeAction } from "./actions/ConsumeAction";
-import { DvaseAction } from "./actions/DvaseAction";
-import { EvaseAction } from "./actions/EvaseAction";
-import { ReloadAction } from "./actions/ReloadAction";
-import { ShieldAction } from "./actions/ShieldAction";
-import { SwapAction } from "./actions/SwapAction";
-//test
+import Manager, { ManagerConstructOptions } from "../Manager";
+import { AttackAction } from "../actions/AttackAction";
+import { BaseAction } from "../actions/BaseAction";
+import { ConsumeAction } from "../actions/ConsumeAction";
+import { DvaseAction } from "../actions/DvaseAction";
+import { EvaseAction } from "../actions/EvaseAction";
+import { ReloadAction } from "../actions/ReloadAction";
+import { ShieldAction } from "../actions/ShieldAction";
+import { SwapAction } from "../actions/SwapAction";
+import ActionManager from "./ActionManager";
 
 enum Status {
   DEFAULT,
@@ -39,9 +39,6 @@ enum Status {
 
 export default class BattleManager extends Manager {
   private readonly mainEmbed: EmbedBuilder;
-  private readonly actionEmbed: EmbedBuilder;
-  private readonly comboQueue: string[] = [];
-  private readonly actionQueue: BaseAction[] = [];
   private readonly status: Map<EntityI, Status>;
 
   public readonly user: User;
@@ -55,38 +52,6 @@ export default class BattleManager extends Manager {
   private consumeRefresher: () => this;
   private reloadRefresher: () => this;
 
-  private readonly comboList: Map<string, () => Promise<void>> = new Map<
-    string,
-    () => Promise<void>
-  >()
-    .set("reload-attack-evase", async () => {
-      (this.turn.inventory.equipments.weapon as SlotWeaponEntity).ammos.push(
-        Items.find(0),
-        Items.find(0),
-        Items.find(0)
-      );
-      await this.updateLog(
-        bundle.find(this.locale, "combo.evasing_attack")
-      ).update();
-      new AttackAction(
-        this,
-        this.turn,
-        this.turn == this.user ? this.enemy : this.user,
-        this.user.inventory.equipments.weapon,
-        true
-      );
-    })
-    .set("consume-consume-consume", async () => {
-      this.turn.stats.health += 5;
-      await this.updateLog(bundle.find(this.locale, "combo.overeat")).update();
-    })
-    .set("evase-dvase-evase", async () => {
-      this.getItsOpponent(this.turn)?.applyStatus(StatusEffects.annoyed);
-      await this.updateLog(
-        bundle.find(this.locale, "combo.tea_bagging")
-      ).update();
-    });
-
   public constructor(
     options: ManagerConstructOptions & { enemy: UnitEntity; user: User }
   ) {
@@ -98,9 +63,6 @@ export default class BattleManager extends Manager {
       .set(this.enemy, Status.DEFAULT);
 
     this.mainEmbed = new EmbedBuilder().setTitle("Battle Status");
-    this.actionEmbed = new EmbedBuilder()
-      .setTitle("Action Queue")
-      .setDescription("Empty");
 
     this.setContent(
       bundle.format(
@@ -110,7 +72,7 @@ export default class BattleManager extends Manager {
         this.enemy.type.localName(this.user)
       )
     );
-    this.setEmbeds(this.mainEmbed, this.actionEmbed);
+    this.setEmbeds(this.mainEmbed, ActionManager.actionEmbed);
     this.updateLog(
       bundle.format(this.locale, "battle.turnend", this.totalTurn)
     );
@@ -153,7 +115,7 @@ export default class BattleManager extends Manager {
       },
       { style: ButtonStyle.Primary }
     );
-
+      
     this.addButtonSelection("evasion", 0, async () => {
       if (this.evaseBtnSelected) {
         this.evaseBtnSelected = false;
@@ -295,12 +257,7 @@ export default class BattleManager extends Manager {
       "undo",
       4,
       () => {
-        this.actionQueue.pop()?.undo();
-        this.actionEmbed.setDescription(
-          this.actionQueue
-            .map<string>((a) => codeBlock(a.description()))
-            .join("") || null
-        );
+        ActionManager.undoAction();
         this.updateBar();
         this.validate();
         this.update();
@@ -353,17 +310,9 @@ export default class BattleManager extends Manager {
       },
     ] = this.components;
 
-    //엑션이 있으면 취소버튼 활성
-    actionCancel.setDisabled(this.actionQueue.length == 0);
-
-    //쿨다운이 없으면 공격버튼 활성
+    actionCancel.setDisabled(ActionManager.isEmpty());
     attack.setDisabled(this.user.inventory.equipments.weapon.cooldown > 0);
-
-    //방패가 있으면 방어버튼 활성
-    //TODO: 방어 시스템 구체화
     shield.setDisabled(!this.user.inventory.equipments.shield);
-
-    //장전 가능한 아이템이 있으면 장전메뉴 활성
     reload.setDisabled(
       !(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity)
     );
@@ -423,20 +372,7 @@ export default class BattleManager extends Manager {
 			return;
 		}
 		*/
-
-    action.added();
-    this.actionQueue.push(action);
-    this.actionEmbed.setDescription(
-      this.actionQueue
-        .map<string>((act) =>
-          codeBlock(
-            (act.bloody ? bundle.find(this.locale, "action.withHealth") : "") +
-              " " +
-              act.description()
-          )
-        )
-        .join("")
-    );
+    ActionManager.addAction(action);
     this.updateBar();
     this.validate();
     await this.update();
@@ -467,33 +403,7 @@ export default class BattleManager extends Manager {
         );
     }
 
-    //엑션/콤보 실행
-    while (this.actionQueue.length > 0) {
-      const action = this.actionQueue.shift();
-      this.actionEmbed.setDescription(
-        this.actionQueue
-          .map<string>((act) =>
-            codeBlock(
-              (act.bloody
-                ? bundle.find(this.locale, "action.withHealth")
-                : "") +
-                " " +
-                act.description()
-            )
-          )
-          .join("") || null
-      );
-      await this.update();
-      if (!action) continue;
-      await action.run();
-
-      this.comboQueue.push(action.title);
-      const callback = this.comboList.get(this.comboQueue.join("-"));
-      if (callback) {
-        this.comboQueue.length = 0;
-        await callback();
-      }
-    }
+    ActionManager.onTurnEnd(this);
 
     //둘 중 하나가 죽으면 전투 끝
     if (this.user.stats.health <= 0 || this.enemy.stats.health <= 0) {

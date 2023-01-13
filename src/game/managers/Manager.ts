@@ -174,6 +174,20 @@ class Manager extends KotlinLike<Manager> {
     else await this.message.delete();
   }
 
+  public addComponent(
+    name: string,
+    row: number,
+    component: SelectMenuBuilder | ButtonBuilder,
+    callback: ComponentTrigger
+  ) {
+    this.resizeSelection(row);
+
+    this.components[row].addComponents(component);
+    this.setTrigger(name, callback);
+
+    return this;
+  }
+
   /**
    * 버튼 컴포넌트를 추가합니다.
    *
@@ -189,15 +203,14 @@ class Manager extends KotlinLike<Manager> {
       style: ButtonStyle.Primary,
     }
   ) {
-    this.resizeSelection(row);
-
-    this.components[row].addComponents(
+    this.addComponent(
+      name,
+      row,
       new ButtonBuilder(option)
         .setLabel(bundle.find(this.locale, `select.${name}`))
-        .setCustomId(name)
+        .setCustomId(name),
+      callback
     );
-    this.setTrigger(name, callback);
-
     return this;
   }
 
