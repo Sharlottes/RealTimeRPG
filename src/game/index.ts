@@ -5,7 +5,6 @@ export { default as User } from "./User";
 export { default as Inventory } from "./Inventory";
 export * from "./Inventory";
 
-import { UserSave } from "@type";
 import CommandManager from "game/managers/CommandManager";
 import { Items, Units, StatusEffects } from "game/contents";
 import Vars from "Vars";
@@ -13,10 +12,8 @@ import Events from "./contents/Events";
 
 class Game {
   update() {
-    const saves: UserSave[] = [];
     for (const user of Vars.users) {
       user.levelup();
-      saves.push(user.save());
     }
   }
 

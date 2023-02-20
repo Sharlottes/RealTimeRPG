@@ -11,7 +11,7 @@ import Discord, {
 import Canvass from "canvas";
 
 import { Item, StatusEffect } from "game/contents";
-import { EntityI, Stat, UserSave } from "@type";
+import { EntityI, Stat } from "@type";
 import { StatusEntity, Inventory, WeaponEntity } from "game";
 import { bundle } from "assets";
 import { Canvas } from "utils";
@@ -97,19 +97,6 @@ export default class User extends Entity implements EntityI {
       await listener(alert);
     }
   }
-
-  public save(): UserSave {
-    return {
-      id: this.id,
-      money: Math.round(this.money),
-      level: this.level,
-      exp: this.exp,
-      stats: this.stats,
-      inventory: this.inventory.toJSON(),
-      fountContents: this.foundContents,
-    };
-  }
-
   public giveItem(item: Item, amount = 1) {
     this.inventory.add(item, amount);
 
@@ -130,7 +117,7 @@ export default class User extends Entity implements EntityI {
   }
 
   public async levelup() {
-    if (this.exp >= this.level ** 2 * 50) return;
+    if (this.exp < this.level ** 2 * 50) return;
 
     await this.user.send(
       bundle.format(

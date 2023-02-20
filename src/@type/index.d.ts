@@ -79,16 +79,6 @@ export type UnitData = {
   stats: Stat;
 } & Rationess;
 
-export type UserSave = {
-  id: string;
-  money: number;
-  level: number;
-  exp: number;
-  stats: Stat;
-  inventory: InventoryJSONdata;
-  fountContents: { items: number[]; units: number[] };
-};
-
 export type InventoryJSONdata = {
   items: {
     type: string;
