@@ -57,31 +57,11 @@ export default class User extends Entity implements EntityI {
     Array<(...args: UserEvents[keyof UserEvents]) => Awaitable<void>>
   >();
 
-  constructor(data: Discord.User | UserSave | string) {
+  constructor(data: Discord.User) {
     super();
-    if (typeof data === "string") {
-      this.user = app.client.users.cache.find(
-        (u) => u.id === data
-      ) as Discord.User;
-      this.id = data;
-      this.name = this.user?.username;
-    } else if (data instanceof Discord.User) {
-      this.user = data;
-      this.id = data.id;
-      this.name = this.user.username;
-    } else {
-      this.user = app.client.users.cache.find(
-        (u) => u.id === data.id
-      ) as Discord.User;
-      this.name = this.user?.username;
-      this.id = data.id;
-      this.money = Math.round(data.money);
-      this.level = data.level;
-      this.exp = data.exp;
-      this.stats = data.stats;
-      this.inventory.fromJSON(data.inventory);
-      this.foundContents = data.fountContents;
-    }
+    this.user = data;
+    this.id = data.id;
+    this.name = this.user.username;
   }
 
   public on<K extends keyof UserEvents>(

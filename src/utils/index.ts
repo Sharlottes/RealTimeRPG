@@ -3,6 +3,5 @@ export * from "./Strings";
 export * from "./Canvas";
 export * from "./KotlinLike";
 export * from "./Mathf";
-export * from "./Database";
 export * from "./delay";
 export * from "./isOfType";

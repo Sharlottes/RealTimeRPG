@@ -6,8 +6,6 @@ import assets from "assets";
 import Game from "./game";
 import CommandManager from "./game/managers/CommandManager";
 
-import Vars from "./Vars";
-
 require("dotenv").config();
 
 const masterIDs = ["462167403237867520", "473072758629203980"];
@@ -37,10 +35,6 @@ console.log(`command initialization has been done in ${Date.now() - time}ms`);
 //게임 콘텐츠 로딩
 Game.init();
 console.log(`game initialization has been done in ${Date.now() - time}ms`);
-
-//전역 변수 로딩
-Vars.init();
-console.log(`vars initialization has been done: ${Date.now() - time}ms`);
 
 //디스코드 봇 로그인
 app.client

@@ -58,7 +58,7 @@ export default class Item extends Content implements Dropable, Rationess {
       );
 
     this.tags.forEach((tag) => tag.buildInfo(embed, entity));
-    Manager.start({ interaction: interaction, embeds: [embed] });
+    new Manager({ interaction: interaction, embeds: [embed] }).send();
   }
 
   public hasAmmo(): boolean {
