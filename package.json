@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "dev": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts"
+    "dev": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts",
+    "ts-check": "tsc --noEmit"
   },
   "dependencies": {
     "random": "^3.0.6",
