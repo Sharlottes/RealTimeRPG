@@ -1,18 +1,13 @@
 import Discord, {
-  Interaction,
-  BaseInteraction,
   Message,
-  EmbedBuilder,
-  MessageOptions,
   CacheType,
   ActionRowBuilder,
   MessageComponentInteraction,
   ActionRowBuilderComponent,
 } from "discord.js";
 
-import { StatusEntity, ItemStack, User, Inventory } from "game";
+import { StatusEntity, User, Inventory } from "game";
 import StatusEffect from "game/contents/StatusEffect";
-import Manager from "game/managers/Manager";
 import { WeaponEntity } from "game/Inventory";
 
 declare global {
