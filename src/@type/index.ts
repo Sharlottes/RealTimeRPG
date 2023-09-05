@@ -7,7 +7,7 @@ import Discord, {
 } from "discord.js";
 
 import { StatusEntity, User, Inventory } from "game";
-import StatusEffect from "game/contents/StatusEffect";
+import StatusEffect from "game/contents/types/StatusEffect";
 import { WeaponEntity } from "game/Inventory";
 
 declare global {
