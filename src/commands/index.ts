@@ -6,8 +6,6 @@ import {
   Guild,
 } from "discord.js";
 import { Routes } from "discord-api-types/v10";
-
-import { CommandInfo } from "@type";
 import { Command } from "commands";
 import { app } from "index";
 

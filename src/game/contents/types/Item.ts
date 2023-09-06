@@ -1,4 +1,3 @@
-import { Dropable, Rationess, ItemData } from "@type";
 import { Content, Items } from "..";
 import {
   AmmoTag,

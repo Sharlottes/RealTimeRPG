@@ -1,6 +1,5 @@
 import { Item } from "..";
 import ItemTag from "./ItemTag";
-import { Durable } from "../../../@type/index";
 import { ShieldEntity } from "game/Inventory";
 import { EmbedBuilder } from "discord.js";
 

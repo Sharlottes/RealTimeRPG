@@ -17,7 +17,7 @@ import { getOne } from "utils/getOne";
 import { Item, Items } from "game/contents";
 import { Mathf, Canvas, Strings, ANSIStyle } from "utils";
 import { bundle } from "assets";
-import { EntityI } from "@type";
+import { EntityI } from "@type/types";
 import ItemSelectManager from "../ItemSelectManager";
 import { codeBlock } from "@discordjs/builders";
 import Manager, { ManagerConstructOptions } from "../Manager";
@@ -115,7 +115,7 @@ export default class BattleManager extends Manager {
       },
       { style: ButtonStyle.Primary }
     );
-      
+
     this.addButtonSelection("evasion", 0, async () => {
       if (this.evaseBtnSelected) {
         this.evaseBtnSelected = false;

@@ -10,7 +10,6 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 
 import { ItemStack, User } from "game";
 import { Items, Units, Content } from "game/contents";
-import { CommandCategory } from "@type";
 import { bundle } from "assets";
 import { Arrays } from "utils";
 import CM from "commands";

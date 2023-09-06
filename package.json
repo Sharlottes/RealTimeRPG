@@ -4,7 +4,8 @@
   "main": "index.ts",
   "scripts": {
     "dev": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts",
-    "ts-check": "tsc --noEmit"
+    "ts-check": "tsc --noEmit",
+    "format": "prettier -w ./src"
   },
   "dependencies": {
     "random": "^3.0.6",

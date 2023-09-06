@@ -1,4 +1,4 @@
-import { EntityI } from "@type";
+import { EntityI } from "@type/types";
 import { bundle } from "assets";
 import { ItemStack, SlotWeaponEntity } from "game/Inventory";
 import BattleManager from "../BattleManager";
