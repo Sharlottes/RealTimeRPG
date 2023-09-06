@@ -100,6 +100,57 @@ app.client
     }
   });
 
+const Resolver = {
+  equal: (str: string) => () => {},
+} as const;
+
+type PermissionResolver = unknown;
+
+const IsInGuild: MethodDecorator = (target, propertyKey, descriptor) => {};
+const CommandController = <T extends { new (...args: any[]): {} }>(
+  constructor: T
+) => {
+  return class extends constructor {};
+};
+
+function Permissions(...resolvers: PermissionResolver[]): MethodDecorator {
+  return function (target, propertyKey, descriptor) {};
+}
+
+function TextCommand({ resolver }: { resolver: () => void }): MethodDecorator {
+  return function (target, propertyKey, descriptor) {};
+}
+
+@CommandController
+class A {
+  @IsInGuild
+  @Permissions()
+  @TextCommand({ resolver: Resolver.equal("refresh") })
+  async refrashGuildCommand(message: Discord.Message<true>) {
+    message.reply(`guild command refresh start! server: ${message.guild.name}`);
+
+    CM.commands.clear();
+    CommandManager.init();
+    await CM.refreshCommand("guild", message.guild);
+
+    message.reply(
+      `guild command refresh has been done in ${Date.now() - time}ms`
+    );
+  }
+
+  async refreshGlobalCommand(message: Discord.Message) {
+    message.reply(`global command refresh start!`);
+
+    CM.commands.clear();
+    CommandManager.init();
+    await CM.refreshCommand("global");
+
+    message.reply(
+      `global command refresh has been done in ${Date.now() - time}ms`
+    );
+  }
+}
+
 process
   .on("unhandledRejection", async (err) => {
     console.error(

@@ -13,6 +13,7 @@
     "dotenv": "^16.0.3",
     "discord.js": "^14.6.0",
     "properties-reader": "^2.2.0",
+    "reflect-metadata": "^0.1.13",
     "string-progressbar": "^1.0.4"
   },
   "devDependencies": {
