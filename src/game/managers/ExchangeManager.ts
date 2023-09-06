@@ -6,7 +6,7 @@ import Manager, { ManagerConstructOptions } from "game/managers/Manager";
 import { Item, Items } from "game/contents";
 import { bundle } from "assets";
 import ItemSelectManager from "./ItemSelectManager";
-import { EntityI } from "@type";
+import { EntityI } from "@type/types";
 import BattleManager from "./BattleManager";
 import { codeBlock } from "@discordjs/builders";
 

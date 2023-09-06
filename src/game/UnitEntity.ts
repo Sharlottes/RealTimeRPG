@@ -1,6 +1,5 @@
-import { Item, Unit, Units, StatusEffect, Items } from "game/contents";
-import { EntityI, Stat } from "@type";
-import { Inventory, StatusEntity, WeaponEntity } from "game";
+import { Item, Unit, StatusEffect } from "game/contents";
+import { StatusEntity } from "game";
 import Entity from "./Entity";
 
 export default class UnitEntity extends Entity {

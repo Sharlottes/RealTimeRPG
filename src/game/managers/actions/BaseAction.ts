@@ -1,4 +1,4 @@
-import { EntityI } from "@type";
+import { EntityI } from "@type/types";
 import { bundle } from "assets";
 import BattleManager from "../BattleManager";
 import Manager from "../Manager";

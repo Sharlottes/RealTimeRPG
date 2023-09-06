@@ -1,5 +1,5 @@
 import { Item, Buff, StatusEffects } from "game/contents";
-import { EntityI } from "../../@type/index";
+import { EntityI } from "../../@type/types";
 import {
   AmmoTag,
   ConsumeTag,

@@ -1,5 +1,3 @@
-import { Rationess } from "@type";
-
 /**
  * @param arr 값을 뽑을 배열
  * @returns arr 배열에서 특정 비율 기반의 랜덤으로 인수 하나를 뽑아 반환

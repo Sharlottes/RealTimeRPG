@@ -1,6 +1,6 @@
 import { bundle } from "assets";
 import { User } from "..";
-import { EntityI } from "../../@type/index";
+import { EntityI } from "../../@type/types";
 
 export default class Buff {
   readonly value: number;

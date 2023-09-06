@@ -1,4 +1,3 @@
-import { Durable, InventoryJSONdata } from "@type";
 import { Item, Items } from "./contents";
 import { predicateOf } from "utils/predicateOf";
 

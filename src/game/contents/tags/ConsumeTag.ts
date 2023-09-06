@@ -1,4 +1,4 @@
-import { EntityI } from "@type";
+import { EntityI } from "@type/types";
 import { ItemEntity } from "game/Inventory";
 import { EmbedBuilder } from "discord.js";
 import Buff from "../Buff";

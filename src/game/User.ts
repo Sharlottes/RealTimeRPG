@@ -11,11 +11,10 @@ import Discord, {
 import Canvass from "canvas";
 
 import { Item, StatusEffect } from "game/contents";
-import { EntityI, Stat } from "@type";
+import { EntityI } from "@type/types";
 import { StatusEntity, Inventory, WeaponEntity } from "game";
 import { bundle } from "assets";
 import { Canvas } from "utils";
-import { app } from "index";
 import Entity from "./Entity";
 import Manager from "./managers/Manager";
 import GameManager from "./managers/GameManager";

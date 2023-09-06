@@ -1,4 +1,4 @@
-import { EntityI } from "@type";
+import { EntityI } from "@type/types";
 import { Content, StatusEffects } from "..";
 import { StatusEntity } from "../..";
 

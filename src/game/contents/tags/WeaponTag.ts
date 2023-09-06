@@ -1,4 +1,4 @@
-import { Durable, EntityI } from "@type";
+import { EntityI } from "@type/types";
 import { bundle } from "assets";
 import { WeaponEntity } from "game/Inventory";
 import { EmbedBuilder } from "discord.js";
