@@ -1,8 +1,8 @@
 import Manager, { ManagerConstructOptions } from "./Manager";
-import { bundle } from "assets";
-import { ItemStack } from "game/Inventory";
+import { bundle } from "@/assets";
+import { ItemStack } from "@/game/Inventory";
 import { codeBlock } from "@discordjs/builders";
-import { User } from "game";
+import { User } from "@/game";
 
 class PickupManager extends Manager {
   public stack?: ItemStack | undefined;
@@ -14,7 +14,7 @@ class PickupManager extends Manager {
       stack?: ItemStack;
       money?: number;
       user: User;
-    }
+    },
   ) {
     super(options);
 
@@ -37,9 +37,9 @@ class PickupManager extends Manager {
             ? `${this.stack.item.localName(this.locale)}: +${
                 this.stack.amount
               }${bundle.find(this.locale, "unit.item")}`
-            : `+${this.money}${bundle.find(this.locale, "unit.money")}`
-        )
-      )
+            : `+${this.money}${bundle.find(this.locale, "unit.money")}`,
+        ),
+      ),
     ).addRemoveButton();
   }
 }

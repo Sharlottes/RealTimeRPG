@@ -1,6 +1,6 @@
-import { EntityI } from "@type/types";
-import { bundle } from "assets";
-import { Item } from "game/contents";
+import { EntityI } from "@/@type/types";
+import { bundle } from "@/assets";
+import { Item } from "@/game/contents";
 import BattleManager from "../BattleManager";
 import { BaseAction } from "./BaseAction";
 
@@ -14,7 +14,7 @@ export class ConsumeAction extends BaseAction {
     owner: EntityI,
     potion: Item,
     amount: number,
-    immediate = false
+    immediate = false,
   ) {
     super(manager, owner, 5);
     this.potion = potion;
@@ -46,10 +46,10 @@ export class ConsumeAction extends BaseAction {
         this.potion
           .getConsume()
           .buffes.map((b) =>
-            b.description(this.owner, this.amount, b, this.manager.locale)
+            b.description(this.owner, this.amount, b, this.manager.locale),
           )
-          .join("\n  ")
-      )
+          .join("\n  "),
+      ),
     );
   }
 
@@ -58,7 +58,7 @@ export class ConsumeAction extends BaseAction {
       this.manager.locale,
       "action.consume.description",
       this.potion.localName(this.manager.locale),
-      this.amount
+      this.amount,
     );
   }
 

@@ -14,7 +14,7 @@ export default class ItemSelectManager extends Manager {
     options: ManagerConstructOptions & {
       item: Item | ItemStack;
       callback: (amount: number) => void;
-    }
+    },
   ) {
     super(options);
     this.stack =
@@ -49,7 +49,7 @@ export default class ItemSelectManager extends Manager {
           this.amount = Math.floor(this.amount / 10);
           this.updateEmbed();
         },
-        { style: ButtonStyle.Danger }
+        { style: ButtonStyle.Danger },
       )
       .addButtonSelection(
         "done",
@@ -63,15 +63,15 @@ export default class ItemSelectManager extends Manager {
                 "shop.notEnough_item",
                 this.stack.item.localName(this.locale),
                 this.amount,
-                this.stack.amount
-              )
+                this.stack.amount,
+              ),
             );
           } else {
             this.callback(this.amount);
             this.remove();
           }
         },
-        { style: ButtonStyle.Success }
+        { style: ButtonStyle.Success },
       )
       .addButtonSelection(
         "cancel",
@@ -79,7 +79,7 @@ export default class ItemSelectManager extends Manager {
         () => {
           this.remove();
         },
-        { style: ButtonStyle.Secondary }
+        { style: ButtonStyle.Secondary },
       )
       .addButtonSelection(
         "reset",
@@ -88,7 +88,7 @@ export default class ItemSelectManager extends Manager {
           this.amount = 0;
           this.updateEmbed();
         },
-        { style: ButtonStyle.Secondary }
+        { style: ButtonStyle.Secondary },
       )
       .addButtonSelection(
         "max",
@@ -97,7 +97,7 @@ export default class ItemSelectManager extends Manager {
           this.amount = this.stack.amount;
           this.updateEmbed();
         },
-        { style: ButtonStyle.Secondary }
+        { style: ButtonStyle.Secondary },
       );
   }
 
@@ -113,7 +113,7 @@ export default class ItemSelectManager extends Manager {
       },
     ]);
     this.components[3].components[2].setDisabled(
-      this.amount > this.stack.amount
+      this.amount > this.stack.amount,
     );
     await this.update();
   }

@@ -1,12 +1,12 @@
 import { EmbedBuilder } from "discord.js";
 
-import { getOne } from "utils/getOne";
-import { ItemStack, ItemStorable, UnitEntity, User } from "game";
-import Manager, { ManagerConstructOptions } from "game/managers/Manager";
-import { Item, Items } from "game/contents";
-import { bundle } from "assets";
+import { getOne } from "@/utils/getOne";
+import { ItemStack, ItemStorable, UnitEntity, User } from "@/game";
+import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
+import { Item, Items } from "@/game/contents";
+import { bundle } from "@/assets";
 import ItemSelectManager from "./ItemSelectManager";
-import { EntityI } from "@type/types";
+import { EntityI } from "@/@type/types";
 import BattleManager from "./BattleManager";
 import { codeBlock } from "@discordjs/builders";
 
@@ -16,7 +16,7 @@ export default class ExchangeManager extends Manager {
   private readonly mainEmbed: EmbedBuilder;
 
   public constructor(
-    options: ManagerConstructOptions & { target: UnitEntity; user: User }
+    options: ManagerConstructOptions & { target: UnitEntity; user: User },
   ) {
     super(options);
     this.user = options.user;
@@ -38,11 +38,11 @@ export default class ExchangeManager extends Manager {
     //고블린 인벤토리 생성
     for (let i = 0; i < 20; i++) {
       const item = getOne(
-        Items.items.filter((i) => i.dropOnShop && i.id !== 5 && typeof i)
+        Items.items.filter((i) => i.dropOnShop && i.id !== 5 && typeof i),
       );
       const exist = this.target.inventory.items.find<ItemStack>(
         (store): store is ItemStack =>
-          store instanceof ItemStack && store.item == item
+          store instanceof ItemStack && store.item == item,
       );
       if (exist) exist.amount++;
       else this.target.inventory.items.push(new ItemStack(item));
@@ -84,15 +84,15 @@ export default class ExchangeManager extends Manager {
             store.item.localName(this.locale) +
             ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
               this.locale,
-              "unit.item"
+              "unit.item",
             )}, ${this.calPrice(store.item)} ${bundle.find(
               this.locale,
-              "unit.money"
+              "unit.money",
             )}`,
           value: index.toString(),
         }),
         placeholder: "select item to buy ...",
-      }
+      },
     );
 
     const sellRefresher = this.addMenuSelection(
@@ -120,15 +120,15 @@ export default class ExchangeManager extends Manager {
             store.item.localName(this.locale) +
             ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
               this.locale,
-              "unit.item"
+              "unit.item",
             )}, ${this.calPrice(store.item)} ${bundle.find(
               this.locale,
-              "unit.money"
+              "unit.money",
             )}`,
           value: index.toString(),
         }),
         placeholder: "select item to sell ...",
-      }
+      },
     );
   }
 
@@ -156,7 +156,7 @@ export default class ExchangeManager extends Manager {
     owner: EntityI,
     visitor: EntityI,
     store: T,
-    amount: number
+    amount: number,
   ) {
     const max = store instanceof ItemStack ? store.amount : 1;
     const item = store.item;
@@ -172,9 +172,9 @@ export default class ExchangeManager extends Manager {
               "shop.notEnough_item",
               item.localName(this.locale),
               amount,
-              max
-            )
-        )
+              max,
+            ),
+        ),
       );
     } else if (visitor.money < amount * money) {
       this.addContent(
@@ -185,9 +185,9 @@ export default class ExchangeManager extends Manager {
               this.locale,
               "shop.notEnough_money",
               amount * money,
-              visitor.money
-            )
-        )
+              visitor.money,
+            ),
+        ),
       );
     } else {
       this.addContent(
@@ -200,9 +200,9 @@ export default class ExchangeManager extends Manager {
               item.localName(this.locale),
               amount,
               owner.money,
-              owner.money + money * amount
-            )
-        )
+              owner.money + money * amount,
+            ),
+        ),
       );
 
       visitor.money -= money * amount;

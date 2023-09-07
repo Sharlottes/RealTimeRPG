@@ -11,14 +11,14 @@ abstract class Command {
   public readonly builder: SlashCommandBuilder;
 
   public abstract run(
-    interaction: ChatInputCommandInteraction<CacheType>
+    interaction: ChatInputCommandInteraction<CacheType>,
   ): void;
 
   constructor(
     category: CommandCategory = "guild",
     debug = true,
     dmOnly = false,
-    builder = new SlashCommandBuilder()
+    builder = new SlashCommandBuilder(),
   ) {
     this.builder = builder;
     this.category = category;

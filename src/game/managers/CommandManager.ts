@@ -8,19 +8,19 @@ import {
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
-import { ItemStack, User } from "game";
-import { Items, Units, Content } from "game/contents";
-import { bundle } from "assets";
-import { Arrays } from "utils";
-import CM from "commands";
-import Vars from "Vars";
+import { ItemStack, User } from "@/game";
+import { Items, Units, Content } from "@/game/contents";
+import { bundle } from "@/assets";
+import { Arrays } from "@/utils";
+import CM from "@/command/legacy/CommandManager";
+import Vars from "@/Vars";
 import Manager from "./Manager";
-import GameManager from "game/managers/GameManager";
+import GameManager from "@/game/managers/GameManager";
 
 function registerCmd(
   builder: SlashCommandBuilder,
   callback: (user: User, interaction: ChatInputCommandInteraction) => void,
-  category: CommandCategory = "guild"
+  category: CommandCategory = "guild",
 ) {
   CM.register({
     category: category,
@@ -50,7 +50,7 @@ namespace CommandManager {
             .setName("target")
             .setDescription("target channel to create game embeds")
             .addChannelTypes(ChannelType.PublicThread)
-            .setRequired(false)
+            .setRequired(false),
         )
         .setName("start")
         .setDescription("start the game"),
@@ -59,7 +59,7 @@ namespace CommandManager {
           Manager.newErrorEmbed(
             interaction,
             bundle.find(interaction.locale, "error.GMexist"),
-            true
+            true,
           );
           return;
         }
@@ -75,13 +75,13 @@ namespace CommandManager {
         })()) as PublicThreadChannel;
         user.gameManager = new GameManager(user, channel, { interaction });
         await user.gameManager.update();
-      }
+      },
     );
 
     registerCmd(
       new SlashCommandBuilder()
         .addUserOption((option) =>
-          option.setName("target").setDescription("target user")
+          option.setName("target").setDescription("target user"),
         )
         .setName("status")
         .setDescription("show your own status"),
@@ -98,18 +98,18 @@ namespace CommandManager {
               bundle.format(
                 interaction.locale,
                 "error.notFound",
-                target.username
-              )
+                target.username,
+              ),
             );
           }
         } else await user.showUserInfo(interaction).update();
-      }
+      },
     );
 
     registerCmd(
       new SlashCommandBuilder()
         .addUserOption((option) =>
-          option.setName("target").setDescription("target user")
+          option.setName("target").setDescription("target user"),
         )
         .setName("inventory")
         .setDescription("show your own inventory"),
@@ -124,11 +124,11 @@ namespace CommandManager {
               bundle.format(
                 interaction.locale,
                 "error.notFound",
-                target.username
-              )
+                target.username,
+              ),
             );
         } else await user.showInventoryInfo(interaction).update();
-      }
+      },
     );
 
     registerCmd(
@@ -144,12 +144,12 @@ namespace CommandManager {
               >(
                 (a, i) =>
                   i.hasConsume() ? [...a, { name: i.name, value: i.id }] : a,
-                []
-              )
-            )
+                [],
+              ),
+            ),
         )
         .addIntegerOption((option) =>
-          option.setName("amount").setDescription("item amount")
+          option.setName("amount").setDescription("item amount"),
         )
         .setName("consume")
         .setDescription("consume item"),
@@ -164,8 +164,8 @@ namespace CommandManager {
             bundle.format(
               user.locale,
               "error.missing_item",
-              Items.find(id).localName(user)
-            )
+              Items.find(id).localName(user),
+            ),
           );
         } else if ((stack instanceof ItemStack ? stack.amount : 1) < amount) {
           Manager.newErrorEmbed(
@@ -174,8 +174,8 @@ namespace CommandManager {
               user.locale,
               "error.not_enough",
               stack.item.localName(user),
-              amount
-            )
+              amount,
+            ),
           );
         } else {
           const potion = stack.item;
@@ -192,11 +192,11 @@ namespace CommandManager {
               amount,
               cons.buffes
                 .map((b) => b.description(user, amount, b, user.locale))
-                .join("\n  ")
-            )
+                .join("\n  "),
+            ),
           );
         }
-      }
+      },
     );
 
     registerCmd(
@@ -207,8 +207,8 @@ namespace CommandManager {
             .setDescription("the content type")
             .addChoices(
               { name: "item", value: "item" },
-              { name: "unit", value: "unit" }
-            )
+              { name: "unit", value: "unit" },
+            ),
         )
         .setName("info")
         .setDescription("show content information"),
@@ -238,7 +238,7 @@ namespace CommandManager {
               name: cont.localName(user),
               value:
                 cont.description(user) + "\n\n" + (cont.details(user) || ""),
-            })
+            }),
           );
           embeds.push(embed);
         });
@@ -251,7 +251,7 @@ namespace CommandManager {
 					embeds: [new EmbedBuilder()]
 				});
 				*/
-      }
+      },
     );
 
     registerCmd(
@@ -270,7 +270,7 @@ namespace CommandManager {
               }),
           ],
         });
-      }
+      },
     );
   }
 }

@@ -1,6 +1,6 @@
 import { Guild, Snowflake } from "discord.js";
 
-import { Command } from "commands";
+import Command from "./Command";
 
 type defaultPermArgs = {
   commandID: Snowflake | Snowflake[] | Command | Command[];
@@ -30,14 +30,14 @@ namespace Permission {
    * @param args.permission
    */
   export async function setCommandPermission(
-    args: permWithUserIDs
+    args: permWithUserIDs,
   ): Promise<void>;
   export async function setCommandPermission(
-    args: permWithRollIDs
+    args: permWithRollIDs,
   ): Promise<void>;
 
   export async function setCommandPermission(
-    args: permWithUserIDs | permWithRollIDs
+    args: permWithUserIDs | permWithRollIDs,
   ) {
     let args0 = true;
     let args1: boolean | undefined = undefined;

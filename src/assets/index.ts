@@ -1,6 +1,6 @@
 import properties from "properties-reader";
 
-import { Strings } from "utils";
+import { Strings } from "@/utils";
 
 namespace Assets {
   const rootDir = "./assets/";
@@ -42,7 +42,7 @@ namespace Assets {
       try {
         dictionary.set(
           lang,
-          properties(`${rootDir}bundles/bundle_${lang}.properties`)
+          properties(`${rootDir}bundles/bundle_${lang}.properties`),
         );
       } catch (ignore) {}
     });
@@ -55,7 +55,7 @@ namespace Assets {
       return String(
         (dictionary.get(lang) ?? dictionary.get(defaultLocale))?.get(key) ??
           dictionary.get(defaultLocale)?.get(key) ??
-          key
+          key,
       );
     }
 

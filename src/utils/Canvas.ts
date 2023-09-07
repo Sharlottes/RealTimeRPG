@@ -6,7 +6,7 @@ export class Canvas {
   public static unicodeProgressBar(
     value: number,
     max: number,
-    options?: { showPercent?: boolean; showValue?: boolean }
+    options?: { showPercent?: boolean; showValue?: boolean },
   ) {
     const per = Mathf.clamp(value / max);
 
@@ -54,7 +54,7 @@ export class Canvas {
             font?: string;
             style?: string | CanvasGradient | CanvasPattern;
           };
-    }
+    },
   ) {
     const { bar, font, sideFont } = options;
     const barWidth = typeof bar === "number" ? bar : bar.width;
@@ -96,7 +96,7 @@ export class Canvas {
     context.fillText(
       `${mainText} ${(progress * 100).toFixed()}%`,
       centerX,
-      centerY
+      centerY,
     );
 
     context.fillStyle = subStyle;
@@ -106,7 +106,7 @@ export class Canvas {
     context.fillText(
       `${subText} ${options.progress.now}/${options.progress.max}`,
       centerX,
-      centerY + rad / 2
+      centerY + rad / 2,
     );
 
     context.beginPath();
@@ -118,7 +118,7 @@ export class Canvas {
       rad,
       -Math.PI / 2,
       -Math.PI / 2 + progress * Math.PI * 2,
-      false
+      false,
     );
     context.stroke();
 

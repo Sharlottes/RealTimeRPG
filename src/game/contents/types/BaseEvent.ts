@@ -1,6 +1,6 @@
 import { BaseInteraction } from "discord.js";
 
-import { User } from "game";
+import { User } from "@/game";
 
 //이딴게 이벤트?
 export default class BaseEvent implements Rationess {
@@ -8,7 +8,7 @@ export default class BaseEvent implements Rationess {
 
   constructor(
     public ratio: number,
-    public start: (user: User, interaction: BaseInteraction) => void
+    public start: (user: User, interaction: BaseInteraction) => void,
   ) {}
 
   public setOnly(only: boolean): this {

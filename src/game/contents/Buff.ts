@@ -1,4 +1,4 @@
-import { bundle } from "assets";
+import { bundle } from "@/assets";
 import { User } from "..";
 import { EntityI } from "../../@type/types";
 
@@ -10,7 +10,7 @@ export default class Buff {
     owner: EntityI,
     amount: number,
     buff: Buff,
-    locale: string
+    locale: string,
   ) => string;
 
   constructor(
@@ -21,15 +21,15 @@ export default class Buff {
       owner: EntityI,
       amount: number,
       buff: Buff,
-      locale: string
-    ) => string
+      locale: string,
+    ) => string,
   ) {
     this.value = value;
 
     this.localName = (user: User | string) =>
       bundle.find(
         typeof user === "string" ? user : user.locale,
-        `buff.${name}.name`
+        `buff.${name}.name`,
       );
     this.callback = callback;
     this.description = description;

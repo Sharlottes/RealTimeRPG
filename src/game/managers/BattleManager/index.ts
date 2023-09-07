@@ -12,12 +12,12 @@ import {
   ItemStack,
   ItemStorable,
   User,
-} from "game";
-import { getOne } from "utils/getOne";
-import { Item, Items } from "game/contents";
-import { Mathf, Canvas, Strings, ANSIStyle } from "utils";
-import { bundle } from "assets";
-import { EntityI } from "@type/types";
+} from "@/game";
+import { getOne } from "@/utils/getOne";
+import { Item, Items } from "@/game/contents";
+import { Mathf, Canvas, Strings, ANSIStyle } from "@/utils";
+import { bundle } from "@/assets";
+import { EntityI } from "@/@type/types";
 import ItemSelectManager from "../ItemSelectManager";
 import { codeBlock } from "@discordjs/builders";
 import Manager, { ManagerConstructOptions } from "../Manager";
@@ -53,7 +53,7 @@ export default class BattleManager extends Manager {
   private reloadRefresher: () => this;
 
   public constructor(
-    options: ManagerConstructOptions & { enemy: UnitEntity; user: User }
+    options: ManagerConstructOptions & { enemy: UnitEntity; user: User },
   ) {
     super(options);
     this.user = this.turn = options.user;
@@ -69,12 +69,12 @@ export default class BattleManager extends Manager {
         this.locale,
         "battle.start",
         this.user.user.username,
-        this.enemy.type.localName(this.user)
-      )
+        this.enemy.type.localName(this.user),
+      ),
     );
     this.setEmbeds(this.mainEmbed, ActionManager.actionEmbed);
     this.updateLog(
-      bundle.format(this.locale, "battle.turnend", this.totalTurn)
+      bundle.format(this.locale, "battle.turnend", this.totalTurn),
     );
     this.updateBar();
 
@@ -89,8 +89,8 @@ export default class BattleManager extends Manager {
             bundle.format(
               this.locale,
               "battle.cooldown",
-              weapon.cooldown.toFixed()
-            )
+              weapon.cooldown.toFixed(),
+            ),
           );
         } else {
           await this.addAction(
@@ -98,22 +98,22 @@ export default class BattleManager extends Manager {
               this,
               this.user,
               this.enemy,
-              this.user.inventory.equipments.weapon
+              this.user.inventory.equipments.weapon,
             )
               .addListener(
                 "undo",
-                () => (this.user.inventory.equipments.weapon.cooldown = 0)
+                () => (this.user.inventory.equipments.weapon.cooldown = 0),
               )
               .addListener(
                 "added",
                 () =>
                   (this.user.inventory.equipments.weapon.cooldown =
-                    this.user.inventory.equipments.weapon.item.getWeapon().cooldown)
-              )
+                    this.user.inventory.equipments.weapon.item.getWeapon().cooldown),
+              ),
           );
         }
       },
-      { style: ButtonStyle.Primary }
+      { style: ButtonStyle.Primary },
     );
 
     this.addButtonSelection("evasion", 0, async () => {
@@ -122,26 +122,26 @@ export default class BattleManager extends Manager {
         this.addAction(
           new DvaseAction(this, this.user)
             .addListener("undo", () => (this.evaseBtnSelected = true))
-            .addListener("runned", () => (this.evaseBtnSelected = false))
+            .addListener("runned", () => (this.evaseBtnSelected = false)),
         );
       } else {
         this.evaseBtnSelected = true;
         this.addAction(
           new EvaseAction(this, this.user)
             .addListener("undo", () => (this.evaseBtnSelected = false))
-            .addListener("runned", () => (this.evaseBtnSelected = false))
+            .addListener("runned", () => (this.evaseBtnSelected = false)),
         );
       }
     });
 
     this.addButtonSelection("shield", 0, async () =>
-      this.addAction(new ShieldAction(this, this.user))
+      this.addAction(new ShieldAction(this, this.user)),
     );
 
     this.addButtonSelection("turn", 0, async () => {
       this.components[4].components[0].setDisabled(true);
       this.components.forEach((rows) =>
-        rows.components.forEach((component) => component.setDisabled(true))
+        rows.components.forEach((component) => component.setDisabled(true)),
       );
       await this.turnEnd();
     });
@@ -162,15 +162,15 @@ export default class BattleManager extends Manager {
         placeholder: "swap weapon to ...",
         list: () =>
           (<ItemStorable[]>[new WeaponEntity(Items.punch)]).concat(
-            this.user.inventory.items.filter((store) => store.item.hasWeapon())
+            this.user.inventory.items.filter((store) => store.item.hasWeapon()),
           ),
         reducer: (store, index) => ({
           label: `(${index + 1}) ${store.item.localName(
-            this.locale
+            this.locale,
           )}, ${store.toStateString((key) => bundle.find(this.locale, key))}`,
           value: index.toString(),
         }),
-      }
+      },
     );
 
     this.consumeRefresher = this.addMenuSelection(
@@ -185,7 +185,7 @@ export default class BattleManager extends Manager {
               await this.addAction(
                 new ConsumeAction(this, this.user, entity.item, amount)
                   .addListener("added", () => this.consumeRefresher().update())
-                  .addListener("undo", () => this.consumeRefresher().update())
+                  .addListener("undo", () => this.consumeRefresher().update()),
               );
               await this.consumeRefresher().update();
             },
@@ -194,7 +194,7 @@ export default class BattleManager extends Manager {
           await this.addAction(
             new ConsumeAction(this, this.user, entity.item, 1)
               .addListener("added", () => this.consumeRefresher().update())
-              .addListener("undo", () => this.consumeRefresher().update())
+              .addListener("undo", () => this.consumeRefresher().update()),
           );
         }
       },
@@ -204,11 +204,11 @@ export default class BattleManager extends Manager {
           this.user.inventory.items.filter((store) => store.item.hasConsume()),
         reducer: (store, index) => ({
           label: `(${index + 1}) ${store.item.localName(
-            this.locale
+            this.locale,
           )} ${store.toStateString((key) => bundle.find(this.locale, key))}`,
           value: index.toString(),
         }),
-      }
+      },
     );
 
     this.reloadRefresher = this.addMenuSelection(
@@ -224,10 +224,10 @@ export default class BattleManager extends Manager {
                 new ReloadAction(
                   this,
                   this.user,
-                  new ItemStack(entity.item, amount)
+                  new ItemStack(entity.item, amount),
                 )
                   .addListener("added", () => this.reloadRefresher().update())
-                  .addListener("undo", () => this.reloadRefresher().update())
+                  .addListener("undo", () => this.reloadRefresher().update()),
               );
               await this.reloadRefresher().update();
             },
@@ -236,7 +236,7 @@ export default class BattleManager extends Manager {
           await this.addAction(
             new ReloadAction(this, this.user, new ItemStack(entity.item, 1))
               .addListener("added", () => this.reloadRefresher().update())
-              .addListener("undo", () => this.reloadRefresher().update())
+              .addListener("undo", () => this.reloadRefresher().update()),
           );
         }
       },
@@ -246,11 +246,11 @@ export default class BattleManager extends Manager {
           this.user.inventory.items.filter((store) => store.item.hasAmmo()),
         reducer: (store, index) => ({
           label: `(${index + 1}) ${store.item.localName(
-            this.locale
+            this.locale,
           )} ${store.toStateString((key) => bundle.find(this.locale, key))}`,
           value: index.toString(),
         }),
-      }
+      },
     );
 
     this.addButtonSelection(
@@ -265,7 +265,7 @@ export default class BattleManager extends Manager {
       {
         style: ButtonStyle.Danger,
         disabled: true,
-      }
+      },
     );
 
     this.validate();
@@ -291,8 +291,8 @@ export default class BattleManager extends Manager {
     //자신의 턴일때만 활성화
     this.components.forEach((row) =>
       row.components.forEach((component) =>
-        component.setDisabled(this.turn != this.user)
-      )
+        component.setDisabled(this.turn != this.user),
+      ),
     );
     if (this.turn != this.user) return;
 
@@ -314,15 +314,15 @@ export default class BattleManager extends Manager {
     attack.setDisabled(this.user.inventory.equipments.weapon.cooldown > 0);
     shield.setDisabled(!this.user.inventory.equipments.shield);
     reload.setDisabled(
-      !(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity)
+      !(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity),
     );
 
     //회피 on/off
     (evase as ButtonBuilder).setLabel(
       bundle.find(
         this.locale,
-        this.evaseBtnSelected ? "select.dvasion" : "select.evasion"
-      )
+        this.evaseBtnSelected ? "select.dvasion" : "select.evasion",
+      ),
     );
   }
 
@@ -342,8 +342,8 @@ export default class BattleManager extends Manager {
                 this.locale,
                 "error.low_energy",
                 this.turn.stats.energy,
-                action.cost
-              )
+                action.cost,
+              ),
             ),
         ],
       })
@@ -353,7 +353,7 @@ export default class BattleManager extends Manager {
               .setCustomId("useHealth")
               .setLabel(bundle.find(this.locale, "select.useHealth"))
               .setStyle(ButtonStyle.Secondary),
-          ])
+          ]),
         )
         .setTrigger("useHealth", (_, manager) => {
           manager.remove();
@@ -384,12 +384,12 @@ export default class BattleManager extends Manager {
       if (item.item.hasWeapon())
         (item as WeaponEntity).cooldown = Math.max(
           0,
-          (item as WeaponEntity).cooldown - 1
+          (item as WeaponEntity).cooldown - 1,
         );
     }
     this.turn.inventory.equipments.weapon.cooldown = Math.max(
       0,
-      this.turn.inventory.equipments.weapon.cooldown - 1
+      this.turn.inventory.equipments.weapon.cooldown - 1,
     );
 
     //버프/디버프 효과
@@ -399,7 +399,7 @@ export default class BattleManager extends Manager {
       if (status.duration <= 0)
         this.turn.statuses.splice(
           this.turn.statuses.findIndex((s) => s == status),
-          1
+          1,
         );
     }
 
@@ -420,8 +420,8 @@ export default class BattleManager extends Manager {
             this,
             this.enemy,
             this.user,
-            this.enemy.inventory.equipments.weapon
-          )
+            this.enemy.inventory.equipments.weapon,
+          ),
         );
       this.turnEnd();
       return;
@@ -433,7 +433,7 @@ export default class BattleManager extends Manager {
     this.updateBar();
     this.validate();
     this.updateLog(
-      bundle.format(this.locale, "battle.turnend", this.totalTurn)
+      bundle.format(this.locale, "battle.turnend", this.totalTurn),
     );
     this.consumeRefresher();
     this.reloadRefresher();
@@ -462,22 +462,22 @@ export default class BattleManager extends Manager {
             this.user.stats.health
           }/${this.user.stats.health_max}\n${Canvas.unicodeProgressBar(
             this.user.stats.health,
-            this.user.stats.health_max
+            this.user.stats.health_max,
           )}` +
           `\n\n**${bundle.find(this.locale, "energy")}**: ${
             this.user.stats.energy
           }/${this.user.stats.energy_max}\n${Canvas.unicodeProgressBar(
             this.user.stats.energy,
-            this.user.stats.energy_max
+            this.user.stats.energy_max,
           )}` +
           `\n\n**${bundle.find(
             this.locale,
-            "weapon"
+            "weapon",
           )}**: ${this.user.inventory.equipments.weapon.item.localName(
-            this.locale
+            this.locale,
           )}(${this.user.inventory.equipments.weapon.cooldown}), ${bundle.find(
             this.locale,
-            "durability"
+            "durability",
           )} ${this.user.inventory.equipments.weapon.durability ?? "0"}` +
           (this.user.inventory.equipments.weapon instanceof SlotWeaponEntity
             ? `, ${bundle.find(this.locale, "ammo")} ${
@@ -487,9 +487,9 @@ export default class BattleManager extends Manager {
           (this.user.inventory.equipments.shield
             ? `\n\n**${bundle.find(
                 this.locale,
-                "shield"
+                "shield",
               )}**: ${this.user.inventory.equipments.shield.item.localName(
-                this.locale
+                this.locale,
               )}, ${bundle.find(this.locale, "durability")} ${
                 this.user.inventory.equipments.shield.durability
               }`
@@ -499,11 +499,11 @@ export default class BattleManager extends Manager {
                 .map(
                   (status) =>
                     `${status.status.localName(
-                      this.locale
+                      this.locale,
                     )}: ${status.duration.toFixed()} ${bundle.find(
                       this.locale,
-                      "turn"
-                    )}`
+                      "turn",
+                    )}`,
                 )
                 .join("\n")}`
             : ""),
@@ -523,19 +523,19 @@ export default class BattleManager extends Manager {
             this.enemy.stats.health
           }/${this.enemy.stats.health_max}\n${Canvas.unicodeProgressBar(
             this.enemy.stats.health,
-            this.enemy.stats.health_max
+            this.enemy.stats.health_max,
           )}` +
           `\n\n**${bundle.find(this.locale, "energy")}**: ${
             this.enemy.stats.energy
           }/${this.enemy.stats.energy_max}\n${Canvas.unicodeProgressBar(
             this.enemy.stats.energy,
-            this.enemy.stats.energy_max
+            this.enemy.stats.energy_max,
           )}` +
           `\n\n**${bundle.find(
             this.locale,
-            "weapon"
+            "weapon",
           )}**: ${this.enemy.inventory.equipments.weapon.item.localName(
-            this.locale
+            this.locale,
           )}(${
             this.enemy.inventory.equipments.weapon.cooldown || 0
           }), ${bundle.find(this.locale, "durability")} ${
@@ -549,9 +549,9 @@ export default class BattleManager extends Manager {
           (this.enemy.inventory.equipments.shield
             ? `\n\n**${bundle.find(
                 this.locale,
-                "shield"
+                "shield",
               )}**: ${this.enemy.inventory.equipments.shield.item.localName(
-                this.locale
+                this.locale,
               )}, ${bundle.find(this.locale, "durability")} ${
                 this.enemy.inventory.equipments.shield.durability
               }`
@@ -559,16 +559,16 @@ export default class BattleManager extends Manager {
           (this.enemy.statuses.length > 0
             ? `\n**${bundle.find(
                 this.locale,
-                "status"
+                "status",
               )}**\n${this.enemy.statuses
                 .map(
                   (status) =>
                     `${status.status.localName(
-                      this.locale
+                      this.locale,
                     )}: ${status.duration.toFixed()} ${bundle.find(
                       this.locale,
-                      "turn"
-                    )}`
+                      "turn",
+                    )}`,
                 )
                 .join("\n")}`
             : ""),
@@ -601,7 +601,7 @@ export default class BattleManager extends Manager {
           (this.enemy.stats.health < 0
             ? bundle.find(this.locale, "battle.overkill") + " "
             : "") +
-          bundle.format(this.locale, "battle.win", this.enemy.stats.health)
+          bundle.format(this.locale, "battle.win", this.enemy.stats.health),
       );
       this.mainEmbed.addFields({
         name: "Battle End",
@@ -616,22 +616,23 @@ export default class BattleManager extends Manager {
                 (i) =>
                   `${i.item.localName(this.locale)} +${i.amount} ${bundle.find(
                     this.locale,
-                    "unit.item"
-                  )}`
+                    "unit.item",
+                  )}`,
               )
-              .join("\n")
+              .join("\n"),
           ) +
             "\n" +
             items
               .map((i) => this.user.giveItem(i.item))
               .filter((e) => e)
               .join("\n"),
-          [ANSIStyle.BLUE]
+          [ANSIStyle.BLUE],
         ),
       });
     } else if (this.user.stats.health <= 0) {
       this.updateLog(
-        "- " + bundle.format(this.locale, "battle.lose", this.user.stats.health)
+        "- " +
+          bundle.format(this.locale, "battle.lose", this.user.stats.health),
       );
       //TODO: 패배 부분 구현하기
     }

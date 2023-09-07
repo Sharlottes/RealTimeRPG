@@ -1,4 +1,4 @@
-import { bundle } from "assets";
+import { bundle } from "@/assets";
 import { User } from "..";
 
 export default class Content {
@@ -12,17 +12,17 @@ export default class Content {
     this.localName = (user: User | string) =>
       bundle.find(
         typeof user === "string" ? user : user.locale,
-        `content.${type}.${name}.name`
+        `content.${type}.${name}.name`,
       );
     this.description = (user: User | string) =>
       bundle.find(
         typeof user === "string" ? user : user.locale,
-        `content.${type}.${name}.description`
+        `content.${type}.${name}.description`,
       );
     this.details = (user: User | string) =>
       bundle.find(
         typeof user === "string" ? user : user.locale,
-        `content.${type}.${name}.details`
+        `content.${type}.${name}.details`,
       );
   }
 }

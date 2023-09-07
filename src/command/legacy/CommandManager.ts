@@ -1,13 +1,11 @@
-export { default as Command } from "./Command";
-
 import {
   ApplicationCommandDataResolvable,
   Collection,
   Guild,
 } from "discord.js";
 import { Routes } from "discord-api-types/v10";
-import { Command } from "commands";
-import { app } from "index";
+import Command from "./Command";
+import { app } from "@/index";
 
 namespace CommandManager {
   export const commands: Collection<string, Command> = new Collection();
@@ -23,7 +21,7 @@ namespace CommandManager {
     if (!commands.has(commandName)) {
       commands.set(commandName, command);
       console.log(
-        `[Command] register [ /${command.builder.name} ] to ${command.category} command.`
+        `[Command] register [ /${command.builder.name} ] to ${command.category} command.`,
       );
       return true;
     } else {
@@ -34,12 +32,12 @@ namespace CommandManager {
   export async function refreshCommand(target: "global"): Promise<void>;
   export async function refreshCommand(
     target: "guild",
-    guild: Guild
+    guild: Guild,
   ): Promise<void>;
 
   export async function refreshCommand(
     target: "global" | "guild",
-    guild?: Guild
+    guild?: Guild,
   ): Promise<void> {
     const application = app.client.application;
     if (!application) return;
@@ -49,12 +47,12 @@ namespace CommandManager {
       : Routes.applicationCommands(application.id);
 
     const data: CommandInfo[] = (await app.rest.get(
-      commandPath
+      commandPath,
     )) as CommandInfo[];
     for (const command of data) {
       await app.rest.delete(`${commandPath}/${command.id}`);
       console.log(
-        `[Command] delecting [ /$${commandPath}/${command.id} ] command has been done.`
+        `[Command] delecting [ /$${commandPath}/${command.id} ] command has been done.`,
       );
     }
 
@@ -63,10 +61,10 @@ namespace CommandManager {
       const data = command.setHiddenConfig(command.builder).toJSON();
       await application.commands.create(
         data as ApplicationCommandDataResolvable,
-        guild?.id
+        guild?.id,
       );
       console.log(
-        `[Command] registing [ /${command.builder.name} ] to ${command.category} command has been done.`
+        `[Command] registing [ /${command.builder.name} ] to ${command.category} command has been done.`,
       );
     }
   }

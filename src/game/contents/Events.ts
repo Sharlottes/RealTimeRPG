@@ -1,12 +1,12 @@
 import Random from "random";
-import { getOne } from "utils/getOne";
+import { getOne } from "@/utils/getOne";
 import EncounterManager from "../managers/EncounterManager";
 import UnitEntity from "../UnitEntity";
 import Items from "./Items";
 import Units from "./Units";
 import Event from "./types/BaseEvent";
-import PickupManager from "game/managers/PickupManager";
-import { ItemStack } from "game/Inventory";
+import PickupManager from "@/game/managers/PickupManager";
+import { ItemStack } from "@/game/Inventory";
 
 export default class Events {
   static readonly events: Event[] = [];
@@ -20,15 +20,15 @@ export default class Events {
         const stack = bool
           ? new ItemStack(
               getOne(Items.items.filter((i) => i.dropOnWalk)),
-              Random.integer(1, 5)
+              Random.integer(1, 5),
             )
           : undefined;
         const money = !bool ? 2 + Math.floor(Math.random() * 10) : undefined;
 
         await new PickupManager({ user, interaction, stack, money }).send(
-          user.gameManager!.targetChannel
+          user.gameManager!.targetChannel,
         );
-      })
+      }),
     );
 
     this.events.push(
@@ -37,10 +37,10 @@ export default class Events {
           user,
           interaction,
           target: new UnitEntity(
-            Units.find(Random.int(0, Units.units.length - 1))
+            Units.find(Random.int(0, Units.units.length - 1)),
           ),
         }).send(user.gameManager!.targetChannel);
-      }).setOnly(true)
+      }).setOnly(true),
     );
   }
 }

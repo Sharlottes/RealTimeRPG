@@ -5,9 +5,9 @@ export { default as User } from "./User";
 export { default as Inventory } from "./Inventory";
 export * from "./Inventory";
 
-import CommandManager from "game/managers/CommandManager";
-import { Items, Units, StatusEffects } from "game/contents";
-import Vars from "Vars";
+import CommandManager from "@/game/managers/CommandManager";
+import { Items, Units, StatusEffects } from "@/game/contents";
+import Vars from "@/Vars";
 import Events from "./contents/Events";
 
 class Game {

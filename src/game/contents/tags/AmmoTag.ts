@@ -1,4 +1,4 @@
-import { ItemEntity } from "game/Inventory";
+import { ItemEntity } from "@/game/Inventory";
 import { EmbedBuilder } from "discord.js";
 import { ItemTag } from ".";
 import { Item } from "..";
@@ -14,7 +14,7 @@ export default class AmmoTag extends ItemTag {
 
   public buildInfo(
     embed: EmbedBuilder,
-    entity?: ItemEntity | undefined
+    entity?: ItemEntity | undefined,
   ): EmbedBuilder {
     return embed.addFields({
       name: "items/ammo",

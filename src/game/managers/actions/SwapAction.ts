@@ -1,6 +1,6 @@
-import { EntityI } from "@type/types";
-import { bundle } from "assets";
-import { WeaponEntity } from "game/Inventory";
+import { EntityI } from "@/@type/types";
+import { bundle } from "@/assets";
+import { WeaponEntity } from "@/game/Inventory";
 import BattleManager from "../BattleManager";
 import { BaseAction } from "./BaseAction";
 
@@ -11,7 +11,7 @@ export class SwapAction extends BaseAction {
     manager: BattleManager,
     owner: EntityI,
     private weapon: WeaponEntity,
-    immediate = false
+    immediate = false,
   ) {
     super(manager, owner, 3);
 
@@ -27,9 +27,9 @@ export class SwapAction extends BaseAction {
         "switch_change",
         this.weapon.item.localName(this.manager.locale),
         this.owner.inventory.equipments.weapon.item.localName(
-          this.manager.locale
-        )
-      )
+          this.manager.locale,
+        ),
+      ),
     );
     this.owner.switchWeapon(this.weapon);
   }
@@ -39,9 +39,9 @@ export class SwapAction extends BaseAction {
       this.manager.locale,
       "action.swap.description",
       this.owner.inventory.equipments.weapon.item.localName(
-        this.manager.locale
+        this.manager.locale,
       ),
-      this.weapon.item.localName(this.manager.locale)
+      this.weapon.item.localName(this.manager.locale),
     );
   }
 

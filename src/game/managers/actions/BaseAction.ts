@@ -1,5 +1,5 @@
-import { EntityI } from "@type/types";
-import { bundle } from "assets";
+import { EntityI } from "@/@type/types";
+import { bundle } from "@/assets";
 import BattleManager from "../BattleManager";
 import Manager from "../Manager";
 
@@ -19,7 +19,7 @@ export abstract class BaseAction {
     manager: BattleManager,
     owner: EntityI,
     cost: number,
-    immediate = false
+    immediate = false,
   ) {
     this.manager = manager;
     this.owner = owner;
@@ -33,7 +33,7 @@ export abstract class BaseAction {
 
   public addListener(
     event: keyof typeof this.eventListeners,
-    callback: () => void
+    callback: () => void,
   ) {
     this.eventListeners[event].push(callback);
     return this;
@@ -44,7 +44,7 @@ export abstract class BaseAction {
     Manager.newTextEmbed(
       this.manager.interaction,
       bundle.find(this.manager.locale, "alert.bloody_action"),
-      bundle.find(this.manager.locale, "alert")
+      bundle.find(this.manager.locale, "alert"),
     );
   }
 

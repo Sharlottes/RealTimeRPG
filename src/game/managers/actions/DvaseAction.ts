@@ -1,5 +1,5 @@
-import { EntityI } from "@type/types";
-import { bundle } from "assets";
+import { EntityI } from "@/@type/types";
+import { bundle } from "@/assets";
 import BattleManager from "../BattleManager";
 import { BaseAction } from "./BaseAction";
 
@@ -24,8 +24,8 @@ export class DvaseAction extends BaseAction {
           "dvasion_position",
           typeof this.owner.name === "string"
             ? this.owner.name
-            : this.owner.name(this.manager.locale)
-        )
+            : this.owner.name(this.manager.locale),
+        ),
       )
       .update();
   }

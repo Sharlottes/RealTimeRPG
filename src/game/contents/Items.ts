@@ -1,4 +1,4 @@
-import { Item, Buff, StatusEffects } from "game/contents";
+import { Item, Buff, StatusEffects } from "@/game/contents";
 import { EntityI } from "../../@type/types";
 import {
   AmmoTag,
@@ -46,7 +46,7 @@ export default class Items {
               owner.stats.energy += amount * buff.value;
             },
             (owner: EntityI, amount: number, buff: Buff, locale: string) =>
-              `* ${buff.localName(locale)} +${amount * buff.value}`
+              `* ${buff.localName(locale)} +${amount * buff.value}`,
           ),
         ]),
       ]);
@@ -57,7 +57,7 @@ export default class Items {
         ratio: 0.1,
         dropOnWalk: false,
         dropOnBattle: false,
-      })
+      }),
     );
     (() => {
       const item = this.items[this.items.length - 1];
@@ -77,7 +77,7 @@ export default class Items {
         ratio: 0.15,
         dropOnWalk: false,
         dropOnBattle: false,
-      })
+      }),
     );
     (() => {
       const item = this.items[this.items.length - 1];
@@ -98,7 +98,7 @@ export default class Items {
         dropOnWalk: false,
         dropOnBattle: false,
         dropOnShop: false,
-      }))
+      })),
     );
     (() => {
       const item = this.items[this.items.length - 1];
@@ -114,7 +114,7 @@ export default class Items {
     })();
 
     this.items.push(
-      new Item("experience_bottle", { ratio: 0.1, dropOnWalk: false })
+      new Item("experience_bottle", { ratio: 0.1, dropOnWalk: false }),
     );
     (() => {
       const item = this.items[this.items.length - 1];
@@ -127,7 +127,7 @@ export default class Items {
               owner.exp += amount * buff.value;
             },
             (owner: EntityI, amount: number, buff: Buff, locale: string) =>
-              `* ${buff.localName(locale)} +${amount * buff.value}`
+              `* ${buff.localName(locale)} +${amount * buff.value}`,
           ),
         ]),
       ]);
@@ -145,7 +145,7 @@ export default class Items {
               owner.stats.health += amount * buff.value;
             },
             (owner: EntityI, amount: number, buff: Buff, locale: string) =>
-              `* ${buff.localName(locale)} +${amount * buff.value}`
+              `* ${buff.localName(locale)} +${amount * buff.value}`,
           ),
         ]),
       ]);
@@ -165,7 +165,7 @@ export default class Items {
               owner.stats.health += amount * buff.value;
             },
             (owner: EntityI, amount: number, buff: Buff, locale: string) =>
-              `* ${buff.localName(locale)} +${amount * buff.value}`
+              `* ${buff.localName(locale)} +${amount * buff.value}`,
           ),
         ]),
       ]);
@@ -178,7 +178,7 @@ export default class Items {
         dropOnWalk: false,
         dropOnBattle: false,
         dropOnShop: false,
-      }))
+      })),
     );
     (() => {
       const item = this.items[this.items.length - 1];
@@ -198,7 +198,7 @@ export default class Items {
         ratio: 0.75,
         dropOnWalk: false,
         dropOnBattle: false,
-      })
+      }),
     );
     (() => {
       const item = this.items[this.items.length - 1];
@@ -220,7 +220,7 @@ export default class Items {
         dropOnWalk: false,
         dropOnBattle: true,
         dropOnShop: false,
-      })
+      }),
     );
     (() => {
       const item = this.items[this.items.length - 1];
@@ -241,7 +241,7 @@ export default class Items {
         dropOnWalk: false,
         dropOnBattle: false,
         dropOnShop: true,
-      })
+      }),
     );
     (() => {
       const item = this.items[this.items.length - 1];

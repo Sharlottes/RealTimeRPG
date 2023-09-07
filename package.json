@@ -1,36 +1,28 @@
 {
-  "name": "realtimerpg",
-  "version": "1.0.0",
-  "main": "index.ts",
+  "type": "module",
   "scripts": {
-    "dev": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts",
+    "start": "node --es-module-specifier-resolution=node output/index.js",
+    "build": "swc src/ -d output",
     "ts-check": "tsc --noEmit",
     "format": "prettier -w ./src"
   },
   "dependencies": {
-    "random": "^3.0.6",
-    "canvas": "^2.10.2",
-    "dotenv": "^16.0.3",
-    "discord.js": "^14.6.0",
-    "properties-reader": "^2.2.0",
-    "reflect-metadata": "^0.1.13",
+    "@discordx/utilities": "^5.2.1",
+    "canvas": "2.10",
+    "discord.js": "^14.13.0",
+    "discordx": "^11.7.6",
+    "dotenv": "^16.3.1",
+    "properties-reader": "^2.3.0",
+    "random": "^4.1.0",
     "string-progressbar": "^1.0.4"
   },
   "devDependencies": {
-    "@types/node": "^17.0.1",
+    "@swc/cli": "^0.1.62",
+    "@swc/core": "^1.3.83",
+    "@swc/helpers": "^0.5.2",
+    "@types/node": "^20.5.9",
     "@types/properties-reader": "^2.1.1",
-    "prettier": "2.5.1",
-    "ts-node-dev": "^1.1.8",
-    "tsconfig-paths": "^3.12.0",
-    "typescript": "^4.8"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Sharlottes/realtimerpg.git"
-  },
-  "author": "Sharlotte",
-  "contributors": [
-    "AmateurPotion"
-  ],
-  "license": "MIT"
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
 }

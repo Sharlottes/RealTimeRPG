@@ -1,6 +1,6 @@
-import { EntityI } from "@type/types";
-import { bundle } from "assets";
-import { ItemStack, SlotWeaponEntity } from "game/Inventory";
+import { EntityI } from "@/@type/types";
+import { bundle } from "@/assets";
+import { ItemStack, SlotWeaponEntity } from "@/game/Inventory";
 import BattleManager from "../BattleManager";
 import { BaseAction } from "./BaseAction";
 
@@ -11,7 +11,7 @@ export class ReloadAction extends BaseAction {
     manager: BattleManager,
     owner: EntityI,
     public stack: ItemStack,
-    immediate = false
+    immediate = false,
   ) {
     super(manager, owner, 1);
 
@@ -44,9 +44,9 @@ export class ReloadAction extends BaseAction {
           this.stack.item.localName(this.manager.locale),
           this.stack.amount,
           this.owner.inventory.equipments.weapon.item.localName(
-            this.manager.locale
-          )
-        )
+            this.manager.locale,
+          ),
+        ),
       );
     }
   }
@@ -57,7 +57,9 @@ export class ReloadAction extends BaseAction {
       "action.reload.description",
       this.stack.item.localName(this.manager.locale),
       this.stack.amount,
-      this.owner.inventory.equipments.weapon.item.localName(this.manager.locale)
+      this.owner.inventory.equipments.weapon.item.localName(
+        this.manager.locale,
+      ),
     );
   }
 

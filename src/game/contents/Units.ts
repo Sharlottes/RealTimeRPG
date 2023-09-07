@@ -1,5 +1,5 @@
 import { Items, Unit } from ".";
-import { Inventory, WeaponEntity } from "game";
+import { Inventory, WeaponEntity } from "@/game";
 
 export default class Units {
   static readonly units: Unit[] = [];
@@ -19,7 +19,7 @@ export default class Units {
         },
         ratio: 0.05,
         inventory: new Inventory().setWeapon(new WeaponEntity(Items.find(10))),
-      })
+      }),
     );
     this.units.push(
       new Unit({
@@ -35,7 +35,7 @@ export default class Units {
         },
         ratio: 0.2,
         inventory: new Inventory().setWeapon(new WeaponEntity(Items.find(3))),
-      })
+      }),
     );
   }
 

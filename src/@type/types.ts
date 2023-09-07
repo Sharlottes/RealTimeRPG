@@ -1,20 +1,6 @@
-import { WeaponEntity } from "game/Inventory";
-import { StatusEntity, User, Inventory } from "game";
-import StatusEffect from "game/contents/types/StatusEffect";
-
-export type EventTrigger = (
-  user: User,
-  components: Discord.ActionRowBuilder[],
-  interactionCallback: Discord.MessageComponentInteraction,
-  currentRow: ActionRowBuilderComponent
-) => void;
-
-export type EventSelection = {
-  readonly name: string;
-  readonly type: "button" | "select";
-  readonly callback: EventTrigger;
-  readonly options?: InteractionButtonOptions | MessageSelectMenuOptions;
-};
+import { WeaponEntity } from "@/game/Inventory";
+import { StatusEntity, User, Inventory } from "@/game";
+import StatusEffect from "@/game/contents/types/StatusEffect";
 
 export type UnitData = {
   name: string;

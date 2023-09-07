@@ -1,7 +1,7 @@
 import { codeBlock, EmbedBuilder } from "discord.js";
 import ComboManager from "./ComboManager";
 import type { BaseAction } from "../actions/BaseAction";
-import type BattleManager from "game/managers/BattleManager/index";
+import type BattleManager from "@/game/managers/BattleManager/index";
 
 class ActionManager {
   public readonly actionEmbed = new EmbedBuilder()
@@ -17,7 +17,7 @@ class ActionManager {
 
   public async onTurnEnd(manager: BattleManager) {
     const actionDescriptions = this.actionQueue.map((action) =>
-      codeBlock(action.description())
+      codeBlock(action.description()),
     );
     for (const action of this.actionQueue) {
       actionDescriptions.shift();

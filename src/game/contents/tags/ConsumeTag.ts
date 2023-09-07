@@ -1,5 +1,5 @@
-import { EntityI } from "@type/types";
-import { ItemEntity } from "game/Inventory";
+import { EntityI } from "@/@type/types";
+import { ItemEntity } from "@/game/Inventory";
 import { EmbedBuilder } from "discord.js";
 import Buff from "../Buff";
 import Item from "../types/Item";
@@ -21,7 +21,7 @@ export default class ConsumeTag extends ItemTag {
   //TODO: 버프 설명 구체화
   public buildInfo(
     embed: EmbedBuilder,
-    entity?: ItemEntity | undefined
+    entity?: ItemEntity | undefined,
   ): EmbedBuilder {
     return embed.addFields({
       name: "buffes",

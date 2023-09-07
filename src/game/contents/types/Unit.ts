@@ -1,4 +1,4 @@
-import { UnitData } from "@type/types";
+import { UnitData } from "@/@type/types";
 import { Inventory } from "../..";
 import { Content, Units } from "..";
 

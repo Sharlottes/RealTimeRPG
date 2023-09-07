@@ -1,5 +1,5 @@
-import { Item, Unit, StatusEffect } from "game/contents";
-import { StatusEntity } from "game";
+import { Item, Unit, StatusEffect } from "@/game/contents";
+import { StatusEntity } from "@/game";
 import Entity from "./Entity";
 
 export default class UnitEntity extends Entity {
@@ -33,7 +33,7 @@ export default class UnitEntity extends Entity {
   public removeStatus(status: StatusEffect) {
     this.statuses.splice(
       this.statuses.findIndex((entity) => entity.status.id == status.id),
-      1
+      1,
     );
   }
 

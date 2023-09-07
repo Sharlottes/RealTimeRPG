@@ -1,4 +1,4 @@
-import { bundle } from "assets";
+import { bundle } from "@/assets";
 import {
   BaseInteraction,
   type BaseMessageOptions,
@@ -12,9 +12,9 @@ import {
   TextBasedChannel,
   InteractionCollector,
   ButtonInteraction,
-  SelectMenuInteraction,
+  StringSelectMenuInteraction,
   ButtonStyle,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
   APIButtonComponent,
   APISelectMenuOption,
   ComponentType,
@@ -27,7 +27,7 @@ type Files = Exclude<BaseMessageOptions["files"], undefined>;
 export type ManagerConstructOptions = {
   content?: string;
   embeds?: EmbedBuilder[];
-  components?: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[];
+  components?: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[];
   triggers?: Map<string, ComponentTrigger>;
   files?: Exclude<BaseMessageOptions["files"], undefined>;
   lastManager?: Manager;
@@ -43,7 +43,7 @@ type MenuSelectOptions<T> = {
 
 type ComponentTrigger = (
   interaction: MessageComponentInteraction,
-  manager: Manager
+  manager: Manager,
 ) => void;
 
 /**
@@ -52,14 +52,16 @@ type ComponentTrigger = (
 class Manager extends KotlinLike<Manager> {
   public content?: string;
   public embeds: EmbedBuilder[] = [];
-  public components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[] = [];
+  public components: ActionRowBuilder<
+    StringSelectMenuBuilder | ButtonBuilder
+  >[] = [];
   public triggers: Map<string, ComponentTrigger> = new Map();
   public files: Files = [];
   public readonly locale: string;
   public readonly interaction: BaseInteraction;
   protected message?: Message | undefined;
   protected collector?: InteractionCollector<
-    SelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>
+    StringSelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>
   >;
   protected readonly lastManager?: Manager;
 
@@ -96,7 +98,7 @@ class Manager extends KotlinLike<Manager> {
           }
           trigger(interaction, this);
         }
-      });
+      }) as typeof this.collector;
   }
 
   /**
@@ -105,7 +107,7 @@ class Manager extends KotlinLike<Manager> {
    * @param channel - 송신할 채널
    */
   public async update(
-    channel: TextBasedChannel | null = this.interaction.channel
+    channel: TextBasedChannel | null = this.interaction.channel,
   ): Promise<Message> {
     if (!channel) throw new Error("channel does not exist");
 
@@ -131,7 +133,7 @@ class Manager extends KotlinLike<Manager> {
    * @param channel - 송신할 채널
    */
   public async send(
-    channel: TextBasedChannel | null = this.interaction.channel
+    channel: TextBasedChannel | null = this.interaction.channel,
   ): Promise<Message> {
     if (!channel) throw new Error("channel does not exist");
 
@@ -177,8 +179,8 @@ class Manager extends KotlinLike<Manager> {
   public addComponent(
     name: string,
     row: number,
-    component: SelectMenuBuilder | ButtonBuilder,
-    callback: ComponentTrigger
+    component: StringSelectMenuBuilder | ButtonBuilder,
+    callback: ComponentTrigger,
   ) {
     this.resizeSelection(row);
 
@@ -201,7 +203,7 @@ class Manager extends KotlinLike<Manager> {
     callback: ComponentTrigger,
     option: Partial<Omit<APIButtonComponent, "label" | "customId">> = {
       style: ButtonStyle.Primary,
-    }
+    },
   ) {
     this.addComponent(
       name,
@@ -209,7 +211,7 @@ class Manager extends KotlinLike<Manager> {
       new ButtonBuilder(option)
         .setLabel(bundle.find(this.locale, `select.${name}`))
         .setCustomId(name),
-      callback
+      callback,
     );
     return this;
   }
@@ -230,9 +232,9 @@ class Manager extends KotlinLike<Manager> {
     callback: (
       interaction: MessageComponentInteraction,
       manager: Manager,
-      item: T
+      item: T,
     ) => void,
-    { list, reducer, placeholder = "select..." }: MenuSelectOptions<T>
+    { list, reducer, placeholder = "select..." }: MenuSelectOptions<T>,
   ) {
     this.resizeSelection(row);
 
@@ -263,7 +265,7 @@ class Manager extends KotlinLike<Manager> {
                   }`,
                   value: "-1",
                 },
-              ]
+              ],
         )
         .concat(
           currentPage == Math.floor(currentList.length / 8)
@@ -275,7 +277,7 @@ class Manager extends KotlinLike<Manager> {
                   } -->`,
                   value: "-2",
                 },
-              ]
+              ],
         );
 
       return options.length === 0
@@ -284,17 +286,17 @@ class Manager extends KotlinLike<Manager> {
     };
 
     const refreshOptions = () => {
-      (this.components[row]?.components[0] as SelectMenuBuilder).setOptions(
-        reoption()
-      );
+      (
+        this.components[row]?.components[0] as StringSelectMenuBuilder
+      ).setOptions(reoption());
       return this;
     };
 
     this.components[row].addComponents(
-      new SelectMenuBuilder()
+      new StringSelectMenuBuilder()
         .setCustomId(name)
         .setPlaceholder(placeholder)
-        .setOptions(reoption())
+        .setOptions(reoption()),
     );
 
     this.setTrigger(name, async (interaction, manager) => {
@@ -313,7 +315,7 @@ class Manager extends KotlinLike<Manager> {
           if (currentPage == 0)
             Manager.newErrorEmbed(
               this.interaction,
-              bundle.find(this.locale, "error.first_page")
+              bundle.find(this.locale, "error.first_page"),
             );
           else currentPage--;
           break;
@@ -321,7 +323,7 @@ class Manager extends KotlinLike<Manager> {
           if (currentPage + 1 > Math.floor(list.length / 8))
             Manager.newErrorEmbed(
               this.interaction,
-              bundle.find(this.locale, "error.last_page")
+              bundle.find(this.locale, "error.last_page"),
             );
           else currentPage++;
           break;
@@ -350,7 +352,7 @@ class Manager extends KotlinLike<Manager> {
   public addBackButton(): this {
     if (!this.lastManager)
       throw new Error(
-        "last manager does not exist but trying to add back button?"
+        "last manager does not exist but trying to add back button?",
       );
 
     this.addButtonSelection(
@@ -359,13 +361,13 @@ class Manager extends KotlinLike<Manager> {
       () => {
         if (!this.lastManager)
           throw new Error(
-            "last manager does not exist but trying to add back button?"
+            "last manager does not exist but trying to add back button?",
           );
 
         this.collector?.stop();
         this.lastManager.update();
       },
-      { style: ButtonStyle.Secondary }
+      { style: ButtonStyle.Secondary },
     );
 
     return this;
@@ -380,7 +382,7 @@ class Manager extends KotlinLike<Manager> {
           .setCustomId("remove_embed")
           .setLabel("Cancel")
           .setStyle(ButtonStyle.Secondary),
-      ])
+      ]),
     );
     this.setTrigger("remove_embed", () => {
       clearTimeout(id);
@@ -410,14 +412,14 @@ class Manager extends KotlinLike<Manager> {
   }
 
   public setComponents(
-    ...components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[]
+    ...components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[]
   ): this {
     this.components = components;
     return this;
   }
 
   public addComponents(
-    ...components: ActionRowBuilder<SelectMenuBuilder | ButtonBuilder>[]
+    ...components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[]
   ): this {
     this.components.push(...components);
     return this;
@@ -441,7 +443,7 @@ class Manager extends KotlinLike<Manager> {
   public static async newErrorEmbed(
     interaction: BaseInteraction,
     description: string,
-    update: boolean = false
+    update: boolean = false,
   ) {
     const manager = new Manager({
       interaction,
@@ -459,7 +461,7 @@ class Manager extends KotlinLike<Manager> {
     interaction: BaseInteraction,
     description: string,
     title = "",
-    update: boolean = false
+    update: boolean = false,
   ) {
     const manager = new Manager({
       interaction,

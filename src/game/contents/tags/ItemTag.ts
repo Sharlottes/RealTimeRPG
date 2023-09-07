@@ -1,4 +1,4 @@
-import { ItemEntity } from "game";
+import { ItemEntity } from "@/game";
 import { EmbedBuilder } from "discord.js";
 import { Item } from "..";
 
@@ -12,6 +12,6 @@ export default abstract class ItemTag {
 
   public abstract buildInfo(
     builder: EmbedBuilder,
-    entity?: ItemEntity
+    entity?: ItemEntity,
   ): EmbedBuilder;
 }

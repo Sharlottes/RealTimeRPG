@@ -1,4 +1,4 @@
-import { EntityI } from "@type/types";
+import { EntityI } from "@/@type/types";
 import { Content, StatusEffects } from "..";
 import { StatusEntity } from "../..";
 
@@ -11,8 +11,8 @@ export default class StatusEffect extends Content {
     public readonly duration = -1,
     public readonly callback: (
       entity: EntityI,
-      status: StatusEntity
-    ) => void = () => {}
+      status: StatusEntity,
+    ) => void = () => {},
   ) {
     super(name, "status");
 

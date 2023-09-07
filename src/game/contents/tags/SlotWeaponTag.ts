@@ -1,6 +1,6 @@
-import { EntityI } from "@type/types";
-import { bundle } from "assets";
-import { SlotWeaponEntity } from "game/Inventory";
+import { EntityI } from "@/@type/types";
+import { bundle } from "@/assets";
+import { SlotWeaponEntity } from "@/game/Inventory";
 import { EmbedBuilder } from "discord.js";
 import { Item } from "..";
 import StatusEffect from "../types/StatusEffect";
@@ -15,7 +15,7 @@ export default class SlotWeaponTag extends WeaponTag {
       critical_ratio: number;
       critical_chance: number;
       status?: StatusEffect;
-    }
+    },
   ) {
     super(item, data);
     this.name = "SlotWeapon";
@@ -24,7 +24,7 @@ export default class SlotWeaponTag extends WeaponTag {
   public override attack(
     target: EntityI,
     entity: SlotWeaponEntity,
-    locale: string
+    locale: string,
   ) {
     if (!entity.ammos.length) return bundle.find(locale, "error.ammo_out");
     entity.ammos.pop();
@@ -34,7 +34,7 @@ export default class SlotWeaponTag extends WeaponTag {
 
   public buildInfo(
     embed: EmbedBuilder,
-    entity?: SlotWeaponEntity
+    entity?: SlotWeaponEntity,
   ): EmbedBuilder {
     super.buildInfo(embed, entity);
     if (entity)

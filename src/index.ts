@@ -1,14 +1,12 @@
-import { Client, GatewayIntentBits, REST } from "discord.js";
+import dotenv from "dotenv";
+dotenv.config();
 
-import CM from "commands";
-import assets from "assets";
-
+import { GatewayIntentBits, REST } from "discord.js";
+import { Client } from "discordx";
+import CM from "@/command/legacy/CommandManager";
+import assets from "@/assets";
 import Game from "./game";
-import CommandManager from "./game/managers/CommandManager";
-
-require("dotenv").config();
-
-const masterIDs = ["462167403237867520", "473072758629203980"];
+import "@/command/commands/RefreshCommand";
 
 // App 선언 - 봇의 모든 코드를 관리함
 export const app = {
@@ -18,8 +16,11 @@ export const app = {
       GatewayIntentBits.GuildMessages,
       GatewayIntentBits.MessageContent,
     ],
+    simpleCommand: {
+      prefix: "!",
+    },
   }),
-  rest: new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN),
+  rest: new REST({ version: "10" }).setToken(process.env.BOT_TOKEN),
 };
 
 const time = Date.now();
@@ -36,13 +37,6 @@ console.log(`command initialization has been done in ${Date.now() - time}ms`);
 Game.init();
 console.log(`game initialization has been done in ${Date.now() - time}ms`);
 
-//디스코드 봇 로그인
-app.client
-  .login(process.env.DISCORD_TOKEN)
-  .then(() =>
-    console.log(`discord bot login has been done in ${Date.now() - time}ms`)
-  );
-
 app.client
   .once("ready", async () => {
     console.log(
@@ -50,6 +44,7 @@ app.client
         Date.now() - time
       }ms`
     );
+    app.client.initApplicationCommands();
   })
   .on("interactionCreate", async (interaction) => {
     if (interaction.isChatInputCommand()) {
@@ -65,91 +60,11 @@ app.client
         );
     }
   })
-  .on("messageCreate", async (message) => {
-    if (
-      message.channel.isTextBased() &&
-      message.guild != null &&
-      (message.author.id == message.guild.ownerId ||
-        masterIDs.includes(message.author.id))
-    ) {
-      const time = new Date().getTime();
-
-      if (message.content == "!refresh") {
-        message.reply(
-          `guild command refresh start! server: ${message.guild.name}`
-        );
-
-        CM.commands.clear();
-        CommandManager.init();
-        await CM.refreshCommand("guild", message.guild);
-
-        message.reply(
-          `guild command refresh has been done in ${Date.now() - time}ms`
-        );
-      } else if (message.content == "!refresh global") {
-        message.reply(`global command refresh start!`);
-
-        CM.commands.clear();
-        CommandManager.init();
-        await CM.refreshCommand("global");
-
-        message.reply(
-          `global command refresh has been done in ${Date.now() - time}ms`
-        );
-      }
-    }
+  .on("messageCreate", (message) => {
+    app.client.executeCommand(message);
   });
 
-const Resolver = {
-  equal: (str: string) => () => {},
-} as const;
-
-type PermissionResolver = unknown;
-
-const IsInGuild: MethodDecorator = (target, propertyKey, descriptor) => {};
-const CommandController = <T extends { new (...args: any[]): {} }>(
-  constructor: T
-) => {
-  return class extends constructor {};
-};
-
-function Permissions(...resolvers: PermissionResolver[]): MethodDecorator {
-  return function (target, propertyKey, descriptor) {};
-}
-
-function TextCommand({ resolver }: { resolver: () => void }): MethodDecorator {
-  return function (target, propertyKey, descriptor) {};
-}
-
-@CommandController
-class A {
-  @IsInGuild
-  @Permissions()
-  @TextCommand({ resolver: Resolver.equal("refresh") })
-  async refrashGuildCommand(message: Discord.Message<true>) {
-    message.reply(`guild command refresh start! server: ${message.guild.name}`);
-
-    CM.commands.clear();
-    CommandManager.init();
-    await CM.refreshCommand("guild", message.guild);
-
-    message.reply(
-      `guild command refresh has been done in ${Date.now() - time}ms`
-    );
-  }
-
-  async refreshGlobalCommand(message: Discord.Message) {
-    message.reply(`global command refresh start!`);
-
-    CM.commands.clear();
-    CommandManager.init();
-    await CM.refreshCommand("global");
-
-    message.reply(
-      `global command refresh has been done in ${Date.now() - time}ms`
-    );
-  }
-}
+app.client.login(process.env.BOT_TOKEN);
 
 process
   .on("unhandledRejection", async (err) => {

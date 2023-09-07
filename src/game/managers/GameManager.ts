@@ -1,4 +1,4 @@
-import { bundle } from "assets";
+import { bundle } from "@/assets";
 import {
   BaseInteraction,
   ButtonStyle,
@@ -8,11 +8,10 @@ import {
 } from "discord.js";
 import BaseEvent from "../contents/types/BaseEvent";
 import User from "../User";
-import Manager, { ManagerConstructOptions } from "game/managers/Manager";
-import { getOne } from "utils/getOne";
-import Events from "game/contents/Events";
-import { Canvas } from "utils";
-import Alert from "game/Alert";
+import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
+import { getOne } from "@/utils/getOne";
+import Events from "@/game/contents/Events";
+import { Canvas } from "@/utils";
 
 /**
  * 이벤트 관리 클래스, user에 종속됨
@@ -23,7 +22,7 @@ export default class GameManager extends Manager {
   constructor(
     private readonly user: User,
     public readonly targetChannel: TextBasedChannel,
-    options: ManagerConstructOptions
+    options: ManagerConstructOptions,
   ) {
     super(options);
     this.user = user;
@@ -35,25 +34,25 @@ export default class GameManager extends Manager {
           `${bundle.find(this.locale, "health")}: ${Canvas.unicodeProgressBar(
             this.user.stats.health,
             this.user.stats.health_max,
-            { showValue: true }
+            { showValue: true },
           )}\n` +
           `${bundle.find(this.locale, "energy")}: ${Canvas.unicodeProgressBar(
             this.user.stats.energy,
             this.user.stats.energy_max,
-            { showValue: true }
+            { showValue: true },
           )}\n`,
       })
       .setDescription(
         this.user.alerts
           .map((alert) => `${codeBlock(alert.content)}`)
-          .join("\n") || null
+          .join("\n") || null,
       );
 
     this.user.on("alert", async (alert) => {
       this.mainEmbed.setDescription(
         this.user.alerts
           .map((alert) => `${codeBlock(alert.content)}`)
-          .join("\n")
+          .join("\n"),
       );
       if (alert.lifetime !== -1 && this.message) {
         const {
@@ -84,7 +83,7 @@ export default class GameManager extends Manager {
             this.targetChannel.delete();
           this.user.gameManager = undefined;
         },
-        { style: ButtonStyle.Secondary }
+        { style: ButtonStyle.Secondary },
       );
   }
 

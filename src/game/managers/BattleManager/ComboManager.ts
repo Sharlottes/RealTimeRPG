@@ -1,10 +1,10 @@
-import { bundle } from "assets";
-import Items from "game/contents/Items";
-import StatusEffects from "game/contents/StatusEffects";
+import { bundle } from "@/assets";
+import Items from "@/game/contents/Items";
+import StatusEffects from "@/game/contents/StatusEffects";
 import { AttackAction } from "../actions/AttackAction";
-import type { SlotWeaponEntity } from "game/Inventory";
+import type { SlotWeaponEntity } from "@/game/Inventory";
 import type { BaseAction } from "../actions/BaseAction";
-import type BattleManager from "game/managers/BattleManager/index";
+import type BattleManager from "@/game/managers/BattleManager/index";
 
 class ComboManager {
   private readonly comboQueue: string[] = [];
@@ -15,7 +15,7 @@ class ComboManager {
 
   public addCombo(
     actions: string,
-    callback: (manager: BattleManager) => Promise<void>
+    callback: (manager: BattleManager) => Promise<void>,
   ): this {
     this.comboList.set(actions, callback);
     return this;
@@ -36,7 +36,7 @@ export default new ComboManager()
     (manager.turn.inventory.equipments.weapon as SlotWeaponEntity).ammos.push(
       Items.find(0),
       Items.find(0),
-      Items.find(0)
+      Items.find(0),
     );
     await manager
       .updateLog(bundle.find(manager.locale, "combo.evasing_attack"))
@@ -46,7 +46,7 @@ export default new ComboManager()
       manager.turn,
       manager.turn == manager.user ? manager.enemy : manager.user,
       manager.user.inventory.equipments.weapon,
-      true
+      true,
     );
   })
   .addCombo("consume-consume-consume", async (manager) => {

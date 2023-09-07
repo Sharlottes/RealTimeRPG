@@ -1,22 +1,23 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
+    "module": "ESNext",
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "*": ["./src/*"],
-      "assets/*": ["./assets/*"]
+      "@/*": ["./src/*"],
+      "@assets/*": ["./assets/*"]
     },
     "strict": true,
     "allowJs": true,
     "sourceMap": true,
     "skipLibCheck": true,
+    "importHelpers": true,
     "removeComments": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "emitDecoratorMetadata": false,
     "experimentalDecorators": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["output", "node_modules"]
 }

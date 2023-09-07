@@ -1,11 +1,11 @@
 import Random from "random";
 import { BaseAction } from "./BaseAction";
-import { EntityI } from "@type/types";
-import { bundle } from "assets";
-import { Items } from "game/contents";
-import { WeaponEntity } from "game/Inventory";
+import { EntityI } from "@/@type/types";
+import { bundle } from "@/assets";
+import { Items } from "@/game/contents";
+import { WeaponEntity } from "@/game/Inventory";
 import BattleManager from "../BattleManager";
-import { predicateOf } from "utils/predicateOf";
+import { predicateOf } from "@/utils/predicateOf";
 
 export class AttackAction extends BaseAction {
   public title = "attack";
@@ -15,7 +15,7 @@ export class AttackAction extends BaseAction {
     owner: EntityI,
     private enemy: EntityI,
     private weapon: WeaponEntity,
-    immediate = false
+    immediate = false,
   ) {
     super(manager, owner, 10);
     if (immediate) this.run();
@@ -38,14 +38,16 @@ export class AttackAction extends BaseAction {
           .updateLog(
             prefixed(
               bundle.format(this.manager.locale, "evasion_successed", name),
-              false
-            )
+              false,
+            ),
           )
           .update();
       } else {
         await this.manager
           .updateLog(
-            prefixed(bundle.format(this.manager.locale, "evasion_failed", name))
+            prefixed(
+              bundle.format(this.manager.locale, "evasion_failed", name),
+            ),
           )
           .update();
         await this.manager
@@ -53,8 +55,8 @@ export class AttackAction extends BaseAction {
             prefixed(
               this.weapon.item
                 .getWeapon()
-                .attack(this.enemy, this.weapon, this.manager.locale)
-            )
+                .attack(this.enemy, this.weapon, this.manager.locale),
+            ),
           )
           .update();
       }
@@ -66,7 +68,7 @@ export class AttackAction extends BaseAction {
         this.owner.inventory.equipments.weapon.item.getWeapon().damage;
       await this.manager
         .updateLog(
-          prefixed(bundle.format(this.manager.locale, "shielded", name), false)
+          prefixed(bundle.format(this.manager.locale, "shielded", name), false),
         )
         .update();
     } else {
@@ -75,8 +77,8 @@ export class AttackAction extends BaseAction {
           prefixed(
             this.weapon.item
               .getWeapon()
-              .attack(this.enemy, this.weapon, this.manager.locale)
-          )
+              .attack(this.enemy, this.weapon, this.manager.locale),
+          ),
         )
         .update();
     }
@@ -89,30 +91,30 @@ export class AttackAction extends BaseAction {
             bundle.format(
               this.manager.locale,
               "battle.broken",
-              this.weapon.item.localName(this.manager.locale)
-            )
+              this.weapon.item.localName(this.manager.locale),
+            ),
           )
           .update();
         const exist = this.owner.inventory.items.find(
           predicateOf<WeaponEntity>()(
             (store) =>
               store instanceof WeaponEntity &&
-              store.item == this.owner.inventory.equipments.weapon.item
-          )
+              store.item == this.owner.inventory.equipments.weapon.item,
+          ),
         );
         if (exist) {
           this.owner.inventory.items.splice(
             this.owner.inventory.items.indexOf(exist),
-            1
+            1,
           );
           this.owner.inventory.equipments.weapon = exist;
           this.manager.updateLog(
-            bundle.find(this.manager.locale, "battle.auto_swap")
+            bundle.find(this.manager.locale, "battle.auto_swap"),
           );
           await this.manager.update();
         } else
           this.owner.inventory.equipments.weapon = new WeaponEntity(
-            Items.punch
+            Items.punch,
           );
       }
     }
@@ -124,13 +126,13 @@ export class AttackAction extends BaseAction {
         ? this.enemy.name(this.manager.locale)
         : this.enemy.name;
     const weaponName = this.owner.inventory.equipments.weapon.item.localName(
-      this.manager.locale
+      this.manager.locale,
     );
     return bundle.format(
       this.manager.locale,
       "action.attack.description",
       enemyName,
-      weaponName
+      weaponName,
     );
   }
 
