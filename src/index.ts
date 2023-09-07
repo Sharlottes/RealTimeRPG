@@ -1,70 +1,62 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { GatewayIntentBits, REST } from "discord.js";
+import { GatewayIntentBits } from "discord.js";
 import { Client } from "discordx";
-import CM from "@/command/legacy/CommandManager";
 import assets from "@/assets";
-import Game from "./game";
-import "@/command/commands/RefreshCommand";
+import Game, { User } from "./game";
+import "@/command/commands/GameCommands";
+import "@/command/commands/UserCommands";
+import Vars from "./Vars";
 
-// App 선언 - 봇의 모든 코드를 관리함
-export const app = {
-  client: new Client({
-    intents: [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.MessageContent,
-    ],
-    simpleCommand: {
-      prefix: "!",
-    },
-  }),
-  rest: new REST({ version: "10" }).setToken(process.env.BOT_TOKEN),
-};
+export const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+  simpleCommand: {
+    prefix: "!",
+  },
+  botGuilds:
+    process.env.NODE_ENV === "production"
+      ? undefined
+      : [process.env.TEST_GUILD_ID],
+});
 
 const time = Date.now();
 
-// 애셋 파일 로딩
 assets.init();
-console.log(`asset initialization has been done: ${Date.now() - time}ms`);
-
-//기본 명령어 로딩
-CM.commands.clear();
-console.log(`command initialization has been done in ${Date.now() - time}ms`);
-
-//게임 콘텐츠 로딩
 Game.init();
-console.log(`game initialization has been done in ${Date.now() - time}ms`);
+console.log(
+  `asset & game initialization has been done in ${Date.now() - time}ms`
+);
 
-app.client
+client.login(process.env.BOT_TOKEN);
+
+client
   .once("ready", async () => {
     console.log(
-      `Logged in as ${app.client.user?.tag}(${app.client.application?.id}): ${
+      `Logged in as ${client.user?.tag}(${client.application?.id}): ${
         Date.now() - time
       }ms`
     );
-    app.client.initApplicationCommands();
-  })
-  .on("interactionCreate", async (interaction) => {
-    if (interaction.isChatInputCommand()) {
-      const command = CM.commands.get(interaction.commandName);
-      if (!command || !interaction.channel) return;
-      await interaction.deferReply();
-
-      if (interaction.channel.isDMBased() || !command.dmOnly)
-        command.run(interaction);
-      else
-        await interaction.editReply(
-          "This command is available only in the dm channel."
-        );
-    }
+    await client.clearApplicationCommands(
+      ...(process.env.NODE_ENV === "production" ? [] : [process.env.BOT_TOKEN])
+    );
+    await client.initApplicationCommands();
   })
   .on("messageCreate", (message) => {
-    app.client.executeCommand(message);
-  });
+    client.executeCommand(message);
+  })
+  .on("interactionCreate", (interaction) => {
+    const user =
+      Vars.users.find((u) => u.id == interaction.user.id) ||
+      Vars.users[Vars.users.push(new User(interaction.user)) - 1];
+    user.updateData(interaction);
 
-app.client.login(process.env.BOT_TOKEN);
+    client.executeInteraction(interaction);
+  });
 
 process
   .on("unhandledRejection", async (err) => {

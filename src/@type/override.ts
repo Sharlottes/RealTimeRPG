@@ -5,6 +5,7 @@ declare global {
     interface ProcessEnv {
       BOT_TOKEN: string;
       OWNER_ID: string;
+      TEST_GUILD_ID: string;
     }
   }
 }
