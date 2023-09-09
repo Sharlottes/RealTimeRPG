@@ -1,6 +1,8 @@
 import { UnitData } from "@/@type/types";
-import { Inventory } from "../..";
-import { Content, Units } from "..";
+import Inventory from "@/game/Inventory";
+
+import Content from "../Content";
+import Units from "../Units";
 
 export default class Unit extends Content implements Rationess {
   readonly level: number;

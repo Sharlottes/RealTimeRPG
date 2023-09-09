@@ -1,5 +1,6 @@
 import bundle from "@/assets/Bundle";
-import { User } from "..";
+import User from "@/game/User";
+
 import { EntityI } from "../../@type/types";
 
 export default class Buff {

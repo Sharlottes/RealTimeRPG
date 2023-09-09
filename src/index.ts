@@ -1,13 +1,14 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import { GatewayIntentBits } from "discord.js";
 import { Client } from "discordx";
-import Game, { User } from "./game";
-import Vars from "./Vars";
-
+import dotenv from "dotenv";
 import "@/utils/kotlinLike";
 import "@/command";
+
+import User from "./game/User";
+import Game from "./game";
+import Vars from "./Vars";
+
+dotenv.config();
 
 export const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],

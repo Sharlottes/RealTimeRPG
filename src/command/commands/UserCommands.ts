@@ -1,9 +1,10 @@
 import bundle from "@/assets/Bundle";
-import { ItemStack, User } from "@/game";
-import { Items } from "@/game/contents";
-import Manager from "@/game/managers/Manager";
-import { ApplicationCommandOptionType } from "discord.js";
+import { ItemStack } from "@/game/Inventory";
 import { Discord as DiscordX, Slash, SlashChoice, SlashOption } from "discordx";
+import { ApplicationCommandOptionType } from "discord.js";
+import Manager from "@/game/managers/Manager";
+import Items from "@/game/contents/Items";
+import User from "@/game/User";
 
 @DiscordX()
 abstract class UserCommands {

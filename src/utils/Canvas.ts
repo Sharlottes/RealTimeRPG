@@ -1,7 +1,8 @@
 import Canvass from "canvas";
-import { Mathf } from "./Mathf";
 
-export class Canvas {
+import Mathf from "./Mathf";
+
+export default class Canvas {
   //TODO: 100/100 상태에서 빈칸이 보임
   public static unicodeProgressBar(
     value: number,

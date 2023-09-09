@@ -1,5 +1,5 @@
 import bundle from "@/assets/Bundle";
-import { User } from "..";
+import User from "@/game/User";
 
 export default class Content {
   readonly name: string;

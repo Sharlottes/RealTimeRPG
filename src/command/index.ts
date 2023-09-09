@@ -1,5 +1,5 @@
-// import collection for entry point
-
+import "./common/GeneralComponents";
 import "./commands/GameCommands";
 import "./commands/UserCommands";
-import "./common/GeneralComponents";
+
+undefined;

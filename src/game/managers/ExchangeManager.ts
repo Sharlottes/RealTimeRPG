@@ -1,15 +1,18 @@
-import { EmbedBuilder } from "discord.js";
-
-import { getOne } from "@/utils/getOne";
-import { ItemStack, ItemStorable, UnitEntity, User } from "@/game";
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
-import { Item, Items } from "@/game/contents";
-import bundle from "@/assets/Bundle";
-import ItemSelectManager from "./ItemSelectManager";
-import { EntityI } from "@/@type/types";
-import BattleManager from "./BattleManager";
 import { codeBlock } from "@discordjs/builders";
+import { getOne } from "@/utils/functions";
+import { EmbedBuilder } from "discord.js";
+import { EntityI } from "@/@type/types";
+import bundle from "@/assets/Bundle";
+
+import { ItemStack, ItemStorable } from "../Inventory";
+import ItemSelectManager from "./ItemSelectManager";
+import BattleManager from "./BattleManager";
 import ParentManager from "./ParentManager";
+import Item from "../contents/types/Item";
+import UnitEntity from "../UnitEntity";
+import Items from "../contents/Items";
+import User from "../User";
 
 export default class ExchangeManager extends ParentManager {
   private readonly user: User;

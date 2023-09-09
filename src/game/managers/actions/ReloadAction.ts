@@ -1,6 +1,7 @@
+import { ItemStack, SlotWeaponEntity } from "@/game/Inventory";
 import { EntityI } from "@/@type/types";
 import bundle from "@/assets/Bundle";
-import { ItemStack, SlotWeaponEntity } from "@/game/Inventory";
+
 import BattleManager from "../BattleManager";
 import { BaseAction } from "./BaseAction";
 

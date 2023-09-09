@@ -1,11 +1,12 @@
-import Random from "random";
-import { BaseAction } from "./BaseAction";
+import { predicateOf } from "@/utils/functions";
+import { WeaponEntity } from "@/game/Inventory";
+import Items from "@/game/contents/Items";
 import { EntityI } from "@/@type/types";
 import bundle from "@/assets/Bundle";
-import { Items } from "@/game/contents";
-import { WeaponEntity } from "@/game/Inventory";
+import Random from "random";
+
 import BattleManager from "../BattleManager";
-import { predicateOf } from "@/utils/predicateOf";
+import { BaseAction } from "./BaseAction";
 
 export class AttackAction extends BaseAction {
   public title = "attack";

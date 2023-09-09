@@ -1,6 +1,8 @@
+import StatusEntity from "@/game/StatusEntity";
 import { EntityI } from "@/@type/types";
-import { Content, StatusEffects } from "..";
-import { StatusEntity } from "../..";
+
+import StatusEffects from "../StatusEffects";
+import Content from "../Content";
 
 export default class StatusEffect extends Content {
   readonly id: number;

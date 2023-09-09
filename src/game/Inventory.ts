@@ -1,5 +1,7 @@
-import { Item, Items } from "./contents";
-import { predicateOf } from "@/utils/predicateOf";
+import { predicateOf } from "@/utils/functions";
+
+import Item from "./contents/types/Item";
+import Items from "./contents/Items";
 
 export default class Inventory {
   public items: ItemStorable[] = [];

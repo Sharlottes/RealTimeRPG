@@ -1,8 +1,15 @@
-import { Content, Items } from "..";
-import { AmmoTag, ConsumeTag, ItemTag, ShieldTag, SlotWeaponTag, WeaponTag } from "../tags";
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
-import { ItemEntity } from "../..";
+import { ItemEntity } from "@/game/Inventory";
+import { EmbedBuilder } from "discord.js";
+
+import SlotWeaponTag from "../tags/SlotWeaponTag";
 import Manager from "../../managers/Manager";
+import ConsumeTag from "../tags/ConsumeTag";
+import ShieldTag from "../tags/ShieldTag";
+import WeaponTag from "../tags/WeaponTag";
+import AmmoTag from "../tags/AmmoTag";
+import ItemTag from "../tags/ItemTag";
+import Content from "../Content";
+import Items from "../Items";
 
 export default class Item extends Content implements Dropable, Rationess {
   readonly ratio: number;

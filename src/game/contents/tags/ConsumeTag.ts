@@ -1,9 +1,10 @@
-import { EntityI } from "@/@type/types";
 import { ItemEntity } from "@/game/Inventory";
 import { EmbedBuilder } from "discord.js";
-import Buff from "../Buff";
+import { EntityI } from "@/@type/types";
+
 import Item from "../types/Item";
 import ItemTag from "./ItemTag";
+import Buff from "../Buff";
 
 export default class ConsumeTag extends ItemTag {
   public readonly buffes: Buff[];

@@ -1,5 +1,5 @@
-import GameManager from "@/game/managers/GameManager";
 import { ClassMethodDecorator, GuardFunction } from "discordx";
+import GameManager from "@/game/managers/GameManager";
 
 declare global {
   namespace NodeJS {

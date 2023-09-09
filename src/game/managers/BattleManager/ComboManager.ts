@@ -1,10 +1,11 @@
-import bundle from "@/assets/Bundle";
-import Items from "@/game/contents/Items";
-import StatusEffects from "@/game/contents/StatusEffects";
-import { AttackAction } from "../actions/AttackAction";
-import type { SlotWeaponEntity } from "@/game/Inventory";
-import type { BaseAction } from "../actions/BaseAction";
 import type BattleManager from "@/game/managers/BattleManager/index";
+import StatusEffects from "@/game/contents/StatusEffects";
+import type { SlotWeaponEntity } from "@/game/Inventory";
+import Items from "@/game/contents/Items";
+import bundle from "@/assets/Bundle";
+
+import type { BaseAction } from "../actions/BaseAction";
+import { AttackAction } from "../actions/AttackAction";
 
 class ComboManager {
   private readonly comboQueue: string[] = [];

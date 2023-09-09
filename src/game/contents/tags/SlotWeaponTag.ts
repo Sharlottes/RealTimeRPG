@@ -1,10 +1,11 @@
-import { EntityI } from "@/@type/types";
-import bundle from "@/assets/Bundle";
 import { SlotWeaponEntity } from "@/game/Inventory";
 import { EmbedBuilder } from "discord.js";
-import { Item } from "..";
+import { EntityI } from "@/@type/types";
+import bundle from "@/assets/Bundle";
+
 import StatusEffect from "../types/StatusEffect";
 import WeaponTag from "./WeaponTag";
+import Item from "../types/Item";
 
 export default class SlotWeaponTag extends WeaponTag {
   constructor(

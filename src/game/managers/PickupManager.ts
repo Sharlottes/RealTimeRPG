@@ -1,8 +1,9 @@
-import Manager, { ManagerConstructOptions } from "./Manager";
-import bundle from "@/assets/Bundle";
-import { ItemStack } from "@/game/Inventory";
 import { codeBlock } from "@discordjs/builders";
-import { User } from "@/game";
+import { ItemStack } from "@/game/Inventory";
+import bundle from "@/assets/Bundle";
+import User from "@/game/User";
+
+import Manager, { ManagerConstructOptions } from "./Manager";
 
 class PickupManager extends Manager {
   public stack?: ItemStack | undefined;

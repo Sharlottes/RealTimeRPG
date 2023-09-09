@@ -1,4 +1,4 @@
-export class Arrays {
+export default class Arrays {
   public static division<T>(array: T[], n: number): T[][] {
     const len = array.length;
     const max = Math.floor(len / n) + (Math.floor(len % n) > 0 ? 1 : 0);

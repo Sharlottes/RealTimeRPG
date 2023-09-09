@@ -1,7 +1,8 @@
-import { codeBlock, EmbedBuilder } from "discord.js";
-import ComboManager from "./ComboManager";
-import type { BaseAction } from "../actions/BaseAction";
 import type BattleManager from "@/game/managers/BattleManager/index";
+import { codeBlock, EmbedBuilder } from "discord.js";
+
+import type { BaseAction } from "../actions/BaseAction";
+import ComboManager from "./ComboManager";
 
 class ActionManager {
   public readonly actionEmbed = new EmbedBuilder().setTitle("Action Queue").setDescription("Empty");

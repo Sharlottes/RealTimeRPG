@@ -1,9 +1,10 @@
-import { ItemStack } from "..";
-import Manager, { ManagerConstructOptions } from "./Manager";
-import bundle from "@/assets/Bundle";
-import { Item } from "../contents";
 import { ButtonStyle, EmbedBuilder } from "discord.js";
+import bundle from "@/assets/Bundle";
+
+import Manager, { ManagerConstructOptions } from "./Manager";
 import ParentManager from "./ParentManager";
+import Item from "../contents/types/Item";
+import { ItemStack } from "../Inventory";
 
 export default class ItemSelectManager extends ParentManager {
   private amount = 0;

@@ -1,5 +1,6 @@
-import { Items, Unit } from ".";
-import { Inventory, WeaponEntity } from "@/game";
+import Inventory, { WeaponEntity } from "../Inventory";
+import Unit from "./types/Unit";
+import Items from "./Items";
 
 export default class Units {
   static readonly units: Unit[] = [];

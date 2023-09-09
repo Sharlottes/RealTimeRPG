@@ -1,6 +1,6 @@
-import { WeaponEntity } from "@/game/Inventory";
-import { StatusEntity, User, Inventory } from "@/game";
 import StatusEffect from "@/game/contents/types/StatusEffect";
+import Inventory, { WeaponEntity } from "@/game/Inventory";
+import StatusEntity from "@/game/StatusEntity";
 
 export type UnitData = {
   name: string;

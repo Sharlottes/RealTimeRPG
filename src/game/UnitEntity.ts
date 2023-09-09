@@ -1,5 +1,7 @@
-import { Item, Unit, StatusEffect } from "@/game/contents";
-import { StatusEntity } from "@/game";
+import StatusEffect from "./contents/types/StatusEffect";
+import StatusEntity from "./StatusEntity";
+import Item from "./contents/types/Item";
+import Unit from "./contents/types/Unit";
 import Entity from "./Entity";
 
 export default class UnitEntity extends Entity {

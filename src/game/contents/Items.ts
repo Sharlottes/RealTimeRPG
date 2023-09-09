@@ -1,6 +1,13 @@
-import { Item, Buff, StatusEffects } from "@/game/contents";
-import { EntityI } from "../../@type/types";
-import { AmmoTag, ConsumeTag, ShieldTag, SlotWeaponTag, WeaponTag } from "./tags";
+import { EntityI } from "@/@type/types";
+
+import SlotWeaponTag from "./tags/SlotWeaponTag";
+import StatusEffects from "./StatusEffects";
+import ConsumeTag from "./tags/ConsumeTag";
+import ShieldTag from "./tags/ShieldTag";
+import WeaponTag from "./tags/WeaponTag";
+import AmmoTag from "./tags/AmmoTag";
+import Item from "./types/Item";
+import Buff from "./Buff";
 
 export default class Items {
   static readonly items: Item[] = [];

@@ -1,4 +1,4 @@
-import { StatusEffect } from ".";
+import StatusEffect from "./types/StatusEffect";
 
 export default class StatusEffects {
   public static readonly statuses: StatusEffect[] = [];

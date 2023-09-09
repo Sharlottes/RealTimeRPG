@@ -1,7 +1,8 @@
 import { ItemEntity } from "@/game/Inventory";
 import { EmbedBuilder } from "discord.js";
-import { ItemTag } from ".";
-import { Item } from "..";
+
+import Item from "../types/Item";
+import ItemTag from "./ItemTag";
 
 export default class AmmoTag extends ItemTag {
   public readonly itemPerAmmo: number;

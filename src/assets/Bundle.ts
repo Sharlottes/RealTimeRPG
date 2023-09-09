@@ -1,6 +1,5 @@
 import properties from "properties-reader";
-
-import { Strings } from "@/utils";
+import Strings from "@/utils/Strings";
 
 const ALL_LANGUAGES = [
   ...["en-US", "en-GB", "es-ES", "da", "de", "fr", "hr", "it", "lt", "hu", "nl", "no", "pl", "pt-BR", "ro"],

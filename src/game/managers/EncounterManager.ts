@@ -1,13 +1,14 @@
+import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
+import ExchangeManager from "@/game/managers/ExchangeManager";
+import BattleManager from "@/game/managers/BattleManager";
+import { EmbedBuilder } from "discord.js";
+import bundle from "@/assets/Bundle";
+import Mathf from "@/utils/Mathf";
 import Random from "random";
 
-import BattleManager from "@/game/managers/BattleManager";
-import ExchangeManager from "@/game/managers/ExchangeManager";
-import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
-import { UnitEntity, User } from "@/game";
-import bundle from "@/assets/Bundle";
-import { Mathf } from "@/utils";
-import { EmbedBuilder } from "discord.js";
 import ParentManager from "./ParentManager";
+import UnitEntity from "../UnitEntity";
+import User from "../User";
 
 export default class EncounterManager extends ParentManager {
   private readonly user: User;

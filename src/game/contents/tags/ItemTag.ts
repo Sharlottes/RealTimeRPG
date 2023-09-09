@@ -1,6 +1,6 @@
-import { ItemEntity } from "@/game";
+import Item from "../types/Item";
 import { EmbedBuilder } from "discord.js";
-import { Item } from "..";
+import { ItemEntity } from "@/game/Inventory";
 
 export default abstract class ItemTag {
   public readonly item: Item;

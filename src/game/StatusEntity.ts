@@ -1,4 +1,4 @@
-import { StatusEffect } from "./contents";
+import StatusEffect from "./contents/types/StatusEffect";
 
 export default class StatusEntity {
   public constructor(

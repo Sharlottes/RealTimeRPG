@@ -1,5 +1,5 @@
-import Discord from "discord.js";
 import * as Discordx from "discordx";
+import Discord from "discord.js";
 
 @Discordx.Discord()
 export default class GeneralComponents {

@@ -1,4 +1,5 @@
 import { ButtonStyle } from "discord.js";
+
 import Manager, { ManagerConstructOptions } from "./Manager";
 
 export default class ParentManager extends Manager {

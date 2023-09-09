@@ -1,25 +1,19 @@
-import Discord, {
-  AttachmentBuilder,
-  EmbedBuilder,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  Awaitable,
-} from "discord.js";
-
-import Canvass from "canvas";
-
-import { Item, StatusEffect } from "@/game/contents";
-import { EntityI } from "@/@type/types";
-import { StatusEntity, Inventory, WeaponEntity } from "@/game";
-import bundle from "@/assets/Bundle";
-import { Canvas } from "@/utils";
-import Entity from "./Entity";
-import Manager from "./managers/Manager";
-import GameManager from "./managers/GameManager";
-import Alert from "./Alert";
+import Discord, { AttachmentBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { filledBar } from "string-progressbar";
+import { EntityI } from "@/@type/types";
+import bundle from "@/assets/Bundle";
+import Canvas from "@/utils/Canvas";
+import Canvass from "canvas";
 import Vars from "@/Vars";
+
+import StatusEffect from "./contents/types/StatusEffect";
+import Inventory, { WeaponEntity } from "./Inventory";
+import GameManager from "./managers/GameManager";
+import StatusEntity from "./StatusEntity";
+import Manager from "./managers/Manager";
+import Item from "./contents/types/Item";
+import Entity from "./Entity";
+import Alert from "./Alert";
 
 const defaultStat: Stat = {
   health: 20,
@@ -48,8 +42,10 @@ export default class User extends Entity implements EntityI {
   public money = 0;
   public locale: string = "en-US";
   public readonly alerts: Alert[] = [];
-  public readonly events: Map<keyof UserEvents, Array<(...args: UserEvents[keyof UserEvents]) => Awaitable<void>>> =
-    new Map<keyof UserEvents, Array<(...args: UserEvents[keyof UserEvents]) => Awaitable<void>>>();
+  public readonly events: Map<
+    keyof UserEvents,
+    Array<(...args: UserEvents[keyof UserEvents]) => Discord.Awaitable<void>>
+  > = new Map<keyof UserEvents, Array<(...args: UserEvents[keyof UserEvents]) => Discord.Awaitable<void>>>();
 
   constructor(data: Discord.User) {
     super();
@@ -67,7 +63,7 @@ export default class User extends Entity implements EntityI {
     return user;
   }
 
-  public on<K extends keyof UserEvents>(event: K, listener: (...args: UserEvents[K]) => Awaitable<void>): this {
+  public on<K extends keyof UserEvents>(event: K, listener: (...args: UserEvents[K]) => Discord.Awaitable<void>): this {
     this.events.set(event, (this.events.get(event) ?? []).concat([listener]));
     return this;
   }
@@ -138,7 +134,7 @@ export default class User extends Entity implements EntityI {
   public showInventoryInfo(interaction: Discord.CommandInteraction) {
     return new Manager({ interaction })
       .setEmbeds(
-        new EmbedBuilder().setTitle(bundle.find(this.locale, "inventory")).addFields(
+        new Discord.EmbedBuilder().setTitle(bundle.find(this.locale, "inventory")).addFields(
           this.inventory.items.map<Discord.APIEmbedField>((store) => ({
             name: store.item.localName(this.locale),
             value: store.toStateString((key) => bundle.find(this.locale, key)),

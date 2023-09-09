@@ -1,11 +1,12 @@
-import { EntityI } from "@/@type/types";
-import bundle from "@/assets/Bundle";
 import { WeaponEntity } from "@/game/Inventory";
 import { EmbedBuilder } from "discord.js";
+import { EntityI } from "@/@type/types";
+import bundle from "@/assets/Bundle";
 import Random from "random";
-import { ItemTag } from ".";
-import { Item } from "..";
+
 import StatusEffect from "../types/StatusEffect";
+import Item from "../types/Item";
+import ItemTag from "./ItemTag";
 
 export default class WeaponTag extends ItemTag {
   public readonly damage: number;

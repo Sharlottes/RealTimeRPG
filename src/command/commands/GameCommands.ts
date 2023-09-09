@@ -1,12 +1,15 @@
-import bundle from "@/assets/Bundle";
-import { User } from "@/game";
-import { Content, Items, Units } from "@/game/contents";
+import { Pagination, PaginationType } from "@discordx/pagination";
 import GameManager from "@/game/managers/GameManager";
 import Manager from "@/game/managers/Manager";
-import { Arrays } from "@/utils";
-import { Pagination, PaginationType } from "@discordx/pagination";
-import Discord from "discord.js";
+import Content from "@/game/contents/Content";
+import Items from "@/game/contents/Items";
+import Units from "@/game/contents/Units";
+import bundle from "@/assets/Bundle";
 import * as Discordx from "discordx";
+import Arrays from "@/utils/Arrays";
+import Discord from "discord.js";
+import User from "@/game/User";
+
 import { CloseButtonComponent } from "../common/GeneralComponents";
 
 @Discordx.Discord()

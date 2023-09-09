@@ -1,14 +1,15 @@
-import bundle from "@/assets/Bundle";
-import { BaseInteraction, ButtonStyle, codeBlock, EmbedBuilder } from "discord.js";
-import User from "../User";
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
-import { getOne } from "@/utils/getOne";
+import { ButtonStyle, codeBlock, EmbedBuilder } from "discord.js";
 import Events from "@/game/contents/Events";
-import { Canvas } from "@/utils";
+import { getOne } from "@/utils/functions";
+import bundle from "@/assets/Bundle";
+import Canvas from "@/utils/Canvas";
+
 import ParentManager from "./ParentManager";
+import User from "../User";
 
 /**
- * 이벤트 관리 클래스, user에 종속됨
+ * 이벤트 관리 클래스
  */
 export default class GameManager extends Manager {
   public readonly mainEmbed: EmbedBuilder;
