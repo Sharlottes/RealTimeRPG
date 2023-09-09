@@ -1,7 +1,6 @@
 import Discord, {
   AttachmentBuilder,
   EmbedBuilder,
-  ChatInputCommandInteraction,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
@@ -13,7 +12,7 @@ import Canvass from "canvas";
 import { Item, StatusEffect } from "@/game/contents";
 import { EntityI } from "@/@type/types";
 import { StatusEntity, Inventory, WeaponEntity } from "@/game";
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import { Canvas } from "@/utils";
 import Entity from "./Entity";
 import Manager from "./managers/Manager";
@@ -47,7 +46,7 @@ export default class User extends Entity implements EntityI {
   public exp = 0;
   public level = 1;
   public money = 0;
-  public locale: string = bundle.defaultLocale;
+  public locale: string = "en-US";
   public readonly alerts: Alert[] = [];
   public readonly events: Map<keyof UserEvents, Array<(...args: UserEvents[keyof UserEvents]) => Awaitable<void>>> =
     new Map<keyof UserEvents, Array<(...args: UserEvents[keyof UserEvents]) => Awaitable<void>>>();

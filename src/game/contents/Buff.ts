@@ -1,4 +1,4 @@
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import { User } from "..";
 import { EntityI } from "../../@type/types";
 

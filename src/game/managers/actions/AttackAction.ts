@@ -1,7 +1,7 @@
 import Random from "random";
 import { BaseAction } from "./BaseAction";
 import { EntityI } from "@/@type/types";
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import { Items } from "@/game/contents";
 import { WeaponEntity } from "@/game/Inventory";
 import BattleManager from "../BattleManager";

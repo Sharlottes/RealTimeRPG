@@ -4,7 +4,7 @@ import { getOne } from "@/utils/getOne";
 import { ItemStack, ItemStorable, UnitEntity, User } from "@/game";
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
 import { Item, Items } from "@/game/contents";
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import ItemSelectManager from "./ItemSelectManager";
 import { EntityI } from "@/@type/types";
 import BattleManager from "./BattleManager";

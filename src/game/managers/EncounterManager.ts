@@ -4,7 +4,7 @@ import BattleManager from "@/game/managers/BattleManager";
 import ExchangeManager from "@/game/managers/ExchangeManager";
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
 import { UnitEntity, User } from "@/game";
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import { Mathf } from "@/utils";
 import { EmbedBuilder } from "discord.js";
 

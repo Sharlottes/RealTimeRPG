@@ -1,6 +1,6 @@
 import { ItemStack } from "..";
 import Manager, { ManagerConstructOptions } from "./Manager";
-import { bundle } from "../../assets/index";
+import bundle from "@/assets/Bundle";
 import { Item } from "../contents";
 import { ButtonStyle, EmbedBuilder } from "discord.js";
 

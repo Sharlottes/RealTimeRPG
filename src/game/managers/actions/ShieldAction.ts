@@ -1,5 +1,5 @@
 import { EntityI } from "@/@type/types";
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import BattleManager from "../BattleManager";
 import { BaseAction } from "./BaseAction";
 

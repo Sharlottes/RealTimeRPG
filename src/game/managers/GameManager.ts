@@ -1,4 +1,4 @@
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import { BaseInteraction, ButtonStyle, codeBlock, EmbedBuilder, TextBasedChannel } from "discord.js";
 import BaseEvent from "../contents/types/BaseEvent";
 import User from "../User";

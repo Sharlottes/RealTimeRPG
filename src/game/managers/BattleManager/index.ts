@@ -4,7 +4,7 @@ import { UnitEntity, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable, Us
 import { getOne } from "@/utils/getOne";
 import { Item, Items } from "@/game/contents";
 import { Mathf, Canvas, Strings, ANSIStyle } from "@/utils";
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import { EntityI } from "@/@type/types";
 import ItemSelectManager from "../ItemSelectManager";
 import { codeBlock } from "@discordjs/builders";

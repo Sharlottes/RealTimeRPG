@@ -1,4 +1,4 @@
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import Items from "@/game/contents/Items";
 import StatusEffects from "@/game/contents/StatusEffects";
 import { AttackAction } from "../actions/AttackAction";

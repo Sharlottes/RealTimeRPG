@@ -1,5 +1,5 @@
 import Manager, { ManagerConstructOptions } from "./Manager";
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import { ItemStack } from "@/game/Inventory";
 import { codeBlock } from "@discordjs/builders";
 import { User } from "@/game";

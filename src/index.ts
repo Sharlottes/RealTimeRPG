@@ -3,7 +3,6 @@ dotenv.config();
 
 import { GatewayIntentBits } from "discord.js";
 import { Client } from "discordx";
-import assets from "@/assets";
 import Game, { User } from "./game";
 import Vars from "./Vars";
 
@@ -19,7 +18,6 @@ export const client = new Client({
 
 const time = Date.now();
 
-assets.init();
 Game.init();
 console.log(`asset & game initialization has been done in ${Date.now() - time}ms`);
 

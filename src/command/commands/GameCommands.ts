@@ -1,4 +1,4 @@
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
 import { User } from "@/game";
 import { Content, Items, Units } from "@/game/contents";
 import GameManager from "@/game/managers/GameManager";
