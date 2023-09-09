@@ -35,7 +35,7 @@ export default class Item extends Content implements Dropable, Rationess {
 
   public async showInfo(
     interaction: Discord.CommandInteraction,
-    entity?: ItemEntity
+    entity?: ItemEntity,
   ) {
     const embed = new EmbedBuilder()
       .setTitle(this.localName(interaction.locale))
@@ -53,7 +53,7 @@ export default class Item extends Content implements Dropable, Rationess {
         {
           name: "Tags",
           value: this.tags.map((tag) => `\`${tag.name}\``).join("  "),
-        }
+        },
       );
 
     this.tags.forEach((tag) => tag.buildInfo(embed, entity));
@@ -65,7 +65,7 @@ export default class Item extends Content implements Dropable, Rationess {
   }
   public getAmmo(): AmmoTag {
     return this.tags.find<AmmoTag>(
-      (tag): tag is AmmoTag => tag instanceof AmmoTag
+      (tag): tag is AmmoTag => tag instanceof AmmoTag,
     ) as AmmoTag;
   }
 
@@ -74,7 +74,7 @@ export default class Item extends Content implements Dropable, Rationess {
   }
   public getWeapon(): WeaponTag {
     return this.tags.find<WeaponTag>(
-      (tag): tag is WeaponTag => tag instanceof WeaponTag
+      (tag): tag is WeaponTag => tag instanceof WeaponTag,
     ) as WeaponTag;
   }
 
@@ -83,7 +83,7 @@ export default class Item extends Content implements Dropable, Rationess {
   }
   public getSlotWeapon(): SlotWeaponTag {
     return this.tags.find<SlotWeaponTag>(
-      (tag): tag is SlotWeaponTag => tag instanceof SlotWeaponTag
+      (tag): tag is SlotWeaponTag => tag instanceof SlotWeaponTag,
     ) as SlotWeaponTag;
   }
 
@@ -92,7 +92,7 @@ export default class Item extends Content implements Dropable, Rationess {
   }
   public getConsume(): ConsumeTag {
     return this.tags.find<ConsumeTag>(
-      (tag): tag is ConsumeTag => tag instanceof ConsumeTag
+      (tag): tag is ConsumeTag => tag instanceof ConsumeTag,
     ) as ConsumeTag;
   }
 
@@ -101,7 +101,7 @@ export default class Item extends Content implements Dropable, Rationess {
   }
   public getShield(): ShieldTag {
     return this.tags.find<ShieldTag>(
-      (tag): tag is ShieldTag => tag instanceof ShieldTag
+      (tag): tag is ShieldTag => tag instanceof ShieldTag,
     ) as ShieldTag;
   }
 }

@@ -29,7 +29,7 @@ const time = Date.now();
 assets.init();
 Game.init();
 console.log(
-  `asset & game initialization has been done in ${Date.now() - time}ms`
+  `asset & game initialization has been done in ${Date.now() - time}ms`,
 );
 
 client.login(process.env.BOT_TOKEN);
@@ -39,10 +39,10 @@ client
     console.log(
       `Logged in as ${client.user?.tag}(${client.application?.id}): ${
         Date.now() - time
-      }ms`
+      }ms`,
     );
     await client.clearApplicationCommands(
-      ...(process.env.NODE_ENV === "production" ? [] : [process.env.BOT_TOKEN])
+      ...(process.env.NODE_ENV === "production" ? [] : [process.env.BOT_TOKEN]),
     );
     await client.initApplicationCommands();
   })
@@ -62,18 +62,18 @@ process
   .on("unhandledRejection", async (err) => {
     console.error(
       `[${new Date().toISOString()}] Unhandled Promise Rejection:\n`,
-      err
+      err,
     );
   })
   .on("uncaughtException", async (err) => {
     console.error(
       `[${new Date().toISOString()}] Uncaught Promise Exception:\n`,
-      err
+      err,
     );
   })
   .on("uncaughtExceptionMonitor", async (err) => {
     console.error(
       `[${new Date().toISOString()}] Uncaught Promise Exception (Monitor):\n`,
-      err
+      err,
     );
   });

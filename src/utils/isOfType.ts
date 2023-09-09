@@ -12,19 +12,19 @@ interface TypeofOperationResultMap {
 export function isOfType<T extends keyof TypeofOperationResultMap, V, U>(
   type: T,
   value: V,
-  unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U
+  unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U,
 ): U | undefined;
 export function isOfType<T extends keyof TypeofOperationResultMap, V, U, I>(
   type: T,
   value: V,
   unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U,
-  _if: (value: Extract<V, TypeofOperationResultMap[T]>) => I
+  _if: (value: Extract<V, TypeofOperationResultMap[T]>) => I,
 ): U | I;
 export function isOfType<T extends keyof TypeofOperationResultMap, V, U, I>(
   type: T,
   value: V,
   unless: (value: Exclude<V, TypeofOperationResultMap[T]>) => U,
-  _if?: (value: Extract<V, TypeofOperationResultMap[T]>) => I
+  _if?: (value: Extract<V, TypeofOperationResultMap[T]>) => I,
 ): U | I | undefined {
   return typeof value === type
     ? _if?.(value as Extract<V, TypeofOperationResultMap[T]>)

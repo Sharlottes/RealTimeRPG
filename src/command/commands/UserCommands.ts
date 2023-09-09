@@ -19,7 +19,7 @@ abstract class UserCommands {
       required: false,
     })
     targetUser: Discord.User | null,
-    interaction: Discord.CommandInteraction
+    interaction: Discord.CommandInteraction,
   ) {
     targetUser ??= interaction.user;
     const user = User.findUserByDiscordId(targetUser.id);
@@ -30,7 +30,11 @@ abstract class UserCommands {
     } else {
       Manager.newErrorEmbed(
         interaction,
-        bundle.format(interaction.locale, "error.notFound", targetUser.username)
+        bundle.format(
+          interaction.locale,
+          "error.notFound",
+          targetUser.username,
+        ),
       );
     }
   }
@@ -47,7 +51,7 @@ abstract class UserCommands {
       required: false,
     })
     targetUser: Discord.User | null,
-    interaction: Discord.CommandInteraction
+    interaction: Discord.CommandInteraction,
   ) {
     targetUser ??= interaction.user;
     const user = User.findUserByDiscordId(targetUser.id);
@@ -57,7 +61,11 @@ abstract class UserCommands {
     } else {
       Manager.newErrorEmbed(
         interaction,
-        bundle.format(interaction.locale, "error.notFound", targetUser.username)
+        bundle.format(
+          interaction.locale,
+          "error.notFound",
+          targetUser.username,
+        ),
       );
     }
   }
@@ -73,7 +81,7 @@ abstract class UserCommands {
         .map<Discord.APIApplicationCommandOptionChoice<number>>((item) => ({
           name: item.name,
           value: item.id,
-        }))
+        })),
     )
     @SlashOption({
       name: "item",
@@ -89,7 +97,7 @@ abstract class UserCommands {
       type: ApplicationCommandOptionType.Number,
     })
     amount: number | null,
-    interaction: Discord.CommandInteraction
+    interaction: Discord.CommandInteraction,
   ) {
     amount ??= 1;
     const user = User.findUserByInteraction(interaction);
@@ -101,8 +109,8 @@ abstract class UserCommands {
         bundle.format(
           user.locale,
           "error.missing_item",
-          Items.find(itemID).localName(user)
-        )
+          Items.find(itemID).localName(user),
+        ),
       );
       return;
     }
@@ -113,8 +121,8 @@ abstract class UserCommands {
           user.locale,
           "error.not_enough",
           stack.item.localName(user),
-          amount
-        )
+          amount,
+        ),
       );
       return;
     }
@@ -133,8 +141,8 @@ abstract class UserCommands {
         amount,
         cons.buffes
           .map((b) => b.description(user, amount!, b, user.locale))
-          .join("\n  ")
-      )
+          .join("\n  "),
+      ),
     );
   }
 }

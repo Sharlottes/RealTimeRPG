@@ -7,9 +7,7 @@ import { Arrays } from "@/utils";
 import { Pagination, PaginationType } from "@discordx/pagination";
 import Discord from "discord.js";
 import * as Discordx from "discordx";
-import GeneralComponents, {
-  CloseButtonComponent,
-} from "../common/GeneralComponents";
+import { CloseButtonComponent } from "../common/GeneralComponents";
 
 @Discordx.Discord()
 abstract class GameCommands {
@@ -26,7 +24,7 @@ abstract class GameCommands {
       required: false,
     })
     channel: Discord.PublicThreadChannel | null,
-    interaction: Discord.CommandInteraction
+    interaction: Discord.CommandInteraction,
   ) {
     const user = User.findUserByInteraction(interaction);
     if (!user) return;
@@ -35,7 +33,7 @@ abstract class GameCommands {
       Manager.newErrorEmbed(
         interaction,
         bundle.find(interaction.locale, "error.GMexist"),
-        true
+        true,
       );
       return;
     }
@@ -59,7 +57,7 @@ abstract class GameCommands {
   async showContentInformation(
     @Discordx.SlashChoice(
       { name: "item", value: "item" },
-      { name: "unit", value: "unit" }
+      { name: "unit", value: "unit" },
     )
     @Discordx.SlashOption({
       name: "type",
@@ -68,7 +66,7 @@ abstract class GameCommands {
       required: false,
     })
     type: "item" | "unit" | null,
-    interaction: Discord.CommandInteraction
+    interaction: Discord.CommandInteraction,
   ) {
     const user = User.findUserByInteraction(interaction);
     if (!user) return;
@@ -94,23 +92,24 @@ abstract class GameCommands {
         components: [CloseButtonComponent.Row],
       });
     } else {
-      const embeds: Discord.EmbedBuilder[] = [];
-      Arrays.division(contents, 5).forEach((conts, i) => {
+      const messageOptions = Arrays.division(
+        contents,
+        5,
+      ).map<Discord.BaseMessageOptions>((conts, i) => {
         const embed = new Discord.EmbedBuilder();
         embed.setTitle(`Page ${i + 1}`);
         conts.forEach((cont) =>
           embed.addFields({
             name: cont.localName(user),
             value: cont.description(user) + "\n\n" + (cont.details(user) || ""),
-          })
+          }),
         );
-        embeds.push(embed);
+        return { embeds: [embed] };
       });
-      new Pagination(
-        interaction,
-        embeds.map((embed) => ({ embeds: [embed] })),
-        { ephemeral: true, type: PaginationType.Button }
-      ).send();
+      new Pagination(interaction, messageOptions, {
+        ephemeral: true,
+        type: PaginationType.Button,
+      }).send();
     }
   }
 

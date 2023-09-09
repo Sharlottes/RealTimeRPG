@@ -5,7 +5,7 @@ export default function SpecialMembers(...memberIDs: MaybeFunction<string>[]) {
   const guard: GuardFunction<SimpleCommandMessage> = async (
     { message },
     _,
-    next
+    next,
   ) => {
     if (
       memberIDs

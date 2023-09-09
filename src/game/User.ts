@@ -69,7 +69,7 @@ export default class User extends Entity implements EntityI {
     return user;
   }
   public static findUserByInteraction<T extends Discord.BaseInteraction>(
-    interaction: T
+    interaction: T,
   ) {
     const user = Vars.users.find((user) => user.id == interaction.user.id);
     return user;
@@ -77,7 +77,7 @@ export default class User extends Entity implements EntityI {
 
   public on<K extends keyof UserEvents>(
     event: K,
-    listener: (...args: UserEvents[K]) => Awaitable<void>
+    listener: (...args: UserEvents[K]) => Awaitable<void>,
   ): this {
     this.events.set(event, (this.events.get(event) ?? []).concat([listener]));
     return this;
@@ -114,7 +114,7 @@ export default class User extends Entity implements EntityI {
     if (!this.foundContents.items.includes(item.id)) {
       this.foundContents.items.push(item.id);
       this.user.send(
-        bundle.format(this.locale, "firstget", item.localName(this))
+        bundle.format(this.locale, "firstget", item.localName(this)),
       );
     }
   }
@@ -142,8 +142,8 @@ export default class User extends Entity implements EntityI {
           Math.round(this.level ** 0.6 * 5 * 100) / 100),
         this.stats.energy_max,
         (this.stats.energy_max +=
-          Math.round(this.level ** 0.4 * 2.5 * 100) / 100)
-      )
+          Math.round(this.level ** 0.4 * 2.5 * 100) / 100),
+      ),
     );
     this.stats.health = this.stats.health_max;
     this.stats.energy = this.stats.energy_max;
@@ -159,11 +159,11 @@ export default class User extends Entity implements EntityI {
             this.inventory.items.map<Discord.APIEmbedField>((store) => ({
               name: store.item.localName(this.locale),
               value: store.toStateString((key) =>
-                bundle.find(this.locale, key)
+                bundle.find(this.locale, key),
               ),
               inline: true,
-            }))
-          )
+            })),
+          ),
       )
       .addRemoveButton(-1);
   }
@@ -211,7 +211,7 @@ export default class User extends Entity implements EntityI {
                   Math.max(0, this.stats.health),
                   10,
                   "\u2593",
-                  "\u2588"
+                  "\u2588",
                 )[0]
               }\n${this.stats.health}/${this.stats.health_max}`,
               inline: true,
@@ -224,7 +224,7 @@ export default class User extends Entity implements EntityI {
                   this.stats.energy,
                   10,
                   "\u2593",
-                  "\u2588"
+                  "\u2588",
                 )[0]
               }\n${this.stats.energy}/${this.stats.energy_max}`,
               inline: true,
@@ -244,8 +244,8 @@ export default class User extends Entity implements EntityI {
               name: "Inventory",
               value: this.inventory.items.length.toString(),
               inline: true,
-            }
-          )
+            },
+          ),
       )
       .setFiles(attachment)
       .setComponents(
@@ -258,16 +258,16 @@ export default class User extends Entity implements EntityI {
             .setCustomId("inventory_info")
             .setLabel("show Inventory Info")
             .setStyle(ButtonStyle.Primary),
-        ])
+        ]),
       )
       .setTrigger(
         "weapon_info",
         async () =>
-          await weapon.showInfo(interaction, this.inventory.equipments.weapon)
+          await weapon.showInfo(interaction, this.inventory.equipments.weapon),
       )
       .setTrigger(
         "inventory_info",
-        async () => await this.showInventoryInfo(interaction).send()
+        async () => await this.showInventoryInfo(interaction).send(),
       )
       .addRemoveButton(-1);
   }
