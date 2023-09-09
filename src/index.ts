@@ -18,16 +18,11 @@ export const client = new Client({
   botGuilds: process.env.NODE_ENV === "production" ? undefined : [process.env.TEST_GUILD_ID],
 });
 
-const time = Date.now();
-
 Game.init();
-console.log(`asset & game initialization has been done in ${Date.now() - time}ms`);
-
-client.login(process.env.BOT_TOKEN);
 
 client
   .once("ready", async () => {
-    console.log(`Logged in as ${client.user?.tag}(${client.application?.id}): ${Date.now() - time}ms`);
+    console.log(`Logged in as ${client.user?.tag}(${client.application?.id})`);
     await client.clearApplicationCommands(
       ...(process.env.NODE_ENV === "production" ? [] : [process.env.TEST_GUILD_ID]),
     );
@@ -43,7 +38,8 @@ client
     user.updateData(interaction);
 
     client.executeInteraction(interaction);
-  });
+  })
+  .login(process.env.BOT_TOKEN);
 
 process
   .on("unhandledRejection", async (err) => {
