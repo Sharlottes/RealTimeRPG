@@ -1,6 +1,5 @@
 import bundle from "@/assets/Bundle";
 import { BaseInteraction, ButtonStyle, codeBlock, EmbedBuilder, TextBasedChannel } from "discord.js";
-import BaseEvent from "../contents/types/BaseEvent";
 import User from "../User";
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
 import { getOne } from "@/utils/getOne";
@@ -14,7 +13,7 @@ export default class GameManager extends Manager {
   private readonly mainEmbed: EmbedBuilder;
 
   constructor(
-    private readonly user: User,
+    public readonly user: User,
     public readonly targetChannel: TextBasedChannel,
     options: ManagerConstructOptions,
   ) {
@@ -55,7 +54,7 @@ export default class GameManager extends Manager {
 
     this.setEmbeds(this.mainEmbed)
       .addButtonSelection("walk", 0, (interaction) => {
-        user.gameManager?.startEvent(getOne(Events.events), interaction);
+        getOne(Events.events).start(this, interaction);
       })
       .addButtonSelection(
         "exit",
@@ -67,9 +66,5 @@ export default class GameManager extends Manager {
         },
         { style: ButtonStyle.Secondary },
       );
-  }
-
-  startEvent(event: BaseEvent, interaction: BaseInteraction) {
-    event.start(this.user, interaction);
   }
 }

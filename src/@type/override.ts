@@ -1,3 +1,4 @@
+import GameManager from "@/game/managers/GameManager";
 import { ClassMethodDecorator, GuardFunction } from "discordx";
 
 declare global {
@@ -7,6 +8,12 @@ declare global {
       OWNER_ID: string;
       TEST_GUILD_ID: string;
     }
+  }
+
+  interface GameEvent {
+    start: (gameManager: GameManager, interaction: Discord.BaseInteraction) => void;
+    ratio: number;
+    only?: boolean;
   }
 }
 

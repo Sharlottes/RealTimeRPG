@@ -1,13 +1,12 @@
 export { default as UnitEntity } from "./UnitEntity";
 export { default as StatusEntity } from "./StatusEntity";
-export { default as BaseEvent } from "./contents/types/BaseEvent";
-export { default as User } from "./User";
 export { default as Inventory } from "./Inventory";
 export * from "./Inventory";
 
 import { Items, Units, StatusEffects } from "@/game/contents";
 import Vars from "@/Vars";
 import Events from "./contents/Events";
+export { default as User } from "./User";
 
 class Game {
   update() {
