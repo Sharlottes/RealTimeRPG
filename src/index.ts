@@ -10,40 +10,25 @@ import Vars from "./Vars";
 import "@/command";
 
 export const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
   simpleCommand: {
     prefix: "!",
   },
-  botGuilds:
-    process.env.NODE_ENV === "production"
-      ? undefined
-      : [process.env.TEST_GUILD_ID],
+  botGuilds: process.env.NODE_ENV === "production" ? undefined : [process.env.TEST_GUILD_ID],
 });
 
 const time = Date.now();
 
 assets.init();
 Game.init();
-console.log(
-  `asset & game initialization has been done in ${Date.now() - time}ms`,
-);
+console.log(`asset & game initialization has been done in ${Date.now() - time}ms`);
 
 client.login(process.env.BOT_TOKEN);
 
 client
   .once("ready", async () => {
-    console.log(
-      `Logged in as ${client.user?.tag}(${client.application?.id}): ${
-        Date.now() - time
-      }ms`,
-    );
-    await client.clearApplicationCommands(
-      ...(process.env.NODE_ENV === "production" ? [] : [process.env.BOT_TOKEN]),
-    );
+    console.log(`Logged in as ${client.user?.tag}(${client.application?.id}): ${Date.now() - time}ms`);
+    await client.clearApplicationCommands(...(process.env.NODE_ENV === "production" ? [] : [process.env.BOT_TOKEN]));
     await client.initApplicationCommands();
   })
   .on("messageCreate", (message) => {
@@ -60,20 +45,11 @@ client
 
 process
   .on("unhandledRejection", async (err) => {
-    console.error(
-      `[${new Date().toISOString()}] Unhandled Promise Rejection:\n`,
-      err,
-    );
+    console.error(`[${new Date().toISOString()}] Unhandled Promise Rejection:\n`, err);
   })
   .on("uncaughtException", async (err) => {
-    console.error(
-      `[${new Date().toISOString()}] Uncaught Promise Exception:\n`,
-      err,
-    );
+    console.error(`[${new Date().toISOString()}] Uncaught Promise Exception:\n`, err);
   })
   .on("uncaughtExceptionMonitor", async (err) => {
-    console.error(
-      `[${new Date().toISOString()}] Uncaught Promise Exception (Monitor):\n`,
-      err,
-    );
+    console.error(`[${new Date().toISOString()}] Uncaught Promise Exception (Monitor):\n`, err);
   });
