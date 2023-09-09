@@ -28,8 +28,6 @@ export type ManagerConstructOptions = {
   components?: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[];
   triggers?: Map<string, ComponentTrigger>;
   files?: Exclude<BaseMessageOptions["files"], undefined>;
-  lastManager?: Manager;
-
   interaction: BaseInteraction;
 };
 
@@ -52,9 +50,8 @@ class Manager {
   public files: Files = [];
   public readonly locale: string;
   public readonly interaction: BaseInteraction;
-  protected message?: Message | undefined;
-  protected collector?: InteractionCollector<StringSelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>>;
-  protected readonly lastManager?: Manager;
+  public message?: Message | undefined;
+  public collector?: InteractionCollector<StringSelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>>;
 
   public constructor({
     content,
@@ -63,7 +60,6 @@ class Manager {
     files = [],
     interaction,
     triggers = new Map(),
-    lastManager,
   }: ManagerConstructOptions) {
     this.components = components;
     this.triggers = triggers;
@@ -73,8 +69,6 @@ class Manager {
 
     this.interaction = interaction;
     this.locale = interaction.locale;
-
-    this.lastManager = lastManager;
   }
 
   private updateCollector() {
@@ -91,12 +85,12 @@ class Manager {
 
   /**
    * 현재 데이터를 갱신합니다.
-   * 메시지가 있다면 그 메시지로, 없다면 상호작용의 메시지를 수정하여 갱신합니다.
-   * @param channel - 송신할 채널
+   *
+   * 메시지가 있다면 그 메시지로, 없다면 상호작용의 메시지를 수정 / 답신하고, **못한다면 그냥 던집니다.**
+   *
+   * 메시지를 새롭게 보내고 싶다면 `send`를 고려하세요
    */
-  public async update(channel: TextBasedChannel | null = this.interaction.channel): Promise<Message> {
-    if (!channel) throw new Error("channel does not exist");
-
+  public async update(): Promise<Message> {
     const options: Discord.BaseMessageOptions = {
       content: this.content,
       embeds: this.embeds,
@@ -111,7 +105,11 @@ class Manager {
         } else {
           return this.interaction.reply(options).then((response) => response.fetch());
         }
-      } else return this.send(channel);
+      } else {
+        throw new Error(
+          "this manager doesn't have editable message or repliable interaction.\nconsider using `send(channel)` instead.",
+        );
+      }
     })();
     this.message = sent;
     this.updateCollector();
@@ -120,7 +118,7 @@ class Manager {
 
   /**
    * 현재 데이터를 송신하고 message를 갱신합니다.
-   * @param channel - 송신할 채널
+   * @param channel 송신할 채널 (기본값: 출생지)
    */
   public async send(channel: TextBasedChannel | null = this.interaction.channel): Promise<Message> {
     if (!channel) throw new Error("channel does not exist");
@@ -139,19 +137,13 @@ class Manager {
 
   /**
    * 이 메시지와의 상호작용을 종료합니다.
-   * 이전 매니저가 존재할 경우 이전 매니저로 즉시 전환합니다.
-   * 이전 매니저가 존재하지 않을 경우 이벤트가 종료되고 삭제 버튼이 생성됩니다.
+   *이벤트가 종료되고 삭제 버튼이 생성됩니다.
    */
   public async endManager(timeout = 5000): Promise<void> {
-    if (this.lastManager) {
-      this.collector?.stop();
-      await this.lastManager.update();
-    } else {
-      //this.user.gameManager.endEvent();
-      this.setComponents();
-      this.addRemoveButton(timeout);
-      await this.update();
-    }
+    //this.user.gameManager.endEvent();
+    this.setComponents();
+    this.addRemoveButton(timeout);
+    await this.update();
   }
 
   /**
@@ -305,24 +297,6 @@ class Manager {
     while (this.components.length <= row) {
       this.components.push(new ActionRowBuilder({ components: [] }));
     }
-  }
-
-  public addBackButton(): this {
-    if (!this.lastManager) throw new Error("last manager does not exist but trying to add back button?");
-
-    this.addButtonSelection(
-      "back_select",
-      0,
-      () => {
-        if (!this.lastManager) throw new Error("last manager does not exist but trying to add back button?");
-
-        this.collector?.stop();
-        this.lastManager.update();
-      },
-      { style: ButtonStyle.Secondary },
-    );
-
-    return this;
   }
 
   public addRemoveButton(timeout = 5000): this {

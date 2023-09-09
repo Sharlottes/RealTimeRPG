@@ -1,20 +1,21 @@
 import bundle from "@/assets/Bundle";
-import { BaseInteraction, ButtonStyle, codeBlock, EmbedBuilder, TextBasedChannel } from "discord.js";
+import { BaseInteraction, ButtonStyle, codeBlock, EmbedBuilder } from "discord.js";
 import User from "../User";
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
 import { getOne } from "@/utils/getOne";
 import Events from "@/game/contents/Events";
 import { Canvas } from "@/utils";
+import ParentManager from "./ParentManager";
 
 /**
  * 이벤트 관리 클래스, user에 종속됨
  */
 export default class GameManager extends Manager {
-  private readonly mainEmbed: EmbedBuilder;
+  public readonly mainEmbed: EmbedBuilder;
 
   constructor(
     public readonly user: User,
-    public readonly targetChannel: TextBasedChannel,
+    public readonly gameThread: Discord.PublicThreadChannel,
     options: ManagerConstructOptions,
   ) {
     super(options);
@@ -61,10 +62,25 @@ export default class GameManager extends Manager {
         0,
         () => {
           this.remove();
-          this.targetChannel.delete();
-          this.user.gameManager = undefined;
+          this.gameThread.delete();
         },
         { style: ButtonStyle.Secondary },
       );
+  }
+
+  /**
+   * user가 없을 때 manager 참조 노드를 거슬러 올라가 gameManager를 찾습니다.
+   *
+   * **확실할 때 쓰세요**
+   *
+   * @return {GameManager} 터질지 안터질지 모르는 GameManager
+   */
+  public static findGameManager(manager: ParentManager): GameManager {
+    if (manager instanceof GameManager) return manager;
+    else if ("user" in manager && manager.user instanceof User) {
+      if (manager.user.gameManager) return manager.user.gameManager;
+      else throw new Error("user doesn't have gameManager");
+    } else if (manager.parentManager instanceof ParentManager) return this.findGameManager(manager.parentManager);
+    else throw new Error("your manager doesn't have either parent or game manager");
   }
 }

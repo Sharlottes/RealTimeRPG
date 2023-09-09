@@ -9,14 +9,15 @@ import ItemSelectManager from "./ItemSelectManager";
 import { EntityI } from "@/@type/types";
 import BattleManager from "./BattleManager";
 import { codeBlock } from "@discordjs/builders";
+import ParentManager from "./ParentManager";
 
-export default class ExchangeManager extends Manager {
+export default class ExchangeManager extends ParentManager {
   private readonly user: User;
   private readonly target: UnitEntity;
   private readonly mainEmbed: EmbedBuilder;
 
-  public constructor(options: ManagerConstructOptions & { target: UnitEntity; user: User }) {
-    super(options);
+  public constructor(parentManager: Manager, options: ManagerConstructOptions & { target: UnitEntity; user: User }) {
+    super(parentManager, options);
     this.user = options.user;
     this.target = options.target;
     this.mainEmbed = new EmbedBuilder().setFields([
@@ -47,7 +48,7 @@ export default class ExchangeManager extends Manager {
       this.setContent(bundle.find(this.locale, "shop.end"));
       await this.endManager();
     }).addButtonSelection("battle", 0, async () => {
-      await new BattleManager({
+      await new BattleManager(this, {
         user: this.user,
         interaction: this.interaction,
         enemy: this.target,
@@ -59,7 +60,7 @@ export default class ExchangeManager extends Manager {
       1,
       async (_, __, store) => {
         if (store instanceof ItemStack && store.amount > 1) {
-          new ItemSelectManager({
+          new ItemSelectManager(this, {
             interaction: this.interaction,
             item: store,
             callback: async (amount) => {
@@ -92,7 +93,7 @@ export default class ExchangeManager extends Manager {
       2,
       async (_, __, store) => {
         if (store instanceof ItemStack && store.amount > 1) {
-          new ItemSelectManager({
+          new ItemSelectManager(this, {
             interaction: this.interaction,
             item: store,
             callback: async (amount) => {

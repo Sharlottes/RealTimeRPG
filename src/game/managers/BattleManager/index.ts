@@ -18,6 +18,7 @@ import { ReloadAction } from "../actions/ReloadAction";
 import { ShieldAction } from "../actions/ShieldAction";
 import { SwapAction } from "../actions/SwapAction";
 import ActionManager from "./ActionManager";
+import ParentManager from "../ParentManager";
 
 enum Status {
   DEFAULT,
@@ -25,7 +26,7 @@ enum Status {
   SHIELD,
 }
 
-export default class BattleManager extends Manager {
+export default class BattleManager extends ParentManager {
   private readonly mainEmbed: EmbedBuilder;
   private readonly status: Map<EntityI, Status>;
 
@@ -40,8 +41,8 @@ export default class BattleManager extends Manager {
   private consumeRefresher: () => this;
   private reloadRefresher: () => this;
 
-  public constructor(options: ManagerConstructOptions & { enemy: UnitEntity; user: User }) {
-    super(options);
+  public constructor(parentManager: Manager, options: ManagerConstructOptions & { enemy: UnitEntity; user: User }) {
+    super(parentManager, options);
     this.user = this.turn = options.user;
     this.enemy = options.enemy;
     this.status = new Map<EntityI, Status>().set(options.user, Status.DEFAULT).set(this.enemy, Status.DEFAULT);
@@ -138,7 +139,7 @@ export default class BattleManager extends Manager {
       2,
       async (_, __, entity) => {
         if (entity instanceof ItemStack && entity.amount > 1) {
-          new ItemSelectManager({
+          new ItemSelectManager(this, {
             item: entity,
             interaction: this.interaction,
             callback: async (amount) => {
@@ -175,7 +176,7 @@ export default class BattleManager extends Manager {
       3,
       async (_, __, entity) => {
         if (entity instanceof ItemStack && entity.amount > 1) {
-          new ItemSelectManager({
+          new ItemSelectManager(this, {
             item: entity,
             interaction: this.interaction,
             callback: async (amount) => {
@@ -493,6 +494,6 @@ export default class BattleManager extends Manager {
       this.updateLog("- " + bundle.format(this.locale, "battle.lose", this.user.stats.health));
       //TODO: 패배 부분 구현하기
     }
-    this.endManager(-1);
+    this.endManager();
   }
 }

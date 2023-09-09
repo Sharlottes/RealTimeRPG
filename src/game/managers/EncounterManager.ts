@@ -7,25 +7,30 @@ import { UnitEntity, User } from "@/game";
 import bundle from "@/assets/Bundle";
 import { Mathf } from "@/utils";
 import { EmbedBuilder } from "discord.js";
+import ParentManager from "./ParentManager";
 
-export default class EncounterManager extends Manager {
+export default class EncounterManager extends ParentManager {
   private readonly user: User;
   private readonly target: UnitEntity;
   private readonly mainEmbed: EmbedBuilder;
 
-  public constructor(options: ManagerConstructOptions & { target: UnitEntity; user: User }) {
-    super(options);
-    this.user = options.user;
-    this.target = options.target;
+  public constructor(
+    parentManager: Manager,
+    { target, user, ...options }: ManagerConstructOptions & { target: UnitEntity; user: User },
+  ) {
+    super(parentManager, options);
+    this.user = user;
+    this.target = target;
     this.mainEmbed = new EmbedBuilder().setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
 
     this.setEmbeds(this.mainEmbed)
       .addButtonSelection("battle", 0, () =>
-        new BattleManager({
+        new BattleManager(this, {
           user: this.user,
           interaction: this.interaction,
           enemy: this.target,
-        }).update(),
+          // EncounterManager의 interaction은 playground인 thread가 아님
+        }).update({ updateParent: true }),
       )
       .addButtonSelection("run", 0, () => {
         if (Random.boolean()) {
@@ -54,7 +59,7 @@ export default class EncounterManager extends Manager {
         });
         this.endManager();
       }).addButtonSelection("exchange", 0, async () => {
-        await new ExchangeManager({
+        await new ExchangeManager(this, {
           user: this.user,
           interaction: this.interaction,
           target: this.target,
