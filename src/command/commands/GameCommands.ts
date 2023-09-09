@@ -30,7 +30,7 @@ abstract class GameCommands {
     if (!user) return;
 
     if (user.gameManager) {
-      Manager.newErrorEmbed(interaction, bundle.find(interaction.locale, "error.GMexist"), true);
+      Manager.newErrorEmbed(interaction, bundle.find(interaction.locale, "error.GMexist"));
       return;
     }
 

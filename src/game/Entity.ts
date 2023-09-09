@@ -1,6 +1,7 @@
 import { Items, StatusEffect } from "@/game/contents";
 import { EntityI } from "@/@type/types";
-import { StatusEntity, Inventory, WeaponEntity } from "@/game";
+import Inventory, { WeaponEntity } from "@/game/Inventory";
+import StatusEntity from "./StatusEntity";
 
 export default abstract class Entity implements EntityI {
   public abstract readonly id: string | number;

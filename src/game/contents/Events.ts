@@ -23,18 +23,18 @@ export default class Events {
             : undefined;
           const money = !bool ? 2 + Math.floor(Math.random() * 10) : undefined;
 
-          await new PickupManager({ user, interaction, stack, money }).send(user.gameManager!.targetChannel);
+          await new PickupManager({ user, interaction, stack, money }).send(user.gameManager!.gameThread);
         },
       },
       {
         only: true,
         ratio: 10,
         start: async (gameManager, interaction) => {
-          await new EncounterManager({
+          await new EncounterManager(gameManager, {
             user: gameManager.user,
             interaction,
             target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),
-          }).send(gameManager.targetChannel);
+          }).send(gameManager.gameThread);
         },
       },
     );

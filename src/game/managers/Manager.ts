@@ -385,30 +385,23 @@ class Manager {
     return this;
   }
 
-  public static async newErrorEmbed(interaction: BaseInteraction, description: string, update: boolean = false) {
+  public static async newErrorEmbed(interaction: BaseInteraction, description: string) {
     const manager = new Manager({
       interaction,
       embeds: [new EmbedBuilder().setTitle("ERROR").setDescription(description)],
     });
     manager.addRemoveButton();
-    if (update) await manager.update(interaction.channel);
-    else await manager.send(interaction.channel);
+    await manager.send(interaction.channel);
     return manager;
   }
 
-  public static async newTextEmbed(
-    interaction: BaseInteraction,
-    description: string,
-    title = "",
-    update: boolean = false,
-  ) {
+  public static async newTextEmbed(interaction: BaseInteraction, description: string, title = "") {
     const manager = new Manager({
       interaction,
       embeds: [new EmbedBuilder().setTitle(title).setDescription(description)],
     });
     manager.addRemoveButton();
-    if (update) await manager.update(interaction.channel);
-    else await manager.send(interaction.channel);
+    await manager.send(interaction.channel);
     return manager;
   }
 }
