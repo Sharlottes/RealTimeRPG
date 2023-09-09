@@ -3,7 +3,6 @@ import {
   BaseInteraction,
   type BaseMessageOptions,
   type MessageCreateOptions,
-  type MessageEditOptions,
   type CacheType,
   Message,
   ActionRowBuilder,
@@ -20,7 +19,6 @@ import {
   ComponentType,
   MessageComponentInteraction,
 } from "discord.js";
-import { KotlinLike } from "../../utils";
 
 type Files = Exclude<BaseMessageOptions["files"], undefined>;
 
@@ -46,7 +44,7 @@ type ComponentTrigger = (interaction: MessageComponentInteraction, manager: Mana
 /**
  * 임베드와 컴포넌트의 생성, 통신, 상호작용을 총괄함
  */
-class Manager extends KotlinLike<Manager> {
+class Manager {
   public content?: string;
   public embeds: EmbedBuilder[] = [];
   public components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[] = [];
@@ -67,7 +65,6 @@ class Manager extends KotlinLike<Manager> {
     triggers = new Map(),
     lastManager,
   }: ManagerConstructOptions) {
-    super();
     this.components = components;
     this.triggers = triggers;
     this.embeds = embeds;

@@ -6,6 +6,7 @@ import { Client } from "discordx";
 import Game, { User } from "./game";
 import Vars from "./Vars";
 
+import "@/utils/kotlinLike";
 import "@/command";
 
 export const client = new Client({
