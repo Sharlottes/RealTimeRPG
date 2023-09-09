@@ -28,7 +28,9 @@ client.login(process.env.BOT_TOKEN);
 client
   .once("ready", async () => {
     console.log(`Logged in as ${client.user?.tag}(${client.application?.id}): ${Date.now() - time}ms`);
-    await client.clearApplicationCommands(...(process.env.NODE_ENV === "production" ? [] : [process.env.BOT_TOKEN]));
+    await client.clearApplicationCommands(
+      ...(process.env.NODE_ENV === "production" ? [] : [process.env.TEST_GUILD_ID]),
+    );
     await client.initApplicationCommands();
   })
   .on("messageCreate", (message) => {
