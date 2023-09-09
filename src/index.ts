@@ -5,9 +5,9 @@ import { GatewayIntentBits } from "discord.js";
 import { Client } from "discordx";
 import assets from "@/assets";
 import Game, { User } from "./game";
-import "@/command/commands/GameCommands";
-import "@/command/commands/UserCommands";
 import Vars from "./Vars";
+
+import "@/command";
 
 export const client = new Client({
   intents: [
