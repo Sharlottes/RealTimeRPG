@@ -1,9 +1,10 @@
 import { bundle } from "@/assets";
-import { ItemStack, User } from "@/game";
+import { User } from "@/game";
 import { Content, Items, Units } from "@/game/contents";
 import GameManager from "@/game/managers/GameManager";
 import Manager from "@/game/managers/Manager";
 import { Arrays } from "@/utils";
+import { Pagination } from "@discordx/pagination";
 import {
   ApplicationCommandOptionType,
   ChannelType,
@@ -32,15 +33,6 @@ abstract class GameCommands {
     const user = User.findUserByInteraction(interaction);
     if (!user) return;
 
-    if (!channel) {
-      if (interaction.channel instanceof TextChannel)
-        channel ??= (await interaction.channel.threads.create({
-          name: `${user.name}'s playground`,
-          type: ChannelType.PublicThread,
-        })) as Discord.PublicThreadChannel;
-      else throw new Error("interaction has no channel");
-    }
-
     if (user.gameManager) {
       Manager.newErrorEmbed(
         interaction,
@@ -48,6 +40,15 @@ abstract class GameCommands {
         true
       );
       return;
+    }
+
+    if (!channel) {
+      if (interaction.channel instanceof TextChannel)
+        channel ??= (await interaction.channel.threads.create({
+          name: `${user.name}'s playground`,
+          type: ChannelType.PublicThread,
+        })) as Discord.PublicThreadChannel;
+      else throw new Error("interaction has no channel");
     }
     user.gameManager = new GameManager(user, channel, { interaction });
     await user.gameManager.update();
@@ -101,15 +102,10 @@ abstract class GameCommands {
       );
       embeds.push(embed);
     });
-    if (embeds.length <= 0)
+    if (embeds.length <= 0) {
       embeds.push(new EmbedBuilder().setDescription("< empty >"));
-    //TODO: make page
-    /*
-            Manager.start({
-                interaction: interaction, 
-                embeds: [new EmbedBuilder()]
-            });
-            */
+    }
+    new Pagination(interaction, embeds.map((embed,i) => ({ content: `Page ${i+1}`, embeds: [embed]}))).send()
   }
 
   @Slash({
@@ -117,7 +113,7 @@ abstract class GameCommands {
     description: "introduce bot info",
   })
   showBotInformation(interaction: Discord.CommandInteraction) {
-    interaction.editReply({
+    interaction.reply({
       embeds: [
         new EmbedBuilder()
           .setTitle("Real Time Text RPG")

@@ -77,6 +77,14 @@
   dependencies:
     tslib "^2.3.1"
 
+"@discordx/pagination@^3.4.1":
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/@discordx/pagination/-/pagination-3.4.1.tgz#5064e4b3fcbc23ca6d80aa4323cef25127e54283"
+  integrity sha512-5LQ+O7NpE/cL1qE8cKf0sKGxAtqj/GTtbbMMwwbNLKDSKID6j+ltabsMYm4i5OpzXaWt98DZXEVwq05WoUSXJw==
+  dependencies:
+    lodash "^4.17.21"
+    tslib "^2.5.0"
+
 "@discordx/utilities@^5.2.1":
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/@discordx/utilities/-/utilities-5.2.1.tgz#973f0b4a19c90528b53df7bce74d65c95858477b"

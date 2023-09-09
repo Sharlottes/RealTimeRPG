@@ -76,11 +76,7 @@ export default class GameManager extends Manager {
         0,
         () => {
           this.remove();
-          if (
-            this.targetChannel.isThread() &&
-            this.targetChannel.name === `${this.user.name}'s playground`
-          )
-            this.targetChannel.delete();
+          this.targetChannel.delete();
           this.user.gameManager = undefined;
         },
         { style: ButtonStyle.Secondary },
