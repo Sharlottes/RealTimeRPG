@@ -11,6 +11,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@assets/*": ["./assets/*"]
-    }
-  }
+    },
+    "target": "esnext"
+  },
+  "sourceMaps": true
 }
