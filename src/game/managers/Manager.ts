@@ -106,7 +106,7 @@ class Manager {
     const sent = await (() => {
       if (this.message?.editable) return this.message.edit(options);
       else if (this.interaction.isRepliable()) {
-        if (this.interaction.replied) {
+        if (this.interaction.replied || this.interaction.deferred) {
           return this.interaction.editReply(options);
         } else {
           return this.interaction.reply(options).then((response) => response.fetch());
