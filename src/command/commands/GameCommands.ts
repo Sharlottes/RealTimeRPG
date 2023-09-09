@@ -30,11 +30,7 @@ abstract class GameCommands {
     if (!user) return;
 
     if (user.gameManager) {
-      Manager.newErrorEmbed(
-        interaction,
-        bundle.find(interaction.locale, "error.GMexist"),
-        true,
-      );
+      Manager.newErrorEmbed(interaction, bundle.find(interaction.locale, "error.GMexist"), true);
       return;
     }
 
@@ -55,10 +51,7 @@ abstract class GameCommands {
     description: "show content information",
   })
   async showContentInformation(
-    @Discordx.SlashChoice(
-      { name: "item", value: "item" },
-      { name: "unit", value: "unit" },
-    )
+    @Discordx.SlashChoice({ name: "item", value: "item" }, { name: "unit", value: "unit" })
     @Discordx.SlashOption({
       name: "type",
       description: "the content type",
@@ -92,10 +85,7 @@ abstract class GameCommands {
         components: [CloseButtonComponent.Row],
       });
     } else {
-      const messageOptions = Arrays.division(
-        contents,
-        5,
-      ).map<Discord.BaseMessageOptions>((conts, i) => {
+      const messageOptions = Arrays.division(contents, 5).map<Discord.BaseMessageOptions>((conts, i) => {
         const embed = new Discord.EmbedBuilder();
         embed.setTitle(`Page ${i + 1}`);
         conts.forEach((cont) =>

@@ -35,17 +35,14 @@ export class ReloadAction extends BaseAction {
     if (entity instanceof SlotWeaponEntity) {
       const inc = this.stack.item.getAmmo()?.itemPerAmmo ?? 1;
       this.owner.inventory.remove(this.stack.item, this.stack.amount);
-      for (let i = 0; i < this.stack.amount; i += inc)
-        entity.ammos.push(this.stack.item);
+      for (let i = 0; i < this.stack.amount; i += inc) entity.ammos.push(this.stack.item);
       this.manager.updateLog(
         bundle.format(
           this.manager.locale,
           "reload",
           this.stack.item.localName(this.manager.locale),
           this.stack.amount,
-          this.owner.inventory.equipments.weapon.item.localName(
-            this.manager.locale,
-          ),
+          this.owner.inventory.equipments.weapon.item.localName(this.manager.locale),
         ),
       );
     }
@@ -57,9 +54,7 @@ export class ReloadAction extends BaseAction {
       "action.reload.description",
       this.stack.item.localName(this.manager.locale),
       this.stack.amount,
-      this.owner.inventory.equipments.weapon.item.localName(
-        this.manager.locale,
-      ),
+      this.owner.inventory.equipments.weapon.item.localName(this.manager.locale),
     );
   }
 

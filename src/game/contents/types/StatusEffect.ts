@@ -9,10 +9,7 @@ export default class StatusEffect extends Content {
   constructor(
     name: string,
     public readonly duration = -1,
-    public readonly callback: (
-      entity: EntityI,
-      status: StatusEntity,
-    ) => void = () => {},
+    public readonly callback: (entity: EntityI, status: StatusEntity) => void = () => {},
   ) {
     super(name, "status");
 

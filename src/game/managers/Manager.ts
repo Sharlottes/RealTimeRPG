@@ -41,10 +41,7 @@ type MenuSelectOptions<T> = {
   placeholder?: string;
 };
 
-type ComponentTrigger = (
-  interaction: MessageComponentInteraction,
-  manager: Manager,
-) => void;
+type ComponentTrigger = (interaction: MessageComponentInteraction, manager: Manager) => void;
 
 /**
  * 임베드와 컴포넌트의 생성, 통신, 상호작용을 총괄함
@@ -52,17 +49,13 @@ type ComponentTrigger = (
 class Manager extends KotlinLike<Manager> {
   public content?: string;
   public embeds: EmbedBuilder[] = [];
-  public components: ActionRowBuilder<
-    StringSelectMenuBuilder | ButtonBuilder
-  >[] = [];
+  public components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[] = [];
   public triggers: Map<string, ComponentTrigger> = new Map();
   public files: Files = [];
   public readonly locale: string;
   public readonly interaction: BaseInteraction;
   protected message?: Message | undefined;
-  protected collector?: InteractionCollector<
-    StringSelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>
-  >;
+  protected collector?: InteractionCollector<StringSelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>>;
   protected readonly lastManager?: Manager;
 
   public constructor({
@@ -88,17 +81,15 @@ class Manager extends KotlinLike<Manager> {
   }
 
   private updateCollector() {
-    this.collector ??= this.message
-      ?.createMessageComponentCollector()
-      .on("collect", async (interaction) => {
-        const trigger = this.triggers.get(interaction.customId);
-        if (trigger) {
-          if (!interaction.deferred) {
-            this.message = await interaction.deferUpdate({ fetchReply: true });
-          }
-          trigger(interaction, this);
+    this.collector ??= this.message?.createMessageComponentCollector().on("collect", async (interaction) => {
+      const trigger = this.triggers.get(interaction.customId);
+      if (trigger) {
+        if (!interaction.deferred) {
+          this.message = await interaction.deferUpdate({ fetchReply: true });
         }
-      }) as typeof this.collector;
+        trigger(interaction, this);
+      }
+    }) as typeof this.collector;
   }
 
   /**
@@ -106,9 +97,7 @@ class Manager extends KotlinLike<Manager> {
    * 메시지가 있다면 그 메시지로, 없다면 상호작용의 메시지를 수정하여 갱신합니다.
    * @param channel - 송신할 채널
    */
-  public async update(
-    channel: TextBasedChannel | null = this.interaction.channel,
-  ): Promise<Message> {
+  public async update(channel: TextBasedChannel | null = this.interaction.channel): Promise<Message> {
     if (!channel) throw new Error("channel does not exist");
 
     const options: Discord.BaseMessageOptions = {
@@ -123,9 +112,7 @@ class Manager extends KotlinLike<Manager> {
         if (this.interaction.replied) {
           return this.interaction.editReply(options);
         } else {
-          return this.interaction
-            .reply(options)
-            .then((response) => response.fetch());
+          return this.interaction.reply(options).then((response) => response.fetch());
         }
       } else return this.send(channel);
     })();
@@ -138,9 +125,7 @@ class Manager extends KotlinLike<Manager> {
    * 현재 데이터를 송신하고 message를 갱신합니다.
    * @param channel - 송신할 채널
    */
-  public async send(
-    channel: TextBasedChannel | null = this.interaction.channel,
-  ): Promise<Message> {
+  public async send(channel: TextBasedChannel | null = this.interaction.channel): Promise<Message> {
     if (!channel) throw new Error("channel does not exist");
 
     const options: MessageCreateOptions = {
@@ -214,9 +199,7 @@ class Manager extends KotlinLike<Manager> {
     this.addComponent(
       name,
       row,
-      new ButtonBuilder(option)
-        .setLabel(bundle.find(this.locale, `select.${name}`))
-        .setCustomId(name),
+      new ButtonBuilder(option).setLabel(bundle.find(this.locale, `select.${name}`)).setCustomId(name),
       callback,
     );
     return this;
@@ -235,11 +218,7 @@ class Manager extends KotlinLike<Manager> {
   public addMenuSelection<T>(
     name: string,
     row: number,
-    callback: (
-      interaction: MessageComponentInteraction,
-      manager: Manager,
-      item: T,
-    ) => void,
+    callback: (interaction: MessageComponentInteraction, manager: Manager, item: T) => void,
     { list, reducer, placeholder = "select..." }: MenuSelectOptions<T>,
   ) {
     this.resizeSelection(row);
@@ -266,9 +245,7 @@ class Manager extends KotlinLike<Manager> {
             ? []
             : [
                 {
-                  label: `<-- ${currentPage}/${
-                    Math.floor(currentList.length / 8) + 1
-                  }`,
+                  label: `<-- ${currentPage}/${Math.floor(currentList.length / 8) + 1}`,
                   value: "-1",
                 },
               ],
@@ -278,59 +255,37 @@ class Manager extends KotlinLike<Manager> {
             ? []
             : [
                 {
-                  label: `${currentPage + 1}/${
-                    Math.floor(currentList.length / 8) + 1
-                  } -->`,
+                  label: `${currentPage + 1}/${Math.floor(currentList.length / 8) + 1} -->`,
                   value: "-2",
                 },
               ],
         );
 
-      return options.length === 0
-        ? [{ label: "empty", value: "-10" }]
-        : options;
+      return options.length === 0 ? [{ label: "empty", value: "-10" }] : options;
     };
 
     const refreshOptions = () => {
-      (
-        this.components[row]?.components[0] as StringSelectMenuBuilder
-      ).setOptions(reoption());
+      (this.components[row]?.components[0] as StringSelectMenuBuilder).setOptions(reoption());
       return this;
     };
 
     this.components[row].addComponents(
-      new StringSelectMenuBuilder()
-        .setCustomId(name)
-        .setPlaceholder(placeholder)
-        .setOptions(reoption()),
+      new StringSelectMenuBuilder().setCustomId(name).setPlaceholder(placeholder).setOptions(reoption()),
     );
 
     this.setTrigger(name, async (interaction, manager) => {
-      if (
-        !(
-          interaction.isSelectMenu() &&
-          interaction.component.type == ComponentType.SelectMenu
-        )
-      )
-        return;
+      if (!(interaction.isSelectMenu() && interaction.component.type == ComponentType.SelectMenu)) return;
       const id = interaction.values[0];
       const list = getList();
 
       switch (id) {
         case "-1":
-          if (currentPage == 0)
-            Manager.newErrorEmbed(
-              this.interaction,
-              bundle.find(this.locale, "error.first_page"),
-            );
+          if (currentPage == 0) Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.first_page"));
           else currentPage--;
           break;
         case "-2":
           if (currentPage + 1 > Math.floor(list.length / 8))
-            Manager.newErrorEmbed(
-              this.interaction,
-              bundle.find(this.locale, "error.last_page"),
-            );
+            Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.last_page"));
           else currentPage++;
           break;
         case "-10":
@@ -356,19 +311,13 @@ class Manager extends KotlinLike<Manager> {
   }
 
   public addBackButton(): this {
-    if (!this.lastManager)
-      throw new Error(
-        "last manager does not exist but trying to add back button?",
-      );
+    if (!this.lastManager) throw new Error("last manager does not exist but trying to add back button?");
 
     this.addButtonSelection(
       "back_select",
       0,
       () => {
-        if (!this.lastManager)
-          throw new Error(
-            "last manager does not exist but trying to add back button?",
-          );
+        if (!this.lastManager) throw new Error("last manager does not exist but trying to add back button?");
 
         this.collector?.stop();
         this.lastManager.update();
@@ -384,10 +333,7 @@ class Manager extends KotlinLike<Manager> {
 
     this.addComponents(
       new ActionRowBuilder<ButtonBuilder>().addComponents([
-        new ButtonBuilder()
-          .setCustomId("remove_embed")
-          .setLabel("Cancel")
-          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId("remove_embed").setLabel("Cancel").setStyle(ButtonStyle.Secondary),
       ]),
     );
     this.setTrigger("remove_embed", () => {
@@ -417,16 +363,12 @@ class Manager extends KotlinLike<Manager> {
     return this;
   }
 
-  public setComponents(
-    ...components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[]
-  ): this {
+  public setComponents(...components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[]): this {
     this.components = components;
     return this;
   }
 
-  public addComponents(
-    ...components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[]
-  ): this {
+  public addComponents(...components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[]): this {
     this.components.push(...components);
     return this;
   }
@@ -446,16 +388,10 @@ class Manager extends KotlinLike<Manager> {
     return this;
   }
 
-  public static async newErrorEmbed(
-    interaction: BaseInteraction,
-    description: string,
-    update: boolean = false,
-  ) {
+  public static async newErrorEmbed(interaction: BaseInteraction, description: string, update: boolean = false) {
     const manager = new Manager({
       interaction,
-      embeds: [
-        new EmbedBuilder().setTitle("ERROR").setDescription(description),
-      ],
+      embeds: [new EmbedBuilder().setTitle("ERROR").setDescription(description)],
     });
     manager.addRemoveButton();
     if (update) await manager.update(interaction.channel);

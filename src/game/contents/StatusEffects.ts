@@ -23,8 +23,7 @@ export default class StatusEffects {
 
     this.weakness = new StatusEffect("weakness", 3, (unit, status) => {
       unit.inventory.equipments.weapon.durability -= status.getValue(3);
-      if (unit.inventory.equipments.weapon.durability <= 0)
-        return unit.removeStatus(status.status);
+      if (unit.inventory.equipments.weapon.durability <= 0) return unit.removeStatus(status.status);
     });
 
     this.annoyed = new StatusEffect("annoyed", 1, (unit, status) => {

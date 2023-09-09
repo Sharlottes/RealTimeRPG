@@ -9,13 +9,7 @@ export class ConsumeAction extends BaseAction {
   private amount: number;
   public title = "consume";
 
-  constructor(
-    manager: BattleManager,
-    owner: EntityI,
-    potion: Item,
-    amount: number,
-    immediate = false,
-  ) {
+  constructor(manager: BattleManager, owner: EntityI, potion: Item, amount: number, immediate = false) {
     super(manager, owner, 5);
     this.potion = potion;
     this.amount = amount;
@@ -45,9 +39,7 @@ export class ConsumeAction extends BaseAction {
         this.amount,
         this.potion
           .getConsume()
-          .buffes.map((b) =>
-            b.description(this.owner, this.amount, b, this.manager.locale),
-          )
+          .buffes.map((b) => b.description(this.owner, this.amount, b, this.manager.locale))
           .join("\n  "),
       ),
     );

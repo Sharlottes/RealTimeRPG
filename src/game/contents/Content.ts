@@ -10,19 +10,10 @@ export default class Content {
   constructor(name: string, type = "other") {
     this.name = name;
     this.localName = (user: User | string) =>
-      bundle.find(
-        typeof user === "string" ? user : user.locale,
-        `content.${type}.${name}.name`,
-      );
+      bundle.find(typeof user === "string" ? user : user.locale, `content.${type}.${name}.name`);
     this.description = (user: User | string) =>
-      bundle.find(
-        typeof user === "string" ? user : user.locale,
-        `content.${type}.${name}.description`,
-      );
+      bundle.find(typeof user === "string" ? user : user.locale, `content.${type}.${name}.description`);
     this.details = (user: User | string) =>
-      bundle.find(
-        typeof user === "string" ? user : user.locale,
-        `content.${type}.${name}.details`,
-      );
+      bundle.find(typeof user === "string" ? user : user.locale, `content.${type}.${name}.details`);
   }
 }

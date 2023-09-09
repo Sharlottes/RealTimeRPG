@@ -22,9 +22,7 @@ export class ShieldAction extends BaseAction {
         bundle.format(
           this.manager.locale,
           "shield_position",
-          typeof this.owner.name === "string"
-            ? this.owner.name
-            : this.owner.name(this.manager.locale),
+          typeof this.owner.name === "string" ? this.owner.name : this.owner.name(this.manager.locale),
         ),
       )
       .update();

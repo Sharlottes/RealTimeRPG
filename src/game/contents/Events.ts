@@ -18,16 +18,11 @@ export default class Events {
       new Event(40, async (user, interaction) => {
         const bool = Random.bool();
         const stack = bool
-          ? new ItemStack(
-              getOne(Items.items.filter((i) => i.dropOnWalk)),
-              Random.integer(1, 5),
-            )
+          ? new ItemStack(getOne(Items.items.filter((i) => i.dropOnWalk)), Random.integer(1, 5))
           : undefined;
         const money = !bool ? 2 + Math.floor(Math.random() * 10) : undefined;
 
-        await new PickupManager({ user, interaction, stack, money }).send(
-          user.gameManager!.targetChannel,
-        );
+        await new PickupManager({ user, interaction, stack, money }).send(user.gameManager!.targetChannel);
       }),
     );
 
@@ -36,9 +31,7 @@ export default class Events {
         await new EncounterManager({
           user,
           interaction,
-          target: new UnitEntity(
-            Units.find(Random.int(0, Units.units.length - 1)),
-          ),
+          target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),
         }).send(user.gameManager!.targetChannel);
       }).setOnly(true),
     );

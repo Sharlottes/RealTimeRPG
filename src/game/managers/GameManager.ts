@@ -1,11 +1,5 @@
 import { bundle } from "@/assets";
-import {
-  BaseInteraction,
-  ButtonStyle,
-  codeBlock,
-  EmbedBuilder,
-  TextBasedChannel,
-} from "discord.js";
+import { BaseInteraction, ButtonStyle, codeBlock, EmbedBuilder, TextBasedChannel } from "discord.js";
 import BaseEvent from "../contents/types/BaseEvent";
 import User from "../User";
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
@@ -42,18 +36,10 @@ export default class GameManager extends Manager {
             { showValue: true },
           )}\n`,
       })
-      .setDescription(
-        this.user.alerts
-          .map((alert) => `${codeBlock(alert.content)}`)
-          .join("\n") || null,
-      );
+      .setDescription(this.user.alerts.map((alert) => `${codeBlock(alert.content)}`).join("\n") || null);
 
     this.user.on("alert", async (alert) => {
-      this.mainEmbed.setDescription(
-        this.user.alerts
-          .map((alert) => `${codeBlock(alert.content)}`)
-          .join("\n"),
-      );
+      this.mainEmbed.setDescription(this.user.alerts.map((alert) => `${codeBlock(alert.content)}`).join("\n"));
       if (alert.lifetime !== -1 && this.message) {
         const {
           embeds: [{ description: cache }],

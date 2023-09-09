@@ -30,13 +30,9 @@ class PickupManager extends Manager {
         bundle.format(
           this.locale,
           "event.pickup",
+          this.stack ? this.stack.item.localName(this.locale) : this.money + bundle.find(this.locale, "unit.money"),
           this.stack
-            ? this.stack.item.localName(this.locale)
-            : this.money + bundle.find(this.locale, "unit.money"),
-          this.stack
-            ? `${this.stack.item.localName(this.locale)}: +${
-                this.stack.amount
-              }${bundle.find(this.locale, "unit.item")}`
+            ? `${this.stack.item.localName(this.locale)}: +${this.stack.amount}${bundle.find(this.locale, "unit.item")}`
             : `+${this.money}${bundle.find(this.locale, "unit.money")}`,
         ),
       ),

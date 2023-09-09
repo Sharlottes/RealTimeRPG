@@ -13,15 +13,11 @@ export default class EncounterManager extends Manager {
   private readonly target: UnitEntity;
   private readonly mainEmbed: EmbedBuilder;
 
-  public constructor(
-    options: ManagerConstructOptions & { target: UnitEntity; user: User },
-  ) {
+  public constructor(options: ManagerConstructOptions & { target: UnitEntity; user: User }) {
     super(options);
     this.user = options.user;
     this.target = options.target;
-    this.mainEmbed = new EmbedBuilder().setTitle(
-      bundle.find(this.locale, `event.${this.target.type.name}`),
-    );
+    this.mainEmbed = new EmbedBuilder().setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
 
     this.setEmbeds(this.mainEmbed)
       .addButtonSelection("battle", 0, () =>
@@ -37,22 +33,12 @@ export default class EncounterManager extends Manager {
           this.user.money -= money;
           this.mainEmbed.addFields({
             name: "Result:",
-            value:
-              "```\n" +
-              bundle.format(
-                this.user.locale,
-                "event.goblin_run_failed",
-                money,
-              ) +
-              "\n```",
+            value: "```\n" + bundle.format(this.user.locale, "event.goblin_run_failed", money) + "\n```",
           });
         } else {
           this.mainEmbed.addFields({
             name: "Result:",
-            value:
-              "```\n" +
-              bundle.find(this.user.locale, "event.goblin_run_success") +
-              "\n```",
+            value: "```\n" + bundle.find(this.user.locale, "event.goblin_run_success") + "\n```",
           });
         }
         this.endManager();
@@ -64,10 +50,7 @@ export default class EncounterManager extends Manager {
         this.user.money -= money;
         this.mainEmbed.addFields({
           name: "Result:",
-          value:
-            "```\n" +
-            bundle.format(this.user.locale, "event.goblin_talking", money) +
-            "\n```",
+          value: "```\n" + bundle.format(this.user.locale, "event.goblin_talking", money) + "\n```",
         });
         this.endManager();
       }).addButtonSelection("exchange", 0, async () => {

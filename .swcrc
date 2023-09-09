@@ -1,16 +1,16 @@
 {
-    "jsc": {
-        "parser": {
-            "syntax": "typescript",
-            "tsx": false,
-            "decorators": true,
-            "dynamicImport": false,
-            "externalHelpers": true
-        },
-        "baseUrl": "./",
-        "paths": {
-            "@/*": ["./src/*"],
-            "@assets/*": ["./assets/*"]
-        }
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "tsx": false,
+      "decorators": true,
+      "dynamicImport": false,
+      "externalHelpers": true
+    },
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@assets/*": ["./assets/*"]
     }
+  }
 }

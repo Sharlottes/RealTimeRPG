@@ -8,15 +8,12 @@ import type BattleManager from "@/game/managers/BattleManager/index";
 
 class ComboManager {
   private readonly comboQueue: string[] = [];
-  private readonly comboList: Map<
+  private readonly comboList: Map<string, (manager: BattleManager) => Promise<void>> = new Map<
     string,
-    (manager: BattleManager) => Promise<void>
-  > = new Map<string, () => Promise<void>>();
+    () => Promise<void>
+  >();
 
-  public addCombo(
-    actions: string,
-    callback: (manager: BattleManager) => Promise<void>,
-  ): this {
+  public addCombo(actions: string, callback: (manager: BattleManager) => Promise<void>): this {
     this.comboList.set(actions, callback);
     return this;
   }
@@ -38,9 +35,7 @@ export default new ComboManager()
       Items.find(0),
       Items.find(0),
     );
-    await manager
-      .updateLog(bundle.find(manager.locale, "combo.evasing_attack"))
-      .update();
+    await manager.updateLog(bundle.find(manager.locale, "combo.evasing_attack")).update();
     new AttackAction(
       manager,
       manager.turn,
@@ -51,13 +46,9 @@ export default new ComboManager()
   })
   .addCombo("consume-consume-consume", async (manager) => {
     manager.turn.stats.health += 5;
-    await manager
-      .updateLog(bundle.find(manager.locale, "combo.overeat"))
-      .update();
+    await manager.updateLog(bundle.find(manager.locale, "combo.overeat")).update();
   })
   .addCombo("evase-dvase-evase", async (manager) => {
     manager.getItsOpponent(manager.turn)?.applyStatus(StatusEffects.annoyed);
-    await manager
-      .updateLog(bundle.find(manager.locale, "combo.tea_bagging"))
-      .update();
+    await manager.updateLog(bundle.find(manager.locale, "combo.tea_bagging")).update();
   });

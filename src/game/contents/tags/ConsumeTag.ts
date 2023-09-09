@@ -19,15 +19,10 @@ export default class ConsumeTag extends ItemTag {
   }
 
   //TODO: 버프 설명 구체화
-  public buildInfo(
-    embed: EmbedBuilder,
-    entity?: ItemEntity | undefined,
-  ): EmbedBuilder {
+  public buildInfo(embed: EmbedBuilder, entity?: ItemEntity | undefined): EmbedBuilder {
     return embed.addFields({
       name: "buffes",
-      value: this.buffes
-        .map<string>((buff) => buff.localName("en-US"))
-        .join("\n"),
+      value: this.buffes.map<string>((buff) => buff.localName("en-US")).join("\n"),
     });
   }
 }

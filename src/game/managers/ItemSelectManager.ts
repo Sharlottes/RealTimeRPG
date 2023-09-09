@@ -17,10 +17,7 @@ export default class ItemSelectManager extends Manager {
     },
   ) {
     super(options);
-    this.stack =
-      options.item instanceof ItemStack
-        ? options.item
-        : new ItemStack(options.item);
+    this.stack = options.item instanceof ItemStack ? options.item : new ItemStack(options.item);
     this.callback = options.callback;
     this.mainEmbed = new EmbedBuilder().setTitle("ItemPad").setFields([
       {
@@ -112,9 +109,7 @@ export default class ItemSelectManager extends Manager {
         value: this.amount.toString(),
       },
     ]);
-    this.components[3].components[2].setDisabled(
-      this.amount > this.stack.amount,
-    );
+    this.components[3].components[2].setDisabled(this.amount > this.stack.amount);
     await this.update();
   }
 }

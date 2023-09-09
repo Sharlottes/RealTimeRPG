@@ -28,14 +28,7 @@ abstract class UserCommands {
     if (user) {
       await user.showUserInfo(interaction).update();
     } else {
-      Manager.newErrorEmbed(
-        interaction,
-        bundle.format(
-          interaction.locale,
-          "error.notFound",
-          targetUser.username,
-        ),
-      );
+      Manager.newErrorEmbed(interaction, bundle.format(interaction.locale, "error.notFound", targetUser.username));
     }
   }
 
@@ -59,14 +52,7 @@ abstract class UserCommands {
     if (user) {
       await user.showInventoryInfo(interaction).update();
     } else {
-      Manager.newErrorEmbed(
-        interaction,
-        bundle.format(
-          interaction.locale,
-          "error.notFound",
-          targetUser.username,
-        ),
-      );
+      Manager.newErrorEmbed(interaction, bundle.format(interaction.locale, "error.notFound", targetUser.username));
     }
   }
 
@@ -106,23 +92,14 @@ abstract class UserCommands {
     if (!stack) {
       Manager.newErrorEmbed(
         interaction,
-        bundle.format(
-          user.locale,
-          "error.missing_item",
-          Items.find(itemID).localName(user),
-        ),
+        bundle.format(user.locale, "error.missing_item", Items.find(itemID).localName(user)),
       );
       return;
     }
     if ((stack instanceof ItemStack ? stack.amount : 1) < amount) {
       Manager.newErrorEmbed(
         interaction,
-        bundle.format(
-          user.locale,
-          "error.not_enough",
-          stack.item.localName(user),
-          amount,
-        ),
+        bundle.format(user.locale, "error.not_enough", stack.item.localName(user), amount),
       );
       return;
     }
@@ -139,9 +116,7 @@ abstract class UserCommands {
         "consume",
         potion.localName(user),
         amount,
-        cons.buffes
-          .map((b) => b.description(user, amount!, b, user.locale))
-          .join("\n  "),
+        cons.buffes.map((b) => b.description(user, amount!, b, user.locale)).join("\n  "),
       ),
     );
   }

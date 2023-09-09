@@ -40,10 +40,7 @@ namespace Assets {
       "ko",
     ].forEach((lang) => {
       try {
-        dictionary.set(
-          lang,
-          properties(`${rootDir}bundles/bundle_${lang}.properties`),
-        );
+        dictionary.set(lang, properties(`${rootDir}bundles/bundle_${lang}.properties`));
       } catch (ignore) {}
     });
   }
@@ -59,11 +56,7 @@ namespace Assets {
       );
     }
 
-    export function format(
-      lang = defaultLocale,
-      key: string,
-      ...args: unknown[]
-    ) {
+    export function format(lang = defaultLocale, key: string, ...args: unknown[]) {
       return Strings.format(find(lang, key), args as string[]);
     }
 

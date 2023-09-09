@@ -10,8 +10,5 @@ export default abstract class ItemTag {
     this.item = item;
   }
 
-  public abstract buildInfo(
-    builder: EmbedBuilder,
-    entity?: ItemEntity,
-  ): EmbedBuilder;
+  public abstract buildInfo(builder: EmbedBuilder, entity?: ItemEntity): EmbedBuilder;
 }

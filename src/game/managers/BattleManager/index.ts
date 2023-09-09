@@ -1,18 +1,6 @@
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  EmbedBuilder,
-} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 
-import {
-  UnitEntity,
-  WeaponEntity,
-  SlotWeaponEntity,
-  ItemStack,
-  ItemStorable,
-  User,
-} from "@/game";
+import { UnitEntity, WeaponEntity, SlotWeaponEntity, ItemStack, ItemStorable, User } from "@/game";
 import { getOne } from "@/utils/getOne";
 import { Item, Items } from "@/game/contents";
 import { Mathf, Canvas, Strings, ANSIStyle } from "@/utils";
@@ -52,30 +40,19 @@ export default class BattleManager extends Manager {
   private consumeRefresher: () => this;
   private reloadRefresher: () => this;
 
-  public constructor(
-    options: ManagerConstructOptions & { enemy: UnitEntity; user: User },
-  ) {
+  public constructor(options: ManagerConstructOptions & { enemy: UnitEntity; user: User }) {
     super(options);
     this.user = this.turn = options.user;
     this.enemy = options.enemy;
-    this.status = new Map<EntityI, Status>()
-      .set(options.user, Status.DEFAULT)
-      .set(this.enemy, Status.DEFAULT);
+    this.status = new Map<EntityI, Status>().set(options.user, Status.DEFAULT).set(this.enemy, Status.DEFAULT);
 
     this.mainEmbed = new EmbedBuilder().setTitle("Battle Status");
 
     this.setContent(
-      bundle.format(
-        this.locale,
-        "battle.start",
-        this.user.user.username,
-        this.enemy.type.localName(this.user),
-      ),
+      bundle.format(this.locale, "battle.start", this.user.user.username, this.enemy.type.localName(this.user)),
     );
     this.setEmbeds(this.mainEmbed, ActionManager.actionEmbed);
-    this.updateLog(
-      bundle.format(this.locale, "battle.turnend", this.totalTurn),
-    );
+    this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
     this.updateBar();
 
     this.addButtonSelection(
@@ -86,24 +63,12 @@ export default class BattleManager extends Manager {
         if (weapon.cooldown > 0) {
           Manager.newErrorEmbed(
             this.interaction,
-            bundle.format(
-              this.locale,
-              "battle.cooldown",
-              weapon.cooldown.toFixed(),
-            ),
+            bundle.format(this.locale, "battle.cooldown", weapon.cooldown.toFixed()),
           );
         } else {
           await this.addAction(
-            new AttackAction(
-              this,
-              this.user,
-              this.enemy,
-              this.user.inventory.equipments.weapon,
-            )
-              .addListener(
-                "undo",
-                () => (this.user.inventory.equipments.weapon.cooldown = 0),
-              )
+            new AttackAction(this, this.user, this.enemy, this.user.inventory.equipments.weapon)
+              .addListener("undo", () => (this.user.inventory.equipments.weapon.cooldown = 0))
               .addListener(
                 "added",
                 () =>
@@ -134,15 +99,11 @@ export default class BattleManager extends Manager {
       }
     });
 
-    this.addButtonSelection("shield", 0, async () =>
-      this.addAction(new ShieldAction(this, this.user)),
-    );
+    this.addButtonSelection("shield", 0, async () => this.addAction(new ShieldAction(this, this.user)));
 
     this.addButtonSelection("turn", 0, async () => {
       this.components[4].components[0].setDisabled(true);
-      this.components.forEach((rows) =>
-        rows.components.forEach((component) => component.setDisabled(true)),
-      );
+      this.components.forEach((rows) => rows.components.forEach((component) => component.setDisabled(true)));
       await this.turnEnd();
     });
 
@@ -150,8 +111,7 @@ export default class BattleManager extends Manager {
       "swap",
       1,
       async (_, __, entity) => {
-        if (!(entity instanceof WeaponEntity))
-          throw new Error("it's not weapon entity");
+        if (!(entity instanceof WeaponEntity)) throw new Error("it's not weapon entity");
 
         new SwapAction(this, this.user, entity, true);
         this.updateBar();
@@ -165,9 +125,9 @@ export default class BattleManager extends Manager {
             this.user.inventory.items.filter((store) => store.item.hasWeapon()),
           ),
         reducer: (store, index) => ({
-          label: `(${index + 1}) ${store.item.localName(
-            this.locale,
-          )}, ${store.toStateString((key) => bundle.find(this.locale, key))}`,
+          label: `(${index + 1}) ${store.item.localName(this.locale)}, ${store.toStateString((key) =>
+            bundle.find(this.locale, key),
+          )}`,
           value: index.toString(),
         }),
       },
@@ -200,12 +160,11 @@ export default class BattleManager extends Manager {
       },
       {
         placeholder: "consume ...",
-        list: () =>
-          this.user.inventory.items.filter((store) => store.item.hasConsume()),
+        list: () => this.user.inventory.items.filter((store) => store.item.hasConsume()),
         reducer: (store, index) => ({
-          label: `(${index + 1}) ${store.item.localName(
-            this.locale,
-          )} ${store.toStateString((key) => bundle.find(this.locale, key))}`,
+          label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString((key) =>
+            bundle.find(this.locale, key),
+          )}`,
           value: index.toString(),
         }),
       },
@@ -221,11 +180,7 @@ export default class BattleManager extends Manager {
             interaction: this.interaction,
             callback: async (amount) => {
               this.addAction(
-                new ReloadAction(
-                  this,
-                  this.user,
-                  new ItemStack(entity.item, amount),
-                )
+                new ReloadAction(this, this.user, new ItemStack(entity.item, amount))
                   .addListener("added", () => this.reloadRefresher().update())
                   .addListener("undo", () => this.reloadRefresher().update()),
               );
@@ -242,12 +197,11 @@ export default class BattleManager extends Manager {
       },
       {
         placeholder: "reload ammo with ...",
-        list: () =>
-          this.user.inventory.items.filter((store) => store.item.hasAmmo()),
+        list: () => this.user.inventory.items.filter((store) => store.item.hasAmmo()),
         reducer: (store, index) => ({
-          label: `(${index + 1}) ${store.item.localName(
-            this.locale,
-          )} ${store.toStateString((key) => bundle.find(this.locale, key))}`,
+          label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString((key) =>
+            bundle.find(this.locale, key),
+          )}`,
           value: index.toString(),
         }),
       },
@@ -273,11 +227,9 @@ export default class BattleManager extends Manager {
   }
 
   isEvasion = (owner: EntityI) => this.status.get(owner) === Status.EVASION;
-  setEvasion = (owner: EntityI, evase: boolean) =>
-    this.status.set(owner, evase ? Status.EVASION : Status.DEFAULT);
+  setEvasion = (owner: EntityI, evase: boolean) => this.status.set(owner, evase ? Status.EVASION : Status.DEFAULT);
   isShielded = (owner: EntityI) => this.status.get(owner) === Status.SHIELD;
-  setShield = (owner: EntityI, evase: boolean) =>
-    this.status.set(owner, evase ? Status.SHIELD : Status.DEFAULT);
+  setShield = (owner: EntityI, evase: boolean) => this.status.set(owner, evase ? Status.SHIELD : Status.DEFAULT);
 
   getItsOpponent(owner: EntityI) {
     if (owner == this.user) return this.enemy;
@@ -290,9 +242,7 @@ export default class BattleManager extends Manager {
   private validate() {
     //자신의 턴일때만 활성화
     this.components.forEach((row) =>
-      row.components.forEach((component) =>
-        component.setDisabled(this.turn != this.user),
-      ),
+      row.components.forEach((component) => component.setDisabled(this.turn != this.user)),
     );
     if (this.turn != this.user) return;
 
@@ -313,38 +263,22 @@ export default class BattleManager extends Manager {
     actionCancel.setDisabled(ActionManager.isEmpty());
     attack.setDisabled(this.user.inventory.equipments.weapon.cooldown > 0);
     shield.setDisabled(!this.user.inventory.equipments.shield);
-    reload.setDisabled(
-      !(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity),
-    );
+    reload.setDisabled(!(this.user.inventory.equipments.weapon instanceof SlotWeaponEntity));
 
     //회피 on/off
     (evase as ButtonBuilder).setLabel(
-      bundle.find(
-        this.locale,
-        this.evaseBtnSelected ? "select.dvasion" : "select.evasion",
-      ),
+      bundle.find(this.locale, this.evaseBtnSelected ? "select.dvasion" : "select.evasion"),
     );
   }
 
   private async addAction(action: BaseAction) {
-    if (
-      !action.bloody &&
-      this.turn.stats.energy_max !== 0 &&
-      this.turn.stats.energy < action.cost
-    ) {
+    if (!action.bloody && this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost) {
       new Manager({
         interaction: this.interaction,
         embeds: [
           new EmbedBuilder()
             .setTitle("ALERT")
-            .setDescription(
-              bundle.format(
-                this.locale,
-                "error.low_energy",
-                this.turn.stats.energy,
-                action.cost,
-              ),
-            ),
+            .setDescription(bundle.format(this.locale, "error.low_energy", this.turn.stats.energy, action.cost)),
         ],
       })
         .addComponents(
@@ -381,16 +315,9 @@ export default class BattleManager extends Manager {
   private async turnEnd() {
     //쿨다운 감소
     for (const item of this.turn.inventory.items) {
-      if (item.item.hasWeapon())
-        (item as WeaponEntity).cooldown = Math.max(
-          0,
-          (item as WeaponEntity).cooldown - 1,
-        );
+      if (item.item.hasWeapon()) (item as WeaponEntity).cooldown = Math.max(0, (item as WeaponEntity).cooldown - 1);
     }
-    this.turn.inventory.equipments.weapon.cooldown = Math.max(
-      0,
-      this.turn.inventory.equipments.weapon.cooldown - 1,
-    );
+    this.turn.inventory.equipments.weapon.cooldown = Math.max(0, this.turn.inventory.equipments.weapon.cooldown - 1);
 
     //버프/디버프 효과
     for (const status of this.turn.statuses) {
@@ -415,14 +342,7 @@ export default class BattleManager extends Manager {
       this.turn = this.enemy;
       this.status.set(this.enemy, Status.DEFAULT);
       if (this.enemy.inventory.equipments.weapon.item != Items.none)
-        await this.addAction(
-          new AttackAction(
-            this,
-            this.enemy,
-            this.user,
-            this.enemy.inventory.equipments.weapon,
-          ),
-        );
+        await this.addAction(new AttackAction(this, this.enemy, this.user, this.enemy.inventory.equipments.weapon));
       this.turnEnd();
       return;
     }
@@ -432,9 +352,7 @@ export default class BattleManager extends Manager {
 
     this.updateBar();
     this.validate();
-    this.updateLog(
-      bundle.format(this.locale, "battle.turnend", this.totalTurn),
-    );
+    this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
     this.consumeRefresher();
     this.reloadRefresher();
     this.swapRefresher();
@@ -451,56 +369,35 @@ export default class BattleManager extends Manager {
       {
         name:
           this.user.user.username +
-          (this.turn == this.user
-            ? `   ${this.totalTurn} ` + bundle.find(this.locale, "turn")
-            : "") +
-          (this.isEvasion(this.user)
-            ? `   ${bundle.find(this.locale, "evasion")}`
-            : ""),
+          (this.turn == this.user ? `   ${this.totalTurn} ` + bundle.find(this.locale, "turn") : "") +
+          (this.isEvasion(this.user) ? `   ${bundle.find(this.locale, "evasion")}` : ""),
         value:
-          `**${bundle.find(this.locale, "health")}**: ${
-            this.user.stats.health
-          }/${this.user.stats.health_max}\n${Canvas.unicodeProgressBar(
-            this.user.stats.health,
-            this.user.stats.health_max,
-          )}` +
-          `\n\n**${bundle.find(this.locale, "energy")}**: ${
-            this.user.stats.energy
-          }/${this.user.stats.energy_max}\n${Canvas.unicodeProgressBar(
-            this.user.stats.energy,
-            this.user.stats.energy_max,
-          )}` +
-          `\n\n**${bundle.find(
+          `**${bundle.find(this.locale, "health")}**: ${this.user.stats.health}/${
+            this.user.stats.health_max
+          }\n${Canvas.unicodeProgressBar(this.user.stats.health, this.user.stats.health_max)}` +
+          `\n\n**${bundle.find(this.locale, "energy")}**: ${this.user.stats.energy}/${
+            this.user.stats.energy_max
+          }\n${Canvas.unicodeProgressBar(this.user.stats.energy, this.user.stats.energy_max)}` +
+          `\n\n**${bundle.find(this.locale, "weapon")}**: ${this.user.inventory.equipments.weapon.item.localName(
             this.locale,
-            "weapon",
-          )}**: ${this.user.inventory.equipments.weapon.item.localName(
-            this.locale,
-          )}(${this.user.inventory.equipments.weapon.cooldown}), ${bundle.find(
-            this.locale,
-            "durability",
-          )} ${this.user.inventory.equipments.weapon.durability ?? "0"}` +
+          )}(${this.user.inventory.equipments.weapon.cooldown}), ${bundle.find(this.locale, "durability")} ${
+            this.user.inventory.equipments.weapon.durability ?? "0"
+          }` +
           (this.user.inventory.equipments.weapon instanceof SlotWeaponEntity
             ? `, ${bundle.find(this.locale, "ammo")} ${
                 this.user.inventory.equipments.weapon.ammos.length
               } ${bundle.find(this.locale, "unit.item")}`
             : "") +
           (this.user.inventory.equipments.shield
-            ? `\n\n**${bundle.find(
+            ? `\n\n**${bundle.find(this.locale, "shield")}**: ${this.user.inventory.equipments.shield.item.localName(
                 this.locale,
-                "shield",
-              )}**: ${this.user.inventory.equipments.shield.item.localName(
-                this.locale,
-              )}, ${bundle.find(this.locale, "durability")} ${
-                this.user.inventory.equipments.shield.durability
-              }`
+              )}, ${bundle.find(this.locale, "durability")} ${this.user.inventory.equipments.shield.durability}`
             : "") +
           (this.user.statuses.length > 0
             ? `\n**${bundle.find(this.locale, "status")}**\n${this.user.statuses
                 .map(
                   (status) =>
-                    `${status.status.localName(
-                      this.locale,
-                    )}: ${status.duration.toFixed()} ${bundle.find(
+                    `${status.status.localName(this.locale)}: ${status.duration.toFixed()} ${bundle.find(
                       this.locale,
                       "turn",
                     )}`,
@@ -512,33 +409,18 @@ export default class BattleManager extends Manager {
       {
         name:
           this.enemy.type.localName(this.locale) +
-          (this.turn == this.enemy
-            ? `   ${this.totalTurn} ` + bundle.find(this.locale, "turn")
-            : "") +
-          (this.isEvasion(this.enemy)
-            ? `   ${bundle.find(this.locale, "evasion")}`
-            : ""),
+          (this.turn == this.enemy ? `   ${this.totalTurn} ` + bundle.find(this.locale, "turn") : "") +
+          (this.isEvasion(this.enemy) ? `   ${bundle.find(this.locale, "evasion")}` : ""),
         value:
-          `**${bundle.find(this.locale, "health")}**: ${
-            this.enemy.stats.health
-          }/${this.enemy.stats.health_max}\n${Canvas.unicodeProgressBar(
-            this.enemy.stats.health,
-            this.enemy.stats.health_max,
-          )}` +
-          `\n\n**${bundle.find(this.locale, "energy")}**: ${
-            this.enemy.stats.energy
-          }/${this.enemy.stats.energy_max}\n${Canvas.unicodeProgressBar(
-            this.enemy.stats.energy,
-            this.enemy.stats.energy_max,
-          )}` +
-          `\n\n**${bundle.find(
+          `**${bundle.find(this.locale, "health")}**: ${this.enemy.stats.health}/${
+            this.enemy.stats.health_max
+          }\n${Canvas.unicodeProgressBar(this.enemy.stats.health, this.enemy.stats.health_max)}` +
+          `\n\n**${bundle.find(this.locale, "energy")}**: ${this.enemy.stats.energy}/${
+            this.enemy.stats.energy_max
+          }\n${Canvas.unicodeProgressBar(this.enemy.stats.energy, this.enemy.stats.energy_max)}` +
+          `\n\n**${bundle.find(this.locale, "weapon")}**: ${this.enemy.inventory.equipments.weapon.item.localName(
             this.locale,
-            "weapon",
-          )}**: ${this.enemy.inventory.equipments.weapon.item.localName(
-            this.locale,
-          )}(${
-            this.enemy.inventory.equipments.weapon.cooldown || 0
-          }), ${bundle.find(this.locale, "durability")} ${
+          )}(${this.enemy.inventory.equipments.weapon.cooldown || 0}), ${bundle.find(this.locale, "durability")} ${
             this.enemy.inventory.equipments.weapon.durability ?? "0"
           }` +
           (this.enemy.inventory.equipments.weapon instanceof SlotWeaponEntity
@@ -547,25 +429,15 @@ export default class BattleManager extends Manager {
               } ${bundle.find(this.locale, "unit.item")}`
             : "") +
           (this.enemy.inventory.equipments.shield
-            ? `\n\n**${bundle.find(
+            ? `\n\n**${bundle.find(this.locale, "shield")}**: ${this.enemy.inventory.equipments.shield.item.localName(
                 this.locale,
-                "shield",
-              )}**: ${this.enemy.inventory.equipments.shield.item.localName(
-                this.locale,
-              )}, ${bundle.find(this.locale, "durability")} ${
-                this.enemy.inventory.equipments.shield.durability
-              }`
+              )}, ${bundle.find(this.locale, "durability")} ${this.enemy.inventory.equipments.shield.durability}`
             : "") +
           (this.enemy.statuses.length > 0
-            ? `\n**${bundle.find(
-                this.locale,
-                "status",
-              )}**\n${this.enemy.statuses
+            ? `\n**${bundle.find(this.locale, "status")}**\n${this.enemy.statuses
                 .map(
                   (status) =>
-                    `${status.status.localName(
-                      this.locale,
-                    )}: ${status.duration.toFixed()} ${bundle.find(
+                    `${status.status.localName(this.locale)}: ${status.duration.toFixed()} ${bundle.find(
                       this.locale,
                       "turn",
                     )}`,
@@ -585,11 +457,7 @@ export default class BattleManager extends Manager {
       const items: { item: Item; amount: number }[] = [];
 
       //전투 보상은 최소 1개, 최대 적 레벨의 4배만큼의 랜덤한 아이템
-      for (
-        let i = 0;
-        i < Math.floor(Mathf.range(unit.level, unit.level * 4)) + 1;
-        i++
-      ) {
+      for (let i = 0; i < Math.floor(Mathf.range(unit.level, unit.level * 4)) + 1; i++) {
         const item = getOne(Items.items.filter((i) => i.dropOnBattle));
         const obj = items.find((i) => i.item == item);
         if (obj) obj.amount++;
@@ -598,9 +466,7 @@ export default class BattleManager extends Manager {
 
       this.updateLog(
         "+ " +
-          (this.enemy.stats.health < 0
-            ? bundle.find(this.locale, "battle.overkill") + " "
-            : "") +
+          (this.enemy.stats.health < 0 ? bundle.find(this.locale, "battle.overkill") + " " : "") +
           bundle.format(this.locale, "battle.win", this.enemy.stats.health),
       );
       this.mainEmbed.addFields({
@@ -612,13 +478,7 @@ export default class BattleManager extends Manager {
             this.user.exp,
             (this.user.exp += unit.level * (1 + unit.ratio) * 10),
             items
-              .map(
-                (i) =>
-                  `${i.item.localName(this.locale)} +${i.amount} ${bundle.find(
-                    this.locale,
-                    "unit.item",
-                  )}`,
-              )
+              .map((i) => `${i.item.localName(this.locale)} +${i.amount} ${bundle.find(this.locale, "unit.item")}`)
               .join("\n"),
           ) +
             "\n" +
@@ -630,10 +490,7 @@ export default class BattleManager extends Manager {
         ),
       });
     } else if (this.user.stats.health <= 0) {
-      this.updateLog(
-        "- " +
-          bundle.format(this.locale, "battle.lose", this.user.stats.health),
-      );
+      this.updateLog("- " + bundle.format(this.locale, "battle.lose", this.user.stats.health));
       //TODO: 패배 부분 구현하기
     }
     this.endManager(-1);

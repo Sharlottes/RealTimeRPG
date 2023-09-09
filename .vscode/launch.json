@@ -8,10 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Debug bot",
-      "args": [
-        "--es-module-specifier-resolution=node",
-        "${workspaceRoot}/output/index.js"
-      ],
+      "args": ["--es-module-specifier-resolution=node", "${workspaceRoot}/output/index.js"],
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "SWCompile"
     }

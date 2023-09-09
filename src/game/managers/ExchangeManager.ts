@@ -15,9 +15,7 @@ export default class ExchangeManager extends Manager {
   private readonly target: UnitEntity;
   private readonly mainEmbed: EmbedBuilder;
 
-  public constructor(
-    options: ManagerConstructOptions & { target: UnitEntity; user: User },
-  ) {
+  public constructor(options: ManagerConstructOptions & { target: UnitEntity; user: User }) {
     super(options);
     this.user = options.user;
     this.target = options.target;
@@ -37,12 +35,9 @@ export default class ExchangeManager extends Manager {
 
     //고블린 인벤토리 생성
     for (let i = 0; i < 20; i++) {
-      const item = getOne(
-        Items.items.filter((i) => i.dropOnShop && i.id !== 5 && typeof i),
-      );
+      const item = getOne(Items.items.filter((i) => i.dropOnShop && i.id !== 5 && typeof i));
       const exist = this.target.inventory.items.find<ItemStack>(
-        (store): store is ItemStack =>
-          store instanceof ItemStack && store.item == item,
+        (store): store is ItemStack => store instanceof ItemStack && store.item == item,
       );
       if (exist) exist.amount++;
       else this.target.inventory.items.push(new ItemStack(item));
@@ -85,10 +80,7 @@ export default class ExchangeManager extends Manager {
             ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
               this.locale,
               "unit.item",
-            )}, ${this.calPrice(store.item)} ${bundle.find(
-              this.locale,
-              "unit.money",
-            )}`,
+            )}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
           value: index.toString(),
         }),
         placeholder: "select item to buy ...",
@@ -121,10 +113,7 @@ export default class ExchangeManager extends Manager {
             ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
               this.locale,
               "unit.item",
-            )}, ${this.calPrice(store.item)} ${bundle.find(
-              this.locale,
-              "unit.money",
-            )}`,
+            )}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
           value: index.toString(),
         }),
         placeholder: "select item to sell ...",
@@ -152,12 +141,7 @@ export default class ExchangeManager extends Manager {
     await this.update();
   }
 
-  private async deal<T extends ItemStorable>(
-    owner: EntityI,
-    visitor: EntityI,
-    store: T,
-    amount: number,
-  ) {
+  private async deal<T extends ItemStorable>(owner: EntityI, visitor: EntityI, store: T, amount: number) {
     const max = store instanceof ItemStack ? store.amount : 1;
     const item = store.item;
     const money = this.calPrice(item);
@@ -166,28 +150,12 @@ export default class ExchangeManager extends Manager {
       this.addContent(
         codeBlock(
           "diff",
-          "- " +
-            bundle.format(
-              this.locale,
-              "shop.notEnough_item",
-              item.localName(this.locale),
-              amount,
-              max,
-            ),
+          "- " + bundle.format(this.locale, "shop.notEnough_item", item.localName(this.locale), amount, max),
         ),
       );
     } else if (visitor.money < amount * money) {
       this.addContent(
-        codeBlock(
-          "diff",
-          "- " +
-            bundle.format(
-              this.locale,
-              "shop.notEnough_money",
-              amount * money,
-              visitor.money,
-            ),
-        ),
+        codeBlock("diff", "- " + bundle.format(this.locale, "shop.notEnough_money", amount * money, visitor.money)),
       );
     } else {
       this.addContent(
