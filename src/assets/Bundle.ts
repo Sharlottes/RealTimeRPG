@@ -1,5 +1,7 @@
 import properties from "properties-reader";
 import Strings from "@/utils/Strings";
+import path from "path";
+import fs from "fs";
 
 const ALL_LANGUAGES = [
   ...["en-US", "en-GB", "es-ES", "da", "de", "fr", "hr", "it", "lt", "hu", "nl", "no", "pl", "pt-BR", "ro"],
@@ -13,10 +15,19 @@ class Bundle {
 
   constructor() {
     Promise.all(
-      ALL_LANGUAGES.map((lang) =>
-        new Promise(() => (this.dictionary[lang] = properties(`./assets/bundles/bundle_${lang}.properties`))).catch(
-          (_) => {},
-        ),
+      ALL_LANGUAGES.map(
+        (lang) =>
+          new Promise(async () => {
+            if (
+              (
+                await new Promise<fs.Stats | null>((res) =>
+                  fs.stat(path.resolve(`./assets/bundles/bundle_${lang}.properties`), (_, stat) => res(stat)),
+                )
+              )?.isFile()
+            ) {
+              this.dictionary[lang] = properties(`./assets/bundles/bundle_${lang}.properties`);
+            }
+          }),
       ),
     );
   }
