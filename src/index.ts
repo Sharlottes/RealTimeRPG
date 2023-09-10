@@ -23,9 +23,12 @@ Game.init();
 client
   .once("ready", async () => {
     console.log(`Logged in as ${client.user?.tag}(${client.application?.id})`);
+
+    /*
     await client.clearApplicationCommands(
       ...(process.env.NODE_ENV === "production" ? [] : [process.env.TEST_GUILD_ID]),
     );
+    */
     await client.initApplicationCommands();
   })
   .on("messageCreate", (message) => {

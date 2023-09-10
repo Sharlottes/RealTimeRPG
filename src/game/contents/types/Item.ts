@@ -33,7 +33,7 @@ export default class Item extends Content implements Dropable, Rationess {
     return this;
   }
 
-  public async showInfo(interaction: Discord.CommandInteraction, entity?: ItemEntity) {
+  public async showInfo(interaction: Discord.BaseInteraction, entity?: ItemEntity) {
     const embed = new EmbedBuilder()
       .setTitle(this.localName(interaction.locale))
       .setAuthor({

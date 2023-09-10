@@ -18,6 +18,7 @@ import {
   ButtonStyle,
   Message,
 } from "discord.js";
+import { CloseButtonComponent } from "@/command/common/GeneralComponents";
 import bundle from "@/assets/Bundle";
 
 type Files = Exclude<BaseMessageOptions["files"], undefined>;
@@ -26,7 +27,6 @@ export type ManagerConstructOptions = {
   content?: string;
   embeds?: EmbedBuilder[];
   components?: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[];
-  triggers?: Map<string, ComponentTrigger>;
   files?: Exclude<BaseMessageOptions["files"], undefined>;
   interaction: BaseInteraction;
 };
@@ -46,41 +46,20 @@ class Manager {
   public content?: string;
   public embeds: EmbedBuilder[] = [];
   public components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[] = [];
-  public triggers: Map<string, ComponentTrigger> = new Map();
   public files: Files = [];
   public readonly locale: string;
   public readonly interaction: BaseInteraction;
   public message?: Message | undefined;
   public collector?: InteractionCollector<StringSelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>>;
 
-  public constructor({
-    content,
-    embeds = [],
-    components = [],
-    files = [],
-    interaction,
-    triggers = new Map(),
-  }: ManagerConstructOptions) {
+  public constructor({ content, embeds = [], components = [], files = [], interaction }: ManagerConstructOptions) {
     this.components = components;
-    this.triggers = triggers;
     this.embeds = embeds;
     this.files = files;
     this.content = content;
 
     this.interaction = interaction;
     this.locale = interaction.locale;
-  }
-
-  private updateCollector() {
-    this.collector ??= this.message?.createMessageComponentCollector().on("collect", async (interaction) => {
-      const trigger = this.triggers.get(interaction.customId);
-      if (trigger) {
-        if (!interaction.deferred) {
-          this.message = await interaction.deferUpdate({ fetchReply: true });
-        }
-        trigger(interaction, this);
-      }
-    }) as typeof this.collector;
   }
 
   /**
@@ -113,7 +92,6 @@ class Manager {
       }
     })();
     this.message = sent;
-    this.updateCollector();
     return sent;
   }
 
@@ -132,7 +110,6 @@ class Manager {
     };
     const sent = await channel.send(options);
     this.message = sent;
-    this.updateCollector();
     return sent;
   }
 
@@ -301,17 +278,15 @@ class Manager {
   }
 
   public addRemoveButton(timeout = 5000): this {
-    const id = setTimeout(() => timeout != -1 && this.remove(), timeout);
+    if (timeout > 0)
+      setTimeout(() => {
+        //TODO
+        try {
+          this.remove();
+        } catch (e) {}
+      }, timeout);
 
-    this.addComponents(
-      new ActionRowBuilder<ButtonBuilder>().addComponents([
-        new ButtonBuilder().setCustomId("remove_embed").setLabel("Cancel").setStyle(ButtonStyle.Secondary),
-      ]),
-    );
-    this.setTrigger("remove_embed", () => {
-      clearTimeout(id);
-      this.remove();
-    });
+    this.addComponents(CloseButtonComponent.Row);
     return this;
   }
 
@@ -342,11 +317,6 @@ class Manager {
 
   public addComponents(...components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[]): this {
     this.components.push(...components);
-    return this;
-  }
-
-  public setTrigger(customId: string, trigger: ComponentTrigger): this {
-    this.triggers.set(customId, trigger);
     return this;
   }
 

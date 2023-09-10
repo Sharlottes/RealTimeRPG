@@ -8,6 +8,7 @@ import UnitEntity from "@/game/UnitEntity";
 import Items from "@/game/contents/Items";
 import { EntityI } from "@/@type/types";
 import bundle from "@/assets/Bundle";
+import * as Discordx from "discordx";
 import Canvas from "@/utils/Canvas";
 import Mathf from "@/utils/Mathf";
 import User from "@/game/User";
@@ -31,6 +32,7 @@ enum Status {
   SHIELD,
 }
 
+@Discordx.Discord()
 export default class BattleManager extends ParentManager {
   private readonly mainEmbed: EmbedBuilder;
   private readonly status: Map<EntityI, Status>;
@@ -276,6 +278,13 @@ export default class BattleManager extends ParentManager {
     );
   }
 
+  @Discordx.ButtonComponent({ id: "useHealth" })
+  private handleUseHealthButton(interaction: Discord.ButtonInteraction) {
+    manager.remove();
+    action.enableBloody();
+    this.addAction(action);
+  }
+
   private async addAction(action: BaseAction) {
     if (!action.bloody && this.turn.stats.energy_max !== 0 && this.turn.stats.energy < action.cost) {
       new Manager({
@@ -294,11 +303,6 @@ export default class BattleManager extends ParentManager {
               .setStyle(ButtonStyle.Secondary),
           ]),
         )
-        .setTrigger("useHealth", (_, manager) => {
-          manager.remove();
-          action.enableBloody();
-          this.addAction(action);
-        })
         .addRemoveButton()
         .send();
       return;

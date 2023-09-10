@@ -1,7 +1,9 @@
-import Discord, { AttachmentBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { InventoryInfoButton, WeaponInfoButton, CloseButtonComponent } from "@/command/common/GeneralComponents";
+import Discord, { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, EmbedBuilder } from "discord.js";
 import { filledBar } from "string-progressbar";
 import { EntityI } from "@/@type/types";
 import bundle from "@/assets/Bundle";
+import Bundle from "@/assets/Bundle";
 import Canvas from "@/utils/Canvas";
 import Canvass from "canvas";
 import Vars from "@/Vars";
@@ -108,7 +110,7 @@ export default class User extends Entity implements EntityI {
     this.level++;
   }
 
-  public showInventoryInfo(interaction: Discord.CommandInteraction) {
+  public showInventoryInfo(interaction: Discord.BaseInteraction) {
     return new Manager({ interaction })
       .setEmbeds(
         new Discord.EmbedBuilder().setTitle(bundle.find(this.locale, "inventory")).addFields(
@@ -119,21 +121,21 @@ export default class User extends Entity implements EntityI {
           })),
         ),
       )
-      .addRemoveButton(-1);
+      .addComponents(CloseButtonComponent.Row);
   }
 
-  public showUserInfo(interaction: Discord.CommandInteraction) {
-    const weapon = this.inventory.equipments.weapon.item;
+  public showUserInfo(interaction: Discord.BaseInteraction) {
+    const user = User.findUserByInteraction(interaction);
     const canvas = Canvass.createCanvas(1000, 1000);
     Canvas.donutProgressBar(canvas, {
       progress: {
-        now: this.exp,
-        max: this.level ** 2 * 50,
+        now: user.exp,
+        max: user.level ** 2 * 50,
       },
       bar: 100,
       font: {
         font: "bold 150px sans-serif",
-        text: `${this.level}Lv`,
+        text: `${user.level}Lv`,
       },
       sideFont: {
         font: "bold 125px sans-serif",
@@ -151,56 +153,45 @@ export default class User extends Entity implements EntityI {
           .setColor("#0099ff")
           .setTitle("User Status Information")
           .setAuthor({
-            name: this.user.username,
-            iconURL: this.user.displayAvatarURL(),
-            url: this.user.displayAvatarURL(),
+            name: user.user.username,
+            iconURL: user.user.displayAvatarURL(),
+            url: user.user.displayAvatarURL(),
           })
           .setThumbnail("attachment://profile-image.png")
           .addFields(
             {
               name: "Health",
-              value: `${filledBar(this.stats.health_max, Math.max(0, this.stats.health), 10, "\u2593", "\u2588")[0]}\n${
-                this.stats.health
-              }/${this.stats.health_max}`,
+              value: `${filledBar(user.stats.health_max, Math.max(0, user.stats.health), 10, "\u2593", "\u2588")[0]}\n${
+                user.stats.health
+              }/${user.stats.health_max}`,
               inline: true,
             },
             {
               name: "Energy",
-              value: `${filledBar(this.stats.energy_max, this.stats.energy, 10, "\u2593", "\u2588")[0]}\n${
-                this.stats.energy
-              }/${this.stats.energy_max}`,
+              value: `${filledBar(user.stats.energy_max, user.stats.energy, 10, "\u2593", "\u2588")[0]}\n${
+                user.stats.energy
+              }/${user.stats.energy_max}`,
               inline: true,
             },
             { name: "\u200B", value: "\u200B" },
             {
               name: "Money",
-              value: `${this.money} ${bundle.find(this.locale, "unit.money")}`,
+              value: `${user.money} ${Bundle.find(user.locale, "unit.money")}`,
               inline: true,
             },
             {
               name: "Equipped Weapon",
-              value: weapon.localName(this),
+              value: user.inventory.equipments.weapon.item.localName(user),
               inline: true,
             },
             {
               name: "Inventory",
-              value: this.inventory.items.length.toString(),
+              value: user.inventory.items.length.toString(),
               inline: true,
             },
           ),
       )
       .setFiles(attachment)
-      .setComponents(
-        new ActionRowBuilder<ButtonBuilder>().addComponents([
-          new ButtonBuilder().setCustomId("weapon_info").setLabel("show Weapon Info").setStyle(ButtonStyle.Primary),
-          new ButtonBuilder()
-            .setCustomId("inventory_info")
-            .setLabel("show Inventory Info")
-            .setStyle(ButtonStyle.Primary),
-        ]),
-      )
-      .setTrigger("weapon_info", async () => await weapon.showInfo(interaction, this.inventory.equipments.weapon))
-      .setTrigger("inventory_info", async () => await this.showInventoryInfo(interaction).send())
-      .addRemoveButton(-1);
+      .setComponents(new ActionRowBuilder<ButtonBuilder>().addComponents([WeaponInfoButton, InventoryInfoButton]));
   }
 }

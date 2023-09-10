@@ -32,14 +32,14 @@ export default class ParentManager extends Manager {
       updateParent: false,
     },
   ): Promise<Discord.Message> {
-    if (updateParent)
+    if (updateParent) {
       return this.parentManager.update({
         content: this.content,
         embeds: this.embeds,
         components: this.components,
         files: this.files,
       });
-    else return super.update(option);
+    } else return super.update(option);
   }
 
   public override async endManager(): Promise<void> {

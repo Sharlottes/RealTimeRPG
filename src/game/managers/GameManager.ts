@@ -38,7 +38,8 @@ export default class GameManager extends Manager {
 
     this.setEmbeds(this.mainEmbed)
       .addButtonSelection("walk", 0, (interaction) => {
-        getOne(Events.events).start(this, interaction);
+        Events.events[1].start(this, interaction);
+        // getOne(Events.events).start(this, interaction);
       })
       .addButtonSelection(
         "exit",
