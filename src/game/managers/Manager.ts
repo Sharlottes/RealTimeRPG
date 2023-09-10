@@ -90,15 +90,16 @@ class Manager {
    *
    * 메시지를 새롭게 보내고 싶다면 `send`를 고려하세요
    */
-  public async update(): Promise<Message> {
-    const options: Discord.BaseMessageOptions = {
+  public async update(
+    options: Discord.BaseMessageOptions = {
       content: this.content,
       embeds: this.embeds,
       components: this.components,
       files: this.files,
-    };
+    },
+  ): Promise<Message> {
     const sent = await (() => {
-      if (this.message?.editable) return this.message.edit(options);
+      if (this.message && this.message.editable) return this.message.edit(options);
       else if (this.interaction.isRepliable()) {
         if (this.interaction.replied || this.interaction.deferred) {
           return this.interaction.editReply(options);

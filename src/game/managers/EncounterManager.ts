@@ -30,7 +30,6 @@ export default class EncounterManager extends ParentManager {
           user: this.user,
           interaction: this.interaction,
           enemy: this.target,
-          // EncounterManager의 interaction은 playground인 thread가 아님
         }).update({ updateParent: true }),
       )
       .addButtonSelection("run", 0, () => {

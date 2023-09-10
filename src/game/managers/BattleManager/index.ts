@@ -229,7 +229,6 @@ export default class BattleManager extends ParentManager {
     );
 
     this.validate();
-    this.update();
   }
 
   isEvasion = (owner: EntityI) => this.status.get(owner) === Status.EVASION;

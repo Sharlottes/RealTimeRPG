@@ -28,10 +28,18 @@ export default class ParentManager extends Manager {
    * @param {boolean} updateParent 자신이 아니라 부모를 업데이트합니다.
    */
   public override async update(
-    { updateParent = false }: { updateParent?: boolean } = { updateParent: false },
+    { updateParent = false, ...option }: { updateParent?: boolean } & Discord.BaseMessageOptions = {
+      updateParent: false,
+    },
   ): Promise<Discord.Message> {
-    if (updateParent) return this.parentManager.update();
-    else return super.update();
+    if (updateParent)
+      return this.parentManager.update({
+        content: this.content,
+        embeds: this.embeds,
+        components: this.components,
+        files: this.files,
+      });
+    else return super.update(option);
   }
 
   public override async endManager(): Promise<void> {
