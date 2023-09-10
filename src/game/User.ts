@@ -55,11 +55,11 @@ export default class User extends Entity implements EntityI {
   }
 
   public static findUserByDiscordId(id: string) {
-    const user = Vars.users.find((user) => user.id == id);
+    const user = Vars.userRegistry[id];
     return user;
   }
   public static findUserByInteraction<T extends Discord.BaseInteraction>(interaction: T) {
-    const user = Vars.users.find((user) => user.id == interaction.user.id);
+    const user = Vars.userRegistry[interaction.user.id];
     return user;
   }
 

@@ -7,8 +7,8 @@ import Units from "./contents/Units";
 
 class Game {
   update() {
-    for (const user of Vars.users) {
-      user.levelup();
+    for (const id in Vars.userRegistry) {
+      Vars.userRegistry[id].levelup();
     }
   }
 

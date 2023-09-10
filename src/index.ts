@@ -32,9 +32,7 @@ client
     client.executeCommand(message);
   })
   .on("interactionCreate", (interaction) => {
-    const user =
-      Vars.users.find((u) => u.id == interaction.user.id) ||
-      Vars.users[Vars.users.push(new User(interaction.user)) - 1];
+    const user = (Vars.userRegistry[interaction.user.id] = new User(interaction.user));
     user.updateData(interaction);
 
     client.executeInteraction(interaction);
