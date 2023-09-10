@@ -13,7 +13,6 @@ import StatusEntity from "./StatusEntity";
 import Manager from "./managers/Manager";
 import Item from "./contents/types/Item";
 import Entity from "./Entity";
-import Alert from "./Alert";
 
 const defaultStat: Stat = {
   health: 20,
@@ -23,10 +22,6 @@ const defaultStat: Stat = {
   strength: 0,
   defense: 0,
 };
-
-export interface UserEvents {
-  alert: [Alert];
-}
 
 export default class User extends Entity implements EntityI {
   public readonly id: string = "unknown";
@@ -41,11 +36,6 @@ export default class User extends Entity implements EntityI {
   public level = 1;
   public money = 0;
   public locale: string = "en-US";
-  public readonly alerts: Alert[] = [];
-  public readonly events: Map<
-    keyof UserEvents,
-    Array<(...args: UserEvents[keyof UserEvents]) => Discord.Awaitable<void>>
-  > = new Map<keyof UserEvents, Array<(...args: UserEvents[keyof UserEvents]) => Discord.Awaitable<void>>>();
 
   constructor(data: Discord.User) {
     super();
@@ -61,11 +51,6 @@ export default class User extends Entity implements EntityI {
   public static findUserByInteraction<T extends Discord.BaseInteraction>(interaction: T) {
     const user = Vars.userRegistry[interaction.user.id];
     return user;
-  }
-
-  public on<K extends keyof UserEvents>(event: K, listener: (...args: UserEvents[K]) => Discord.Awaitable<void>): this {
-    this.events.set(event, (this.events.get(event) ?? []).concat([listener]));
-    return this;
   }
 
   public updateData(interaction: Discord.Interaction) {
@@ -85,14 +70,6 @@ export default class User extends Entity implements EntityI {
     if (index != -1) this.statuses.splice(index, 1);
   }
 
-  public async addAlert(alert: Alert) {
-    this.alerts.push(alert);
-    const listeners = this.events.get("alert");
-    if (!listeners) return;
-    for await (const listener of listeners) {
-      await listener(alert);
-    }
-  }
   public giveItem(item: Item, amount = 1) {
     this.inventory.add(item, amount);
 
