@@ -1,6 +1,9 @@
-import { Items, StatusEffect } from "@/game/contents";
+import Inventory, { WeaponEntity } from "@/game/Inventory";
 import { EntityI } from "@/@type/types";
-import { StatusEntity, Inventory, WeaponEntity } from "@/game";
+
+import StatusEffect from "./contents/types/StatusEffect";
+import StatusEntity from "./StatusEntity";
+import Items from "./contents/Items";
 
 export default abstract class Entity implements EntityI {
   public abstract readonly id: string | number;
@@ -16,13 +19,8 @@ export default abstract class Entity implements EntityI {
   public switchWeapon(entity: WeaponEntity) {
     const { equipments, items } = this.inventory;
     const equippedWeapon = equipments.weapon;
-    const isEquippedWeaponSwitchable =
-      equippedWeapon.item !== Items.none && equippedWeapon.item !== Items.punch;
-    if (isEquippedWeaponSwitchable)
-      [items[items.indexOf(entity)], equipments.weapon] = [
-        equipments.weapon,
-        entity,
-      ];
+    const isEquippedWeaponSwitchable = equippedWeapon.item !== Items.none && equippedWeapon.item !== Items.punch;
+    if (isEquippedWeaponSwitchable) [items[items.indexOf(entity)], equipments.weapon] = [equipments.weapon, entity];
     else {
       equipments.weapon = entity;
       items.splice(items.indexOf(entity), 1);

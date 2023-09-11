@@ -1,7 +1,8 @@
 import { ItemEntity } from "@/game/Inventory";
 import { EmbedBuilder } from "discord.js";
-import { ItemTag } from ".";
-import { Item } from "..";
+
+import Item from "../types/Item";
+import ItemTag from "./ItemTag";
 
 export default class AmmoTag extends ItemTag {
   public readonly itemPerAmmo: number;
@@ -12,10 +13,7 @@ export default class AmmoTag extends ItemTag {
     this.itemPerAmmo = itemPerAmmo;
   }
 
-  public buildInfo(
-    embed: EmbedBuilder,
-    entity?: ItemEntity | undefined,
-  ): EmbedBuilder {
+  public buildInfo(embed: EmbedBuilder, entity?: ItemEntity | undefined): EmbedBuilder {
     return embed.addFields({
       name: "items/ammo",
       value: this.itemPerAmmo.toString(),

@@ -4,7 +4,7 @@
     "start": "node --es-module-specifier-resolution=node output/index.js",
     "build": "swc src/ -d output",
     "ts-check": "tsc --noEmit",
-    "format": "prettier -w ./src"
+    "format": "prettier --cache --write ."
   },
   "dependencies": {
     "@discordx/pagination": "^3.4.1",

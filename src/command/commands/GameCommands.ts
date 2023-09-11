@@ -1,52 +1,47 @@
-import { bundle } from "@/assets";
-import { User } from "@/game";
-import { Content, Items, Units } from "@/game/contents";
+import { Pagination, PaginationType } from "@discordx/pagination";
 import GameManager from "@/game/managers/GameManager";
 import Manager from "@/game/managers/Manager";
-import { Arrays } from "@/utils";
-import { Pagination } from "@discordx/pagination";
-import {
-  ApplicationCommandOptionType,
-  ChannelType,
-  TextChannel,
-  EmbedBuilder,
-} from "discord.js";
-import { Discord as DiscordX, Slash, SlashChoice, SlashOption } from "discordx";
+import Content from "@/game/contents/Content";
+import Items from "@/game/contents/Items";
+import Units from "@/game/contents/Units";
+import bundle from "@/assets/Bundle";
+import * as Discordx from "discordx";
+import Arrays from "@/utils/Arrays";
+import Discord from "discord.js";
+import User from "@/game/User";
 
-@DiscordX()
+import { CloseButtonComponent } from "../components/GeneralComponents";
+
+@Discordx.Discord()
 abstract class GameCommands {
-  @Slash({
+  @Discordx.Slash({
     name: "start",
     description: "start the game",
   })
   async startGame(
-    @SlashOption({
+    @Discordx.SlashOption({
       name: "target",
       description: "target channel to create game embeds",
-      channelTypes: [ChannelType.PublicThread],
-      type: ApplicationCommandOptionType.Channel,
+      channelTypes: [Discord.ChannelType.PublicThread],
+      type: Discord.ApplicationCommandOptionType.Channel,
       required: false,
     })
     channel: Discord.PublicThreadChannel | null,
-    interaction: Discord.CommandInteraction
+    interaction: Discord.CommandInteraction,
   ) {
     const user = User.findUserByInteraction(interaction);
     if (!user) return;
 
     if (user.gameManager) {
-      Manager.newErrorEmbed(
-        interaction,
-        bundle.find(interaction.locale, "error.GMexist"),
-        true
-      );
+      Manager.newErrorEmbed(interaction, bundle.find(interaction.locale, "error.GMexist"));
       return;
     }
 
     if (!channel) {
-      if (interaction.channel instanceof TextChannel)
+      if (interaction.channel instanceof Discord.TextChannel)
         channel ??= (await interaction.channel.threads.create({
           name: `${user.name}'s playground`,
-          type: ChannelType.PublicThread,
+          type: Discord.ChannelType.PublicThread,
         })) as Discord.PublicThreadChannel;
       else throw new Error("interaction has no channel");
     }
@@ -54,30 +49,25 @@ abstract class GameCommands {
     await user.gameManager.update();
   }
 
-  @Slash({
+  @Discordx.Slash({
     name: "info",
     description: "show content information",
   })
-  showContentInformation(
-    @SlashChoice(
-      { name: "item", value: "item" },
-      { name: "unit", value: "unit" }
-    )
-    @SlashOption({
+  async showContentInformation(
+    @Discordx.SlashChoice({ name: "item", value: "item" }, { name: "unit", value: "unit" })
+    @Discordx.SlashOption({
       name: "type",
       description: "the content type",
-      type: ApplicationCommandOptionType.String,
+      type: Discord.ApplicationCommandOptionType.String,
       required: false,
     })
     type: "item" | "unit" | null,
-    interaction: Discord.CommandInteraction
+    interaction: Discord.CommandInteraction,
   ) {
     const user = User.findUserByInteraction(interaction);
     if (!user) return;
 
     const contents: Content[] = [];
-    const embeds: EmbedBuilder[] = [];
-
     if (type === null || type == "unit") {
       for (const unit of Units.units) {
         if (!user.foundContents.units.includes(unit.id)) continue;
@@ -92,30 +82,38 @@ abstract class GameCommands {
       }
     }
 
-    Arrays.division(contents, 5).forEach((conts) => {
-      const embed = new EmbedBuilder();
-      conts.forEach((cont) =>
-        embed.addFields({
-          name: cont.localName(user),
-          value: cont.description(user) + "\n\n" + (cont.details(user) || ""),
-        })
-      );
-      embeds.push(embed);
-    });
-    if (embeds.length <= 0) {
-      embeds.push(new EmbedBuilder().setDescription("< empty >"));
+    if (contents.length <= 0) {
+      interaction.reply({
+        embeds: [new Discord.EmbedBuilder().setDescription("< empty >")],
+        components: [CloseButtonComponent.Row],
+      });
+    } else {
+      const messageOptions = Arrays.division(contents, 5).map<Discord.BaseMessageOptions>((conts, i) => {
+        const embed = new Discord.EmbedBuilder();
+        embed.setTitle(`Page ${i + 1}`);
+        conts.forEach((cont) =>
+          embed.addFields({
+            name: cont.localName(user),
+            value: cont.description(user) + "\n\n" + (cont.details(user) || ""),
+          }),
+        );
+        return { embeds: [embed] };
+      });
+      new Pagination(interaction, messageOptions, {
+        ephemeral: true,
+        type: PaginationType.Button,
+      }).send();
     }
-    new Pagination(interaction, embeds.map((embed,i) => ({ content: `Page ${i+1}`, embeds: [embed]}))).send()
   }
 
-  @Slash({
+  @Discordx.Slash({
     name: "intro",
     description: "introduce bot info",
   })
   showBotInformation(interaction: Discord.CommandInteraction) {
     interaction.reply({
       embeds: [
-        new EmbedBuilder()
+        new Discord.EmbedBuilder()
           .setTitle("Real Time Text RPG")
           .setDescription(bundle.find(interaction.locale, "bot.description"))
           .addFields({

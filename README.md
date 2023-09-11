@@ -1,6 +1,6 @@
 # RTTRPG (WIP)
 
-~~real time~~ turn-based role playing game on the discord bot 
+~~real time~~ turn-based role playing game on the discord bot
 
 ## How To Start
 

@@ -1,24 +1,19 @@
-import { codeBlock, EmbedBuilder } from "discord.js";
-import ComboManager from "./ComboManager";
-import type { BaseAction } from "../actions/BaseAction";
 import type BattleManager from "@/game/managers/BattleManager/index";
+import { codeBlock, EmbedBuilder } from "discord.js";
+
+import type { BaseAction } from "../actions/BaseAction";
+import ComboManager from "./ComboManager";
 
 class ActionManager {
-  public readonly actionEmbed = new EmbedBuilder()
-    .setTitle("Action Queue")
-    .setDescription("Empty");
+  public readonly actionEmbed = new EmbedBuilder().setTitle("Action Queue").setDescription("Empty");
   private readonly actionQueue: BaseAction[] = [];
 
   public toString() {
-    return (
-      this.actionQueue.map((a) => codeBlock(a.description())).join("") || null
-    );
+    return this.actionQueue.map((a) => codeBlock(a.description())).join("") || null;
   }
 
   public async onTurnEnd(manager: BattleManager) {
-    const actionDescriptions = this.actionQueue.map((action) =>
-      codeBlock(action.description()),
-    );
+    const actionDescriptions = this.actionQueue.map((action) => codeBlock(action.description()));
     for (const action of this.actionQueue) {
       actionDescriptions.shift();
       this.actionEmbed.setDescription(actionDescriptions.join(""));

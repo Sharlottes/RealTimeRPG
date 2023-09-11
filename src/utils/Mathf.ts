@@ -1,4 +1,4 @@
-export class Mathf {
+export default class Mathf {
   public static range(from: number, to: number) {
     return from + Math.random() * (to - from);
   }

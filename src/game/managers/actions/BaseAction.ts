@@ -1,5 +1,6 @@
 import { EntityI } from "@/@type/types";
-import { bundle } from "@/assets";
+import bundle from "@/assets/Bundle";
+
 import BattleManager from "../BattleManager";
 import Manager from "../Manager";
 
@@ -15,12 +16,7 @@ export abstract class BaseAction {
     undo: [],
   };
 
-  constructor(
-    manager: BattleManager,
-    owner: EntityI,
-    cost: number,
-    immediate = false,
-  ) {
+  constructor(manager: BattleManager, owner: EntityI, cost: number, immediate = false) {
     this.manager = manager;
     this.owner = owner;
     this.cost = cost;
@@ -31,10 +27,7 @@ export abstract class BaseAction {
   public abstract description(): string;
   public abstract isValid(): boolean;
 
-  public addListener(
-    event: keyof typeof this.eventListeners,
-    callback: () => void,
-  ) {
+  public addListener(event: keyof typeof this.eventListeners, callback: () => void) {
     this.eventListeners[event].push(callback);
     return this;
   }

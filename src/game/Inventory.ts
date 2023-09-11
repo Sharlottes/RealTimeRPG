@@ -1,5 +1,7 @@
-import { Item, Items } from "./contents";
-import { predicateOf } from "@/utils/predicateOf";
+import { predicateOf } from "@/utils/functions";
+
+import Item from "./contents/types/Item";
+import Items from "./contents/Items";
 
 export default class Inventory {
   public items: ItemStorable[] = [];
@@ -15,9 +17,7 @@ export default class Inventory {
   public add(item: Item, amount = 1): void {
     if (this.isStorable(item)) {
       const stack = this.items.find(
-        predicateOf<ItemStack>()(
-          (store) => store instanceof ItemStack && store.item == item,
-        ),
+        predicateOf<ItemStack>()((store) => store instanceof ItemStack && store.item == item),
       );
       if (stack) stack.apply(amount);
       else this.items.push(new ItemStack(item, amount));
@@ -33,9 +33,7 @@ export default class Inventory {
   public remove(item: Item, amount = 1): void {
     if (this.isStorable(item)) {
       const stack = this.items.find(
-        predicateOf<ItemStack>()(
-          (store) => store instanceof ItemStack && store.item == item,
-        ),
+        predicateOf<ItemStack>()((store) => store instanceof ItemStack && store.item == item),
       );
       if (stack) {
         stack.amount -= amount;
@@ -107,8 +105,7 @@ export default class Inventory {
           durability: store.durability,
           cooldown: store.cooldown,
         });
-      else if (store instanceof ItemEntity)
-        data.items.push({ type: "ItemEntity", item: store.item.id });
+      else if (store instanceof ItemEntity) data.items.push({ type: "ItemEntity", item: store.item.id });
       else if (store instanceof ItemStack)
         data.items.push({
           type: "ItemStack",
@@ -132,8 +129,7 @@ export default class Inventory {
           break;
         }
         case "WeaponEntity": {
-          if (!item.hasWeapon())
-            throw "got crashed during loading user inventory";
+          if (!item.hasWeapon()) throw "got crashed during loading user inventory";
           const entity = new WeaponEntity(item);
           entity.durability = store.durability!;
           entity.cooldown = store.cooldown!;
@@ -146,8 +142,7 @@ export default class Inventory {
           break;
         }
         case "SlotWeaponEntity": {
-          if (!item.hasSlotWeapon())
-            throw "got crashed during loading user inventory";
+          if (!item.hasSlotWeapon()) throw "got crashed during loading user inventory";
           const entity = new SlotWeaponEntity(item);
           store.ammos?.forEach((ammo) => entity.ammos.push(Items.find(ammo)));
           entity.durability = store.durability!;
@@ -156,8 +151,7 @@ export default class Inventory {
           break;
         }
         case "ShieldEntity": {
-          if (!item.hasShield())
-            throw "got crashed during loading user inventory";
+          if (!item.hasShield()) throw "got crashed during loading user inventory";
           const entity = new ShieldEntity(item);
           entity.durability = store.durability!;
           this.items.push(entity);
@@ -170,8 +164,7 @@ export default class Inventory {
     if (equippedWeapon) {
       switch (equippedWeapon.type) {
         case "WeaponEntity": {
-          if (!Items.find(equippedWeapon.item).hasWeapon())
-            throw "got crashed during loading user inventory";
+          if (!Items.find(equippedWeapon.item).hasWeapon()) throw "got crashed during loading user inventory";
           const entity = new WeaponEntity(Items.find(equippedWeapon.item));
           entity.durability = equippedWeapon.durability;
           entity.cooldown = equippedWeapon.cooldown;
@@ -179,12 +172,9 @@ export default class Inventory {
           break;
         }
         case "SlotWeaponEntity": {
-          if (!Items.find(equippedWeapon.item).hasSlotWeapon())
-            throw "got crashed during loading user inventory";
+          if (!Items.find(equippedWeapon.item).hasSlotWeapon()) throw "got crashed during loading user inventory";
           const entity = new SlotWeaponEntity(Items.find(equippedWeapon.item));
-          equippedWeapon.ammos?.forEach((ammo) =>
-            entity.ammos.push(Items.find(ammo)),
-          );
+          equippedWeapon.ammos?.forEach((ammo) => entity.ammos.push(Items.find(ammo)));
           entity.durability = equippedWeapon.durability;
           entity.cooldown = equippedWeapon.cooldown;
           this.equipments.weapon = entity;
@@ -258,9 +248,7 @@ export class SlotWeaponEntity extends WeaponEntity {
   }
 
   toStateString(find: (key: string) => string): string {
-    return `${super.toStateString(find)} ${this.ammos.length} ${find(
-      "unit.item",
-    )} ${find("ammo")}`;
+    return `${super.toStateString(find)} ${this.ammos.length} ${find("unit.item")} ${find("ammo")}`;
   }
 }
 

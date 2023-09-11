@@ -1,8 +1,9 @@
-import Manager, { ManagerConstructOptions } from "./Manager";
-import { bundle } from "@/assets";
-import { ItemStack } from "@/game/Inventory";
 import { codeBlock } from "@discordjs/builders";
-import { User } from "@/game";
+import { ItemStack } from "@/game/Inventory";
+import bundle from "@/assets/Bundle";
+import User from "@/game/User";
+
+import Manager, { ManagerConstructOptions } from "./Manager";
 
 class PickupManager extends Manager {
   public stack?: ItemStack | undefined;
@@ -30,13 +31,9 @@ class PickupManager extends Manager {
         bundle.format(
           this.locale,
           "event.pickup",
+          this.stack ? this.stack.item.localName(this.locale) : this.money + bundle.find(this.locale, "unit.money"),
           this.stack
-            ? this.stack.item.localName(this.locale)
-            : this.money + bundle.find(this.locale, "unit.money"),
-          this.stack
-            ? `${this.stack.item.localName(this.locale)}: +${
-                this.stack.amount
-              }${bundle.find(this.locale, "unit.item")}`
+            ? `${this.stack.item.localName(this.locale)}: +${this.stack.amount}${bundle.find(this.locale, "unit.item")}`
             : `+${this.money}${bundle.find(this.locale, "unit.money")}`,
         ),
       ),

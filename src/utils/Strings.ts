@@ -22,7 +22,7 @@ export enum ANSIStyle {
   BACKGROUND_IVORY = 47,
 }
 
-export class Strings {
+export default class Strings {
   public static color(string: string, styles: ANSIStyle[], blocklize = true) {
     const colorized = `\x1b[${styles.join(";")}m${string}\x1b[0m`;
     return blocklize ? codeBlock("ansi", colorized) : colorized;

@@ -1,18 +1,14 @@
-export { default as UnitEntity } from "./UnitEntity";
-export { default as StatusEntity } from "./StatusEntity";
-export { default as BaseEvent } from "./contents/types/BaseEvent";
-export { default as User } from "./User";
-export { default as Inventory } from "./Inventory";
-export * from "./Inventory";
-
-import { Items, Units, StatusEffects } from "@/game/contents";
 import Vars from "@/Vars";
+
+import StatusEffects from "./contents/StatusEffects";
 import Events from "./contents/Events";
+import Items from "./contents/Items";
+import Units from "./contents/Units";
 
 class Game {
   update() {
-    for (const user of Vars.users) {
-      user.levelup();
+    for (const id in Vars.userRegistry) {
+      Vars.userRegistry[id].levelup();
     }
   }
 

@@ -1,6 +1,6 @@
-import { ItemEntity } from "@/game";
+import Item from "../types/Item";
 import { EmbedBuilder } from "discord.js";
-import { Item } from "..";
+import { ItemEntity } from "@/game/Inventory";
 
 export default abstract class ItemTag {
   public readonly item: Item;
@@ -10,8 +10,5 @@ export default abstract class ItemTag {
     this.item = item;
   }
 
-  public abstract buildInfo(
-    builder: EmbedBuilder,
-    entity?: ItemEntity,
-  ): EmbedBuilder;
+  public abstract buildInfo(builder: EmbedBuilder, entity?: ItemEntity): EmbedBuilder;
 }

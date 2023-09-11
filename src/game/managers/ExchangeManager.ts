@@ -1,24 +1,26 @@
-import { EmbedBuilder } from "discord.js";
-
-import { getOne } from "@/utils/getOne";
-import { ItemStack, ItemStorable, UnitEntity, User } from "@/game";
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
-import { Item, Items } from "@/game/contents";
-import { bundle } from "@/assets";
-import ItemSelectManager from "./ItemSelectManager";
-import { EntityI } from "@/@type/types";
-import BattleManager from "./BattleManager";
 import { codeBlock } from "@discordjs/builders";
+import { getOne } from "@/utils/functions";
+import { EmbedBuilder } from "discord.js";
+import { EntityI } from "@/@type/types";
+import bundle from "@/assets/Bundle";
 
-export default class ExchangeManager extends Manager {
+import { ItemStack, ItemStorable } from "../Inventory";
+import ItemSelectManager from "./ItemSelectManager";
+import BattleManager from "./BattleManager";
+import ParentManager from "./ParentManager";
+import Item from "../contents/types/Item";
+import UnitEntity from "../UnitEntity";
+import Items from "../contents/Items";
+import User from "../User";
+
+export default class ExchangeManager extends ParentManager {
   private readonly user: User;
   private readonly target: UnitEntity;
   private readonly mainEmbed: EmbedBuilder;
 
-  public constructor(
-    options: ManagerConstructOptions & { target: UnitEntity; user: User },
-  ) {
-    super(options);
+  public constructor(parentManager: Manager, options: ManagerConstructOptions & { target: UnitEntity; user: User }) {
+    super(parentManager, options);
     this.user = options.user;
     this.target = options.target;
     this.mainEmbed = new EmbedBuilder().setFields([
@@ -37,12 +39,9 @@ export default class ExchangeManager extends Manager {
 
     //고블린 인벤토리 생성
     for (let i = 0; i < 20; i++) {
-      const item = getOne(
-        Items.items.filter((i) => i.dropOnShop && i.id !== 5 && typeof i),
-      );
+      const item = getOne(Items.items.filter((i) => i.dropOnShop && i.id !== 5 && typeof i));
       const exist = this.target.inventory.items.find<ItemStack>(
-        (store): store is ItemStack =>
-          store instanceof ItemStack && store.item == item,
+        (store): store is ItemStack => store instanceof ItemStack && store.item == item,
       );
       if (exist) exist.amount++;
       else this.target.inventory.items.push(new ItemStack(item));
@@ -52,29 +51,28 @@ export default class ExchangeManager extends Manager {
       this.setContent(bundle.find(this.locale, "shop.end"));
       await this.endManager();
     }).addButtonSelection("battle", 0, async () => {
-      await new BattleManager({
+      await new BattleManager(this, {
         user: this.user,
         interaction: this.interaction,
         enemy: this.target,
       }).update();
     });
 
-    const buyRefresher = this.addMenuSelection(
+    this.addMenuSelection(
       "buy",
-      1,
-      async (_, __, store) => {
+      async (_, store) => {
         if (store instanceof ItemStack && store.amount > 1) {
-          new ItemSelectManager({
+          new ItemSelectManager(this, {
             interaction: this.interaction,
             item: store,
             callback: async (amount) => {
               await this.deal(this.target, this.user, store, amount);
-              await buyRefresher().update();
+              await this.update();
             },
           }).send();
         } else {
           await this.deal(this.target, this.user, store, 1);
-          await buyRefresher().update();
+          await this.update();
         }
       },
       {
@@ -85,32 +83,28 @@ export default class ExchangeManager extends Manager {
             ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
               this.locale,
               "unit.item",
-            )}, ${this.calPrice(store.item)} ${bundle.find(
-              this.locale,
-              "unit.money",
-            )}`,
+            )}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
           value: index.toString(),
         }),
         placeholder: "select item to buy ...",
       },
     );
 
-    const sellRefresher = this.addMenuSelection(
+    this.addMenuSelection(
       "sell",
-      2,
-      async (_, __, store) => {
+      async (_, store) => {
         if (store instanceof ItemStack && store.amount > 1) {
-          new ItemSelectManager({
+          new ItemSelectManager(this, {
             interaction: this.interaction,
             item: store,
             callback: async (amount) => {
               await this.deal(this.user, this.target, store, amount);
-              await sellRefresher().update();
+              await this.update();
             },
           }).send();
         } else {
           await this.deal(this.user, this.target, store, 1);
-          await sellRefresher().update();
+          await this.update();
         }
       },
       {
@@ -121,10 +115,7 @@ export default class ExchangeManager extends Manager {
             ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
               this.locale,
               "unit.item",
-            )}, ${this.calPrice(store.item)} ${bundle.find(
-              this.locale,
-              "unit.money",
-            )}`,
+            )}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
           value: index.toString(),
         }),
         placeholder: "select item to sell ...",
@@ -152,12 +143,7 @@ export default class ExchangeManager extends Manager {
     await this.update();
   }
 
-  private async deal<T extends ItemStorable>(
-    owner: EntityI,
-    visitor: EntityI,
-    store: T,
-    amount: number,
-  ) {
+  private async deal<T extends ItemStorable>(owner: EntityI, visitor: EntityI, store: T, amount: number) {
     const max = store instanceof ItemStack ? store.amount : 1;
     const item = store.item;
     const money = this.calPrice(item);
@@ -166,28 +152,12 @@ export default class ExchangeManager extends Manager {
       this.addContent(
         codeBlock(
           "diff",
-          "- " +
-            bundle.format(
-              this.locale,
-              "shop.notEnough_item",
-              item.localName(this.locale),
-              amount,
-              max,
-            ),
+          "- " + bundle.format(this.locale, "shop.notEnough_item", item.localName(this.locale), amount, max),
         ),
       );
     } else if (visitor.money < amount * money) {
       this.addContent(
-        codeBlock(
-          "diff",
-          "- " +
-            bundle.format(
-              this.locale,
-              "shop.notEnough_money",
-              amount * money,
-              visitor.money,
-            ),
-        ),
+        codeBlock("diff", "- " + bundle.format(this.locale, "shop.notEnough_money", amount * money, visitor.money)),
       );
     } else {
       this.addContent(

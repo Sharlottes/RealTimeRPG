@@ -1,79 +1,58 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import { GatewayIntentBits } from "discord.js";
 import { Client } from "discordx";
-import assets from "@/assets";
-import Game, { User } from "./game";
-import "@/command/commands/GameCommands";
-import "@/command/commands/UserCommands";
+import dotenv from "dotenv";
+import "@/utils/KotlinLike";
+import "@/command";
+
+import InteractionEvent from "./core/interactionEvent";
+import User from "./game/User";
+import Game from "./game";
 import Vars from "./Vars";
 
+dotenv.config();
+
 export const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
   simpleCommand: {
     prefix: "!",
   },
-  botGuilds:
-    process.env.NODE_ENV === "production"
-      ? undefined
-      : [process.env.TEST_GUILD_ID],
+  botGuilds: process.env.NODE_ENV === "production" ? undefined : [process.env.TEST_GUILD_ID],
 });
+client.interactionEvent = new InteractionEvent(client);
 
-const time = Date.now();
-
-assets.init();
 Game.init();
-console.log(
-  `asset & game initialization has been done in ${Date.now() - time}ms`
-);
 
-client.login(process.env.BOT_TOKEN);
-
+console.log("game initalization hsa been done. logging in discord bot client.");
 client
   .once("ready", async () => {
-    console.log(
-      `Logged in as ${client.user?.tag}(${client.application?.id}): ${
-        Date.now() - time
-      }ms`
-    );
+    console.log(`Logged in as ${client.user?.tag}(${client.application?.id})`);
+
+    /*
     await client.clearApplicationCommands(
-      ...(process.env.NODE_ENV === "production" ? [] : [process.env.BOT_TOKEN])
+      ...(process.env.NODE_ENV === "production" ? [] : [process.env.TEST_GUILD_ID]),
     );
+    */
     await client.initApplicationCommands();
   })
   .on("messageCreate", (message) => {
     client.executeCommand(message);
   })
   .on("interactionCreate", (interaction) => {
-    const user =
-      Vars.users.find((u) => u.id == interaction.user.id) ||
-      Vars.users[Vars.users.push(new User(interaction.user)) - 1];
+    const user = (Vars.userRegistry[interaction.user.id] = new User(interaction.user));
     user.updateData(interaction);
 
     client.executeInteraction(interaction);
-  });
+  })
+  .login(process.env.BOT_TOKEN)
+  .catch(console.log);
 
 process
   .on("unhandledRejection", async (err) => {
-    console.error(
-      `[${new Date().toISOString()}] Unhandled Promise Rejection:\n`,
-      err
-    );
+    console.error(`[${new Date().toISOString()}] Unhandled Promise Rejection:\n`, err);
   })
   .on("uncaughtException", async (err) => {
-    console.error(
-      `[${new Date().toISOString()}] Uncaught Promise Exception:\n`,
-      err
-    );
+    console.error(`[${new Date().toISOString()}] Uncaught Promise Exception:\n`, err);
   })
   .on("uncaughtExceptionMonitor", async (err) => {
-    console.error(
-      `[${new Date().toISOString()}] Uncaught Promise Exception (Monitor):\n`,
-      err
-    );
+    console.error(`[${new Date().toISOString()}] Uncaught Promise Exception (Monitor):\n`, err);
   });

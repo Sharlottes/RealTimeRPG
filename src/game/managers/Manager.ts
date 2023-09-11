@@ -1,147 +1,92 @@
-import { bundle } from "@/assets";
-import {
-  BaseInteraction,
-  type BaseMessageOptions,
-  type MessageCreateOptions,
-  type MessageEditOptions,
-  type CacheType,
-  Message,
-  ActionRowBuilder,
-  EmbedBuilder,
-  ButtonBuilder,
-  TextBasedChannel,
-  InteractionCollector,
-  ButtonInteraction,
-  StringSelectMenuInteraction,
-  ButtonStyle,
-  StringSelectMenuBuilder,
-  APIButtonComponent,
-  APISelectMenuOption,
-  ComponentType,
-  MessageComponentInteraction,
-} from "discord.js";
-import { KotlinLike } from "../../utils";
+import type { PaginationStringSelectMenuOptions } from "@/command/components/PaginationStringSelectMenu";
+import PaginationStringSelectMenu from "@/command/components/PaginationStringSelectMenu";
+import { CloseButtonComponent } from "@/command/components/GeneralComponents";
+import { ActionRowBuilder, EmbedBuilder, ButtonStyle } from "discord.js";
+import ButtonComponent from "@/command/components/ButtonComponent";
+import withRowBuilder from "@/command/components/withRowBuilder";
+import bundle from "@/assets/Bundle";
 
-type Files = Exclude<BaseMessageOptions["files"], undefined>;
+type Files = Exclude<Discord.BaseMessageOptions["files"], undefined>;
 
 export type ManagerConstructOptions = {
   content?: string;
-  embeds?: EmbedBuilder[];
-  components?: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[];
-  triggers?: Map<string, ComponentTrigger>;
-  files?: Exclude<BaseMessageOptions["files"], undefined>;
-  lastManager?: Manager;
-
-  interaction: BaseInteraction;
+  embeds?: Discord.EmbedBuilder[];
+  components?: ActionRowBuilder<Discord.StringSelectMenuBuilder | Discord.ButtonBuilder>[];
+  files?: Exclude<Discord.BaseMessageOptions["files"], undefined>;
+  interaction: Discord.BaseInteraction;
 };
-
-type MenuSelectOptions<T> = {
-  list: T[] | (() => T[]);
-  reducer?: (elem: T, index: number) => APISelectMenuOption;
-  placeholder?: string;
-};
-
-type ComponentTrigger = (
-  interaction: MessageComponentInteraction,
-  manager: Manager,
-) => void;
 
 /**
  * 임베드와 컴포넌트의 생성, 통신, 상호작용을 총괄함
  */
-class Manager extends KotlinLike<Manager> {
+class Manager {
   public content?: string;
-  public embeds: EmbedBuilder[] = [];
-  public components: ActionRowBuilder<
-    StringSelectMenuBuilder | ButtonBuilder
-  >[] = [];
-  public triggers: Map<string, ComponentTrigger> = new Map();
+  public embeds: Discord.EmbedBuilder[] = [];
+  public components: Discord.ActionRowBuilder<Discord.StringSelectMenuBuilder | Discord.ButtonBuilder>[] = [];
   public files: Files = [];
   public readonly locale: string;
-  public readonly interaction: BaseInteraction;
-  protected message?: Message | undefined;
-  protected collector?: InteractionCollector<
-    StringSelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>
+  public readonly interaction: Discord.BaseInteraction;
+  public message?: Discord.Message | undefined;
+  public collector?: Discord.InteractionCollector<
+    Discord.StringSelectMenuInteraction<Discord.CacheType> | Discord.ButtonInteraction<Discord.CacheType>
   >;
-  protected readonly lastManager?: Manager;
 
-  public constructor({
-    content,
-    embeds = [],
-    components = [],
-    files = [],
-    interaction,
-    triggers = new Map(),
-    lastManager,
-  }: ManagerConstructOptions) {
-    super();
+  public constructor({ content, embeds = [], components = [], files = [], interaction }: ManagerConstructOptions) {
     this.components = components;
-    this.triggers = triggers;
     this.embeds = embeds;
     this.files = files;
     this.content = content;
 
     this.interaction = interaction;
     this.locale = interaction.locale;
-
-    this.lastManager = lastManager;
-  }
-
-  private updateCollector() {
-    this.collector ??= this.message
-      ?.createMessageComponentCollector()
-      .on("collect", async (interaction) => {
-        const trigger = this.triggers.get(interaction.customId);
-        if (trigger) {
-          if (!interaction.deferred) {
-            this.message = await interaction.deferUpdate({ fetchReply: true });
-          }
-          trigger(interaction, this);
-        }
-      }) as typeof this.collector;
   }
 
   /**
    * 현재 데이터를 갱신합니다.
-   * 메시지가 있다면 그 메시지로, 없다면 상호작용의 메시지를 수정하여 갱신합니다.
-   * @param channel - 송신할 채널
+   *
+   * 메시지가 있다면 그 메시지로, 없다면 상호작용의 메시지를 수정 / 답신하고, **못한다면 그냥 던집니다.**
+   *
+   * 메시지를 새롭게 보내고 싶다면 `send`를 고려하세요
    */
   public async update(
-    channel: TextBasedChannel | null = this.interaction.channel,
-  ): Promise<Message> {
-    if (!channel) throw new Error("channel does not exist");
-
-    const options: Discord.BaseMessageOptions = {
+    options: Discord.BaseMessageOptions = {
       content: this.content,
       embeds: this.embeds,
       components: this.components,
       files: this.files,
-    };
+    },
+  ): Promise<Discord.Message> {
+    this.components.forEach((component) => {
+      if (component instanceof PaginationStringSelectMenu) {
+        component.reoption();
+      }
+    });
     const sent = await (() => {
-      if (this.message?.editable) return this.message.edit(options);
+      if (this.message && this.message.editable) return this.message.edit(options);
       else if (this.interaction.isRepliable()) {
-        if(this.interaction.replied) {
-        return this.interaction.editReply(options);
+        if (this.interaction.replied || this.interaction.deferred) {
+          return this.interaction.editReply(options);
         } else {
-        return this.interaction.reply(options).then(response => response.fetch());
-      }}
-      else return this.send(channel);
+          return this.interaction.reply(options).then((response) => response.fetch());
+        }
+      } else {
+        throw new Error(
+          "this manager doesn't have editable message or repliable interaction.\nconsider using `send(channel)` instead.",
+        );
+      }
     })();
     this.message = sent;
-    this.updateCollector();
     return sent;
   }
 
   /**
    * 현재 데이터를 송신하고 message를 갱신합니다.
-   * @param channel - 송신할 채널
+   * @param channel 송신할 채널 (기본값: 출생지)
    */
-  public async send(
-    channel: TextBasedChannel | null = this.interaction.channel,
-  ): Promise<Message> {
+  public async send(channel: Discord.TextBasedChannel | null = this.interaction.channel): Promise<Discord.Message> {
     if (!channel) throw new Error("channel does not exist");
 
-    const options: MessageCreateOptions = {
+    const options: Discord.MessageCreateOptions = {
       content: this.content,
       embeds: this.embeds,
       components: this.components,
@@ -149,25 +94,18 @@ class Manager extends KotlinLike<Manager> {
     };
     const sent = await channel.send(options);
     this.message = sent;
-    this.updateCollector();
     return sent;
   }
 
   /**
    * 이 메시지와의 상호작용을 종료합니다.
-   * 이전 매니저가 존재할 경우 이전 매니저로 즉시 전환합니다.
-   * 이전 매니저가 존재하지 않을 경우 이벤트가 종료되고 삭제 버튼이 생성됩니다.
+   *이벤트가 종료되고 삭제 버튼이 생성됩니다.
    */
   public async endManager(timeout = 5000): Promise<void> {
-    if (this.lastManager) {
-      this.collector?.stop();
-      await this.lastManager.update();
-    } else {
-      //this.user.gameManager.endEvent();
-      this.setComponents();
-      this.addRemoveButton(timeout);
-      await this.update();
-    }
+    //this.user.gameManager.endEvent();
+    this.setComponents();
+    this.addRemoveButton(timeout);
+    await this.update();
   }
 
   /**
@@ -180,20 +118,6 @@ class Manager extends KotlinLike<Manager> {
     else await this.message.delete();
   }
 
-  public addComponent(
-    name: string,
-    row: number,
-    component: StringSelectMenuBuilder | ButtonBuilder,
-    callback: ComponentTrigger,
-  ) {
-    this.resizeSelection(row);
-
-    this.components[row].addComponents(component);
-    this.setTrigger(name, callback);
-
-    return this;
-  }
-
   /**
    * 버튼 컴포넌트를 추가합니다.
    *
@@ -204,19 +128,22 @@ class Manager extends KotlinLike<Manager> {
   public addButtonSelection(
     name: string,
     row: number,
-    callback: ComponentTrigger,
-    option: Partial<Omit<APIButtonComponent, "label" | "customId">> = {
+    callback: (interaction: Discord.ButtonInteraction) => unknown,
+    option: Partial<Omit<Discord.InteractionButtonComponentData, "label" | "customId">> = {
       style: ButtonStyle.Primary,
     },
   ) {
-    this.addComponent(
-      name,
-      row,
-      new ButtonBuilder(option)
-        .setLabel(bundle.find(this.locale, `select.${name}`))
-        .setCustomId(name),
-      callback,
+    this.resizeSelection(row);
+
+    this.components[row].addComponents(
+      new ButtonComponent({
+        onClick: callback,
+        customId: name,
+        label: bundle.find(this.locale, `select.${name}`),
+        ...option,
+      }),
     );
+
     return this;
   }
 
@@ -224,7 +151,6 @@ class Manager extends KotlinLike<Manager> {
    * 선택메뉴 컴포넌트를 추가합니다.
    *
    * @param name - 컴포넌트 이름
-   * @param row - 컴포넌트 열 (0~4)
    * @param callback - 선택 콜백함수
    * @param list - 아이템 리스트
    * @param reducer - 아이템 리스트 매퍼
@@ -232,114 +158,13 @@ class Manager extends KotlinLike<Manager> {
    */
   public addMenuSelection<T>(
     name: string,
-    row: number,
-    callback: (
-      interaction: MessageComponentInteraction,
-      manager: Manager,
-      item: T,
-    ) => void,
-    { list, reducer, placeholder = "select..." }: MenuSelectOptions<T>,
+    callback: (interaction: Discord.StringSelectMenuInteraction, item: T) => void,
+    options: PaginationStringSelectMenuOptions<T>,
   ) {
-    this.resizeSelection(row);
+    console.log(1);
+    this.components.push(withRowBuilder(new PaginationStringSelectMenu(name, callback, options)).Row);
 
-    const getList = () => (typeof list === "function" ? list() : list);
-    let currentPage = 0;
-    const reoption = () => {
-      const currentList = getList();
-      const options = currentList
-        .reduce<APISelectMenuOption[]>(
-          (acc, elem, index) =>
-            index < currentPage * 8 || index > (currentPage + 1) * 8
-              ? acc
-              : [
-                  ...acc,
-                  reducer
-                    ? reducer(elem, index)
-                    : {
-                        label: `#${index} item`,
-                        value: index.toString(),
-                      },
-                ],
-          currentPage == 0
-            ? []
-            : [
-                {
-                  label: `<-- ${currentPage}/${
-                    Math.floor(currentList.length / 8) + 1
-                  }`,
-                  value: "-1",
-                },
-              ],
-        )
-        .concat(
-          currentPage == Math.floor(currentList.length / 8)
-            ? []
-            : [
-                {
-                  label: `${currentPage + 1}/${
-                    Math.floor(currentList.length / 8) + 1
-                  } -->`,
-                  value: "-2",
-                },
-              ],
-        );
-
-      return options.length === 0
-        ? [{ label: "empty", value: "-10" }]
-        : options;
-    };
-
-    const refreshOptions = () => {
-      (
-        this.components[row]?.components[0] as StringSelectMenuBuilder
-      ).setOptions(reoption());
-      return this;
-    };
-
-    this.components[row].addComponents(
-      new StringSelectMenuBuilder()
-        .setCustomId(name)
-        .setPlaceholder(placeholder)
-        .setOptions(reoption()),
-    );
-
-    this.setTrigger(name, async (interaction, manager) => {
-      if (
-        !(
-          interaction.isSelectMenu() &&
-          interaction.component.type == ComponentType.SelectMenu
-        )
-      )
-        return;
-      const id = interaction.values[0];
-      const list = getList();
-
-      switch (id) {
-        case "-1":
-          if (currentPage == 0)
-            Manager.newErrorEmbed(
-              this.interaction,
-              bundle.find(this.locale, "error.first_page"),
-            );
-          else currentPage--;
-          break;
-        case "-2":
-          if (currentPage + 1 > Math.floor(list.length / 8))
-            Manager.newErrorEmbed(
-              this.interaction,
-              bundle.find(this.locale, "error.last_page"),
-            );
-          else currentPage++;
-          break;
-        case "-10":
-          break;
-        default:
-          callback(interaction, manager, list[Number(id)]);
-      }
-
-      await refreshOptions().update();
-    });
-    return refreshOptions;
+    return this;
   }
 
   /**
@@ -353,45 +178,16 @@ class Manager extends KotlinLike<Manager> {
     }
   }
 
-  public addBackButton(): this {
-    if (!this.lastManager)
-      throw new Error(
-        "last manager does not exist but trying to add back button?",
-      );
-
-    this.addButtonSelection(
-      "back_select",
-      0,
-      () => {
-        if (!this.lastManager)
-          throw new Error(
-            "last manager does not exist but trying to add back button?",
-          );
-
-        this.collector?.stop();
-        this.lastManager.update();
-      },
-      { style: ButtonStyle.Secondary },
-    );
-
-    return this;
-  }
-
   public addRemoveButton(timeout = 5000): this {
-    const id = setTimeout(() => timeout != -1 && this.remove(), timeout);
+    if (timeout > 0)
+      setTimeout(() => {
+        //TODO
+        try {
+          this.remove();
+        } catch (e) {}
+      }, timeout);
 
-    this.addComponents(
-      new ActionRowBuilder<ButtonBuilder>().addComponents([
-        new ButtonBuilder()
-          .setCustomId("remove_embed")
-          .setLabel("Cancel")
-          .setStyle(ButtonStyle.Secondary),
-      ]),
-    );
-    this.setTrigger("remove_embed", () => {
-      clearTimeout(id);
-      this.remove();
-    });
+    this.addComponents(CloseButtonComponent.Row);
     return this;
   }
 
@@ -405,32 +201,27 @@ class Manager extends KotlinLike<Manager> {
     return this;
   }
 
-  public setEmbeds(...embeds: EmbedBuilder[]): this {
+  public setEmbeds(...embeds: Discord.EmbedBuilder[]): this {
     this.embeds = embeds;
     return this;
   }
 
-  public addEmbeds(...embeds: EmbedBuilder[]): this {
+  public addEmbeds(...embeds: Discord.EmbedBuilder[]): this {
     this.embeds.push(...embeds);
     return this;
   }
 
   public setComponents(
-    ...components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[]
+    ...components: Discord.ActionRowBuilder<Discord.StringSelectMenuBuilder | Discord.ButtonBuilder>[]
   ): this {
     this.components = components;
     return this;
   }
 
   public addComponents(
-    ...components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[]
+    ...components: Discord.ActionRowBuilder<Discord.StringSelectMenuBuilder | Discord.ButtonBuilder>[]
   ): this {
     this.components.push(...components);
-    return this;
-  }
-
-  public setTrigger(customId: string, trigger: ComponentTrigger): this {
-    this.triggers.set(customId, trigger);
     return this;
   }
 
@@ -444,36 +235,23 @@ class Manager extends KotlinLike<Manager> {
     return this;
   }
 
-  public static async newErrorEmbed(
-    interaction: BaseInteraction,
-    description: string,
-    update: boolean = false,
-  ) {
+  public static async newErrorEmbed(interaction: Discord.BaseInteraction, description: string) {
     const manager = new Manager({
       interaction,
-      embeds: [
-        new EmbedBuilder().setTitle("ERROR").setDescription(description),
-      ],
+      embeds: [new EmbedBuilder().setTitle("ERROR").setDescription(description)],
     });
     manager.addRemoveButton();
-    if (update) await manager.update(interaction.channel);
-    else await manager.send(interaction.channel);
+    await manager.send(interaction.channel);
     return manager;
   }
 
-  public static async newTextEmbed(
-    interaction: BaseInteraction,
-    description: string,
-    title = "",
-    update: boolean = false,
-  ) {
+  public static async newTextEmbed(interaction: Discord.BaseInteraction, description: string, title = "") {
     const manager = new Manager({
       interaction,
       embeds: [new EmbedBuilder().setTitle(title).setDescription(description)],
     });
     manager.addRemoveButton();
-    if (update) await manager.update(interaction.channel);
-    else await manager.send(interaction.channel);
+    await manager.send(interaction.channel);
     return manager;
   }
 }

@@ -1,26 +1,20 @@
-import Discord, {
-  AttachmentBuilder,
-  EmbedBuilder,
-  ChatInputCommandInteraction,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  Awaitable,
-} from "discord.js";
-
-import Canvass from "canvas";
-
-import { Item, StatusEffect } from "@/game/contents";
-import { EntityI } from "@/@type/types";
-import { StatusEntity, Inventory, WeaponEntity } from "@/game";
-import { bundle } from "@/assets";
-import { Canvas } from "@/utils";
-import Entity from "./Entity";
-import Manager from "./managers/Manager";
-import GameManager from "./managers/GameManager";
-import Alert from "./Alert";
+import { InventoryInfoButton, WeaponInfoButton, CloseButtonComponent } from "@/command/components/GeneralComponents";
+import Discord, { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, EmbedBuilder } from "discord.js";
 import { filledBar } from "string-progressbar";
+import { EntityI } from "@/@type/types";
+import bundle from "@/assets/Bundle";
+import Bundle from "@/assets/Bundle";
+import Canvas from "@/utils/Canvas";
+import Canvass from "canvas";
 import Vars from "@/Vars";
+
+import StatusEffect from "./contents/types/StatusEffect";
+import Inventory, { WeaponEntity } from "./Inventory";
+import GameManager from "./managers/GameManager";
+import StatusEntity from "./StatusEntity";
+import Manager from "./managers/Manager";
+import Item from "./contents/types/Item";
+import Entity from "./Entity";
 
 const defaultStat: Stat = {
   health: 20,
@@ -30,10 +24,6 @@ const defaultStat: Stat = {
   strength: 0,
   defense: 0,
 };
-
-export interface UserEvents {
-  alert: [Alert];
-}
 
 export default class User extends Entity implements EntityI {
   public readonly id: string = "unknown";
@@ -47,15 +37,7 @@ export default class User extends Entity implements EntityI {
   public exp = 0;
   public level = 1;
   public money = 0;
-  public locale: string = bundle.defaultLocale;
-  public readonly alerts: Alert[] = [];
-  public readonly events: Map<
-    keyof UserEvents,
-    Array<(...args: UserEvents[keyof UserEvents]) => Awaitable<void>>
-  > = new Map<
-    keyof UserEvents,
-    Array<(...args: UserEvents[keyof UserEvents]) => Awaitable<void>>
-  >();
+  public locale: string = "en-US";
 
   constructor(data: Discord.User) {
     super();
@@ -65,22 +47,12 @@ export default class User extends Entity implements EntityI {
   }
 
   public static findUserByDiscordId(id: string) {
-    const user = Vars.users.find((user) => user.id == id);
+    const user = Vars.userRegistry[id];
     return user;
   }
-  public static findUserByInteraction<T extends Discord.BaseInteraction>(
-    interaction: T
-  ) {
-    const user = Vars.users.find((user) => user.id == interaction.user.id);
+  public static findUserByInteraction<T extends Discord.BaseInteraction>(interaction: T) {
+    const user = Vars.userRegistry[interaction.user.id];
     return user;
-  }
-
-  public on<K extends keyof UserEvents>(
-    event: K,
-    listener: (...args: UserEvents[K]) => Awaitable<void>
-  ): this {
-    this.events.set(event, (this.events.get(event) ?? []).concat([listener]));
-    return this;
   }
 
   public updateData(interaction: Discord.Interaction) {
@@ -100,22 +72,12 @@ export default class User extends Entity implements EntityI {
     if (index != -1) this.statuses.splice(index, 1);
   }
 
-  public async addAlert(alert: Alert) {
-    this.alerts.push(alert);
-    const listeners = this.events.get("alert");
-    if (!listeners) return;
-    for await (const listener of listeners) {
-      await listener(alert);
-    }
-  }
   public giveItem(item: Item, amount = 1) {
     this.inventory.add(item, amount);
 
     if (!this.foundContents.items.includes(item.id)) {
       this.foundContents.items.push(item.id);
-      this.user.send(
-        bundle.format(this.locale, "firstget", item.localName(this))
-      );
+      this.user.send(bundle.format(this.locale, "firstget", item.localName(this)));
     }
   }
 
@@ -138,48 +100,42 @@ export default class User extends Entity implements EntityI {
         this.level,
         this.level + 1,
         this.stats.health_max,
-        (this.stats.health_max +=
-          Math.round(this.level ** 0.6 * 5 * 100) / 100),
+        (this.stats.health_max += Math.round(this.level ** 0.6 * 5 * 100) / 100),
         this.stats.energy_max,
-        (this.stats.energy_max +=
-          Math.round(this.level ** 0.4 * 2.5 * 100) / 100)
-      )
+        (this.stats.energy_max += Math.round(this.level ** 0.4 * 2.5 * 100) / 100),
+      ),
     );
     this.stats.health = this.stats.health_max;
     this.stats.energy = this.stats.energy_max;
     this.level++;
   }
 
-  public showInventoryInfo(interaction: Discord.CommandInteraction) {
+  public showInventoryInfo(interaction: Discord.BaseInteraction) {
     return new Manager({ interaction })
       .setEmbeds(
-        new EmbedBuilder()
-          .setTitle(bundle.find(this.locale, "inventory"))
-          .addFields(
-            this.inventory.items.map<Discord.APIEmbedField>((store) => ({
-              name: store.item.localName(this.locale),
-              value: store.toStateString((key) =>
-                bundle.find(this.locale, key)
-              ),
-              inline: true,
-            }))
-          )
+        new Discord.EmbedBuilder().setTitle(bundle.find(this.locale, "inventory")).addFields(
+          this.inventory.items.map<Discord.APIEmbedField>((store) => ({
+            name: store.item.localName(this.locale),
+            value: store.toStateString((key) => bundle.find(this.locale, key)),
+            inline: true,
+          })),
+        ),
       )
-      .addRemoveButton(-1);
+      .addComponents(CloseButtonComponent.Row);
   }
 
-  public showUserInfo(interaction: Discord.CommandInteraction) {
-    const weapon = this.inventory.equipments.weapon.item;
+  public showUserInfo(interaction: Discord.BaseInteraction) {
+    const user = User.findUserByInteraction(interaction);
     const canvas = Canvass.createCanvas(1000, 1000);
     Canvas.donutProgressBar(canvas, {
       progress: {
-        now: this.exp,
-        max: this.level ** 2 * 50,
+        now: user.exp,
+        max: user.level ** 2 * 50,
       },
       bar: 100,
       font: {
         font: "bold 150px sans-serif",
-        text: `${this.level}Lv`,
+        text: `${user.level}Lv`,
       },
       sideFont: {
         font: "bold 125px sans-serif",
@@ -197,78 +153,45 @@ export default class User extends Entity implements EntityI {
           .setColor("#0099ff")
           .setTitle("User Status Information")
           .setAuthor({
-            name: this.user.username,
-            iconURL: this.user.displayAvatarURL(),
-            url: this.user.displayAvatarURL(),
+            name: user.user.username,
+            iconURL: user.user.displayAvatarURL(),
+            url: user.user.displayAvatarURL(),
           })
           .setThumbnail("attachment://profile-image.png")
           .addFields(
             {
               name: "Health",
-              value: `${
-                filledBar(
-                  this.stats.health_max,
-                  Math.max(0, this.stats.health),
-                  10,
-                  "\u2593",
-                  "\u2588"
-                )[0]
-              }\n${this.stats.health}/${this.stats.health_max}`,
+              value: `${filledBar(user.stats.health_max, Math.max(0, user.stats.health), 10, "\u2593", "\u2588")[0]}\n${
+                user.stats.health
+              }/${user.stats.health_max}`,
               inline: true,
             },
             {
               name: "Energy",
-              value: `${
-                filledBar(
-                  this.stats.energy_max,
-                  this.stats.energy,
-                  10,
-                  "\u2593",
-                  "\u2588"
-                )[0]
-              }\n${this.stats.energy}/${this.stats.energy_max}`,
+              value: `${filledBar(user.stats.energy_max, user.stats.energy, 10, "\u2593", "\u2588")[0]}\n${
+                user.stats.energy
+              }/${user.stats.energy_max}`,
               inline: true,
             },
             { name: "\u200B", value: "\u200B" },
             {
               name: "Money",
-              value: `${this.money} ${bundle.find(this.locale, "unit.money")}`,
+              value: `${user.money} ${Bundle.find(user.locale, "unit.money")}`,
               inline: true,
             },
             {
               name: "Equipped Weapon",
-              value: weapon.localName(this),
+              value: user.inventory.equipments.weapon.item.localName(user),
               inline: true,
             },
             {
               name: "Inventory",
-              value: this.inventory.items.length.toString(),
+              value: user.inventory.items.length.toString(),
               inline: true,
-            }
-          )
+            },
+          ),
       )
       .setFiles(attachment)
-      .setComponents(
-        new ActionRowBuilder<ButtonBuilder>().addComponents([
-          new ButtonBuilder()
-            .setCustomId("weapon_info")
-            .setLabel("show Weapon Info")
-            .setStyle(ButtonStyle.Primary),
-          new ButtonBuilder()
-            .setCustomId("inventory_info")
-            .setLabel("show Inventory Info")
-            .setStyle(ButtonStyle.Primary),
-        ])
-      )
-      .setTrigger(
-        "weapon_info",
-        async () =>
-          await weapon.showInfo(interaction, this.inventory.equipments.weapon)
-      )
-      .setTrigger(
-        "inventory_info",
-        async () => await this.showInventoryInfo(interaction).send()
-      )
-      .addRemoveButton(-1);
+      .setComponents(new ActionRowBuilder<ButtonBuilder>().addComponents([WeaponInfoButton, InventoryInfoButton]));
   }
 }

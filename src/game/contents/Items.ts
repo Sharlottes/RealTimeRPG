@@ -1,12 +1,13 @@
-import { Item, Buff, StatusEffects } from "@/game/contents";
-import { EntityI } from "../../@type/types";
-import {
-  AmmoTag,
-  ConsumeTag,
-  ShieldTag,
-  SlotWeaponTag,
-  WeaponTag,
-} from "./tags";
+import { EntityI } from "@/@type/types";
+
+import SlotWeaponTag from "./tags/SlotWeaponTag";
+import StatusEffects from "./StatusEffects";
+import ConsumeTag from "./tags/ConsumeTag";
+import ShieldTag from "./tags/ShieldTag";
+import WeaponTag from "./tags/WeaponTag";
+import AmmoTag from "./tags/AmmoTag";
+import Item from "./types/Item";
+import Buff from "./Buff";
 
 export default class Items {
   static readonly items: Item[] = [];
@@ -113,9 +114,7 @@ export default class Items {
       ]);
     })();
 
-    this.items.push(
-      new Item("experience_bottle", { ratio: 0.1, dropOnWalk: false }),
-    );
+    this.items.push(new Item("experience_bottle", { ratio: 0.1, dropOnWalk: false }));
     (() => {
       const item = this.items[this.items.length - 1];
       item.addTags([

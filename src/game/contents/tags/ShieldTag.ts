@@ -1,7 +1,8 @@
-import { Item } from "..";
-import ItemTag from "./ItemTag";
 import { ShieldEntity } from "@/game/Inventory";
 import { EmbedBuilder } from "discord.js";
+
+import Item from "../types/Item";
+import ItemTag from "./ItemTag";
 
 export default class ShieldTag extends ItemTag implements Durable {
   public readonly durability: number;

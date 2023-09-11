@@ -1,6 +1,8 @@
+import StatusEntity from "@/game/StatusEntity";
 import { EntityI } from "@/@type/types";
-import { Content, StatusEffects } from "..";
-import { StatusEntity } from "../..";
+
+import StatusEffects from "../StatusEffects";
+import Content from "../Content";
 
 export default class StatusEffect extends Content {
   readonly id: number;
@@ -9,10 +11,7 @@ export default class StatusEffect extends Content {
   constructor(
     name: string,
     public readonly duration = -1,
-    public readonly callback: (
-      entity: EntityI,
-      status: StatusEntity,
-    ) => void = () => {},
+    public readonly callback: (entity: EntityI, status: StatusEntity) => void = () => {},
   ) {
     super(name, "status");
 

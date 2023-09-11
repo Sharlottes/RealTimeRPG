@@ -1,26 +1,26 @@
-import { ItemStack } from "..";
-import Manager, { ManagerConstructOptions } from "./Manager";
-import { bundle } from "../../assets/index";
-import { Item } from "../contents";
 import { ButtonStyle, EmbedBuilder } from "discord.js";
+import bundle from "@/assets/Bundle";
 
-export default class ItemSelectManager extends Manager {
+import Manager, { ManagerConstructOptions } from "./Manager";
+import ParentManager from "./ParentManager";
+import Item from "../contents/types/Item";
+import { ItemStack } from "../Inventory";
+
+export default class ItemSelectManager extends ParentManager {
   private amount = 0;
   private readonly mainEmbed: EmbedBuilder;
   private readonly stack: ItemStack;
   private readonly callback: (amount: number) => void;
 
   public constructor(
+    parentManager: Manager,
     options: ManagerConstructOptions & {
       item: Item | ItemStack;
       callback: (amount: number) => void;
     },
   ) {
-    super(options);
-    this.stack =
-      options.item instanceof ItemStack
-        ? options.item
-        : new ItemStack(options.item);
+    super(parentManager, options);
+    this.stack = options.item instanceof ItemStack ? options.item : new ItemStack(options.item);
     this.callback = options.callback;
     this.mainEmbed = new EmbedBuilder().setTitle("ItemPad").setFields([
       {
@@ -112,9 +112,7 @@ export default class ItemSelectManager extends Manager {
         value: this.amount.toString(),
       },
     ]);
-    this.components[3].components[2].setDisabled(
-      this.amount > this.stack.amount,
-    );
+    this.components[3].components[2].setDisabled(this.amount > this.stack.amount);
     await this.update();
   }
 }
