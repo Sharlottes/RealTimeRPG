@@ -1,5 +1,6 @@
+import ButtonComponent from "@/command/components/ButtonComponent";
+import { ActionRowBuilder, ButtonStyle } from "discord.js";
 import { ignoreInteraction } from "@/utils/functions";
-import { ButtonStyle } from "discord.js";
 
 import Manager, { ManagerConstructOptions } from "./Manager";
 
@@ -12,15 +13,19 @@ export default class ParentManager extends Manager {
   }
 
   public addBackButton(): this {
-    this.addButtonSelection(
-      "back_select",
-      0,
-      (interaction) => {
-        ignoreInteraction(interaction);
-        this.collector?.stop();
-        this.parentManager.update();
-      },
-      { style: ButtonStyle.Secondary },
+    this.addComponents(
+      new ActionRowBuilder<ButtonComponent>().addComponents(
+        ButtonComponent.createByInteraction(
+          this.interaction,
+          "back_select",
+          (interaction) => {
+            ignoreInteraction(interaction);
+            this.collector?.stop();
+            this.parentManager.update();
+          },
+          { style: ButtonStyle.Secondary },
+        ),
+      ),
     );
 
     return this;

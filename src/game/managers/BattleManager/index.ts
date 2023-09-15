@@ -1,4 +1,5 @@
 import { WeaponEntity, ItemStorable, ItemStack, SlotWeaponEntity } from "@/game/Inventory";
+import PaginationStringSelectMenu from "@/command/components/PaginationStringSelectMenu";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 import ButtonComponent from "@/command/components/ButtonComponent";
 import withRowBuilder from "@/command/components/withRowBuilder";
@@ -59,178 +60,198 @@ export default class BattleManager extends ParentManager {
     this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
     this.updateBar();
 
-    this.addButtonSelection(
-      "attack",
-      0,
-      async (interaction) => {
-        ignoreInteraction(interaction);
-        const weapon = this.user.inventory.equipments.weapon;
-        if (weapon.cooldown > 0) {
-          Manager.newErrorEmbed(
-            this.interaction,
-            bundle.format(this.locale, "battle.cooldown", weapon.cooldown.toFixed()),
-          );
-        } else {
-          await this.addAction(
-            new AttackAction(this, this.user, this.enemy, this.user.inventory.equipments.weapon)
-              .addListener("undo", () => (this.user.inventory.equipments.weapon.cooldown = 0))
-              .addListener(
-                "added",
-                () =>
-                  (this.user.inventory.equipments.weapon.cooldown =
-                    this.user.inventory.equipments.weapon.item.getWeapon().cooldown),
-              ),
-          );
-        }
-      },
-      { style: ButtonStyle.Primary },
-    );
-
-    this.addButtonSelection("evasion", 0, async (interaction) => {
-      ignoreInteraction(interaction);
-      if (this.evaseBtnSelected) {
-        this.evaseBtnSelected = false;
-        this.addAction(
-          new DvaseAction(this, this.user)
-            .addListener("undo", () => (this.evaseBtnSelected = true))
-            .addListener("runned", () => (this.evaseBtnSelected = false)),
-        );
-      } else {
-        this.evaseBtnSelected = true;
-        this.addAction(
-          new EvaseAction(this, this.user)
-            .addListener("undo", () => (this.evaseBtnSelected = false))
-            .addListener("runned", () => (this.evaseBtnSelected = false)),
-        );
-      }
-    });
-
-    this.addButtonSelection("shield", 0, async (interaction) => {
-      ignoreInteraction(interaction);
-      this.addAction(new ShieldAction(this, this.user));
-    });
-
-    this.addButtonSelection("turn", 0, async (interaction) => {
-      ignoreInteraction(interaction);
-      this.components[4].components[0].setDisabled(true);
-      this.components.forEach((rows) => rows.components.forEach((component) => component.setDisabled(true)));
-      this.turnEnd();
-    });
-
-    this.addMenuSelection(
-      "swap",
-      async (interaction, entity) => {
-        ignoreInteraction(interaction);
-        if (!(entity instanceof WeaponEntity)) throw new Error("it's not weapon entity");
-
-        new SwapAction(this, this.user, entity, true);
-        this.updateBar();
-        this.validate();
-        this.update();
-      },
-      {
-        placeholder: "swap weapon to ...",
-        list: () =>
-          (<ItemStorable[]>[new WeaponEntity(Items.punch)]).concat(
-            this.user.inventory.items.filter((store) => store.item.hasWeapon()),
-          ),
-        reducer: (store, index) => ({
-          label: `(${index + 1}) ${store.item.localName(this.locale)}, ${store.toStateString((key) =>
-            bundle.find(this.locale, key),
-          )}`,
-          value: index.toString(),
-        }),
-      },
-    );
-
-    this.addMenuSelection(
-      "consume",
-      async (interaction, entity) => {
-        ignoreInteraction(interaction);
-        if (entity instanceof ItemStack && entity.amount > 1) {
-          new ItemSelectManager(this, {
-            item: entity,
-            interaction: this.interaction,
-            callback: async (amount) => {
+    this.addComponents(
+      new ActionRowBuilder<ButtonComponent>().setComponents(
+        ButtonComponent.createByInteraction(
+          this.interaction,
+          "attack",
+          async (interaction) => {
+            ignoreInteraction(interaction);
+            const weapon = this.user.inventory.equipments.weapon;
+            if (weapon.cooldown > 0) {
+              Manager.newErrorEmbed(
+                this.interaction,
+                bundle.format(this.locale, "battle.cooldown", weapon.cooldown.toFixed()),
+              );
+            } else {
               await this.addAction(
-                new ConsumeAction(this, this.user, entity.item, amount)
+                new AttackAction(this, this.user, this.enemy, this.user.inventory.equipments.weapon)
+                  .addListener("undo", () => (this.user.inventory.equipments.weapon.cooldown = 0))
+                  .addListener(
+                    "added",
+                    () =>
+                      (this.user.inventory.equipments.weapon.cooldown =
+                        this.user.inventory.equipments.weapon.item.getWeapon().cooldown),
+                  ),
+              );
+            }
+          },
+          { style: ButtonStyle.Primary },
+        ),
+
+        ButtonComponent.createByInteraction(this.interaction, "evasion", async (interaction) => {
+          ignoreInteraction(interaction);
+          if (this.evaseBtnSelected) {
+            this.evaseBtnSelected = false;
+            this.addAction(
+              new DvaseAction(this, this.user)
+                .addListener("undo", () => (this.evaseBtnSelected = true))
+                .addListener("runned", () => (this.evaseBtnSelected = false)),
+            );
+          } else {
+            this.evaseBtnSelected = true;
+            this.addAction(
+              new EvaseAction(this, this.user)
+                .addListener("undo", () => (this.evaseBtnSelected = false))
+                .addListener("runned", () => (this.evaseBtnSelected = false)),
+            );
+          }
+        }),
+
+        ButtonComponent.createByInteraction(this.interaction, "shield", async (interaction) => {
+          ignoreInteraction(interaction);
+          this.addAction(new ShieldAction(this, this.user));
+        }),
+
+        ButtonComponent.createByInteraction(this.interaction, "turn", async (interaction) => {
+          ignoreInteraction(interaction);
+          this.components[4].components[0].setDisabled(true);
+          this.components.forEach((rows) => rows.components.forEach((component) => component.setDisabled(true)));
+          this.turnEnd();
+        }),
+      ),
+    );
+
+    this.addComponents(
+      withRowBuilder(
+        new PaginationStringSelectMenu(
+          "swap",
+          async (interaction, entity) => {
+            ignoreInteraction(interaction);
+            if (!(entity instanceof WeaponEntity)) throw new Error("it's not weapon entity");
+
+            new SwapAction(this, this.user, entity, true);
+            this.updateBar();
+            this.validate();
+            this.update();
+          },
+          {
+            placeholder: "swap weapon to ...",
+            list: () =>
+              (<ItemStorable[]>[new WeaponEntity(Items.punch)]).concat(
+                this.user.inventory.items.filter((store) => store.item.hasWeapon()),
+              ),
+            reducer: (store, index) => ({
+              label: `(${index + 1}) ${store.item.localName(this.locale)}, ${store.toStateString((key) =>
+                bundle.find(this.locale, key),
+              )}`,
+              value: index.toString(),
+            }),
+          },
+        ),
+      ).Row,
+    );
+
+    this.addComponents(
+      withRowBuilder(
+        new PaginationStringSelectMenu(
+          "consume",
+          async (interaction, entity) => {
+            ignoreInteraction(interaction);
+            if (entity instanceof ItemStack && entity.amount > 1) {
+              new ItemSelectManager(this, {
+                item: entity,
+                interaction: this.interaction,
+                callback: async (amount) => {
+                  await this.addAction(
+                    new ConsumeAction(this, this.user, entity.item, amount)
+                      .addListener("added", () => this.update())
+                      .addListener("undo", () => this.update()),
+                  );
+                  await this.update();
+                },
+              }).send();
+            } else {
+              await this.addAction(
+                new ConsumeAction(this, this.user, entity.item, 1)
                   .addListener("added", () => this.update())
                   .addListener("undo", () => this.update()),
               );
-              await this.update();
-            },
-          }).send();
-        } else {
-          await this.addAction(
-            new ConsumeAction(this, this.user, entity.item, 1)
-              .addListener("added", () => this.update())
-              .addListener("undo", () => this.update()),
-          );
-        }
-      },
-      {
-        placeholder: "consume ...",
-        list: () => this.user.inventory.items.filter((store) => store.item.hasConsume()),
-        reducer: (store, index) => ({
-          label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString((key) =>
-            bundle.find(this.locale, key),
-          )}`,
-          value: index.toString(),
-        }),
-      },
+            }
+          },
+          {
+            placeholder: "consume ...",
+            list: () => this.user.inventory.items.filter((store) => store.item.hasConsume()),
+            reducer: (store, index) => ({
+              label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString((key) =>
+                bundle.find(this.locale, key),
+              )}`,
+              value: index.toString(),
+            }),
+          },
+        ),
+      ).Row,
     );
 
-    this.addMenuSelection(
-      "reload",
-      async (interaction, entity) => {
-        ignoreInteraction(interaction);
-        if (entity instanceof ItemStack && entity.amount > 1) {
-          new ItemSelectManager(this, {
-            item: entity,
-            interaction: this.interaction,
-            callback: async (amount) => {
-              this.addAction(
-                new ReloadAction(this, this.user, new ItemStack(entity.item, amount))
+    this.addComponents(
+      withRowBuilder(
+        new PaginationStringSelectMenu(
+          "reload",
+          async (interaction, entity) => {
+            ignoreInteraction(interaction);
+            if (entity instanceof ItemStack && entity.amount > 1) {
+              new ItemSelectManager(this, {
+                item: entity,
+                interaction: this.interaction,
+                callback: async (amount) => {
+                  this.addAction(
+                    new ReloadAction(this, this.user, new ItemStack(entity.item, amount))
+                      .addListener("added", () => this.update())
+                      .addListener("undo", () => this.update()),
+                  );
+                  await this.update();
+                },
+              }).send();
+            } else {
+              await this.addAction(
+                new ReloadAction(this, this.user, new ItemStack(entity.item, 1))
                   .addListener("added", () => this.update())
                   .addListener("undo", () => this.update()),
               );
-              await this.update();
-            },
-          }).send();
-        } else {
-          await this.addAction(
-            new ReloadAction(this, this.user, new ItemStack(entity.item, 1))
-              .addListener("added", () => this.update())
-              .addListener("undo", () => this.update()),
-          );
-        }
-      },
-      {
-        placeholder: "reload ammo with ...",
-        list: () => this.user.inventory.items.filter((store) => store.item.hasAmmo()),
-        reducer: (store, index) => ({
-          label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString((key) =>
-            bundle.find(this.locale, key),
-          )}`,
-          value: index.toString(),
-        }),
-      },
+            }
+          },
+          {
+            placeholder: "reload ammo with ...",
+            list: () => this.user.inventory.items.filter((store) => store.item.hasAmmo()),
+            reducer: (store, index) => ({
+              label: `(${index + 1}) ${store.item.localName(this.locale)} ${store.toStateString((key) =>
+                bundle.find(this.locale, key),
+              )}`,
+              value: index.toString(),
+            }),
+          },
+        ),
+      ).Row,
     );
 
-    this.addButtonSelection(
-      "undo",
-      4,
-      async (interaction) => {
-        ignoreInteraction(interaction);
-        ActionManager.undoAction();
-        this.updateBar();
-        this.validate();
-        this.update();
-      },
-      {
-        style: ButtonStyle.Danger,
-        disabled: true,
-      },
+    this.addComponents(
+      new ActionRowBuilder<ButtonComponent>().setComponents(
+        ButtonComponent.createByInteraction(
+          this.interaction,
+          "undo",
+          async (interaction) => {
+            ignoreInteraction(interaction);
+            ActionManager.undoAction();
+            this.updateBar();
+            this.validate();
+            this.update();
+          },
+          {
+            style: ButtonStyle.Danger,
+            disabled: true,
+          },
+        ),
+      ),
     );
 
     this.validate();
