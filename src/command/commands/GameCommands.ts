@@ -1,4 +1,5 @@
 import { Pagination, PaginationType } from "@discordx/pagination";
+import AlertManager from "@/game/managers/AlertManager";
 import GameManager from "@/game/managers/GameManager";
 import Manager from "@/game/managers/Manager";
 import Content from "@/game/contents/Content";
@@ -33,7 +34,7 @@ abstract class GameCommands {
     if (!user) return;
 
     if (user.gameManager) {
-      Manager.newErrorEmbed(interaction, bundle.find(interaction.locale, "error.GMexist"));
+      new AlertManager(interaction, "ERROR", bundle.find(interaction.locale, "error.GMexist")).send();
       return;
     }
 

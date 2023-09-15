@@ -1,3 +1,4 @@
+import AlertManager from "@/game/managers/AlertManager";
 import { StringSelectMenuBuilder } from "discord.js";
 import { functionOrNot } from "@/utils/functions";
 import Manager from "@/game/managers/Manager";
@@ -82,12 +83,12 @@ export default class PaginationStringSelectMenu<T> extends StringSelectMenuBuild
     switch (id) {
       case "-1":
         if (this.currentPage == 0)
-          Manager.newErrorEmbed(interaction, bundle.find(interaction.locale, "error.first_page"));
+          new AlertManager(interaction, "ERROR", bundle.find(interaction.locale, "error.first_page")).send();
         else this.currentPage--;
         break;
       case "-2":
         if (this.currentPage + 1 > Math.floor(list.length / 8))
-          Manager.newErrorEmbed(interaction, bundle.find(interaction.locale, "error.last_page"));
+          new AlertManager(interaction, "ERROR", bundle.find(interaction.locale, "error.last_page")).send();
         else this.currentPage++;
         break;
       case "-10":

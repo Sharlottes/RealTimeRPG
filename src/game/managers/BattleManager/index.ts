@@ -27,6 +27,7 @@ import { BaseAction } from "../actions/BaseAction";
 import { SwapAction } from "../actions/SwapAction";
 import ParentManager from "../ParentManager";
 import ActionManager from "./ActionManager";
+import AlertManager from "../AlertManager";
 
 enum Status {
   DEFAULT,
@@ -69,10 +70,11 @@ export default class BattleManager extends ParentManager {
             ignoreInteraction(interaction);
             const weapon = this.user.inventory.equipments.weapon;
             if (weapon.cooldown > 0) {
-              Manager.newErrorEmbed(
+              new AlertManager(
                 this.interaction,
+                "ERROR",
                 bundle.format(this.locale, "battle.cooldown", weapon.cooldown.toFixed()),
-              );
+              ).send();
             } else {
               await this.addAction(
                 new AttackAction(this, this.user, this.enemy, this.user.inventory.equipments.weapon)
@@ -311,7 +313,7 @@ export default class BattleManager extends ParentManager {
     /*
 		TODO: action valid 함수 만들기
 		if (this.status.get(this.user) !== Status.DEFAULT) {
-			Manager.newErrorEmbed(this.interaction, bundle.find(this.locale, "error.action_status"));
+      new AlertManager(this.interaction, "ERROR", bundle.find(this.locale, "error.action_status")).send();
 			return;
 		}
 		*/

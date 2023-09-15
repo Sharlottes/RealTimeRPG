@@ -1,5 +1,6 @@
 import { Discord as DiscordX, Slash, SlashChoice, SlashOption } from "discordx";
 import { ApplicationCommandOptionType } from "discord.js";
+import AlertManager from "@/game/managers/AlertManager";
 import Manager from "@/game/managers/Manager";
 import { ItemStack } from "@/game/Inventory";
 import Items from "@/game/contents/Items";
@@ -29,7 +30,11 @@ abstract class UserCommands {
     if (user) {
       await user.showUserInfo(interaction).update();
     } else {
-      Manager.newErrorEmbed(interaction, bundle.format(interaction.locale, "error.notFound", targetUser.username));
+      new AlertManager(
+        interaction,
+        "ERROR",
+        bundle.format(interaction.locale, "error.notFound", targetUser.username),
+      ).send();
     }
   }
 
@@ -53,7 +58,11 @@ abstract class UserCommands {
     if (user) {
       await user.showInventoryInfo(interaction).update();
     } else {
-      Manager.newErrorEmbed(interaction, bundle.format(interaction.locale, "error.notFound", targetUser.username));
+      new AlertManager(
+        interaction,
+        "ERROR",
+        bundle.format(interaction.locale, "error.notFound", targetUser.username),
+      ).send();
     }
   }
 
@@ -91,17 +100,19 @@ abstract class UserCommands {
     if (!user) return;
     const stack = user.inventory.items.find((i) => i.item.id == itemID);
     if (!stack) {
-      Manager.newErrorEmbed(
+      new AlertManager(
         interaction,
+        "ERROR",
         bundle.format(user.locale, "error.missing_item", Items.find(itemID).localName(user)),
-      );
+      ).send();
       return;
     }
     if ((stack instanceof ItemStack ? stack.amount : 1) < amount) {
-      Manager.newErrorEmbed(
+      new AlertManager(
         interaction,
+        "ERROR",
         bundle.format(user.locale, "error.not_enough", stack.item.localName(user), amount),
-      );
+      ).send();
       return;
     }
 
@@ -110,8 +121,9 @@ abstract class UserCommands {
 
     user.inventory.remove(potion, amount);
     cons.consume(user, amount);
-    Manager.newTextEmbed(
+    new AlertManager(
       interaction,
+      "",
       bundle.format(
         user.locale,
         "consume",
@@ -119,6 +131,6 @@ abstract class UserCommands {
         amount,
         cons.buffes.map((b) => b.description(user, amount!, b, user.locale)).join("\n  "),
       ),
-    );
+    ).send();
   }
 }

@@ -6,6 +6,7 @@ import bundle from "@/assets/Bundle";
 import Manager, { ManagerConstructOptions } from "./Manager";
 import ParentManager from "./ParentManager";
 import Item from "../contents/types/Item";
+import AlertManager from "./AlertManager";
 import { ItemStack } from "../Inventory";
 
 export default class ItemSelectManager extends ParentManager {
@@ -69,8 +70,9 @@ export default class ItemSelectManager extends ParentManager {
           (interaction) => {
             ignoreInteraction(interaction);
             if (this.amount > this.stack.amount) {
-              Manager.newErrorEmbed(
+              new AlertManager(
                 this.interaction,
+                "ERROR",
                 bundle.format(
                   this.locale,
                   "shop.notEnough_item",
@@ -78,7 +80,7 @@ export default class ItemSelectManager extends ParentManager {
                   this.amount,
                   this.stack.amount,
                 ),
-              );
+              ).send();
             } else {
               this.callback(this.amount);
               this.remove();

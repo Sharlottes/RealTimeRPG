@@ -2,6 +2,7 @@ import { EntityI } from "@/@type/types";
 import bundle from "@/assets/Bundle";
 
 import BattleManager from "../BattleManager";
+import AlertManager from "../AlertManager";
 import Manager from "../Manager";
 
 export abstract class BaseAction {
@@ -34,11 +35,11 @@ export abstract class BaseAction {
 
   public enableBloody(): void {
     this.bloody = true;
-    Manager.newTextEmbed(
+    new AlertManager(
       this.manager.interaction,
-      bundle.find(this.manager.locale, "alert.bloody_action"),
       bundle.find(this.manager.locale, "alert"),
-    );
+      bundle.find(this.manager.locale, "alert.bloody_action"),
+    ).send();
   }
 
   public async run(): Promise<void> {

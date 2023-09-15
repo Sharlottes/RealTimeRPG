@@ -165,26 +165,6 @@ class Manager {
     this.files.push(...files);
     return this;
   }
-
-  public static async newErrorEmbed(interaction: Discord.BaseInteraction, description: string) {
-    const manager = new Manager({
-      interaction,
-      embeds: [new EmbedBuilder().setTitle("ERROR").setDescription(description)],
-    });
-    manager.addRemoveButton();
-    await manager.send(interaction.channel);
-    return manager;
-  }
-
-  public static async newTextEmbed(interaction: Discord.BaseInteraction, description: string, title = "") {
-    const manager = new Manager({
-      interaction,
-      embeds: [new EmbedBuilder().setTitle(title).setDescription(description)],
-    });
-    manager.addRemoveButton();
-    await manager.send(interaction.channel);
-    return manager;
-  }
 }
 
 export default Manager;
