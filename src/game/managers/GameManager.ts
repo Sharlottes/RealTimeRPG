@@ -1,7 +1,7 @@
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
 import { ButtonStyle, codeBlock, EmbedBuilder } from "discord.js";
+import { getOne, ignoreInteraction } from "@/utils/functions";
 import Events from "@/game/contents/Events";
-import { getOne } from "@/utils/functions";
 import bundle from "@/assets/Bundle";
 import Canvas from "@/utils/Canvas";
 
@@ -44,7 +44,8 @@ export default class GameManager extends Manager {
       .addButtonSelection(
         "exit",
         0,
-        () => {
+        (interaction) => {
+          ignoreInteraction(interaction);
           this.remove();
           this.gameThread.delete();
         },

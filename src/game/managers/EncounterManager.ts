@@ -1,6 +1,7 @@
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
 import ExchangeManager from "@/game/managers/ExchangeManager";
 import BattleManager from "@/game/managers/BattleManager";
+import { ignoreInteraction } from "@/utils/functions";
 import { EmbedBuilder } from "discord.js";
 import bundle from "@/assets/Bundle";
 import Mathf from "@/utils/Mathf";
@@ -25,14 +26,17 @@ export default class EncounterManager extends ParentManager {
     this.mainEmbed = new EmbedBuilder().setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
 
     this.setEmbeds(this.mainEmbed)
-      .addButtonSelection("battle", 0, () =>
+      .addButtonSelection("battle", 0, (interaction) => {
+        ignoreInteraction(interaction);
+        this.remove();
         new BattleManager(this, {
           user: this.user,
           interaction: this.interaction,
           enemy: this.target,
-        }).update({ updateParent: true }),
-      )
-      .addButtonSelection("run", 0, () => {
+        }).send(this.user.gameManager?.gameThread);
+      })
+      .addButtonSelection("run", 0, async (interaction) => {
+        ignoreInteraction(interaction);
         if (Random.boolean()) {
           const money = Math.floor(Mathf.range(2, 10));
           this.user.money -= money;
@@ -46,24 +50,28 @@ export default class EncounterManager extends ParentManager {
             value: "```\n" + bundle.find(this.user.locale, "event.goblin_run_success") + "\n```",
           });
         }
+        await this.update();
         this.endManager();
       });
 
     if (this.target.id == 1) {
-      this.addButtonSelection("talking", 0, () => {
+      this.addButtonSelection("talking", 0, async (interaction) => {
+        ignoreInteraction(interaction);
         const money = Math.floor(Mathf.range(2, 5));
         this.user.money -= money;
         this.mainEmbed.addFields({
           name: "Result:",
           value: "```\n" + bundle.format(this.user.locale, "event.goblin_talking", money) + "\n```",
         });
+        await this.update();
         this.endManager();
-      }).addButtonSelection("exchange", 0, async () => {
+      }).addButtonSelection("exchange", 0, async (interaction) => {
+        ignoreInteraction(interaction);
         await new ExchangeManager(this, {
           user: this.user,
           interaction: this.interaction,
           target: this.target,
-        }).update();
+        }).send(this.user.gameManager?.gameThread);
       });
     }
   }

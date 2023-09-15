@@ -14,9 +14,11 @@ class ActionManager {
 
   public async onTurnEnd(manager: BattleManager) {
     const actionDescriptions = this.actionQueue.map((action) => codeBlock(action.description()));
-    for (const action of this.actionQueue) {
+    while (this.actionQueue.length) {
+      const action = this.actionQueue.shift();
       actionDescriptions.shift();
-      this.actionEmbed.setDescription(actionDescriptions.join(""));
+      if (!action) break;
+      this.actionEmbed.setDescription(actionDescriptions.join("") || null);
       await manager.update();
       await action.run();
       await ComboManager.onAction(action, manager);

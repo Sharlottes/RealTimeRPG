@@ -1,6 +1,6 @@
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
+import { getOne, ignoreInteraction } from "@/utils/functions";
 import { codeBlock } from "@discordjs/builders";
-import { getOne } from "@/utils/functions";
 import { EmbedBuilder } from "discord.js";
 import { EntityI } from "@/@type/types";
 import bundle from "@/assets/Bundle";
@@ -47,10 +47,12 @@ export default class ExchangeManager extends ParentManager {
       else this.target.inventory.items.push(new ItemStack(item));
     }
 
-    this.addButtonSelection("back", 0, async () => {
+    this.addButtonSelection("back", 0, async (interaction) => {
+      ignoreInteraction(interaction);
       this.setContent(bundle.find(this.locale, "shop.end"));
       await this.endManager();
-    }).addButtonSelection("battle", 0, async () => {
+    }).addButtonSelection("battle", 0, async (interaction) => {
+      ignoreInteraction(interaction);
       await new BattleManager(this, {
         user: this.user,
         interaction: this.interaction,
@@ -60,7 +62,8 @@ export default class ExchangeManager extends ParentManager {
 
     this.addMenuSelection(
       "buy",
-      async (_, store) => {
+      async (interaction, store) => {
+        ignoreInteraction(interaction);
         if (store instanceof ItemStack && store.amount > 1) {
           new ItemSelectManager(this, {
             interaction: this.interaction,
@@ -92,7 +95,8 @@ export default class ExchangeManager extends ParentManager {
 
     this.addMenuSelection(
       "sell",
-      async (_, store) => {
+      async (interaction, store) => {
+        ignoreInteraction(interaction);
         if (store instanceof ItemStack && store.amount > 1) {
           new ItemSelectManager(this, {
             interaction: this.interaction,

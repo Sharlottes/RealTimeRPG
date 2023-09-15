@@ -29,3 +29,11 @@ export const predicateOf =
   <U>() =>
   <T>(f: (x: T) => boolean) =>
     f as (x: T) => x is T & U;
+
+export const ignoreInteraction = async (interaction: Discord.BaseInteraction) => {
+  if (!interaction.isRepliable()) return;
+  if (interaction.replied || interaction.deferred) return;
+
+  const res = await interaction.deferReply({ ephemeral: true });
+  res.delete();
+};

@@ -1,4 +1,5 @@
 import { ButtonStyle, EmbedBuilder } from "discord.js";
+import { ignoreInteraction } from "@/utils/functions";
 import bundle from "@/assets/Bundle";
 
 import Manager, { ManagerConstructOptions } from "./Manager";
@@ -32,7 +33,8 @@ export default class ItemSelectManager extends ParentManager {
     this.setEmbeds(this.mainEmbed);
 
     for (let i = 1; i <= 9; i++) {
-      this.addButtonSelection(i.toString(), Math.floor((i - 1) / 3), () => {
+      this.addButtonSelection(i.toString(), Math.floor((i - 1) / 3), (interaction) => {
+        ignoreInteraction(interaction);
         this.amount *= 10;
         this.amount += i;
         this.updateEmbed();
@@ -45,7 +47,8 @@ export default class ItemSelectManager extends ParentManager {
       .addButtonSelection(
         "del",
         3,
-        () => {
+        (interaction) => {
+          ignoreInteraction(interaction);
           this.amount = Math.floor(this.amount / 10);
           this.updateEmbed();
         },
@@ -54,7 +57,8 @@ export default class ItemSelectManager extends ParentManager {
       .addButtonSelection(
         "done",
         3,
-        () => {
+        (interaction) => {
+          ignoreInteraction(interaction);
           if (this.amount > this.stack.amount) {
             Manager.newErrorEmbed(
               this.interaction,
@@ -76,7 +80,8 @@ export default class ItemSelectManager extends ParentManager {
       .addButtonSelection(
         "cancel",
         4,
-        () => {
+        (interaction) => {
+          ignoreInteraction(interaction);
           this.remove();
         },
         { style: ButtonStyle.Secondary },
@@ -84,7 +89,8 @@ export default class ItemSelectManager extends ParentManager {
       .addButtonSelection(
         "reset",
         4,
-        () => {
+        (interaction) => {
+          ignoreInteraction(interaction);
           this.amount = 0;
           this.updateEmbed();
         },
@@ -93,7 +99,8 @@ export default class ItemSelectManager extends ParentManager {
       .addButtonSelection(
         "max",
         4,
-        () => {
+        (interaction) => {
+          ignoreInteraction(interaction);
           this.amount = this.stack.amount;
           this.updateEmbed();
         },

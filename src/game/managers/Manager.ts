@@ -4,6 +4,7 @@ import { CloseButtonComponent } from "@/command/components/GeneralComponents";
 import { ActionRowBuilder, EmbedBuilder, ButtonStyle } from "discord.js";
 import ButtonComponent from "@/command/components/ButtonComponent";
 import withRowBuilder from "@/command/components/withRowBuilder";
+import { ignoreInteraction } from "@/utils/functions";
 import bundle from "@/assets/Bundle";
 
 type Files = Exclude<Discord.BaseMessageOptions["files"], undefined>;
@@ -85,6 +86,7 @@ class Manager {
    */
   public async send(channel: Discord.TextBasedChannel | null = this.interaction.channel): Promise<Discord.Message> {
     if (!channel) throw new Error("channel does not exist");
+    ignoreInteraction(this.interaction);
 
     const options: Discord.MessageCreateOptions = {
       content: this.content,
@@ -161,7 +163,6 @@ class Manager {
     callback: (interaction: Discord.StringSelectMenuInteraction, item: T) => void,
     options: PaginationStringSelectMenuOptions<T>,
   ) {
-    console.log(1);
     this.components.push(withRowBuilder(new PaginationStringSelectMenu(name, callback, options)).Row);
 
     return this;

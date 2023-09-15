@@ -30,8 +30,8 @@ export default class Events {
       {
         only: true,
         ratio: 10,
-        start: async (gameManager, interaction) => {
-          await new EncounterManager(gameManager, {
+        start: (gameManager, interaction) => {
+          new EncounterManager(gameManager, {
             user: gameManager.user,
             interaction,
             target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),

@@ -1,9 +1,9 @@
-import bundle from "@/assets/Bundle";
-import { ItemStack } from "@/game/Inventory";
 import { Discord as DiscordX, Slash, SlashChoice, SlashOption } from "discordx";
 import { ApplicationCommandOptionType } from "discord.js";
 import Manager from "@/game/managers/Manager";
+import { ItemStack } from "@/game/Inventory";
 import Items from "@/game/contents/Items";
+import bundle from "@/assets/Bundle";
 import User from "@/game/User";
 
 @DiscordX()

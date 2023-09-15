@@ -36,7 +36,7 @@ export default class PaginationStringSelectMenu<T> extends StringSelectMenuBuild
     this.reducer = reducer;
     this.placeholder = placeholder;
     this.reoption();
-    client.interactionEvent.on(this.handleSelectMenu);
+    client.interactionEvent.on((interaction) => this.handleSelectMenu(interaction));
   }
 
   /**

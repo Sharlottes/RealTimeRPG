@@ -2,15 +2,14 @@ import { WeaponEntity, ItemStorable, ItemStack, SlotWeaponEntity } from "@/game/
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 import ButtonComponent from "@/command/components/ButtonComponent";
 import withRowBuilder from "@/command/components/withRowBuilder";
+import { getOne, ignoreInteraction } from "@/utils/functions";
 import Strings, { ANSIStyle } from "@/utils/Strings";
 import { codeBlock } from "@discordjs/builders";
 import Item from "@/game/contents/types/Item";
-import { getOne } from "@/utils/functions";
 import UnitEntity from "@/game/UnitEntity";
 import Items from "@/game/contents/Items";
 import { EntityI } from "@/@type/types";
 import bundle from "@/assets/Bundle";
-import * as Discordx from "discordx";
 import Canvas from "@/utils/Canvas";
 import Mathf from "@/utils/Mathf";
 import User from "@/game/User";
@@ -63,7 +62,8 @@ export default class BattleManager extends ParentManager {
     this.addButtonSelection(
       "attack",
       0,
-      async () => {
+      async (interaction) => {
+        ignoreInteraction(interaction);
         const weapon = this.user.inventory.equipments.weapon;
         if (weapon.cooldown > 0) {
           Manager.newErrorEmbed(
@@ -86,7 +86,8 @@ export default class BattleManager extends ParentManager {
       { style: ButtonStyle.Primary },
     );
 
-    this.addButtonSelection("evasion", 0, async () => {
+    this.addButtonSelection("evasion", 0, async (interaction) => {
+      ignoreInteraction(interaction);
       if (this.evaseBtnSelected) {
         this.evaseBtnSelected = false;
         this.addAction(
@@ -104,17 +105,22 @@ export default class BattleManager extends ParentManager {
       }
     });
 
-    this.addButtonSelection("shield", 0, async () => this.addAction(new ShieldAction(this, this.user)));
+    this.addButtonSelection("shield", 0, async (interaction) => {
+      ignoreInteraction(interaction);
+      this.addAction(new ShieldAction(this, this.user));
+    });
 
-    this.addButtonSelection("turn", 0, async () => {
+    this.addButtonSelection("turn", 0, async (interaction) => {
+      ignoreInteraction(interaction);
       this.components[4].components[0].setDisabled(true);
       this.components.forEach((rows) => rows.components.forEach((component) => component.setDisabled(true)));
-      await this.turnEnd();
+      this.turnEnd();
     });
 
     this.addMenuSelection(
       "swap",
-      async (_, entity) => {
+      async (interaction, entity) => {
+        ignoreInteraction(interaction);
         if (!(entity instanceof WeaponEntity)) throw new Error("it's not weapon entity");
 
         new SwapAction(this, this.user, entity, true);
@@ -139,7 +145,8 @@ export default class BattleManager extends ParentManager {
 
     this.addMenuSelection(
       "consume",
-      async (_, entity) => {
+      async (interaction, entity) => {
+        ignoreInteraction(interaction);
         if (entity instanceof ItemStack && entity.amount > 1) {
           new ItemSelectManager(this, {
             item: entity,
@@ -175,7 +182,8 @@ export default class BattleManager extends ParentManager {
 
     this.addMenuSelection(
       "reload",
-      async (_, entity) => {
+      async (interaction, entity) => {
+        ignoreInteraction(interaction);
         if (entity instanceof ItemStack && entity.amount > 1) {
           new ItemSelectManager(this, {
             item: entity,
@@ -212,7 +220,8 @@ export default class BattleManager extends ParentManager {
     this.addButtonSelection(
       "undo",
       4,
-      () => {
+      async (interaction) => {
+        ignoreInteraction(interaction);
         ActionManager.undoAction();
         this.updateBar();
         this.validate();
@@ -309,7 +318,7 @@ export default class BattleManager extends ParentManager {
         );
     }
 
-    ActionManager.onTurnEnd(this);
+    await ActionManager.onTurnEnd(this);
 
     //둘 중 하나가 죽으면 전투 끝
     if (this.user.stats.health <= 0 || this.enemy.stats.health <= 0) {
@@ -332,7 +341,7 @@ export default class BattleManager extends ParentManager {
     this.updateBar();
     this.validate();
     this.updateLog(bundle.format(this.locale, "battle.turnend", this.totalTurn));
-    await this.update();
+    this.update();
   }
 
   public updateLog(log: string): this {
@@ -469,6 +478,7 @@ export default class BattleManager extends ParentManager {
       this.updateLog("- " + bundle.format(this.locale, "battle.lose", this.user.stats.health));
       //TODO: 패배 부분 구현하기
     }
+    this.components.length = 0;
     this.endManager();
   }
 }
