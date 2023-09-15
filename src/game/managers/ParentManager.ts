@@ -20,7 +20,6 @@ export default class ParentManager extends Manager {
           "back_select",
           (interaction) => {
             ignoreInteraction(interaction);
-            this.collector?.stop();
             this.parentManager.update();
           },
           { style: ButtonStyle.Secondary },

@@ -1,7 +1,7 @@
 import PaginationStringSelectMenu from "@/command/components/PaginationStringSelectMenu";
 import { CloseButtonComponent } from "@/command/components/GeneralComponents";
-import { ActionRowBuilder, EmbedBuilder, ButtonStyle } from "discord.js";
 import { ignoreInteraction } from "@/utils/functions";
+import { ActionRowBuilder } from "discord.js";
 
 type Files = Exclude<Discord.BaseMessageOptions["files"], undefined>;
 
@@ -21,12 +21,8 @@ class Manager {
   public embeds: Discord.EmbedBuilder[] = [];
   public components: Discord.ActionRowBuilder<Discord.StringSelectMenuBuilder | Discord.ButtonBuilder>[] = [];
   public files: Files = [];
-  public readonly locale: string;
   public readonly interaction: Discord.BaseInteraction;
   public message?: Discord.Message | undefined;
-  public collector?: Discord.InteractionCollector<
-    Discord.StringSelectMenuInteraction<Discord.CacheType> | Discord.ButtonInteraction<Discord.CacheType>
-  >;
 
   public constructor({ content, embeds = [], components = [], files = [], interaction }: ManagerConstructOptions) {
     this.components = components;
@@ -35,7 +31,10 @@ class Manager {
     this.content = content;
 
     this.interaction = interaction;
-    this.locale = interaction.locale;
+  }
+
+  get locale() {
+    return this.interaction.locale;
   }
 
   /**
@@ -101,7 +100,6 @@ class Manager {
    */
   public async endManager(): Promise<void> {
     //this.user.gameManager.endEvent();
-    this.collector?.stop();
     this.setComponents();
     this.addRemoveButton();
     await this.update();
@@ -111,8 +109,6 @@ class Manager {
    * 보냈을 때 업데이트한 메시지를 삭제합니다.
    */
   public async remove(): Promise<void> {
-    this.collector?.stop();
-
     if (!this.message) throw new Error("message is empty");
     else await this.message.delete();
   }
