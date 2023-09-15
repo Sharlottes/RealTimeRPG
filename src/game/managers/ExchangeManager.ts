@@ -1,7 +1,10 @@
+import PaginationStringSelectMenu from "@/command/components/PaginationStringSelectMenu";
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
+import ButtonComponent from "@/command/components/ButtonComponent";
+import withRowBuilder from "@/command/components/withRowBuilder";
 import { getOne, ignoreInteraction } from "@/utils/functions";
+import { ActionRowBuilder, EmbedBuilder } from "discord.js";
 import { codeBlock } from "@discordjs/builders";
-import { EmbedBuilder } from "discord.js";
 import { EntityI } from "@/@type/types";
 import bundle from "@/assets/Bundle";
 
@@ -47,83 +50,96 @@ export default class ExchangeManager extends ParentManager {
       else this.target.inventory.items.push(new ItemStack(item));
     }
 
-    this.addButtonSelection("back", 0, async (interaction) => {
-      ignoreInteraction(interaction);
-      this.setContent(bundle.find(this.locale, "shop.end"));
-      await this.endManager();
-    }).addButtonSelection("battle", 0, async (interaction) => {
-      ignoreInteraction(interaction);
-      await new BattleManager(this, {
-        user: this.user,
-        interaction: this.interaction,
-        enemy: this.target,
-      }).update();
-    });
-
-    this.addMenuSelection(
-      "buy",
-      async (interaction, store) => {
-        ignoreInteraction(interaction);
-        if (store instanceof ItemStack && store.amount > 1) {
-          new ItemSelectManager(this, {
-            interaction: this.interaction,
-            item: store,
-            callback: async (amount) => {
-              await this.deal(this.target, this.user, store, amount);
-              await this.update();
-            },
-          }).send();
-        } else {
-          await this.deal(this.target, this.user, store, 1);
-          await this.update();
-        }
-      },
-      {
-        list: () => this.target.inventory.items,
-        reducer: (store, index) => ({
-          label:
-            store.item.localName(this.locale) +
-            ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
-              this.locale,
-              "unit.item",
-            )}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
-          value: index.toString(),
+    this.addComponents(
+      new ActionRowBuilder<ButtonComponent>().setComponents(
+        ButtonComponent.createByInteraction(this.interaction, "back", async (interaction) => {
+          ignoreInteraction(interaction);
+          this.setContent(bundle.find(this.locale, "shop.end"));
+          await this.endManager();
         }),
-        placeholder: "select item to buy ...",
-      },
+        ButtonComponent.createByInteraction(this.interaction, "battle", async (interaction) => {
+          ignoreInteraction(interaction);
+          await new BattleManager(this, {
+            user: this.user,
+            interaction: this.interaction,
+            enemy: this.target,
+          }).update();
+        }),
+      ),
     );
 
-    this.addMenuSelection(
-      "sell",
-      async (interaction, store) => {
-        ignoreInteraction(interaction);
-        if (store instanceof ItemStack && store.amount > 1) {
-          new ItemSelectManager(this, {
-            interaction: this.interaction,
-            item: store,
-            callback: async (amount) => {
-              await this.deal(this.user, this.target, store, amount);
+    this.addComponents(
+      withRowBuilder(
+        new PaginationStringSelectMenu(
+          "buy",
+          async (interaction, store) => {
+            ignoreInteraction(interaction);
+            if (store instanceof ItemStack && store.amount > 1) {
+              new ItemSelectManager(this, {
+                interaction: this.interaction,
+                item: store,
+                callback: async (amount) => {
+                  await this.deal(this.target, this.user, store, amount);
+                  await this.update();
+                },
+              }).send();
+            } else {
+              await this.deal(this.target, this.user, store, 1);
               await this.update();
-            },
-          }).send();
-        } else {
-          await this.deal(this.user, this.target, store, 1);
-          await this.update();
-        }
-      },
-      {
-        list: () => this.user.inventory.items,
-        reducer: (store, index) => ({
-          label:
-            store.item.localName(this.locale) +
-            ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
-              this.locale,
-              "unit.item",
-            )}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
-          value: index.toString(),
-        }),
-        placeholder: "select item to sell ...",
-      },
+            }
+          },
+          {
+            list: () => this.target.inventory.items,
+            reducer: (store, index) => ({
+              label:
+                store.item.localName(this.locale) +
+                ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
+                  this.locale,
+                  "unit.item",
+                )}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
+              value: index.toString(),
+            }),
+            placeholder: "select item to buy ...",
+          },
+        ),
+      ).Row,
+    );
+
+    this.addComponents(
+      withRowBuilder(
+        new PaginationStringSelectMenu(
+          "sell",
+          async (interaction, store) => {
+            ignoreInteraction(interaction);
+            if (store instanceof ItemStack && store.amount > 1) {
+              new ItemSelectManager(this, {
+                interaction: this.interaction,
+                item: store,
+                callback: async (amount) => {
+                  await this.deal(this.user, this.target, store, amount);
+                  await this.update();
+                },
+              }).send();
+            } else {
+              await this.deal(this.user, this.target, store, 1);
+              await this.update();
+            }
+          },
+          {
+            list: () => this.user.inventory.items,
+            reducer: (store, index) => ({
+              label:
+                store.item.localName(this.locale) +
+                ` ${store instanceof ItemStack ? store.amount : 1} ${bundle.find(
+                  this.locale,
+                  "unit.item",
+                )}, ${this.calPrice(store.item)} ${bundle.find(this.locale, "unit.money")}`,
+              value: index.toString(),
+            }),
+            placeholder: "select item to sell ...",
+          },
+        ),
+      ).Row,
     );
   }
 

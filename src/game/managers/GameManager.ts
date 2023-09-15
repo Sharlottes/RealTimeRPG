@@ -1,6 +1,7 @@
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
-import { ButtonStyle, codeBlock, EmbedBuilder } from "discord.js";
-import { getOne, ignoreInteraction } from "@/utils/functions";
+import { ActionRowBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
+import ButtonComponent from "@/command/components/ButtonComponent";
+import { ignoreInteraction } from "@/utils/functions";
 import Events from "@/game/contents/Events";
 import bundle from "@/assets/Bundle";
 import Canvas from "@/utils/Canvas";
@@ -36,21 +37,26 @@ export default class GameManager extends Manager {
         )}\n`,
     });
 
-    this.setEmbeds(this.mainEmbed)
-      .addButtonSelection("walk", 0, (interaction) => {
-        Events.events[1].start(this, interaction);
-        // getOne(Events.events).start(this, interaction);
-      })
-      .addButtonSelection(
-        "exit",
-        0,
-        (interaction) => {
-          ignoreInteraction(interaction);
-          this.remove();
-          this.gameThread.delete();
-        },
-        { style: ButtonStyle.Secondary },
-      );
+    this.setEmbeds(this.mainEmbed);
+
+    this.addComponents(
+      new ActionRowBuilder<ButtonComponent>().setComponents(
+        ButtonComponent.createByInteraction(this.interaction, "walk", (interaction) => {
+          Events.events[1].start(this, interaction);
+          // getOne(Events.events).start(this, interaction);
+        }),
+        ButtonComponent.createByInteraction(
+          this.interaction,
+          "exit",
+          (interaction) => {
+            ignoreInteraction(interaction);
+            this.remove();
+            this.gameThread.delete();
+          },
+          { style: ButtonStyle.Secondary },
+        ),
+      ),
+    );
   }
 
   /**

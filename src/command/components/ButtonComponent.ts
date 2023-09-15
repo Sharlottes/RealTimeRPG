@@ -1,4 +1,5 @@
-import { ButtonBuilder } from "discord.js";
+import { ButtonBuilder, ButtonStyle } from "discord.js";
+import Bundle from "@/assets/Bundle";
 import { client } from "@/index";
 
 export default class ButtonComponent extends ButtonBuilder {
@@ -23,5 +24,21 @@ export default class ButtonComponent extends ButtonBuilder {
     if (!(interaction.isButton() && interaction.customId === this.customId)) return;
 
     this.onClick(interaction);
+  }
+
+  public static createByInteraction(
+    interaction: Discord.BaseInteraction,
+    name: string,
+    callback: (interaction: Discord.ButtonInteraction) => unknown,
+    options: Partial<Omit<ConstructorParameters<typeof ButtonComponent>[0], "label" | "customId">> = {
+      style: ButtonStyle.Primary,
+    },
+  ) {
+    return new ButtonComponent({
+      onClick: callback,
+      customId: name + interaction.id,
+      label: Bundle.find(interaction.locale, `select.${name}`),
+      ...options,
+    });
   }
 }

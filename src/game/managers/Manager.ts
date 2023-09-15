@@ -121,65 +121,6 @@ class Manager {
     else await this.message.delete();
   }
 
-  /**
-   * 버튼 컴포넌트를 추가합니다.
-   *
-   * @param name - 컴포넌트 이름
-   * @param row - 컴포넌트 열 (0~4)
-   * @param callback - 선택 콜백함수(버튼 interaction, 버튼 manager)
-   */
-  public addButtonSelection(
-    name: string,
-    row: number,
-    callback: (interaction: Discord.ButtonInteraction) => unknown,
-    option: Partial<Omit<Discord.InteractionButtonComponentData, "label" | "customId">> = {
-      style: ButtonStyle.Primary,
-    },
-  ) {
-    this.resizeSelection(row);
-
-    this.components[row].addComponents(
-      new ButtonComponent({
-        onClick: callback,
-        customId: name + this.interaction.id,
-        label: bundle.find(this.locale, `select.${name}`),
-        ...option,
-      }),
-    );
-
-    return this;
-  }
-
-  /**
-   * 선택메뉴 컴포넌트를 추가합니다.
-   *
-   * @param name - 컴포넌트 이름
-   * @param callback - 선택 콜백함수
-   * @param list - 아이템 리스트
-   * @param reducer - 아이템 리스트 매퍼
-   * @param placeholder - 선택 전 힌트
-   */
-  public addMenuSelection<T>(
-    name: string,
-    callback: (interaction: Discord.StringSelectMenuInteraction, item: T) => void,
-    options: PaginationStringSelectMenuOptions<T>,
-  ) {
-    this.components.push(withRowBuilder(new PaginationStringSelectMenu(name, callback, options)).Row);
-
-    return this;
-  }
-
-  /**
-   * 최대 5 열까지 컴포넌트 열 컴포넌트를 추가합니다.
-   * @param row 갱신할 열 길이
-   */
-  private resizeSelection(row: number) {
-    if (row >= 5) throw new Error("component row cannot be more than 5!");
-    while (this.components.length <= row) {
-      this.components.push(new ActionRowBuilder({ components: [] }));
-    }
-  }
-
   public addRemoveButton(): this {
     this.addComponents(CloseButtonComponent.Row);
     return this;

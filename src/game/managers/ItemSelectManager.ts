@@ -1,4 +1,5 @@
-import { ButtonStyle, EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
+import ButtonComponent from "@/command/components/ButtonComponent";
 import { ignoreInteraction } from "@/utils/functions";
 import bundle from "@/assets/Bundle";
 
@@ -32,80 +33,92 @@ export default class ItemSelectManager extends ParentManager {
     ]);
     this.setEmbeds(this.mainEmbed);
 
-    for (let i = 1; i <= 9; i++) {
-      this.addButtonSelection(i.toString(), Math.floor((i - 1) / 3), (interaction) => {
-        ignoreInteraction(interaction);
-        this.amount *= 10;
-        this.amount += i;
-        this.updateEmbed();
-      });
+    for (let i = 0; i < 3; i++) {
+      const row = new ActionRowBuilder<ButtonComponent>();
+      for (let j = 0; j < 3; j++) {
+        row.addComponents(
+          ButtonComponent.createByInteraction(this.interaction, (j + 1).toString(), (interaction) => {
+            ignoreInteraction(interaction);
+            this.amount = this.amount * 10 + j + 1;
+            this.updateEmbed();
+          }),
+        );
+      }
+      this.addComponents(row);
     }
-    this.addButtonSelection("0", 3, () => {
-      this.amount *= 10;
-      this.updateEmbed();
-    })
-      .addButtonSelection(
-        "del",
-        3,
-        (interaction) => {
-          ignoreInteraction(interaction);
-          this.amount = Math.floor(this.amount / 10);
+
+    this.addComponents(
+      new ActionRowBuilder<ButtonComponent>().addComponents(
+        ButtonComponent.createByInteraction(this.interaction, "0", () => {
+          this.amount *= 10;
           this.updateEmbed();
-        },
-        { style: ButtonStyle.Danger },
-      )
-      .addButtonSelection(
-        "done",
-        3,
-        (interaction) => {
-          ignoreInteraction(interaction);
-          if (this.amount > this.stack.amount) {
-            Manager.newErrorEmbed(
-              this.interaction,
-              bundle.format(
-                this.locale,
-                "shop.notEnough_item",
-                this.stack.item.localName(this.locale),
-                this.amount,
-                this.stack.amount,
-              ),
-            );
-          } else {
-            this.callback(this.amount);
+        }),
+        ButtonComponent.createByInteraction(
+          this.interaction,
+          "del",
+          (interaction) => {
+            ignoreInteraction(interaction);
+            this.amount = Math.floor(this.amount / 10);
+            this.updateEmbed();
+          },
+          { style: ButtonStyle.Danger },
+        ),
+        ButtonComponent.createByInteraction(
+          this.interaction,
+          "done",
+          (interaction) => {
+            ignoreInteraction(interaction);
+            if (this.amount > this.stack.amount) {
+              Manager.newErrorEmbed(
+                this.interaction,
+                bundle.format(
+                  this.locale,
+                  "shop.notEnough_item",
+                  this.stack.item.localName(this.locale),
+                  this.amount,
+                  this.stack.amount,
+                ),
+              );
+            } else {
+              this.callback(this.amount);
+              this.remove();
+            }
+          },
+          { style: ButtonStyle.Success },
+        ),
+      ),
+      new ActionRowBuilder<ButtonComponent>().addComponents(
+        ButtonComponent.createByInteraction(
+          this.interaction,
+          "cancel",
+          (interaction) => {
+            ignoreInteraction(interaction);
             this.remove();
-          }
-        },
-        { style: ButtonStyle.Success },
-      )
-      .addButtonSelection(
-        "cancel",
-        4,
-        (interaction) => {
-          ignoreInteraction(interaction);
-          this.remove();
-        },
-        { style: ButtonStyle.Secondary },
-      )
-      .addButtonSelection(
-        "reset",
-        4,
-        (interaction) => {
-          ignoreInteraction(interaction);
-          this.amount = 0;
-          this.updateEmbed();
-        },
-        { style: ButtonStyle.Secondary },
-      )
-      .addButtonSelection(
-        "max",
-        4,
-        (interaction) => {
-          ignoreInteraction(interaction);
-          this.amount = this.stack.amount;
-          this.updateEmbed();
-        },
-        { style: ButtonStyle.Secondary },
-      );
+          },
+          { style: ButtonStyle.Secondary },
+        ),
+        ButtonComponent.createByInteraction(
+          this.interaction,
+          "reset",
+          (interaction) => {
+            ignoreInteraction(interaction);
+            this.amount = 0;
+            this.updateEmbed();
+          },
+          { style: ButtonStyle.Secondary },
+        ),
+        ButtonComponent.createByInteraction(
+          this.interaction,
+          "max",
+          (interaction) => {
+            ignoreInteraction(interaction);
+            this.amount = this.stack.amount;
+            this.updateEmbed();
+          },
+          { style: ButtonStyle.Secondary },
+        ),
+      ),
+    );
   }
 
   private async updateEmbed() {

@@ -1,8 +1,9 @@
 import Manager, { ManagerConstructOptions } from "@/game/managers/Manager";
+import ButtonComponent from "@/command/components/ButtonComponent";
 import ExchangeManager from "@/game/managers/ExchangeManager";
+import { EmbedBuilder, ActionRowBuilder } from "discord.js";
 import BattleManager from "@/game/managers/BattleManager";
 import { ignoreInteraction } from "@/utils/functions";
-import { EmbedBuilder } from "discord.js";
 import bundle from "@/assets/Bundle";
 import Mathf from "@/utils/Mathf";
 import Random from "random";
@@ -23,56 +24,71 @@ export default class EncounterManager extends ParentManager {
     super(parentManager, options);
     this.user = user;
     this.target = target;
-    this.mainEmbed = new EmbedBuilder().setTitle(bundle.find(this.locale, `event.${this.target.type.name}`));
+    this.mainEmbed = new EmbedBuilder({ title: bundle.find(this.locale, `event.${this.target.type.name}`) });
+    this.setEmbeds(this.mainEmbed);
+    this.addComponents(
+      new ActionRowBuilder<ButtonComponent>().setComponents(
+        ButtonComponent.createByInteraction(this.interaction, "battle", (interaction) => {
+          ignoreInteraction(interaction);
+          this.remove();
+          new BattleManager(this, {
+            user: this.user,
+            interaction: this.interaction,
+            enemy: this.target,
+          }).send(this.user.gameManager?.gameThread);
+        }),
+        ButtonComponent.createByInteraction(this.interaction, "battle", (interaction) => {
+          ignoreInteraction(interaction);
+          this.remove();
+          new BattleManager(this, {
+            user: this.user,
+            interaction: this.interaction,
+            enemy: this.target,
+          }).send(this.user.gameManager?.gameThread);
+        }),
+        ButtonComponent.createByInteraction(this.interaction, "run", async (interaction) => {
+          ignoreInteraction(interaction);
+          if (Random.boolean()) {
+            const money = Math.floor(Mathf.range(2, 10));
+            this.user.money -= money;
+            this.mainEmbed.addFields({
+              name: "Result:",
+              value: "```\n" + bundle.format(this.user.locale, "event.goblin_run_failed", money) + "\n```",
+            });
+          } else {
+            this.mainEmbed.addFields({
+              name: "Result:",
+              value: "```\n" + bundle.find(this.user.locale, "event.goblin_run_success") + "\n```",
+            });
+          }
+          await this.update();
+          this.endManager();
+        }),
+      ),
+    );
 
-    this.setEmbeds(this.mainEmbed)
-      .addButtonSelection("battle", 0, (interaction) => {
-        ignoreInteraction(interaction);
-        this.remove();
-        new BattleManager(this, {
-          user: this.user,
-          interaction: this.interaction,
-          enemy: this.target,
-        }).send(this.user.gameManager?.gameThread);
-      })
-      .addButtonSelection("run", 0, async (interaction) => {
-        ignoreInteraction(interaction);
-        if (Random.boolean()) {
-          const money = Math.floor(Mathf.range(2, 10));
+    if (this.target.id == 1) {
+      this.components[0].addComponents(
+        ButtonComponent.createByInteraction(this.interaction, "talking", async (interaction) => {
+          ignoreInteraction(interaction);
+          const money = Math.floor(Mathf.range(2, 5));
           this.user.money -= money;
           this.mainEmbed.addFields({
             name: "Result:",
-            value: "```\n" + bundle.format(this.user.locale, "event.goblin_run_failed", money) + "\n```",
+            value: "```\n" + bundle.format(this.user.locale, "event.goblin_talking", money) + "\n```",
           });
-        } else {
-          this.mainEmbed.addFields({
-            name: "Result:",
-            value: "```\n" + bundle.find(this.user.locale, "event.goblin_run_success") + "\n```",
-          });
-        }
-        await this.update();
-        this.endManager();
-      });
-
-    if (this.target.id == 1) {
-      this.addButtonSelection("talking", 0, async (interaction) => {
-        ignoreInteraction(interaction);
-        const money = Math.floor(Mathf.range(2, 5));
-        this.user.money -= money;
-        this.mainEmbed.addFields({
-          name: "Result:",
-          value: "```\n" + bundle.format(this.user.locale, "event.goblin_talking", money) + "\n```",
-        });
-        await this.update();
-        this.endManager();
-      }).addButtonSelection("exchange", 0, async (interaction) => {
-        ignoreInteraction(interaction);
-        await new ExchangeManager(this, {
-          user: this.user,
-          interaction: this.interaction,
-          target: this.target,
-        }).send(this.user.gameManager?.gameThread);
-      });
+          await this.update();
+          this.endManager();
+        }),
+        ButtonComponent.createByInteraction(this.interaction, "exchange", async (interaction) => {
+          ignoreInteraction(interaction);
+          await new ExchangeManager(this, {
+            user: this.user,
+            interaction: this.interaction,
+            target: this.target,
+          }).send(this.user.gameManager?.gameThread);
+        }),
+      );
     }
   }
 }
