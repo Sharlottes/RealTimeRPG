@@ -25,10 +25,4 @@ export default class ParentManager extends Manager {
 
     return this;
   }
-
-  public override async endManager(): Promise<void> {
-    this.collector?.stop();
-    this.addRemoveButton();
-    await this.update();
-  }
 }

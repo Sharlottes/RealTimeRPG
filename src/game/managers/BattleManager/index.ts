@@ -478,7 +478,6 @@ export default class BattleManager extends ParentManager {
       this.updateLog("- " + bundle.format(this.locale, "battle.lose", this.user.stats.health));
       //TODO: 패배 부분 구현하기
     }
-    this.components.length = 0;
     this.endManager();
   }
 }

@@ -103,10 +103,11 @@ class Manager {
    * 이 메시지와의 상호작용을 종료합니다.
    *이벤트가 종료되고 삭제 버튼이 생성됩니다.
    */
-  public async endManager(timeout = 5000): Promise<void> {
+  public async endManager(): Promise<void> {
     //this.user.gameManager.endEvent();
+    this.collector?.stop();
     this.setComponents();
-    this.addRemoveButton(timeout);
+    this.addRemoveButton();
     await this.update();
   }
 
@@ -140,7 +141,7 @@ class Manager {
     this.components[row].addComponents(
       new ButtonComponent({
         onClick: callback,
-        customId: name,
+        customId: name + this.interaction.id,
         label: bundle.find(this.locale, `select.${name}`),
         ...option,
       }),
@@ -179,15 +180,7 @@ class Manager {
     }
   }
 
-  public addRemoveButton(timeout = 5000): this {
-    if (timeout > 0)
-      setTimeout(() => {
-        //TODO
-        try {
-          this.remove();
-        } catch (e) {}
-      }, timeout);
-
+  public addRemoveButton(): this {
     this.addComponents(CloseButtonComponent.Row);
     return this;
   }
