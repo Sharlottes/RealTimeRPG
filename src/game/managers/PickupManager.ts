@@ -1,43 +1,35 @@
+import { CloseButtonComponent } from "@/command/components/GeneralComponents";
 import { codeBlock } from "@discordjs/builders";
 import { ItemStack } from "@/game/Inventory";
 import bundle from "@/assets/Bundle";
 import User from "@/game/User";
 
-import Manager, { ManagerConstructOptions } from "./Manager";
+import Manager from "./Manager";
 
 class PickupManager extends Manager {
-  public stack?: ItemStack | undefined;
-  public money?: number | undefined;
-  private readonly user: User;
-
-  public constructor(
-    options: ManagerConstructOptions & {
-      stack?: ItemStack;
-      money?: number;
-      user: User;
-    },
-  ) {
-    super(options);
-
-    this.user = options.user;
-    this.stack = options.stack;
-    this.money = options.money;
-
-    this.user.money += this.money ?? 0;
-    if (this.stack) this.user.giveItem(this.stack.item, this.stack.amount);
-
-    this.setContent(
-      codeBlock(
+  public constructor(options: { interaction: Discord.BaseInteraction; stack?: ItemStack; money?: number; user: User }) {
+    super({
+      ...options,
+      content: codeBlock(
         bundle.format(
-          this.locale,
+          options.interaction.locale,
           "event.pickup",
-          this.stack ? this.stack.item.localName(this.locale) : this.money + bundle.find(this.locale, "unit.money"),
-          this.stack
-            ? `${this.stack.item.localName(this.locale)}: +${this.stack.amount}${bundle.find(this.locale, "unit.item")}`
-            : `+${this.money}${bundle.find(this.locale, "unit.money")}`,
+          options.stack
+            ? options.stack.item.localName(options.interaction.locale)
+            : options.money + bundle.find(options.interaction.locale, "unit.money"),
+          options.stack
+            ? `${options.stack.item.localName(options.interaction.locale)}: +${options.stack.amount}${bundle.find(
+                options.interaction.locale,
+                "unit.item",
+              )}`
+            : `+${options.money}${bundle.find(options.interaction.locale, "unit.money")}`,
         ),
       ),
-    ).addRemoveButton();
+      components: [CloseButtonComponent.Row],
+    });
+
+    options.user.money += options.money ?? 0;
+    if (options.stack) options.user.giveItem(options.stack.item, options.stack.amount);
   }
 }
 

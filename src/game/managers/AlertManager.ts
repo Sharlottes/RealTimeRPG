@@ -1,3 +1,4 @@
+import { CloseButtonComponent } from "@/command/components/GeneralComponents";
 import { channel } from "diagnostics_channel";
 import { EmbedBuilder } from "discord.js";
 
@@ -8,7 +9,7 @@ export default class AlertManager extends Manager {
     super({
       interaction,
       embeds: [new EmbedBuilder({ title, description })],
+      components: [CloseButtonComponent.Row],
     });
-    this.addRemoveButton();
   }
 }

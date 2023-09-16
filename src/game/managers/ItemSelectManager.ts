@@ -32,7 +32,7 @@ export default class ItemSelectManager extends ParentManager {
       },
       { name: "Amount", value: this.amount.toString() },
     ]);
-    this.setEmbeds(this.mainEmbed);
+    this.messageData.embeds = [this.mainEmbed];
 
     for (let i = 0; i < 3; i++) {
       const row = new ActionRowBuilder<ButtonComponent>();
@@ -45,10 +45,10 @@ export default class ItemSelectManager extends ParentManager {
           }),
         );
       }
-      this.addComponents(row);
+      this.messageData.components.push(row);
     }
 
-    this.addComponents(
+    this.messageData.components.push(
       new ActionRowBuilder<ButtonComponent>().addComponents(
         ButtonComponent.createByInteraction(this.interaction, "0", () => {
           this.amount *= 10;
@@ -134,7 +134,7 @@ export default class ItemSelectManager extends ParentManager {
         value: this.amount.toString(),
       },
     ]);
-    this.components[3].components[2].setDisabled(this.amount > this.stack.amount);
+    this.messageData.components[3].components[2].setDisabled(this.amount > this.stack.amount);
     await this.update();
   }
 }

@@ -111,8 +111,9 @@ export default class User extends Entity implements EntityI {
   }
 
   public showInventoryInfo(interaction: Discord.BaseInteraction) {
-    return new Manager({ interaction })
-      .setEmbeds(
+    return new Manager({
+      interaction,
+      embeds: [
         new Discord.EmbedBuilder().setTitle(bundle.find(this.locale, "inventory")).addFields(
           this.inventory.items.map<Discord.APIEmbedField>((store) => ({
             name: store.item.localName(this.locale),
@@ -120,8 +121,9 @@ export default class User extends Entity implements EntityI {
             inline: true,
           })),
         ),
-      )
-      .addComponents(CloseButtonComponent.Row);
+      ],
+      components: [CloseButtonComponent.Row],
+    });
   }
 
   public showUserInfo(interaction: Discord.BaseInteraction) {
@@ -147,8 +149,9 @@ export default class User extends Entity implements EntityI {
       name: "profile-image.png",
     });
 
-    return new Manager({ interaction })
-      .setEmbeds(
+    return new Manager({
+      interaction,
+      embeds: [
         new EmbedBuilder()
           .setColor("#0099ff")
           .setTitle("User Status Information")
@@ -190,8 +193,9 @@ export default class User extends Entity implements EntityI {
               inline: true,
             },
           ),
-      )
-      .setFiles(attachment)
-      .setComponents(new ActionRowBuilder<ButtonBuilder>().addComponents([WeaponInfoButton, InventoryInfoButton]));
+      ],
+      files: [attachment],
+      components: [new ActionRowBuilder<ButtonBuilder>().addComponents([WeaponInfoButton, InventoryInfoButton])],
+    });
   }
 }

@@ -13,7 +13,7 @@ export default class ParentManager extends Manager {
   }
 
   public addBackButton(): this {
-    this.addComponents(
+    this.messageData.components.push(
       new ActionRowBuilder<ButtonComponent>().addComponents(
         ButtonComponent.createByInteraction(
           this.interaction,

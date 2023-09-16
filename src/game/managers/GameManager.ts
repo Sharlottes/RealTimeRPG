@@ -37,26 +37,27 @@ export default class GameManager extends Manager {
         )}\n`,
     });
 
-    this.setEmbeds(this.mainEmbed);
-
-    this.addComponents(
-      new ActionRowBuilder<ButtonComponent>().setComponents(
-        ButtonComponent.createByInteraction(this.interaction, "walk", (interaction) => {
-          Events.events[1].start(this, interaction);
-          // getOne(Events.events).start(this, interaction);
-        }),
-        ButtonComponent.createByInteraction(
-          this.interaction,
-          "exit",
-          (interaction) => {
-            ignoreInteraction(interaction);
-            this.remove();
-            this.gameThread.delete();
-          },
-          { style: ButtonStyle.Secondary },
+    this.updateMessageData({
+      embeds: [this.mainEmbed],
+      components: [
+        new ActionRowBuilder<ButtonComponent>().setComponents(
+          ButtonComponent.createByInteraction(this.interaction, "walk", (interaction) => {
+            Events.events[1].start(this, interaction);
+            // getOne(Events.events).start(this, interaction);
+          }),
+          ButtonComponent.createByInteraction(
+            this.interaction,
+            "exit",
+            (interaction) => {
+              ignoreInteraction(interaction);
+              this.remove();
+              this.gameThread.delete();
+            },
+            { style: ButtonStyle.Secondary },
+          ),
         ),
-      ),
-    );
+      ],
+    });
   }
 
   /**
