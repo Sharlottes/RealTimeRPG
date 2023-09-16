@@ -19,5 +19,5 @@
     "emitDecoratorMetadata": false,
     "experimentalDecorators": true
   },
-  "exclude": ["output", "node_modules"]
+  "exclude": ["output", "depgraph", "node_modules"]
 }
