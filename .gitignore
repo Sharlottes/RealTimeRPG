@@ -1,3 +1,4 @@
 node_modules/
+depgraph/out/
 output/
 .env

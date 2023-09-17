@@ -1,5 +1,4 @@
 import { CloseButtonComponent } from "@/command/components/GeneralComponents";
-import { channel } from "diagnostics_channel";
 import { EmbedBuilder } from "discord.js";
 
 import Manager from "./Manager";

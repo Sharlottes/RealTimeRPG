@@ -1,12 +1,16 @@
 {
   "type": "module",
   "scripts": {
+    "dev": "yarn build && yarn start",
     "start": "node --es-module-specifier-resolution=node output/index.js",
     "build": "swc src/ -d output",
     "ts-check": "tsc --noEmit",
-    "format": "prettier --cache --write ."
+    "format": "prettier --cache --write .",
+    "dc": "depcruise output --progress --config depgraph/visual.config.cjs -T flat | dot -Tsvg | tee depgraph/dist/dependency-cruiser-graph-flat-dot.svg | npx depcruise-wrap-stream-in-html > depgraph/dist/dependency-cruiser-graph-flat-dot.html",
+    "dcval": "depcruise output --progress --config depgraph/visual.config.cjs -T err-html -f depgraph/dist/dependency-report.html"
   },
   "dependencies": {
+    "@discordjs/builders": "^1.6.5",
     "@discordx/pagination": "^3.4.1",
     "@discordx/utilities": "^5.2.1",
     "canvas": "2.10",
@@ -23,6 +27,7 @@
     "@swc/helpers": "^0.5.2",
     "@types/node": "^20.5.9",
     "@types/properties-reader": "^2.1.1",
+    "dependency-cruiser": "^13.1.5",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   }
