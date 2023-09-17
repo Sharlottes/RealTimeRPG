@@ -1,12 +1,10 @@
-import { client } from "..";
-
 type InteractionEventListener = (interaction: Discord.BaseInteraction) => unknown;
 
-export default class InteractionEvent {
+class InteractionEvent {
   private callbacks: Set<InteractionEventListener> = new Set();
 
-  constructor(private client: Discord.Client) {
-    this.client.on("interactionCreate", (interaction) => {
+  public setClient(client: Discord.Client) {
+    client.on("interactionCreate", (interaction) => {
       for (const callback of this.callbacks) {
         callback(interaction);
       }
@@ -27,3 +25,5 @@ declare module "discord.js" {
     interactionEvent: InteractionEvent;
   }
 }
+
+export default new InteractionEvent();

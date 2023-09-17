@@ -18,7 +18,7 @@ export const client = new Client({
   },
   botGuilds: process.env.NODE_ENV === "production" ? undefined : [process.env.TEST_GUILD_ID],
 });
-client.interactionEvent = new InteractionEvent(client);
+InteractionEvent.setClient(client);
 
 Game.init();
 

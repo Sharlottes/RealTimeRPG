@@ -1,3 +1,4 @@
+import { showInventoryInfo } from "@/game/managers/managerFactory";
 import Discord, { ButtonBuilder, ButtonStyle } from "discord.js";
 import * as Discordx from "discordx";
 import User from "@/game/User";
@@ -19,8 +20,7 @@ export default class GeneralComponents {
 
   @Discordx.ButtonComponent({ id: "inventory_info" })
   private inventoryInfoHandler(interaction: Discord.ButtonInteraction) {
-    const user = User.findUserByInteraction(interaction);
-    user.showInventoryInfo(interaction).send();
+    showInventoryInfo(interaction).send();
   }
 }
 

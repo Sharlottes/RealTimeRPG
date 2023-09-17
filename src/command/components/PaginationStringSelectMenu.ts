@@ -1,8 +1,8 @@
 import AlertManager from "@/game/managers/AlertManager";
+import InteractionEvent from "@/core/interactionEvent";
 import { StringSelectMenuBuilder } from "discord.js";
 import { functionOrNot } from "@/utils/functions";
 import bundle from "@/assets/Bundle";
-import { client } from "@/index";
 
 export type PaginationStringSelectMenuOptions<T> = {
   list: MaybeFunction<T[]>;
@@ -34,7 +34,7 @@ export default class PaginationStringSelectMenu<T> extends StringSelectMenuBuild
     this.list = list;
     this.reducer = reducer;
     this.refresh();
-    client.interactionEvent.on((interaction) => this.handleSelectMenu(interaction));
+    InteractionEvent.on((interaction) => this.handleSelectMenu(interaction));
   }
 
   /**

@@ -1,7 +1,7 @@
 import { Discord as DiscordX, Slash, SlashChoice, SlashOption } from "discordx";
+import { showInventoryInfo, showUserInfo } from "@/game/managers/managerFactory";
 import { ApplicationCommandOptionType } from "discord.js";
 import AlertManager from "@/game/managers/AlertManager";
-import Manager from "@/game/managers/Manager";
 import { ItemStack } from "@/game/Inventory";
 import Items from "@/game/contents/Items";
 import bundle from "@/assets/Bundle";
@@ -23,19 +23,7 @@ abstract class UserCommands {
     targetUser: Discord.User | null,
     interaction: Discord.CommandInteraction,
   ) {
-    targetUser ??= interaction.user;
-    const user = User.findUserByDiscordId(targetUser.id);
-
-    console.log(user);
-    if (user) {
-      await user.showUserInfo(interaction).update();
-    } else {
-      new AlertManager(
-        interaction,
-        "ERROR",
-        bundle.format(interaction.locale, "error.notFound", targetUser.username),
-      ).send();
-    }
+    await showUserInfo(interaction, User.findUserByDiscordId((targetUser ?? interaction.user).id)).send();
   }
 
   @Slash({
@@ -52,18 +40,7 @@ abstract class UserCommands {
     targetUser: Discord.User | null,
     interaction: Discord.CommandInteraction,
   ) {
-    targetUser ??= interaction.user;
-    const user = User.findUserByDiscordId(targetUser.id);
-
-    if (user) {
-      await user.showInventoryInfo(interaction).update();
-    } else {
-      new AlertManager(
-        interaction,
-        "ERROR",
-        bundle.format(interaction.locale, "error.notFound", targetUser.username),
-      ).send();
-    }
+    await showInventoryInfo(interaction, User.findUserByDiscordId((targetUser ?? interaction.user).id)).send();
   }
 
   @Slash({

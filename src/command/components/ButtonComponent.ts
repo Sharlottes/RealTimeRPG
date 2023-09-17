@@ -1,6 +1,6 @@
 import { ButtonBuilder, ButtonStyle } from "discord.js";
+import InteractionEvent from "@/core/interactionEvent";
 import Bundle from "@/assets/Bundle";
-import { client } from "@/index";
 
 export default class ButtonComponent extends ButtonBuilder {
   private readonly onClick?: (interaction: Discord.ButtonInteraction) => unknown;
@@ -16,7 +16,7 @@ export default class ButtonComponent extends ButtonBuilder {
     this.onClick = data.onClick;
     this.customId = data.customId;
 
-    client.interactionEvent.on((interaction) => this.handleClick(interaction));
+    InteractionEvent.on((interaction) => this.handleClick(interaction));
   }
 
   private handleClick(interaction: Discord.BaseInteraction) {
