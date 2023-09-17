@@ -38,15 +38,6 @@ export default class EncounterManager extends ParentManager {
               enemy: this.target,
             }).send(this.user.gameManager?.gameThread);
           }),
-          ButtonComponent.createByInteraction(this.interaction, "battle", (interaction) => {
-            ignoreInteraction(interaction);
-            this.remove();
-            new BattleManager(this, {
-              user: this.user,
-              interaction: this.interaction,
-              enemy: this.target,
-            }).send(this.user.gameManager?.gameThread);
-          }),
           ButtonComponent.createByInteraction(this.interaction, "run", async (interaction) => {
             ignoreInteraction(interaction);
             if (Random.boolean()) {
