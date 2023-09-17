@@ -1,7 +1,6 @@
 import AlertManager from "@/game/managers/AlertManager";
 import { StringSelectMenuBuilder } from "discord.js";
 import { functionOrNot } from "@/utils/functions";
-import Manager from "@/game/managers/Manager";
 import bundle from "@/assets/Bundle";
 import { client } from "@/index";
 
@@ -13,9 +12,8 @@ export type PaginationStringSelectMenuOptions<T> = {
 
 export default class PaginationStringSelectMenu<T> extends StringSelectMenuBuilder {
   private currentPage = 0;
-  list: MaybeFunction<T[]>;
-  reducer: (elem: T, index: number) => Discord.APISelectMenuOption;
-  placeholder: string;
+  private list: MaybeFunction<T[]>;
+  private reducer: (elem: T, index: number) => Discord.APISelectMenuOption;
 
   constructor(
     private readonly customId: string,
@@ -35,15 +33,14 @@ export default class PaginationStringSelectMenu<T> extends StringSelectMenuBuild
     });
     this.list = list;
     this.reducer = reducer;
-    this.placeholder = placeholder;
-    this.reoption();
+    this.refresh();
     client.interactionEvent.on((interaction) => this.handleSelectMenu(interaction));
   }
 
   /**
    * refresh select menu options
    */
-  public reoption() {
+  public refresh() {
     const currentList = functionOrNot(this.list);
     const options = currentList
       .reduce<Discord.APISelectMenuOption[]>(
@@ -97,6 +94,6 @@ export default class PaginationStringSelectMenu<T> extends StringSelectMenuBuild
         this.callback(interaction, list[Number(id)]);
     }
 
-    this.reoption();
+    this.refresh();
   }
 }

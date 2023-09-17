@@ -3,7 +3,6 @@ import bundle from "@/assets/Bundle";
 
 import BattleManager from "../BattleManager";
 import AlertManager from "../AlertManager";
-import Manager from "../Manager";
 
 export abstract class BaseAction {
   public abstract title: string;

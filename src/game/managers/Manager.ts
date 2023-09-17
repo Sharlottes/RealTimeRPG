@@ -1,4 +1,3 @@
-import PaginationStringSelectMenu from "@/command/components/PaginationStringSelectMenu";
 import { CloseButtonComponent } from "@/command/components/GeneralComponents";
 import { ignoreInteraction } from "@/utils/functions";
 
@@ -41,8 +40,8 @@ class Manager {
    */
   public async update(): Promise<Discord.Message> {
     this.messageData.components.forEach((component) => {
-      if (component instanceof PaginationStringSelectMenu) {
-        component.reoption();
+      if ("refresh" in component && typeof component.refresh === "function") {
+        component.refresh();
       }
     });
     const sent = await (() => {
