@@ -34,13 +34,16 @@ export default class ItemSelectManager extends ParentManager {
     ]);
     this.messageData.embeds = [this.mainEmbed];
 
-    for (let i = 0; i < 3; i++) {
+    let stack = 0;
+    for (let i = 1; i <= 3; i++) {
       const row = new ActionRowBuilder<ButtonComponent>();
-      for (let j = 0; j < 3; j++) {
+      for (let j = 1; j <= 3; j++) {
+        stack++;
+        let sstack = stack;
         row.addComponents(
-          ButtonComponent.createByInteraction(this.interaction, (j + 1).toString(), (interaction) => {
+          ButtonComponent.createByInteraction(this.interaction, sstack.toString(), (interaction) => {
             ignoreInteraction(interaction);
-            this.amount = this.amount * 10 + j + 1;
+            this.amount = this.amount * 10 + sstack;
             this.updateEmbed();
           }),
         );
