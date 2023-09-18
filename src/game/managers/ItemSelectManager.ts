@@ -53,7 +53,8 @@ export default class ItemSelectManager extends ParentManager {
 
     this.messageData.components.push(
       new ActionRowBuilder<ButtonComponent>().addComponents(
-        ButtonComponent.createByInteraction(this.interaction, "0", () => {
+        ButtonComponent.createByInteraction(this.interaction, "0", (interaction) => {
+          ignoreInteraction(interaction);
           this.amount *= 10;
           this.updateEmbed();
         }),
