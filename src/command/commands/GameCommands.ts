@@ -47,7 +47,7 @@ abstract class GameCommands {
       else throw new Error("interaction has no channel");
     }
     user.gameManager = new GameManager(user, channel, { interaction });
-    await user.gameManager.update();
+    user.gameManager.update();
   }
 
   @Discordx.Slash({

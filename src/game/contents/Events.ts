@@ -24,7 +24,7 @@ export default class Events {
             : undefined;
           const money = !bool ? 2 + Math.floor(Math.random() * 10) : undefined;
 
-          await new PickupManager({ user, interaction, stack, money }).send(user.gameManager!.gameThread);
+          await new PickupManager({ user, interaction, stack, money }).send();
         },
       },
       {
@@ -35,7 +35,7 @@ export default class Events {
             user: gameManager.user,
             interaction,
             target: new UnitEntity(Units.find(Random.int(0, Units.units.length - 1))),
-          }).send(gameManager.gameThread);
+          }).send();
         },
       },
     );

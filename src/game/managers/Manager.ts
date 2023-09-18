@@ -1,5 +1,8 @@
 import { CloseButtonComponent } from "@/command/components/GeneralComponents";
 import { ignoreInteraction } from "@/utils/functions";
+import Vars from "@/Vars";
+
+import User from "../User";
 
 export type ManagerConstructOptions = {
   content?: string;
@@ -66,11 +69,11 @@ class Manager {
    * 현재 데이터를 송신하고 message를 갱신합니다.
    * @param channel 송신할 채널 (기본값: 출생지)
    */
-  public async send(channel: Discord.TextBasedChannel | null = this.interaction.channel): Promise<Discord.Message> {
-    if (!channel) throw new Error("channel does not exist");
+  public async send(
+    channel: Discord.TextBasedChannel = User.findUserByInteraction(this.interaction).gameManager!.gameThread,
+  ): Promise<Discord.Message> {
     ignoreInteraction(this.interaction);
-
-    const sent = await channel.send(this.messageData);
+    const sent = await channel?.send(this.messageData);
     this.message = sent;
     return sent;
   }

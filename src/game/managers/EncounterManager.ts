@@ -36,7 +36,7 @@ export default class EncounterManager extends ParentManager {
               user: this.user,
               interaction: this.interaction,
               enemy: this.target,
-            }).send(this.user.gameManager?.gameThread);
+            }).send();
           }),
           ButtonComponent.createByInteraction(this.interaction, "run", async (interaction) => {
             ignoreInteraction(interaction);
@@ -72,11 +72,12 @@ export default class EncounterManager extends ParentManager {
                 }),
                 ButtonComponent.createByInteraction(this.interaction, "exchange", async (interaction) => {
                   ignoreInteraction(interaction);
+                  this.remove();
                   await new ExchangeManager(this, {
                     user: this.user,
                     interaction: this.interaction,
                     target: this.target,
-                  }).send(this.user.gameManager?.gameThread);
+                  }).send();
                 }),
               ]
             : []),
