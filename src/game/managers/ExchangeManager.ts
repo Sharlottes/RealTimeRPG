@@ -61,11 +61,12 @@ export default class ExchangeManager extends ParentManager {
           }),
           ButtonComponent.createByInteraction(this.interaction, "battle", async (interaction) => {
             ignoreInteraction(interaction);
+            this.remove();
             await new BattleManager(this, {
               user: this.user,
               interaction: this.interaction,
               enemy: this.target,
-            }).update();
+            }).send();
           }),
         ),
         withRowBuilder(
