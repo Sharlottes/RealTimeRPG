@@ -52,6 +52,7 @@ export default class GameManager extends Manager {
               ignoreInteraction(interaction);
               this.remove();
               this.gameThread.delete();
+              this.user.gameManager = undefined;
             },
             { style: ButtonStyle.Secondary },
           ),

@@ -70,7 +70,8 @@ class Manager {
    * @param channel 송신할 채널 (기본값: 출생지)
    */
   public async send(
-    channel: Discord.TextBasedChannel = User.findUserByInteraction(this.interaction).gameManager!.gameThread,
+    channel: Discord.TextBasedChannel = User.findUserByInteraction(this.interaction).gameManager?.gameThread ??
+      this.interaction.channel!,
   ): Promise<Discord.Message> {
     ignoreInteraction(this.interaction);
     const sent = await channel?.send(this.messageData);
