@@ -516,7 +516,7 @@ class LowHealthAlertManager extends Manager {
           .setDescription(bundle.format(manager.locale, "error.low_energy", manager.turn.stats.energy, action.cost)),
       ],
       components: [
-        new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ActionRowBuilder<ButtonComponent>().addComponents(
           CloseButtonComponent,
           new ButtonComponent({
             customId: "useHealth",

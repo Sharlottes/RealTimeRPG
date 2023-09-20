@@ -1,43 +1,33 @@
 import { showInventoryInfo } from "@/game/managers/managerFactory";
-import Discord, { ButtonBuilder, ButtonStyle } from "discord.js";
-import * as Discordx from "discordx";
+import { ButtonStyle } from "discord.js";
 import User from "@/game/User";
 
+import ButtonComponent from "./ButtonComponent";
 import withRowBuilder from "./withRowBuilder";
 
-@Discordx.Discord()
-export default class GeneralComponents {
-  @Discordx.ButtonComponent({ id: "closebutton" })
-  handler(interaction: Discord.ButtonInteraction) {
-    interaction.message.delete();
-  }
-  @Discordx.ButtonComponent({ id: "weapon_info" })
-  private weaponInfoHandler(interaction: Discord.ButtonInteraction) {
+export const WeaponInfoButton = new ButtonComponent({
+  customId: "weapon_info",
+  label: "show Weapon Info",
+  style: ButtonStyle.Primary,
+  onClick: (interaction) => {
     const user = User.findUserByInteraction(interaction);
     const weapon = user.inventory.equipments.weapon;
     weapon.item.showInfo(interaction, weapon);
-  }
+  },
+});
 
-  @Discordx.ButtonComponent({ id: "inventory_info" })
-  private inventoryInfoHandler(interaction: Discord.ButtonInteraction) {
-    showInventoryInfo(interaction).send();
-  }
-}
-
-export const WeaponInfoButton = new ButtonBuilder()
-  .setCustomId("weapon_info")
-  .setLabel("show Weapon Info")
-  .setStyle(ButtonStyle.Primary);
-
-export const InventoryInfoButton = new ButtonBuilder()
-  .setCustomId("inventory_info")
-  .setLabel("show Inventory Info")
-  .setStyle(ButtonStyle.Primary);
+export const InventoryInfoButton = new ButtonComponent({
+  customId: "inventory_info",
+  label: "show Inventory Info",
+  style: ButtonStyle.Primary,
+  onClick: (interaction) => showInventoryInfo(interaction).send(),
+});
 
 export const CloseButtonComponent = withRowBuilder(
-  new Discord.ButtonBuilder({
-    custom_id: "closebutton",
+  new ButtonComponent({
+    customId: "closebutton",
     label: "Close",
-    style: Discord.ButtonStyle.Danger,
+    style: ButtonStyle.Danger,
+    onClick: (interaction) => interaction.message.delete(),
   }),
 );

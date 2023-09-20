@@ -1,13 +1,15 @@
 import { CloseButtonComponent } from "@/command/components/GeneralComponents";
 import { ignoreInteraction } from "@/utils/functions";
-import Vars from "@/Vars";
+import Discord from "discord.js";
 
 import User from "../User";
 
 export type ManagerConstructOptions = {
   content?: string;
   embeds?: Discord.EmbedBuilder[];
-  components?: Discord.ActionRowBuilder<Discord.StringSelectMenuBuilder | Discord.ButtonBuilder>[];
+  components?: Discord.ActionRowBuilder<
+    Discord.MessageActionRowComponentBuilder & Interactive<Discord.MessageComponentType>
+  >[];
   files?: Exclude<Discord.BaseMessageOptions["files"], undefined>;
   interaction: Discord.BaseInteraction;
 };
@@ -19,7 +21,10 @@ class Manager {
   public readonly messageData: Pick<ManagerConstructOptions, "content"> &
     Required<Omit<ManagerConstructOptions, "interaction" | "content">>;
   public readonly interaction: Discord.BaseInteraction;
-  public message?: Discord.Message | undefined;
+  private interactionCollector?: Discord.InteractionCollector<
+    Discord.MappedInteractionTypes[Discord.MessageComponentType]
+  >;
+  private _message?: Discord.Message | undefined;
 
   public constructor({ content, embeds = [], components = [], files = [], interaction }: ManagerConstructOptions) {
     this.messageData = { components, content, embeds, files };
@@ -28,6 +33,30 @@ class Manager {
 
   get locale() {
     return this.interaction.locale;
+  }
+
+  get message() {
+    return this._message;
+  }
+
+  set message(newMessage: Discord.Message | undefined) {
+    if (this.interactionCollector) {
+      this.interactionCollector.checkEnd();
+    }
+    this._message = newMessage;
+    if (newMessage) {
+      this.interactionCollector = newMessage.createMessageComponentCollector();
+      this.interactionCollector.on("collect", (interaction) => {
+        if (User.findUserByInteraction(interaction).id !== interaction.user.id) return;
+        this.messageData.components.forEach((row) => {
+          row.components.forEach((component) => {
+            if (component.data.type !== interaction.componentType) return;
+            if ("custom_id" in component.data && component.data.custom_id !== interaction.customId) return;
+            component.handleInteraction(interaction);
+          });
+        });
+      });
+    }
   }
 
   public updateMessageData(data: Partial<typeof this.messageData>) {

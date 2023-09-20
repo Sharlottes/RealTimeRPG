@@ -1,8 +1,6 @@
-import AlertManager from "@/game/managers/AlertManager";
 import InteractionEvent from "@/core/interactionEvent";
 import { StringSelectMenuBuilder } from "discord.js";
 import { functionOrNot } from "@/utils/functions";
-import bundle from "@/assets/Bundle";
 
 export type PaginationStringSelectMenuOptions<T> = {
   list: MaybeFunction<T[]>;
@@ -10,7 +8,10 @@ export type PaginationStringSelectMenuOptions<T> = {
   placeholder?: string;
 };
 
-export default class PaginationStringSelectMenu<T> extends StringSelectMenuBuilder {
+export default class PaginationStringSelectMenu<T>
+  extends StringSelectMenuBuilder
+  implements Interactive<Discord.ComponentType.StringSelect>
+{
   private currentPage = 0;
   private list: MaybeFunction<T[]>;
   private reducer: (elem: T, index: number) => Discord.APISelectMenuOption;
@@ -34,7 +35,6 @@ export default class PaginationStringSelectMenu<T> extends StringSelectMenuBuild
     this.list = list;
     this.reducer = reducer;
     this.refresh();
-    InteractionEvent.on((interaction) => this.handleSelectMenu(interaction));
   }
 
   /**
@@ -71,22 +71,20 @@ export default class PaginationStringSelectMenu<T> extends StringSelectMenuBuild
     this.setOptions(options.length === 0 ? [{ label: "empty", value: "-10" }] : options);
   }
 
-  private handleSelectMenu(interaction: Discord.BaseInteraction) {
-    if (!interaction.isStringSelectMenu() || interaction.customId !== this.customId) return;
-
+  public handleInteraction(interaction: Discord.StringSelectMenuInteraction) {
     const id = interaction.values[0];
     const list = functionOrNot(this.list);
 
     switch (id) {
       case "-1":
-        if (this.currentPage == 0)
-          new AlertManager(interaction, "ERROR", bundle.find(interaction.locale, "error.first_page")).send();
-        else this.currentPage--;
+        if (this.currentPage !== 0) {
+          this.currentPage--;
+        }
         break;
       case "-2":
-        if (this.currentPage + 1 > Math.floor(list.length / 8))
-          new AlertManager(interaction, "ERROR", bundle.find(interaction.locale, "error.last_page")).send();
-        else this.currentPage++;
+        if (this.currentPage + 1 <= Math.floor(list.length / 8)) {
+          this.currentPage++;
+        }
         break;
       case "-10":
         break;

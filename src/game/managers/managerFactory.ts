@@ -1,5 +1,6 @@
 import { InventoryInfoButton, WeaponInfoButton, CloseButtonComponent } from "@/command/components/GeneralComponents";
-import Discord, { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, EmbedBuilder } from "discord.js";
+import Discord, { ActionRowBuilder, AttachmentBuilder, EmbedBuilder } from "discord.js";
+import ButtonComponent from "@/command/components/ButtonComponent";
 import { filledBar } from "string-progressbar";
 import bundle from "@/assets/Bundle";
 import Bundle from "@/assets/Bundle";
@@ -96,6 +97,6 @@ export function showUserInfo(interaction: Discord.BaseInteraction, user = User.f
         ),
     ],
     files: [attachment],
-    components: [new ActionRowBuilder<ButtonBuilder>().addComponents([WeaponInfoButton, InventoryInfoButton])],
+    components: [new ActionRowBuilder<ButtonComponent>().addComponents([WeaponInfoButton, InventoryInfoButton])],
   });
 }

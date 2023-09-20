@@ -77,3 +77,7 @@ type Message = {
   interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>;
   sender: Discord.User;
 };
+
+interface Interactive<T extends Discord.MessageComponentType> {
+  handleInteraction(interaction: Discord.MappedInteractionTypes[T]): void;
+}
