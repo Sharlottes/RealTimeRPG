@@ -42,6 +42,7 @@ class Manager {
   set message(newMessage: Discord.Message | undefined) {
     if (this.interactionCollector) {
       this.interactionCollector.checkEnd();
+      this.interactionCollector.removeAllListeners();
     }
     this._message = newMessage;
     if (newMessage) {
@@ -52,6 +53,7 @@ class Manager {
           row.components.forEach((component) => {
             if (component.data.type !== interaction.componentType) return;
             if ("custom_id" in component.data && component.data.custom_id !== interaction.customId) return;
+            console.log(component, interaction.customId);
             component.handleInteraction(interaction);
           });
         });
@@ -109,7 +111,6 @@ class Manager {
   }
 
   public async endManager(): Promise<void> {
-    //this.user.gameManager.endEvent();
     this.messageData.components = [CloseButtonComponent.Row];
     await this.update();
   }
