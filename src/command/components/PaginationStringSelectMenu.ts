@@ -42,33 +42,30 @@ export default class PaginationStringSelectMenu<T>
    */
   public refresh() {
     const currentList = functionOrNot(this.list);
-    const options = currentList
-      .reduce<Discord.APISelectMenuOption[]>(
-        (acc, elem, index) =>
-          index < this.currentPage * 8 || index > (this.currentPage + 1) * 8
-            ? acc
-            : [...acc, this.reducer(elem, index)],
-        this.currentPage == 0
-          ? []
-          : [
-              {
-                label: `<-- ${this.currentPage}/${Math.floor(currentList.length / 8) + 1}`,
-                value: "-1",
-              },
-            ],
-      )
-      .concat(
-        this.currentPage == Math.floor(currentList.length / 8)
-          ? []
-          : [
-              {
-                label: `${this.currentPage + 1}/${Math.floor(currentList.length / 8) + 1} -->`,
-                value: "-2",
-              },
-            ],
-      );
+    if (currentList.length == 0) {
+      this.setOptions([{ label: "empty", value: "-10" }]);
+      return;
+    }
 
-    this.setOptions(options.length === 0 ? [{ label: "empty", value: "-10" }] : options);
+    const options = currentList
+      .filter((_, index) => index < this.currentPage * 8 || index > (this.currentPage + 1) * 8)
+      .map(this.reducer);
+
+    if (this.currentPage !== 0) {
+      options.unshift({
+        label: `<-- ${this.currentPage}/${Math.floor(currentList.length / 8) + 1}`,
+        value: "-1",
+      });
+    }
+
+    if (this.currentPage == Math.floor(currentList.length / 8)) {
+      options.push({
+        label: `${this.currentPage + 1}/${Math.floor(currentList.length / 8) + 1} -->`,
+        value: "-2",
+      });
+    }
+
+    this.setOptions(options);
   }
 
   public handleInteraction(interaction: Discord.StringSelectMenuInteraction) {
